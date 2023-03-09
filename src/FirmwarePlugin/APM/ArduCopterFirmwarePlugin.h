@@ -20,7 +20,8 @@ class APMCopterMode : public APMCustomMode
 {
 public:
     enum Mode {
-        STABILIZE   = 0,   // hold level position
+        //STABILIZE   = 0,   // hold level position
+        POS_HOLD    =0,
         ACRO        = 1,   // rate control
         ALT_HOLD    = 2,   // AUTO control
         AUTO        = 3,   // AUTO control
@@ -36,7 +37,8 @@ public:
         SPORT       = 13,
         FLIP        = 14,
         AUTOTUNE    = 15,
-        POS_HOLD    = 16, // HYBRID LOITER.
+        STABILIZE   =16,
+        //POS_HOLD    = 16, // HYBRID LOITER.
         BRAKE       = 17,
         THROW       = 18,
         AVOID_ADSB  = 19,

@@ -111,10 +111,11 @@ Item {
         anchors.margins:            _toolsMargin
         anchors.top:                multiVehiclePanelSelector.visible ? multiVehiclePanelSelector.bottom : parent.top
         anchors.right:              parent.right
-        width:                      _rightPanelWidth
+        //width:                      _rightPanelWidth
+        width:                      _rightPanelWidth * 1.5
         spacing:                    _toolsMargin
         visible:                    QGroundControl.corePlugin.options.flyView.showInstrumentPanel && multiVehiclePanelSelector.showSingleVehiclePanel
-        availableHeight:            parent.height - y - _toolsMargin
+        availableHeight:            parent.height - y - _toolsMargin /2 //parent.height - y - _toolsMargin
 
         property real rightInset: visible ? parent.width - x : 0
     }

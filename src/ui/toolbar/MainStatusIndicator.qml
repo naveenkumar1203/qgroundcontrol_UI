@@ -44,10 +44,12 @@ RowLayout {
             var statusText
             if (_activeVehicle) {
                 if (_communicationLost) {
+                    fixedFont.source = "/fonts/ARLRDBD"
                     _mainStatusBGColor = "red"
                     return mainStatusLabel._commLostText
                 }
                 if (_activeVehicle.armed) {
+                    fixedFont.source = "/fonts/design.graffiti.mistral"
                     _mainStatusBGColor = "green"
                     if (_activeVehicle.flying) {
                         return mainStatusLabel._flyingText
@@ -60,24 +62,30 @@ RowLayout {
                     if (_activeVehicle.readyToFlyAvailable) {
                         if (_activeVehicle.readyToFly) {
                             _mainStatusBGColor = "green"
+                            fixedFont.source = "/fonts/design.graffitti.mistral"
                             return mainStatusLabel._readyToFlyText
                         } else {
-                            _mainStatusBGColor = "yellow"
+                            _mainStatusBGColor = "red" //"yellow"
+                            //fixedFont.source = "/fonts/design.graffitti.mistral"
+                            fixedFont.source = "/fonts/ARLRDBD"
                             return mainStatusLabel._notReadyToFlyText
                         }
                     } else {
                         // Best we can do is determine readiness based on AutoPilot component setup and health indicators from SYS_STATUS
                         if (_activeVehicle.allSensorsHealthy && _activeVehicle.autopilot.setupComplete) {
                             _mainStatusBGColor = "green"
+                            fixedFont.source = "/fonts/design.graffitti.mistral"
                             return mainStatusLabel._readyToFlyText
                         } else {
-                            _mainStatusBGColor = "yellow"
+                            _mainStatusBGColor = "red" //"yellow"
+                            fixedFont.source = "/fonts/ARLRDBD"
                             return mainStatusLabel._notReadyToFlyText
                         }
                     }
                 }
             } else {
-                _mainStatusBGColor = qgcPal.brandingPurple
+                _mainStatusBGColor =  "red" //qgcPal.brandingPurple
+                fixedFont.source = "/fonts/ARLRDBD"
                 return mainStatusLabel._disconnectedText
             }
         }
@@ -99,12 +107,13 @@ RowLayout {
 
     QGCColoredImage {
         id:         flightModeIcon
-        width:      ScreenTools.defaultFontPixelWidth * 2
-        height:     ScreenTools.defaultFontPixelHeight * 0.75
+        width:      ScreenTools.defaultFontPixelWidth * 5//2
+        height:     ScreenTools.defaultFontPixelHeight * 2//0.75
         fillMode:   Image.PreserveAspectFit
         mipmap:     true
         color:      qgcPal.text
-        source:     "/qmlimages/FlightModesComponentIcon.png"
+        //source:     "/qmlimages/FlightModesComponentIcon.png"
+        source:     "/qmlimages/FlightModesComponentIcon_1.svg"
         visible:    flightModeMenu.visible
     }
 

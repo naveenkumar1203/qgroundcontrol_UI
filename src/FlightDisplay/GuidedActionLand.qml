@@ -10,9 +10,10 @@
 import QGroundControl.FlightDisplay 1.0
 
 GuidedToolStripAction {
-    text:       _guidedController.landTitle
+    text:       "LAND" //_guidedController.landTitle
     message:    _guidedController.landMessage
-    iconSource: "/res/land.svg"
+    //iconSource: "/res/land.svg"
+    iconSource: "/res/Land_1.svg"
     visible:    _guidedController.showLand && !_guidedController.showTakeoff
     enabled:    _guidedController.showLand
     actionID:   _guidedController.actionLand

@@ -34,6 +34,7 @@ Rectangle {
     property color  _mainStatusBGColor: qgcPal.brandingPurple
 
     QGCPalette { id: qgcPal }
+    FontLoader { id: fixedFont}
 
     /// Bottom single pixel divider
     Rectangle {
@@ -67,9 +68,29 @@ Rectangle {
         QGCToolBarButton {
             id:                     currentButton
             Layout.preferredHeight: viewButtonRow.height
-            icon.source:            "/res/QGCLogoFull"
+            //icon.source:            "/res/QGCLogoFull"
+            icon.source:            "/res/goDrona"
             logo:                   true
             onClicked:              mainWindow.showToolSelectDialog()
+        }
+
+//        Text{
+//            id: godrona
+//            text: "Go Drona  "
+//            font.bold: true
+//            color: "White"
+//            //font.family: "Mistral"
+//            font.pointSize: ScreenTools.defaultFontPointSize * 3  //: ScreenTools.largeFontPointSize
+//        }
+
+        Text{
+            id: godrona
+            text: "Go Drona  "
+            color: "White"
+            //font.family: "Mistral"
+            font.family: fixedFont.name
+            font.pixelSize: ScreenTools.defaultFontPointSize * 3  //: ScreenTools.largeFontPointSize
+            font.bold: true
         }
 
         MainStatusIndicator {
@@ -80,9 +101,18 @@ Rectangle {
         QGCButton {
             id:                 disconnectButton
             text:               qsTr("Disconnect")
+            font.bold:          true
+            font.pointSize: ScreenTools.defaultFontPointSize * 3//1.5  //: ScreenTools.largeFontPointSize
             onClicked:          _activeVehicle.closeVehicle()
             visible:            _activeVehicle && _communicationLost && currentToolbar === flyViewToolbar
         }
+
+//        QGCButton{
+//            text: "Vehicle Log"
+//            onClicked: {
+//                console.log("vehicle log button clicked")
+//            }
+//        }
     }
 
     QGCFlickable {
@@ -109,57 +139,57 @@ Rectangle {
 
     //-------------------------------------------------------------------------
     //-- Branding Logo
-    Image {
-        anchors.right:          parent.right
-        anchors.top:            parent.top
-        anchors.bottom:         parent.bottom
-        anchors.margins:        ScreenTools.defaultFontPixelHeight * 0.66
-        visible:                currentToolbar !== planViewToolbar && _activeVehicle && !_communicationLost && x > (toolsFlickable.x + toolsFlickable.contentWidth + ScreenTools.defaultFontPixelWidth)
-        fillMode:               Image.PreserveAspectFit
-        source:                 _outdoorPalette ? _brandImageOutdoor : _brandImageIndoor
-        mipmap:                 true
+    //    Image {
+    //        anchors.right:          parent.right
+    //        anchors.top:            parent.top
+    //        anchors.bottom:         parent.bottom
+    //        anchors.margins:        ScreenTools.defaultFontPixelHeight * 0.66
+    //        visible:                currentToolbar !== planViewToolbar && _activeVehicle && !_communicationLost && x > (toolsFlickable.x + toolsFlickable.contentWidth + ScreenTools.defaultFontPixelWidth)
+    //        fillMode:               Image.PreserveAspectFit
+    //        source:                 _outdoorPalette ? _brandImageOutdoor : _brandImageIndoor
+    //        mipmap:                 true
 
-        property bool   _outdoorPalette:        qgcPal.globalTheme === QGCPalette.Light
-        property bool   _corePluginBranding:    QGroundControl.corePlugin.brandImageIndoor.length != 0
-        property string _userBrandImageIndoor:  QGroundControl.settingsManager.brandImageSettings.userBrandImageIndoor.value
-        property string _userBrandImageOutdoor: QGroundControl.settingsManager.brandImageSettings.userBrandImageOutdoor.value
-        property bool   _userBrandingIndoor:    _userBrandImageIndoor.length != 0
-        property bool   _userBrandingOutdoor:   _userBrandImageOutdoor.length != 0
-        property string _brandImageIndoor:      brandImageIndoor()
-        property string _brandImageOutdoor:     brandImageOutdoor()
+    //        property bool   _outdoorPalette:        qgcPal.globalTheme === QGCPalette.Light
+    //        property bool   _corePluginBranding:    QGroundControl.corePlugin.brandImageIndoor.length != 0
+    //        property string _userBrandImageIndoor:  QGroundControl.settingsManager.brandImageSettings.userBrandImageIndoor.value
+    //        property string _userBrandImageOutdoor: QGroundControl.settingsManager.brandImageSettings.userBrandImageOutdoor.value
+    //        property bool   _userBrandingIndoor:    _userBrandImageIndoor.length != 0
+    //        property bool   _userBrandingOutdoor:   _userBrandImageOutdoor.length != 0
+    //        property string _brandImageIndoor:      brandImageIndoor()
+    //        property string _brandImageOutdoor:     brandImageOutdoor()
 
-        function brandImageIndoor() {
-            if (_userBrandingIndoor) {
-                return _userBrandImageIndoor
-            } else {
-                if (_userBrandingOutdoor) {
-                    return _userBrandingOutdoor
-                } else {
-                    if (_corePluginBranding) {
-                        return QGroundControl.corePlugin.brandImageIndoor
-                    } else {
-                        return _activeVehicle ? _activeVehicle.brandImageIndoor : ""
-                    }
-                }
-            }
-        }
+    //        function brandImageIndoor() {
+    //            if (_userBrandingIndoor) {
+    //                return _userBrandImageIndoor
+    //            } else {
+    //                if (_userBrandingOutdoor) {
+    //                    return _userBrandingOutdoor
+    //                } else {
+    //                    if (_corePluginBranding) {
+    //                        return QGroundControl.corePlugin.brandImageIndoor
+    //                    } else {
+    //                        return _activeVehicle ? _activeVehicle.brandImageIndoor : ""
+    //                    }
+    //                }
+    //            }
+    //        }
 
-        function brandImageOutdoor() {
-            if (_userBrandingOutdoor) {
-                return _userBrandingOutdoor
-            } else {
-                if (_userBrandingIndoor) {
-                    return _userBrandingIndoor
-                } else {
-                    if (_corePluginBranding) {
-                        return QGroundControl.corePlugin.brandImageOutdoor
-                    } else {
-                        return _activeVehicle ? _activeVehicle.brandImageOutdoor : ""
-                    }
-                }
-            }
-        }
-    }
+    //        function brandImageOutdoor() {
+    //            if (_userBrandingOutdoor) {
+    //                return _userBrandingOutdoor
+    //            } else {
+    //                if (_userBrandingIndoor) {
+    //                    return _userBrandingIndoor
+    //                } else {
+    //                    if (_corePluginBranding) {
+    //                        return QGroundControl.corePlugin.brandImageOutdoor
+    //                    } else {
+    //                        return _activeVehicle ? _activeVehicle.brandImageOutdoor : ""
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
 
     // Small parameter download progress bar
     Rectangle {
@@ -217,3 +247,5 @@ Rectangle {
         }
     }
 }
+
+

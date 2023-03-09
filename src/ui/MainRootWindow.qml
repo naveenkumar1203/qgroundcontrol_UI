@@ -145,7 +145,8 @@ ApplicationWindow {
     }
 
     function showTool(toolTitle, toolSource, toolIcon) {
-        toolDrawer.backIcon     = flightView.visible ? "/qmlimages/PaperPlane.svg" : "/qmlimages/Plan.svg"
+        //toolDrawer.backIcon     = flightView.visible ? "/qmlimages/PaperPlane.svg" : "/qmlimages/Plan.svg"
+        toolDrawer.backIcon     = flightView.visible ? "/qmlimages/Back.svg" : "/qmlimages/Mission Plan.png"
         toolDrawer.toolTitle    = toolTitle
         toolDrawer.toolSource   = toolSource
         toolDrawer.toolIcon     = toolIcon
@@ -161,7 +162,8 @@ ApplicationWindow {
     }
 
     function showSettingsTool() {
-        showTool(qsTr("Application Settings"), "AppSettings.qml", "/res/QGCLogoWhite")
+        //showTool(qsTr("Application Settings"), "AppSettings.qml", "/res/QGCLogoWhite")
+        showTool(qsTr("Application Settings"), "AppSettings.qml", " ")
     }
 
     //-------------------------------------------------------------------------
@@ -369,7 +371,7 @@ ApplicationWindow {
                         Layout.fillWidth:   true
                         text:               qsTr("Vehicle Setup")
                         imageColor:         qgcPal.text
-                        imageResource:      "/qmlimages/Gears.svg"
+                        imageResource:      "/res/drone-setting.svg"
                         onClicked: {
                             if (!mainWindow.preventViewSwitch()) {
                                 toolSelectDialog.hideDialog()
@@ -399,7 +401,8 @@ ApplicationWindow {
                         height:             _toolButtonHeight
                         Layout.fillWidth:   true
                         text:               qsTr("Application Settings")
-                        imageResource:      "/res/QGCLogoFull"
+                        //imageResource:      "/res/QGCLogoFull"
+                        imageResource:      "/res/goDrona"
                         imageColor:         "transparent"
                         visible:            !QGroundControl.corePlugin.options.combineSettingsAndSetup
                         onClicked: {
@@ -423,42 +426,42 @@ ApplicationWindow {
                             Layout.alignment:       Qt.AlignHCenter
                         }
 
-                        QGCLabel {
-                            text:                   QGroundControl.qgcVersion
-                            font.pointSize:         ScreenTools.smallFontPointSize
-                            wrapMode:               QGCLabel.WrapAnywhere
-                            Layout.maximumWidth:    parent.width
-                            Layout.alignment:       Qt.AlignHCenter
+//                        QGCLabel {
+//                            text:                   QGroundControl.qgcVersion
+//                            font.pointSize:         ScreenTools.smallFontPointSize
+//                            wrapMode:               QGCLabel.WrapAnywhere
+//                            Layout.maximumWidth:    parent.width
+//                            Layout.alignment:       Qt.AlignHCenter
 
-                            QGCMouseArea {
-                                id:                 easterEggMouseArea
-                                anchors.topMargin:  -versionLabel.height
-                                anchors.fill:       parent
+//                            QGCMouseArea {
+//                                id:                 easterEggMouseArea
+//                                anchors.topMargin:  -versionLabel.height
+//                                anchors.fill:       parent
 
-                                onClicked: {
-                                    if (mouse.modifiers & Qt.ControlModifier) {
-                                        QGroundControl.corePlugin.showTouchAreas = !QGroundControl.corePlugin.showTouchAreas
-                                    } else if (mouse.modifiers & Qt.ShiftModifier) {
-                                        if(!QGroundControl.corePlugin.showAdvancedUI) {
-                                            advancedModeConfirmation.open()
-                                        } else {
-                                            QGroundControl.corePlugin.showAdvancedUI = false
-                                        }
-                                    }
-                                }
+//                                onClicked: {
+//                                    if (mouse.modifiers & Qt.ControlModifier) {
+//                                        QGroundControl.corePlugin.showTouchAreas = !QGroundControl.corePlugin.showTouchAreas
+//                                    } else if (mouse.modifiers & Qt.ShiftModifier) {
+//                                        if(!QGroundControl.corePlugin.showAdvancedUI) {
+//                                            advancedModeConfirmation.open()
+//                                        } else {
+//                                            QGroundControl.corePlugin.showAdvancedUI = false
+//                                        }
+//                                    }
+//                                }
 
-                                MessageDialog {
-                                    id:                 advancedModeConfirmation
-                                    title:              qsTr("Advanced Mode")
-                                    text:               QGroundControl.corePlugin.showAdvancedUIMessage
-                                    standardButtons:    StandardButton.Yes | StandardButton.No
-                                    onYes: {
-                                        QGroundControl.corePlugin.showAdvancedUI = true
-                                        advancedModeConfirmation.close()
-                                    }
-                                }
-                            }
-                        }
+//                                MessageDialog {
+//                                    id:                 advancedModeConfirmation
+//                                    title:              qsTr("Advanced Mode")
+//                                    text:               QGroundControl.corePlugin.showAdvancedUIMessage
+//                                    standardButtons:    StandardButton.Yes | StandardButton.No
+//                                    onYes: {
+//                                        QGroundControl.corePlugin.showAdvancedUI = true
+//                                        advancedModeConfirmation.close()
+//                                    }
+//                                }
+//                            }
+//                        }
                     }
                 }
             }

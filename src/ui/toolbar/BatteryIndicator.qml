@@ -60,20 +60,34 @@ Item {
             anchors.top:    parent.top
             anchors.bottom: parent.bottom
 
+//            function getBatteryColor() {
+//                switch (battery.chargeState.rawValue) {
+//                case MAVLink.MAV_BATTERY_CHARGE_STATE_OK:
+//                    return qgcPal.text
+//                case MAVLink.MAV_BATTERY_CHARGE_STATE_LOW:
+//                    return qgcPal.colorOrange
+//                case MAVLink.MAV_BATTERY_CHARGE_STATE_CRITICAL:
+//                case MAVLink.MAV_BATTERY_CHARGE_STATE_EMERGENCY:
+//                case MAVLink.MAV_BATTERY_CHARGE_STATE_FAILED:
+//                case MAVLink.MAV_BATTERY_CHARGE_STATE_UNHEALTHY:
+//                    return qgcPal.colorRed
+//                default:
+//                    return qgcPal.text
+//                }
+//            }
+
             function getBatteryColor() {
-                switch (battery.chargeState.rawValue) {
-                case MAVLink.MAV_BATTERY_CHARGE_STATE_OK:
-                    return qgcPal.text
-                case MAVLink.MAV_BATTERY_CHARGE_STATE_LOW:
-                    return qgcPal.colorOrange
-                case MAVLink.MAV_BATTERY_CHARGE_STATE_CRITICAL:
-                case MAVLink.MAV_BATTERY_CHARGE_STATE_EMERGENCY:
-                case MAVLink.MAV_BATTERY_CHARGE_STATE_FAILED:
-                case MAVLink.MAV_BATTERY_CHARGE_STATE_UNHEALTHY:
-                    return qgcPal.colorRed
-                default:
-                    return qgcPal.text
+                if (battery.percentRemaining.rawValue >=70)  {
+                    return qgcPal.colorGreen;
                 }
+                else if (battery.percentRemaining.rawValue <=69 && battery.percentRemaining.rawValue >=25) {
+                    return qgcPal.colorYellow;
+                }
+                else if (battery.percentRemaining.rawValue <= 24) {
+                    return qgcPal.colorRed;
+                }
+                else
+                    return qgcPal.text;
             }
 
             function getBatteryPercentageText() {
@@ -96,7 +110,8 @@ Item {
                 anchors.bottom:     parent.bottom
                 width:              height
                 sourceSize.width:   width
-                source:             "/qmlimages/Battery.svg"
+                //source:             "/qmlimages/Battery.svg"
+                source:             "/qmlimages/Battery_1.svg"
                 fillMode:           Image.PreserveAspectFit
                 color:              getBatteryColor()
             }

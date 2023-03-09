@@ -196,5 +196,24 @@
         <file alias="Yield.svg">src/ui/toolbar/Images/Yield.svg</file>
         <file alias="ZoomMinus.svg">src/FlightMap/Images/ZoomMinus.svg</file>
         <file alias="ZoomPlus.svg">src/FlightMap/Images/ZoomPlus.svg</file>
+        <file alias="marker.png">src/FlightMap/Images/marker.png</file>
+        <file alias="FLY.png">src/ui/toolbar/Images/FLY.png</file>
+        <file alias="Mission Plan.png">src/ui/toolbar/Images/Mission Plan.png</file>
+        <file alias="Takeoff.png">src/ui/toolbar/Images/Take-Off.png</file>
+        <file alias="Return.png">src/ui/toolbar/Images/Return.png</file>
+        <file alias="MapAddMission_1.svg">src/FlightMap/Images/MapAddMission_1.svg</file>
+        <file alias="MapDrawShape_1.svg">src/FlightMap/Images/MapDrawShape_1.svg</file>
+        <file alias="MapCenter_1.svg">src/FlightMap/Images/MapCenter_1.svg</file>
+        <file alias="Megaphone_1.svg">src/ui/toolbar/Images/Megaphone_1.svg</file>
+        <file alias="Gps_1.svg">src/ui/toolbar/Images/Gps_1.svg</file>
+        <file alias="RC_1.svg">src/ui/toolbar/Images/RC_1.svg</file>
+        <file alias="Battery_1.svg">src/ui/toolbar/Images/Battery_1.svg</file>
+        <file alias="MapSyncChanged_1.svg">src/ui/toolbar/Images/MapSyncChanged_1.svg</file>
+        <file alias="MapSync_1.svg">src/ui/toolbar/Images/MapSync_1.svg</file>
+        <file alias="Back.svg">resources/Back.svg</file>
+        <file alias="FLY_1.png">src/ui/toolbar/Images/FLY_1.png</file>
+        <file alias="FlightModesComponentIcon_1.svg">src/AutoPilotPlugins/Common/Images/FlightModesComponentIcon_1.svg</file>
+        <file alias="MapAddMissionBlack_1.svg">src/FlightMap/Images/MapAddMissionBlack_1.svg</file>
+        <file alias="MapCenterBlack_1.svg">src/FlightMap/Images/MapCenterBlack_1.svg</file>
     </qresource>
 </RCC>

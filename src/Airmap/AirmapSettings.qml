@@ -504,7 +504,8 @@ Item {
                         id:                 busyIndicator
                         height:             ScreenTools.defaultFontPixelHeight * 2.5
                         width:              height
-                        source:             "/qmlimages/MapSync.svg"
+                        //source:             "/qmlimages/MapSync.svg"
+                        source:             "/qmlimages/MapSync_1.svg"
                         sourceSize.height:  height
                         fillMode:           Image.PreserveAspectFit
                         mipmap:             true

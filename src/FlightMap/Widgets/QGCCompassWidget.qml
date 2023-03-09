@@ -73,7 +73,7 @@ Item {
         id:             borderRect
         anchors.fill:   parent
         radius:         width / 2
-        color:          qgcPal.window
+        color:          "transparent"//qgcPal.window
         border.color:   qgcPal.text
         border.width:   1
     }
@@ -169,7 +169,7 @@ Item {
             width:              size * 0.35
             height:             size * 0.2
             border.color:       qgcPal.text
-            color:              qgcPal.window
+            color:              "transparent"//qgcPal.window
             opacity:            0.65
 
             QGCLabel {

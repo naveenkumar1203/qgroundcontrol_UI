@@ -10,8 +10,9 @@
 import QGroundControl.FlightDisplay 1.0
 
 GuidedToolStripAction {
-    text:       _guidedController.rtlTitle
-    iconSource: "/res/rtl.svg"
+    text:       "RETURN" //_guidedController.rtlTitle
+    //iconSource: "/res/rtl.svg"
+    iconSource: "/res/Return.svg"
     visible:    true
     enabled:    _guidedController.showRTL
     actionID:   _guidedController.actionRTL

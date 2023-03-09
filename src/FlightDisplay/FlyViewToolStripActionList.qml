@@ -19,8 +19,15 @@ ToolStripActionList {
 
     model: [
         ToolStripAction {
-            text:           qsTr("Plan")
-            iconSource:     "/qmlimages/Plan.svg"
+            text:           qsTr("FLY")
+            //iconSource:     "/qmlimages/FLY.png"
+            iconSource:     "/qmlimages/FLY_1.png"
+            enabled:        false
+        },
+        ToolStripAction {
+            text:           qsTr("PLAN")
+            //iconSource:     "/qmlimages/Plan.svg"
+            iconSource:     "/qmlimages/Mission Plan.png"
             onTriggered:    mainWindow.showPlanView()
         },
         PreFlightCheckListShowAction { onTriggered: displayPreFlightChecklist() },

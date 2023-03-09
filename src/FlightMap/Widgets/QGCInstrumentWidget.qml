@@ -34,23 +34,26 @@ ColumnLayout {
         height:             _outerRadius * 2
         Layout.fillWidth:   true
         radius:             _outerRadius
-        color:              qgcPal.window
+        //color:              qgcPal.window
+        color:              "#0005324d"
 
         DeadMouseArea { anchors.fill: parent }
 
-        QGCAttitudeWidget {
-            id:                     attitude
-            anchors.leftMargin:     _topBottomMargin
-            anchors.left:           parent.left
-            size:                   _innerRadius * 2
-            vehicle:                globals.activeVehicle
-            anchors.verticalCenter: parent.verticalCenter
-        }
+//        QGCAttitudeWidget {
+//            id:                     attitude
+//            anchors.leftMargin:     _topBottomMargin
+//            anchors.left:           parent.left
+//            size:                   _innerRadius * 2
+//            vehicle:                globals.activeVehicle
+//            anchors.verticalCenter: parent.verticalCenter
+//        }
 
         QGCCompassWidget {
             id:                     compass
-            anchors.leftMargin:     _spacing
-            anchors.left:           attitude.right
+            //anchors.leftMargin:     _spacing
+            anchors.rightMargin:     _spacing
+            //anchors.left:           attitude.right
+            anchors.right:           parent.right
             size:                   _innerRadius * 2
             vehicle:                globals.activeVehicle
             anchors.verticalCenter: parent.verticalCenter

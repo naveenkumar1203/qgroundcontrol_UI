@@ -40,18 +40,32 @@ Rectangle {
         radius:     _diameter / 2
         color:      qgcPal.primaryButton
 
-        QGCColoredImage {
-            anchors.centerIn:       parent
-            width:                  parent.width  * 0.8
-            height:                 parent.height * 0.8
-            sourceSize.height:      height
-            fillMode:               Image.PreserveAspectFit
-            smooth:                 false
-            mipmap:                 false
-            color:                  qgcPal.buttonText
-            cache:                  false
-            source:                 "/res/ArrowRight.svg"
-        }
+//        QGCColoredImage {
+//            anchors.centerIn:       parent
+//            width:                  parent.width  * 0.8
+//            height:                 parent.height * 0.8
+//            sourceSize.height:      height
+//            fillMode:               Image.PreserveAspectFit
+//            smooth:                 false
+//            mipmap:                 false
+//            color:                  qgcPal.buttonText
+//            cache:                  false
+//            //source:                 "/res/ArrowRight.svg"
+//            source:                 "/res/goDrona.svg"
+//        }
+
+        Image{
+                    anchors.centerIn:       parent
+                    //width:                  parent.width  * 0.8
+                    //height:                 parent.height * 0.8
+                    anchors.fill: parent
+                    sourceSize.height:      height
+                    fillMode:               Image.PreserveAspectFit
+                    smooth:                 false
+                    mipmap:                 false
+                    cache:                  false
+                    source:                 "/res/goDrona" //"/res/ArrowRight.svg"
+                }
 
     }
 

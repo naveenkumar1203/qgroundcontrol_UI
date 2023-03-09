@@ -140,6 +140,7 @@ public:
     DEFINE_QGC_COLOR(colorRed,                      setColorRed)
     DEFINE_QGC_COLOR(colorGrey,                     setColorGrey)
     DEFINE_QGC_COLOR(colorBlue,                     setColorBlue)
+    DEFINE_QGC_COLOR(colorYellow,                   setcolorYellow)
     DEFINE_QGC_COLOR(alertBackground,               setAlertBackground)
     DEFINE_QGC_COLOR(alertBorder,                   setAlertBorder)
     DEFINE_QGC_COLOR(alertText,                     setAlertText)
@@ -152,8 +153,9 @@ public:
     DEFINE_QGC_COLOR(toolbarBackground,             setToolbarBackground)
     DEFINE_QGC_COLOR(toolStripFGColor,              setToolStripFGColor)
     DEFINE_QGC_COLOR(toolStripHoverColor,           setToolStripHoverColor)
+    DEFINE_QGC_COLOR(newstriptoolbarBackground,     setNewstriptoolbarBackground)
 
-     QGCPalette(QObject* parent = nullptr);
+    QGCPalette(QObject* parent = nullptr);
     ~QGCPalette();
 
     QStringList colors                      () const { return _colors; }

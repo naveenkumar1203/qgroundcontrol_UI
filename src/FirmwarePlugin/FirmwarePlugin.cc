@@ -296,11 +296,13 @@ int FirmwarePlugin::remapParamNameHigestMinorVersionNumber(int) const
 QString FirmwarePlugin::vehicleImageOpaque(const Vehicle*) const
 {
     return QStringLiteral("/qmlimages/vehicleArrowOpaque.svg");
+    //return QStringLiteral("/qmlimages/vehicleArrowOpaque_1.svg");
 }
 
 QString FirmwarePlugin::vehicleImageOutline(const Vehicle*) const
 {
     return QStringLiteral("/qmlimages/vehicleArrowOutline.svg");
+    //return QStringLiteral("/qmlimages/vehicleArrowOutline_1.svg");
 }
 
 QString FirmwarePlugin::vehicleImageCompass(const Vehicle*) const

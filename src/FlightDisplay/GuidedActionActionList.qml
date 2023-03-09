@@ -11,7 +11,8 @@ import QGroundControl.FlightDisplay 1.0
 
 GuidedToolStripAction {
     text:               _guidedController.actionListTitle
-    iconSource:         "/res/action.svg"
+    //iconSource:         "/res/action.svg"
+    iconSource:         "/res/Drone Action.svg"
     visible:            _guidedController.showActionList
     enabled:            true
     actionID:           _guidedController.actionActionList

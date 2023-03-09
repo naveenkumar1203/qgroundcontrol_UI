@@ -37,7 +37,8 @@ QString FlightModesComponent::description(void) const
 
 QString FlightModesComponent::iconResource(void) const
 {
-    return "/qmlimages/FlightModesComponentIcon.png";
+    //return "/qmlimages/FlightModesComponentIcon.png";
+    return "/qmlimages/FlightModesComponentIcon_1.svg";
 }
 
 bool FlightModesComponent::requiresSetup(void) const

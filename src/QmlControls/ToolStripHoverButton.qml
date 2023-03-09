@@ -79,11 +79,33 @@ Button {
                 anchors.horizontalCenter:   parent.horizontalCenter
             }
 
+//            Image {
+//                id:                         innerImage
+//                height:                     contentLayoutItem.height * imageScale
+//                width:                      contentLayoutItem.width  * imageScale
+//                smooth:                     true
+//                mipmap:                     true
+//                //color:                      "green"//_currentContentColor
+//                fillMode:                   Image.PreserveAspectFit
+//                antialiasing:               true
+//                sourceSize.height:          height
+//                sourceSize.width:           width
+//                anchors.horizontalCenter:   parent.horizontalCenter
+
+//                ColorOverlay {
+//                    anchors.fill: parent
+//                    source: parent
+//                    color: "#1a89ca"//"green"
+//                }
+//            }
+
             QGCLabel {
                 id:                         innerText
                 text:                       control.text
                 color:                      _currentContentColor
                 anchors.horizontalCenter:   parent.horizontalCenter
+                font.bold: true
+                font.pointSize: ScreenTools.defaultFontPointSize * 13
             }
         }
     }
@@ -91,8 +113,8 @@ Button {
     background: Rectangle {
         id:             buttonBkRect
         color:          (control.checked || control.pressed) ?
-                            qgcPal.buttonHighlight :
-                            (control.hovered ? qgcPal.toolStripHoverColor : qgcPal.toolbarBackground)
+                            qgcPal.buttonHighlight : (control.hovered ? qgcPal.toolStripHoverColor : qgcPal.newstriptoolbarBackground)
+                          //  (control.hovered ? qgcPal.toolStripHoverColor : qgcPal.toolbarBackground)
         anchors.fill:   parent
     }
 }

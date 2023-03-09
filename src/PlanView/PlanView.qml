@@ -185,9 +185,9 @@ Item {
         id: firmwareOrVehicleMismatchUploadDialogComponent
         QGCViewMessage {
             message: qsTr("This Plan was created for a different firmware or vehicle type than the firmware/vehicle type of vehicle you are uploading to. " +
-                            "This can lead to errors or incorrect behavior. " +
-                            "It is recommended to recreate the Plan for the correct firmware/vehicle type.\n\n" +
-                            "Click 'Ok' to upload the Plan anyway.")
+                          "This can lead to errors or incorrect behavior. " +
+                          "It is recommended to recreate the Plan for the correct firmware/vehicle type.\n\n" +
+                          "Click 'Ok' to upload the Plan anyway.")
 
             function accept() {
                 _planMasterController.sendToVehicle()
@@ -253,15 +253,15 @@ Item {
                 return
             }
             switch (_missionController.sendToVehiclePreCheck()) {
-                case MissionController.SendToVehiclePreCheckStateOk:
-                    sendToVehicle()
-                    break
-                case MissionController.SendToVehiclePreCheckStateActiveMission:
-                    mainWindow.showMessageDialog(qsTr("Send To Vehicle"), qsTr("Current mission must be paused prior to uploading a new Plan"))
-                    break
-                case MissionController.SendToVehiclePreCheckStateFirwmareVehicleMismatch:
-                    mainWindow.showComponentDialog(firmwareOrVehicleMismatchUploadDialogComponent, qsTr("Plan Upload"), mainWindow.showDialogDefaultWidth, StandardButton.Ok | StandardButton.Cancel)
-                    break
+            case MissionController.SendToVehiclePreCheckStateOk:
+                sendToVehicle()
+                break
+            case MissionController.SendToVehiclePreCheckStateActiveMission:
+                mainWindow.showMessageDialog(qsTr("Send To Vehicle"), qsTr("Current mission must be paused prior to uploading a new Plan"))
+                break
+            case MissionController.SendToVehiclePreCheckStateFirwmareVehicleMismatch:
+                mainWindow.showComponentDialog(firmwareOrVehicleMismatchUploadDialogComponent, qsTr("Plan Upload"), mainWindow.showDialogDefaultWidth, StandardButton.Ok | StandardButton.Cancel)
+                break
             }
         }
 
@@ -446,6 +446,16 @@ Item {
                 updateAirspace(false)
             }
 
+//            MapQuickItem{
+//                coordinate: _visualItems.x
+//                anchorPoint.x: image1.width/4
+//                anchorPoint.y: image1.height
+//                sourceItem:Image{
+//                    id:image1
+//                    source: "qrc:/qmlimages/marker.png"
+//                }
+//            }
+
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
@@ -616,7 +626,7 @@ Item {
             anchors.top:        parent.top
             z:                  QGroundControl.zOrderWidgets
             maxHeight:          parent.height - toolStrip.y
-            title:              qsTr("Plan")
+            //title:              qsTr("Plan")
 
             readonly property int flyButtonIndex:       0
             readonly property int fileButtonIndex:      1
@@ -632,24 +642,38 @@ Item {
 
             ToolStripActionList {
                 id: toolStripActionList
+
                 model: [
                     ToolStripAction {
-                        text:           qsTr("Fly")
-                        iconSource:     "/qmlimages/PaperPlane.svg"
+                        text:           qsTr("FLY")
+                        //iconSource:     "/qmlimages/PaperPlane.svg"
+                        iconSource:     "/qmlimages/FLY_1.png"
                         onTriggered:    mainWindow.showFlyView()
                     },
                     ToolStripAction {
-                        text:                   qsTr("File")
+                        id:                     filetoolstrip
+                        text:                   qsTr("FILE")
                         enabled:                !_planMasterController.syncInProgress
                         visible:                true
-                        showAlternateIcon:      _planMasterController.dirty
-                        iconSource:             "/qmlimages/MapSync.svg"
-                        alternateIconSource:    "/qmlimages/MapSyncChanged.svg"
+                        iconSource: {
+                            if(_planMasterController.dirty){
+                                filetoolstrip.iconSource = "/qmlimages/MapSyncChanged_1.svg"
+                            }
+                            else {
+                                filetoolstrip.iconSource = "/qmlimages/MapSync_1.svg"
+                            }
+                        }
+                        //showAlternateIcon:      _planMasterController.dirty
+                        //iconSource:             "/qmlimages/MapSync.svg"
+                        //alternateIconSource:    "/qmlimages/MapSyncChanged.svg"
+                        //iconSource:             "/qmlimages/MapSync_1.svg"
+                        //alternateIconSource:    "/qmlimages/MapSyncChanged_1.svg"
                         dropPanelComponent:     syncDropPanel
                     },
                     ToolStripAction {
-                        text:       qsTr("Takeoff")
-                        iconSource: "/res/takeoff.svg"
+                        text:       qsTr("TAKEOFF")
+                        //iconSource: "/res/takeoff.svg"
+                        iconSource: "/res/Takeoff_1.svg"
                         enabled:    _missionController.isInsertTakeoffValid
                         visible:    toolStrip._isMissionLayer && !_planMasterController.controllerVehicle.rover
                         onTriggered: {
@@ -659,15 +683,17 @@ Item {
                     },
                     ToolStripAction {
                         id:                 addWaypointRallyPointAction
-                        text:               _editingLayer == _layerRallyPoints ? qsTr("Rally Point") : qsTr("Waypoint")
-                        iconSource:         "/qmlimages/MapAddMission.svg"
+                        text:               _editingLayer == _layerRallyPoints ? qsTr("RALLY POINT") : qsTr("WAYPOINT")
+                        //iconSource:         "/qmlimages/MapAddMission.svg"
+                        iconSource:         "/qmlimages/MapAddMission_1.svg"
                         enabled:            toolStrip._isRallyLayer ? true : _missionController.flyThroughCommandsAllowed
                         visible:            toolStrip._isRallyLayer || toolStrip._isMissionLayer
                         checkable:          true
                     },
                     ToolStripAction {
-                        text:               _missionController.isROIActive ? qsTr("Cancel ROI") : qsTr("ROI")
-                        iconSource:         "/qmlimages/MapAddMission.svg"
+                        text:               _missionController.isROIActive ? qsTr("CANCEL ROI") : qsTr("ROI")
+                        //iconSource:         "/qmlimages/MapAddMission.svg"
+                        iconSource:         "/qmlimages/MapAddMission_1.svg"
                         enabled:            !_missionController.onlyInsertTakeoffValid
                         visible:            toolStrip._isMissionLayer && _planMasterController.controllerVehicle.roiModeSupported
                         checkable:          !_missionController.isROIActive
@@ -682,8 +708,9 @@ Item {
                         onMyAddROIOnClickChanged: checked = _addROIOnClick
                     },
                     ToolStripAction {
-                        text:               _singleComplexItem ? _missionController.complexMissionItemNames[0] : qsTr("Pattern")
-                        iconSource:         "/qmlimages/MapDrawShape.svg"
+                        text:               _singleComplexItem ? _missionController.complexMissionItemNames[0] : qsTr("PATTERN")
+                        //iconSource:         "/qmlimages/MapDrawShape.svg"
+                        iconSource:         "/qmlimages/MapDrawShape_1.svg"
                         enabled:            _missionController.flyThroughCommandsAllowed
                         visible:            toolStrip._isMissionLayer
                         dropPanelComponent: _singleComplexItem ? undefined : patternDropPanel
@@ -695,8 +722,9 @@ Item {
                         }
                     },
                     ToolStripAction {
-                        text:       _planMasterController.controllerVehicle.multiRotor ? qsTr("Return") : qsTr("Land")
-                        iconSource: "/res/rtl.svg"
+                        text:       _planMasterController.controllerVehicle.multiRotor ? qsTr("RETURN") : qsTr("LAND")
+                        //iconSource: "/res/rtl.svg"
+                        iconSource: "/res/Return.svg"
                         enabled:    _missionController.isInsertLandValid
                         visible:    toolStrip._isMissionLayer
                         onTriggered: {
@@ -705,8 +733,9 @@ Item {
                         }
                     },
                     ToolStripAction {
-                        text:               qsTr("Center")
-                        iconSource:         "/qmlimages/MapCenter.svg"
+                        text:               qsTr("CENTER")
+                        //iconSource:         "/qmlimages/MapCenter.svg"
+                        iconSource:         "/qmlimages/MapCenter_1.svg"
                         enabled:            true
                         visible:            true
                         dropPanelComponent: centerMapDropPanel

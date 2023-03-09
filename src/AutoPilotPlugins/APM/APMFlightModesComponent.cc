@@ -31,7 +31,8 @@ QString APMFlightModesComponent::description(void) const
 
 QString APMFlightModesComponent::iconResource(void) const
 {
-    return QStringLiteral("/qmlimages/FlightModesComponentIcon.png");
+    //return QStringLiteral("/qmlimages/FlightModesComponentIcon.png");
+    return QStringLiteral("/qmlimages/FlightModesComponentIcon_1.svg");
 }
 
 bool APMFlightModesComponent::requiresSetup(void) const

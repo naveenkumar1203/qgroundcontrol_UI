@@ -75,16 +75,27 @@ Item {
         }
     }
 
-    QGCColoredImage {
+//    QGCColoredImage {
+//        id:                 gpsIcon
+//        width:              height
+//        anchors.top:        parent.top
+//        anchors.bottom:     parent.bottom
+//        //source:             "/qmlimages/Gps.svg"
+//        source:             "/qmlimages/Gps_1.svg"
+//        fillMode:           Image.PreserveAspectFit
+//        sourceSize.height:  height
+//        opacity:            (_activeVehicle && _activeVehicle.gps.count.value >= 0) ? 1 : 0.5
+//        color:              qgcPal.buttonText
+//    }
+
+    Image {
         id:                 gpsIcon
         width:              height
         anchors.top:        parent.top
         anchors.bottom:     parent.bottom
-        source:             "/qmlimages/Gps.svg"
-        fillMode:           Image.PreserveAspectFit
+        source:             "/qmlimages/Gps_1.svg"
         sourceSize.height:  height
-        opacity:            (_activeVehicle && _activeVehicle.gps.count.value >= 0) ? 1 : 0.5
-        color:              qgcPal.buttonText
+        smooth:             true
     }
 
     Column {

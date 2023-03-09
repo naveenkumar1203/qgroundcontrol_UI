@@ -4,6 +4,8 @@
         <file alias="opensans-demibold">resources/fonts/OpenSans-Semibold.ttf</file>
         <file alias="NanumGothic-Regular">resources/fonts/NanumGothic-Regular.ttf</file>
         <file alias="NanumGothic-Bold">resources/fonts/NanumGothic-Bold.ttf</file>
+        <file alias="design.graffiti.mistral">resources/fonts/design.graffiti.mistral.ttf</file>
+        <file alias="ARLRDBD">resources/fonts/ARLRDBD.ttf</file>
     </qresource>
     <qresource prefix="/res">
         <file alias="action.svg">resources/action.svg</file>
@@ -18,7 +20,7 @@
         <file alias="counter-clockwise-arrow.svg">resources/counter-clockwise-arrow.svg</file>
         <file alias="chevron-down.svg">resources/chevron-down.svg</file>
         <file alias="chevron-up.svg">resources/chevron-up.svg</file>
-		<file alias="DropArrow.svg">resources/DropArrow.svg</file>
+        <file alias="DropArrow.svg">resources/DropArrow.svg</file>
         <file alias="gear-black.svg">resources/gear-black.svg</file>
         <file alias="gear-white.svg">resources/gear-white.svg</file>
         <file alias="helicoptericon.svg">resources/helicoptericon.svg</file>
@@ -31,13 +33,12 @@
         <file alias="LockClosed.svg">resources/LockClosed.svg</file>
         <file alias="LockOpen.svg">resources/LockOpen.svg</file>
         <file alias="notile.png">resources/notile.png</file>
-        <file alias="Pause.svg">resources/Pause.svg</file>
         <file alias="pause-mission.svg">resources/pause-mission.svg</file>
         <file alias="pencil.svg">resources/pencil.svg</file>
         <file alias="Play">resources/Play.svg</file>
         <file alias="PowerButton">resources/PowerButton.svg</file>
         <file alias="QGCLogoBlack">resources/QGCLogoBlack.svg</file>
-		<file alias="QGCLogoFull">resources/QGCLogoFull.svg</file>
+        <file alias="QGCLogoFull">resources/QGCLogoFull.svg</file>
         <file alias="QGCLogoWhite">resources/QGCLogoWhite.svg</file>
         <file alias="QGCLogoArrow">resources/QGCLogoArrow.svg</file>
         <file alias="QGroundControlConnect">resources/QGroundControlConnect.svg</file>
@@ -55,11 +56,20 @@
         <file alias="XDeleteBlack.svg">resources/XDeleteBlack.svg</file>
         <file alias="waypoint.svg">resources/waypoint.svg</file>
         <file>resources/icons/qgroundcontrol.ico</file>
+        <file>resources/icons/goDrona.ico</file>
+        <file alias="goDrona">resources/goDrona.svg</file>
+        <file alias="Drone Action.svg">resources/Drone Action.svg</file>
+        <file alias="Return.svg">resources/Return.svg</file>
+        <file alias="pause.svg">resources/pause.svg</file>
+        <file alias="Takeoff_1.svg">resources/Takeoff_1.svg</file>
+        <file alias="drone-setting.svg">resources/drone-setting.svg</file>
+        <file alias="Land_1.svg">resources/Land_1.svg</file>
     </qresource>
     <qresource prefix="/res/firmware">
         <file alias="3drradio.png">resources/firmware/3drradio.png</file>
         <file alias="apm.png">resources/firmware/apm.png</file>
         <file alias="px4.png">resources/firmware/px4.png</file>
+        <file>src/ui/toolbar/Images/Mission Plan.png</file>
     </qresource>
     <qresource prefix="/res/calibration">
         <file alias="accel_back.png">resources/calibration/accel_back.png</file>

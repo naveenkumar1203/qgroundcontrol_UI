@@ -74,16 +74,33 @@ Item {
         anchors.bottom: parent.bottom
         spacing:        ScreenTools.defaultFontPixelWidth
 
-        QGCColoredImage {
+//        QGCColoredImage {
+//            width:              height
+//            anchors.top:        parent.top
+//            anchors.bottom:     parent.bottom
+//            sourceSize.height:  height
+//            //source:             "/qmlimages/RC.svg"
+//            source:             "/qmlimages/RC_1.svg"
+//            fillMode:           Image.PreserveAspectFit
+//            opacity:            _rcRSSIAvailable ? 1 : 0.5
+//            color:              qgcPal.buttonText
+//        }
+
+        Image {
+            id:                 rc
             width:              height
+            sourceSize.height:  height
             anchors.top:        parent.top
             anchors.bottom:     parent.bottom
-            sourceSize.height:  height
-            source:             "/qmlimages/RC.svg"
-            fillMode:           Image.PreserveAspectFit
-            opacity:            _rcRSSIAvailable ? 1 : 0.5
-            color:              qgcPal.buttonText
+            source:             "/qmlimages/RC_1.svg"
+            //smooth:             true
         }
+
+//        QGCColorOverlay {
+//            anchors.fill: rc
+//            source: rc
+//            color: "white"
+//        }
 
         SignalStrength {
             anchors.verticalCenter: parent.verticalCenter

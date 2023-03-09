@@ -176,7 +176,7 @@ Rectangle {
             visible:                !missionItem.isCurrentItem || !missionItem.isSimpleItem || _waypointsOnlyMode || missionItem.isTakeoffItem
             verticalAlignment:      Text.AlignVCenter
             text:                   missionItem.commandName
-            color:                  _outerTextColor
+            color:                  "white"//_outerTextColor
         }
     }
 

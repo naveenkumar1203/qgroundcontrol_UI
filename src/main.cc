@@ -23,26 +23,26 @@
 #include "AppMessages.h"
 
 #ifndef NO_SERIAL_LINK
-    #include "SerialLink.h"
+#include "SerialLink.h"
 #endif
 
 #ifndef __mobile__
-    #include "QGCSerialPortInfo.h"
-    #include "RunGuard.h"
+#include "QGCSerialPortInfo.h"
+#include "RunGuard.h"
 #ifndef NO_SERIAL_LINK
-    #include <QSerialPort>
+#include <QSerialPort>
 #endif
 #endif
 
 #ifdef UNITTEST_BUILD
-    #include "UnitTest.h"
+#include "UnitTest.h"
 #endif
 
 #ifdef QT_DEBUG
-    #include "CmdLineOptParser.h"
-    #ifdef Q_OS_WIN
-        #include <crtdbg.h>
-    #endif
+#include "CmdLineOptParser.h"
+#ifdef Q_OS_WIN
+#include <crtdbg.h>
+#endif
 #endif
 
 #ifdef QGC_ENABLE_BLUETOOTH
@@ -59,7 +59,7 @@
 
 #ifndef __mobile__
 #ifndef NO_SERIAL_LINK
-    Q_DECLARE_METATYPE(QGCSerialPortInfo)
+Q_DECLARE_METATYPE(QGCSerialPortInfo)
 #endif
 #endif
 
@@ -95,12 +95,12 @@ static jobject _context = nullptr;
 
 //-----------------------------------------------------------------------------
 extern "C" {
-    void gst_amc_jni_set_java_vm(JavaVM *java_vm);
+void gst_amc_jni_set_java_vm(JavaVM *java_vm);
 
-    jobject gst_android_get_application_class_loader(void)
-    {
-        return _class_loader;
-    }
+jobject gst_android_get_application_class_loader(void)
+{
+    return _class_loader;
+}
 }
 
 //-----------------------------------------------------------------------------
@@ -184,9 +184,9 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved)
     gst_amc_jni_set_java_vm(vm);
 #endif
 
- #if !defined(NO_SERIAL_LINK)
+#if !defined(NO_SERIAL_LINK)
     QSerialPort::setNativeMethods();
- #endif
+#endif
 
     JoystickAndroid::setNativeMethods();
 
@@ -207,10 +207,10 @@ bool checkAndroidWritePermission() {
         QtAndroid::requestPermissionsSync( QStringList() << "android.permission.WRITE_EXTERNAL_STORAGE" );
         r = QtAndroid::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE");
         if(r == QtAndroid::PermissionResult::Denied) {
-             return false;
+            return false;
         }
-   }
-   return true;
+    }
+    return true;
 }
 #endif
 
@@ -242,7 +242,9 @@ int main(int argc, char *argv[])
     // builds, so they can be executed together in the same device.
     // Stable and Daily have same QGC_APPLICATION_NAME so they would
     // not be able to run at the same time
-    QString runguardString(QGC_APPLICATION_NAME);
+
+    //QString runguardString(QGC_APPLICATION_NAME);
+    QString runguardString("GoDrona GCS");
     runguardString.append("RunGuardKey");
 
     RunGuard guard(runguardString);
@@ -250,8 +252,9 @@ int main(int argc, char *argv[])
         // QApplication is necessary to use QMessageBox
         QApplication errorApp(argc, argv);
         QMessageBox::critical(nullptr, QObject::tr("Error"),
-            QObject::tr("A second instance of %1 is already running. Please close the other instance and try again.").arg(QGC_APPLICATION_NAME)
-        );
+                              //QObject::tr("A second instance of %1 is already running. Please close the other instance and try again.").arg(QGC_APPLICATION_NAME)
+                              QObject::tr("A second instance of %1 is already running. Please close the other instance and try again.").arg("GoDrona GCS")
+                              );
         return -1;
     }
 #endif
@@ -374,7 +377,8 @@ int main(int argc, char *argv[])
     }
 
 #ifdef Q_OS_LINUX
-    QApplication::setWindowIcon(QIcon(":/res/resources/icons/qgroundcontrol.ico"));
+    //QApplication::setWindowIcon(QIcon(":/res/resources/icons/qgroundcontrol.ico"));
+    QApplication::setWindowIcon(QIcon(":/res/resources/icons/goDrona.ico"));
 #endif /* Q_OS_LINUX */
 
     // There appears to be a threading issue in qRegisterMetaType which can cause it to throw a qWarning

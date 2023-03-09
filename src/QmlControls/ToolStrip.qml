@@ -17,9 +17,11 @@ import QGroundControl.Controls      1.0
 
 Rectangle {
     id:         _root
-    color:      qgcPal.toolbarBackground
-    width:      _idealWidth < repeater.contentWidth ? repeater.contentWidth : _idealWidth
-    height:     Math.min(maxHeight, toolStripColumn.height + (flickable.anchors.margins * 2))
+    color:      qgcPal.newstriptoolbarBackground //qgcPal.toolbarBackground
+    //width:      _idealWidth < repeater.contentWidth ? repeater.contentWidth : _idealWidth
+    //height:     Math.min(maxHeight, toolStripColumn.height + (flickable.anchors.margins * 2))
+    width:      _idealWidth < repeater.contentWidth ? repeater.contentWidth : _idealWidth * 1.5
+    height:     Math.min(maxHeight, toolStripColumn.height + (flickable.anchors.margins *3))
     radius:     ScreenTools.defaultFontPixelWidth / 2
 
     property alias  model:              repeater.model
