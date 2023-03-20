@@ -91,7 +91,6 @@ Item{
                     text: "Model B"
                 }
             }
-
             onCurrentTextChanged :{
 
                 if(currentText == "Model A") {
@@ -165,6 +164,7 @@ Item{
 
     FirmwareUpdate{
         id:firmware_load1
+
         onGeneration_checksum_model_AChanged: {
         }
         onGeneration_checksum_model_BChanged: {

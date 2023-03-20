@@ -18,7 +18,6 @@ FirmwareUpdate::FirmwareUpdate(QObject *parent)
 
 }
 void FirmwareUpdate::checksum_generation_process_model_A()
-
 {
     QProcess code_checksum_process_model_A;
     code_checksum_process_model_A.execute("openssl",QStringList()<< "dgst" << "-sha256" << "-out" << "/home/vasanth/firmware_load/new_model_A.txt" << "/home/vasanth/firmware_load/model_A.params");
@@ -98,13 +97,14 @@ void FirmwareUpdate::compare_file_model_A()
     qDebug() << list2;
 
     if(list1 == list2){
-        qDebug()<< "Model A - The checksum matches. Please continue";
+
         QMessageBox msgBox;
         msgBox.setText("Model A - The checksum matches. Please continue");
         msgBox.setStyleSheet("color:white;background:#05324D");
         msgBox.setDefaultButton(QMessageBox::Ok);
         msgBox.exec();
         load_file_model_A();
+        qDebug()<< "Model A - The checksum matches. Please continue";
         return;
     }
     else {
@@ -216,13 +216,14 @@ void FirmwareUpdate::compare_file_model_B()
     qDebug() << list2;
 
     if(list1 == list2){
-        qDebug()<< "Model B - The checksum matches. Please continue";
+
         QMessageBox msgBox;
         msgBox.setText("Model B - The checksum matches. Please continue");
         msgBox.setStyleSheet("color:white;background:#05324D");
         msgBox.setDefaultButton(QMessageBox::Ok);
         msgBox.exec();
         load_file_model_B();
+        qDebug()<< "Model B - The checksum matches. Please continue";
         return;
     }
     else {
