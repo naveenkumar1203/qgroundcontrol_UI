@@ -87,7 +87,6 @@ Rectangle {
             id: godrona
             text: "Go Drona  "
             color: "White"
-            //font.family: "Mistral"
             font.family: fixedFont.name
             font.pixelSize: ScreenTools.defaultFontPointSize * 3  //: ScreenTools.largeFontPointSize
             font.bold: true

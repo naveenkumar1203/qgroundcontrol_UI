@@ -440,7 +440,10 @@ contains (DEFINES, QGC_ENABLE_PAIRING) {
 #
 
 HEADERS += \
+    src/QmlControls/Database.h \
+    src/QmlControls/FirmwareUpdate.h \
     src/QmlControls/QmlUnitsConversion.h \
+    src/QmlControls/RpaDatabase.h \
     src/Vehicle/VehicleEscStatusFactGroup.h \
     src/api/QGCCorePlugin.h \
     src/api/QGCOptions.h \
@@ -454,6 +457,9 @@ contains (DEFINES, QGC_ENABLE_PAIRING) {
 }
 
 SOURCES += \
+    src/QmlControls/Database.cpp \
+    src/QmlControls/FirmwareUpdate.cpp \
+    src/QmlControls/RpaDatabase.cpp \
     src/Vehicle/VehicleEscStatusFactGroup.cc \
     src/api/QGCCorePlugin.cc \
     src/api/QGCOptions.cc \
@@ -1536,9 +1542,6 @@ contains (CONFIG, QGC_DISABLE_INSTALLER_SETUP) {
     include(QGCPostLinkInstaller.pri)
 }
 
-DISTFILES += \
-    src/QmlControls/QGroundControl/Specific/qmldir
-
 #
 # Steps for "install" target on Linux
 #
@@ -1557,3 +1560,6 @@ LinuxBuild {
 
     INSTALLS += target share_qgroundcontrol share_icons share_metainfo share_applications
 }
+
+DISTFILES += \
+    src/QmlControls/NewParameterDialog.qml

@@ -215,5 +215,9 @@
         <file alias="FlightModesComponentIcon_1.svg">src/AutoPilotPlugins/Common/Images/FlightModesComponentIcon_1.svg</file>
         <file alias="MapAddMissionBlack_1.svg">src/FlightMap/Images/MapAddMissionBlack_1.svg</file>
         <file alias="MapCenterBlack_1.svg">src/FlightMap/Images/MapCenterBlack_1.svg</file>
+        <file alias="Back_to_fly.png">resources/Back_to_fly.png</file>
+        <file alias="customers_black.png">resources/customers_black.png</file>
+        <file alias="Remote_pilot.png">resources/Remote_pilot.png</file>
+        <file alias="drone.png">resources/drone.png</file>
     </qresource>
 </RCC>

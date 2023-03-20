@@ -19,6 +19,8 @@ import QGroundControl.FactSystem    1.0
 import QGroundControl.FactControls  1.0
 import QGroundControl.Controllers   1.0
 
+
+
 QGCPopupDialog {
     title:      qsTr("Load Parameters")
     buttons:    StandardButton.Cancel | (paramController.diffList.count ? StandardButton.Ok : 0)
@@ -95,3 +97,6 @@ QGCPopupDialog {
         }
     }
 }
+
+
+

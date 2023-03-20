@@ -66,7 +66,7 @@ RowLayout {
                             return mainStatusLabel._readyToFlyText
                         } else {
                             _mainStatusBGColor = "red" //"yellow"
-                            //fixedFont.source = "/fonts/design.graffitti.mistral"
+                            //fixedFont.source = "/fonts/design.graffiti.mistral"
                             fixedFont.source = "/fonts/ARLRDBD"
                             return mainStatusLabel._notReadyToFlyText
                         }

@@ -57,13 +57,29 @@
         <file alias="waypoint.svg">resources/waypoint.svg</file>
         <file>resources/icons/qgroundcontrol.ico</file>
         <file>resources/icons/goDrona.ico</file>
-        <file alias="goDrona">resources/goDrona.svg</file>
+        <file alias="goDrona.svg">resources/goDrona.svg</file>
         <file alias="Drone Action.svg">resources/Drone Action.svg</file>
         <file alias="Return.svg">resources/Return.svg</file>
         <file alias="pause.svg">resources/pause.svg</file>
         <file alias="Takeoff_1.svg">resources/Takeoff_1.svg</file>
         <file alias="drone-setting.svg">resources/drone-setting.svg</file>
         <file alias="Land_1.svg">resources/Land_1.svg</file>
+        <file alias="dashboard.png">resources/dashboard.png</file>
+        <file alias="back_arrow.png">resources/back_arrow.png</file>
+        <file alias="search.png">resources/search.png</file>
+        <file alias="hamburger_menu.png">resources/hamburger_menu.png</file>
+        <file alias="logout.png">resources/logout.png</file>
+        <file alias="notification.png">resources/notification.png</file>
+        <file alias="settings.png">resources/settings.png</file>
+        <file alias="manual_mission.png">resources/manual_mission.png</file>
+        <file alias="mission.png">resources/mission.png</file>
+        <file alias="remote.png">resources/remote.png</file>
+        <file alias="customers.png">resources/customers.png</file>
+        <file alias="manage_rpa.png">resources/manage_rpa.png</file>
+        <file alias="home.png">resources/home.png</file>
+        <file alias="goDrona.png">resources/goDrona.png</file>
+        <file alias="backto_fly.png">resources/backto_fly.png</file>
+        <file alias="Flight_log.png">resources/Flight_log.png</file>
     </qresource>
     <qresource prefix="/res/firmware">
         <file alias="3drradio.png">resources/firmware/3drradio.png</file>

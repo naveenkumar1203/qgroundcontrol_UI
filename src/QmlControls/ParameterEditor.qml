@@ -7,10 +7,17 @@
  *
  ****************************************************************************/
 
-import QtQuick                      2.3
-import QtQuick.Controls             1.2
-import QtQuick.Dialogs              1.2
-import QtQuick.Layouts              1.2
+import QtQuick          2.11
+import QtQuick.Controls 2.4
+import QtQuick.Dialogs  1.3
+import QtQuick.Layouts  1.11
+import QtQuick.Window   2.11
+import QtQuick.Controls.Styles 1.4
+import QtQuick.Controls 1.4 as STYLE
+import Qt.labs.qmlmodels 1.0
+import QtGraphicalEffects 1.0
+import QtQuick 2.15
+import QtQuick.Window 2.15
 
 import QGroundControl               1.0
 import QGroundControl.Controls      1.0
@@ -19,348 +26,164 @@ import QGroundControl.ScreenTools   1.0
 import QGroundControl.Controllers   1.0
 import QGroundControl.FactSystem    1.0
 import QGroundControl.FactControls  1.0
+import FirmwareUpdate 1.0
+import RpaDatabase 1.0
 
-Item {
-    id:         _root
+Item{
+    id:         drone_contents
+    z:1
 
     property Fact   _editorDialogFact: Fact { }
     property int    _rowHeight:         ScreenTools.defaultFontPixelHeight * 2
     property int    _rowWidth:          10 // Dynamic adjusted at runtime
-    property bool   _searchFilter:      searchText.text.trim() != "" || controller.showModifiedOnly  ///< true: showing results of search
+    //property bool   _searchFilter:      searchText.text.trim() != "" || controller.showModifiedOnly  ///< true: showing results of search
     property var    _searchResults      ///< List of parameter names from search results
     property var    _activeVehicle:     QGroundControl.multiVehicleManager.activeVehicle
-    property bool   _showRCToParam:     _activeVehicle.px4Firmware
+    //property bool   _showRCToParam:     _activeVehicle.px4Firmware
     property var    _appSettings:       QGroundControl.settingsManager.appSettings
     property var    _controller:        controller
+
+
 
     ParameterEditorController {
         id: controller
     }
+    RpaDatabase{
+        id:rpa_database
+    }
 
-    ExclusiveGroup { id: sectionGroup }
+    //ExclusiveGroup { id: sectionGroup }
 
     //---------------------------------------------
-    //-- Header
-    Row {
-        id:             header
-        anchors.left:   parent.left
-        anchors.right:  parent.right
-        spacing:        ScreenTools.defaultFontPixelWidth
 
-        Timer {
-            id:         clearTimer
-            interval:   100;
-            running:    false;
-            repeat:     false
-            onTriggered: {
-                searchText.text = ""
-                controller.searchText = ""
-            }
-        }
+    Text {
+        id: drone_model_text
+        text: qsTr("Name/Drone's Model Name")
+        color: "White"
+        font.pointSize: 10
+    }
 
-        QGCLabel {
-            anchors.verticalCenter: parent.verticalCenter
-            text: qsTr("Search:")
-        }
+    Rectangle {
+        id: drone_model_combo
+        width: 200
+        height: 35
+        anchors.top: drone_model_text.top
+        anchors.leftMargin: 10
+        anchors.topMargin: 25
+        color: "#031C28"
+        border.color: "cyan"
+        border.width: 1
+        radius: 4
 
-        QGCTextField {
-            id:                 searchText
-            text:               controller.searchText
-            onDisplayTextChanged: controller.searchText = displayText
-            anchors.verticalCenter: parent.verticalCenter
-        }
+        ComboBox {
 
-        QGCButton {
-            text: qsTr("Clear")
-            onClicked: {
-                if(ScreenTools.isMobile) {
-                    Qt.inputMethod.hide();
+            id:drone_model_list
+            anchors.fill: parent
+            anchors.margins: 4
+            currentIndex: -1
+            displayText: currentIndex === -1 ? "Select Drone Model" : currentText
+            model: //["Model A", "Model B"]
+                   ListModel {
+                ListElement{
+                    text: "Model A"
                 }
-                clearTimer.start()
+                ListElement{
+                    text: "Model B"
+                }
             }
-            anchors.verticalCenter: parent.verticalCenter
-        }
 
-        QGCCheckBox {
-            text:                   qsTr("Show modified only")
-            anchors.verticalCenter: parent.verticalCenter
-            checked:                controller.showModifiedOnly
-            onClicked:              controller.showModifiedOnly = checked
-            visible:                QGroundControl.multiVehicleManager.activeVehicle.px4Firmware
-        }
-    } // Row - Header
+            onCurrentTextChanged :{
 
-    QGCButton {
-        anchors.top:    header.top
-        anchors.bottom: header.bottom
-        anchors.right:  parent.right
-        text:           qsTr("Tools")
-        visible:        !_searchFilter
-        onClicked:      toolsMenu.popup()
-    }
+                if(currentText == "Model A") {
+                    firmware_load1.checksum_generation_process_model_A()
 
-    QGCMenu {
-        id:                 toolsMenu
-        QGCMenuItem {
-            text:           qsTr("Refresh")
-            onTriggered:	controller.refresh()
-        }
-        QGCMenuItem {
-            text:           qsTr("Reset all to firmware's defaults")
-            onTriggered:    mainWindow.showComponentDialog(resetToDefaultConfirmComponent, qsTr("Reset All"), mainWindow.showDialogDefaultWidth, StandardButton.Cancel | StandardButton.Reset)
-        }
-        QGCMenuItem {
-            text:           qsTr("Reset to vehicle's configuration defaults")
-            visible:        !_activeVehicle.apmFirmware
-            onTriggered:    mainWindow.showComponentDialog(resetToVehicleConfigurationConfirmComponent, qsTr("Reset All"), mainWindow.showDialogDefaultWidth, StandardButton.Cancel | StandardButton.Reset)
-        }
-        QGCMenuSeparator { }
-        QGCMenuItem {
-            text:           qsTr("Load from file...")
-            onTriggered: {
-                fileDialog.title =          qsTr("Load Parameters")
-                fileDialog.selectExisting = true
-                fileDialog.openForLoad()
+                }
+                else if(currentText == "Model B") {
+                        firmware_load1.checksum_generation_process_model_B()
+                }
+
             }
-        }
-        QGCMenuItem {
-            text:           qsTr("Save to file...")
-            onTriggered: {
-                fileDialog.title =          qsTr("Save Parameters")
-                fileDialog.selectExisting = false
-                fileDialog.openForSave()
+
+            delegate:ItemDelegate {
+                width: drone_model_list.width
+                contentItem: Text {
+                    text: modelData
+                    verticalAlignment: Text.AlignVCenter
+                }
+                highlighted: drone_model_list.highlightedIndex === index
             }
-        }
-        QGCMenuSeparator { visible: _showRCToParam }
-        QGCMenuItem {
-            text:           qsTr("Clear all RC to Param")
-            onTriggered:	_activeVehicle.clearAllParamMapRC()
-            visible:        _showRCToParam
-        }
-        QGCMenuSeparator { }
-        QGCMenuItem {
-            text:           qsTr("Reboot Vehicle")
-            onTriggered:    mainWindow.showComponentDialog(rebootVehicleConfirmComponent, qsTr("Reboot Vehicle"), mainWindow.showDialogDefaultWidth, StandardButton.Cancel | StandardButton.Ok)
-        }
-    }
 
-    /// Group buttons
-    QGCFlickable {
-        id :                groupScroll
-        width:              ScreenTools.defaultFontPixelWidth * 25
-        anchors.top:        header.bottom
-        anchors.bottom:     parent.bottom
-        clip:               true
-        pixelAligned:       true
-        contentHeight:      groupedViewCategoryColumn.height
-        flickableDirection: Flickable.VerticalFlick
-        visible:            !_searchFilter
+            indicator: Canvas {
+                id: canvas1
+                x: drone_model_list.width - width - drone_model_list.rightPadding
+                y: drone_model_list.topPadding + (drone_model_list.availableHeight - height) / 2
+                width: 12
+                height: 8
+                contextType: "2d"
 
-        ColumnLayout {
-            id:             groupedViewCategoryColumn
-            anchors.left:   parent.left
-            anchors.right:  parent.right
-            spacing:        Math.ceil(ScreenTools.defaultFontPixelHeight * 0.25)
+                onPaint: {
+                    context.reset();
+                    context.moveTo(0, 0);
+                    context.lineTo(width, 0);
+                    context.lineTo(width / 2, height);
+                    context.closePath();
+                    context.fillStyle = "white";
+                    context.fill();
+                }
+            }
 
-            Repeater {
-                model: controller.categories
+            contentItem: Text {
+                text: drone_model_list.displayText
+                color: "white"
+                verticalAlignment: Text.AlignVCenter
+            }
 
-                Column {
-                    Layout.fillWidth:   true
-                    spacing:            Math.ceil(ScreenTools.defaultFontPixelHeight * 0.25)
+            background: Rectangle {
+                implicitWidth: 120
+                implicitHeight: 40
+                color: "#031C28"
+            }
 
+            popup: Popup {
+                y: drone_model_list.height - 1
+                width: drone_model_list.width
+                implicitHeight: contentItem.implicitHeight
+                padding: 1
 
-                    SectionHeader {
-                        id:             categoryHeader
-                        anchors.left:   parent.left
-                        anchors.right:  parent.right
-                        text:           object.name
-                        checked:        object == controller.currentCategory
-                        exclusiveGroup: sectionGroup
+                contentItem: ListView {
+                    clip: true
+                    implicitHeight: contentHeight
+                    model: drone_model_list.popup.visible ? drone_model_list.delegateModel : null
+                    currentIndex: drone_model_list.highlightedIndex
 
-                        onCheckedChanged: {
-                            if (checked) {
-                                controller.currentCategory  = object
-                            }
-                        }
-                    }
-
-                    Repeater {
-                        model: categoryHeader.checked ? object.groups : 0
-
-                        QGCButton {
-                            width:          ScreenTools.defaultFontPixelWidth * 25
-                            text:           object.name
-                            height:         _rowHeight
-                            checked:        object == controller.currentGroup
-                            autoExclusive:  true
-
-                            onClicked: {
-                                if (!checked) _rowWidth = 10
-                                checked = true
-                                controller.currentGroup = object
-                            }
-                        }
-                    }
+                    ScrollIndicator.vertical: ScrollIndicator { }
                 }
             }
         }
     }
 
-    /// Parameter list
-    QGCListView {
-        id:                 editorListView
-        anchors.leftMargin: ScreenTools.defaultFontPixelWidth
-        anchors.left:       _searchFilter ? parent.left : groupScroll.right
-        anchors.right:      parent.right
-        anchors.top:        header.bottom
-        anchors.bottom:     parent.bottom
-        orientation:        ListView.Vertical
-        model:              controller.parameters
-        cacheBuffer:        height > 0 ? height * 2 : 0
-        clip:               true
 
-        delegate: Rectangle {
-            height: _rowHeight
-            width:  _rowWidth
-            color:  Qt.rgba(0,0,0,0)
-
-            Row {
-                id:     factRow
-                spacing: Math.ceil(ScreenTools.defaultFontPixelWidth * 0.5)
-                anchors.verticalCenter: parent.verticalCenter
-
-                property Fact modelFact: object
-
-                QGCLabel {
-                    id:     nameLabel
-                    width:  ScreenTools.defaultFontPixelWidth  * 20
-                    text:   factRow.modelFact.name
-                    clip:   true
-                }
-
-                QGCLabel {
-                    id:     valueLabel
-                    width:  ScreenTools.defaultFontPixelWidth  * 20
-                    color:  factRow.modelFact.defaultValueAvailable ? (factRow.modelFact.valueEqualsDefault ? qgcPal.text : qgcPal.warningText) : qgcPal.text
-                    text:   {
-                        if(factRow.modelFact.enumStrings.length === 0) {
-                            return factRow.modelFact.valueString + " " + factRow.modelFact.units
-                        }
-
-                        if(factRow.modelFact.bitmaskStrings.length != 0) {
-                            return factRow.modelFact.selectedBitmaskStrings.join(',')
-                        }
-
-                        return factRow.modelFact.enumStringValue
-                    }
-                    clip:   true
-                }
-
-                QGCLabel {
-                    text:   factRow.modelFact.shortDescription
-                }
-
-                Component.onCompleted: {
-                    if(_rowWidth < factRow.width + ScreenTools.defaultFontPixelWidth) {
-                        _rowWidth = factRow.width + ScreenTools.defaultFontPixelWidth
-                    }
-                }
-            }
-
-            Rectangle {
-                width:  _rowWidth
-                height: 1
-                color:  qgcPal.text
-                opacity: 0.15
-                anchors.bottom: parent.bottom
-                anchors.left:   parent.left
-            }
-
-            MouseArea {
-                anchors.fill:       parent
-                acceptedButtons:    Qt.LeftButton
-                onClicked: {
-                    _editorDialogFact = factRow.modelFact
-                    mainWindow.showComponentDialog(editorDialogComponent, qsTr("Parameter Editor"), mainWindow.showDialogDefaultWidth, StandardButton.Cancel | StandardButton.Save)
-                }
-            }
+    FirmwareUpdate{
+        id:firmware_load1
+        onGeneration_checksum_model_AChanged: {
         }
-    }
-
-    QGCFileDialog {
-        id:             fileDialog
-        folder:         _appSettings.parameterSavePath
-        nameFilters:    [ qsTr("Parameter Files (*.%1)").arg(_appSettings.parameterFileExtension) , qsTr("All Files (*)") ]
-
-        onAcceptedForSave: {
-            controller.saveToFile(file)
-            close()
+        onGeneration_checksum_model_BChanged: {
         }
-
-        onAcceptedForLoad: {
-            close()
-            if (controller.buildDiffFromFile(file)) {
+        onFirmware_load_model_AChanged:{
+            if (controller.buildDiffFromFile(firmware_load1.firmware_load_model_A)) {
                 mainWindow.showPopupDialogFromComponent(parameterDiffDialog)
+                console.log("mainroot" + firmware_load1.firmware_load_model_A)
+            }
+        }
+        onFirmware_load_model_BChanged:{
+            if (controller.buildDiffFromFile(firmware_load1.firmware_load_model_B)) {
+                mainWindow.showPopupDialogFromComponent(parameterDiffDialog)
+                console.log("mainroot" + firmware_load1.firmware_load_model_B)
             }
         }
     }
 
-    Component {
-        id: editorDialogComponent
 
-        ParameterEditorDialog {
-            fact:           _editorDialogFact
-            showRCToParam:  _showRCToParam
-        }
-    }
-
-    Component {
-        id: resetToDefaultConfirmComponent
-        QGCViewDialog {
-            function accept() {
-                controller.resetAllToDefaults()
-                hideDialog()
-            }
-            QGCLabel {
-                width:              parent.width
-                wrapMode:           Text.WordWrap
-                text:               qsTr("Select Reset to reset all parameters to their defaults.\n\nNote that this will also completely reset everything, including UAVCAN nodes, all vehicle settings, setup and calibrations.")
-            }
-        }
-    }
-
-    Component {
-        id: resetToVehicleConfigurationConfirmComponent
-        QGCViewDialog {
-            function accept() {
-                controller.resetAllToVehicleConfiguration()
-                hideDialog()
-            }
-            QGCLabel {
-                width:              parent.width
-                wrapMode:           Text.WordWrap
-                text:               qsTr("Select Reset to reset all parameters to the vehicle's configuration defaults.")
-            }
-        }
-    }
-
-    Component {
-        id: rebootVehicleConfirmComponent
-
-        QGCViewDialog {
-            function accept() {
-                hideDialog()
-                _activeVehicle.rebootVehicle()
-            }
-
-            QGCLabel {
-                width:              parent.width
-                wrapMode:           Text.WordWrap
-                text:               qsTr("Select Ok to reboot vehicle.")
-            }
-        }
-    }
 
     Component {
         id: parameterDiffDialog
@@ -370,3 +193,9 @@ Item {
         }
     }
 }
+
+
+
+
+
+

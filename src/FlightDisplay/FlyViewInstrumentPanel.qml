@@ -32,7 +32,7 @@ Column {
 
     FlightDisplayViewWidgets {
         id:                 flightDisplayViewWidgets
-        width:              parent.width
+        width:              parent.width /1.2
         missionController:  _missionController
     }
 }
