@@ -1562,4 +1562,4 @@ LinuxBuild {
 }
 
 DISTFILES += \
-    src/QmlControls/NewParameterDialog.qml
+

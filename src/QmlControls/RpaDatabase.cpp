@@ -4,16 +4,16 @@
 
 RpaDatabase::RpaDatabase(QObject *parent) : QSqlQueryModel(parent)
 {
-    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
-    db.setHostName("logdata.cbgenywwv2vb.ap-south-1.rds.amazonaws.com");
-    db.setUserName("admin");
-    db.setPassword("admin123");
+//    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
+//    db.setHostName("logdata.cbgenywwv2vb.ap-south-1.rds.amazonaws.com");
+//    db.setUserName("admin");
+//    db.setPassword("admin123");
 
 
-    if(!db.open()){
-        qDebug() << "Connection to mysql failed";
+//    if(!db.open()){
+//        qDebug() << "Connection to mysql failed";
 
-    }
+//    }
 
     QSqlQueryModel *database_creation = new QSqlQueryModel();
     database_creation->setQuery("create database RpaInformation");

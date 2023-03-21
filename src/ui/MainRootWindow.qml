@@ -2302,12 +2302,17 @@ ApplicationWindow {
             id:rpadatabase
         }
 
-        Row {
-            anchors.fill: parent
-            Component.onCompleted: {
-                rpadatabase.callSql("USE RpaInformation")
-                rpadatabase.callSql("SELECT * From RpaList")
-            }
+        Component.onCompleted: {
+            rpadatabase.callSql("USE RpaInformation")
+            rpadatabase.callSql("SELECT * From RpaList")
+        }
+
+        GridLayout {
+            columns: 2
+            Layout.alignment: Qt.AlignTop
+            //anchors.fill: parent
+            //anchors.top:  parent.top
+
 
             Rectangle {
                 id: first_rectangle
@@ -2683,8 +2688,8 @@ ApplicationWindow {
 
             Rectangle {
                 id: second_rectangle
-                anchors.left: first_rectangle.Left
-                width: parent.width/1.8
+                //anchors.left: first_rectangle.Left
+                width: screen.width/1.8//parent.width/1.8
                 height: parent.height
                 visible: false
                 color: "#031C28"
@@ -2737,104 +2742,6 @@ ApplicationWindow {
                             anchors.rightMargin: 100
                         }
                     }
-
-                    /*  Rectangle{
-                        id: header2
-                        color: "#031C28"
-                        height: 300
-                        width: second_rectangle.width
-                        border.color: "#05324D"
-                        border.width: 2
-                        Text{
-                            id: name
-                            text: "Hi,"
-                            color : "white"
-                            font.pointSize: 8
-                            anchors.left: parent.left
-                            anchors.leftMargin: 20
-                            anchors.top: parent.top
-                            anchors.topMargin: 20
-
-                        }
-                        Text{
-                            id: name_1
-                            text: "Chris Hemsworth"
-                            color : "#F25822"
-                            font.pointSize: 8
-                            font.bold: true
-                            anchors.left: parent.left
-                            anchors.leftMargin: 35
-                            anchors.top: parent.top
-                            anchors.topMargin: 20
-
-                        }
-                        Text{
-                            id: name2
-                            text: "Welcome back to GoDrona"
-                            color : "white"
-                            font.pointSize: 10
-                            anchors.left: parent.left
-                            anchors.leftMargin: 20
-                            anchors.top: parent.top
-                            anchors.topMargin: 50
-                        }
-                        Text{
-                            id: name3
-                            text: "OVERVIEW"
-                            color : "white"
-                            font.pointSize: 8
-                            anchors.left: parent.left
-                            anchors.leftMargin: 20
-                            anchors.top: parent.top
-                            anchors.topMargin: 100
-
-                        }
-
-                        Row{
-                            anchors.left: parent.left
-                            anchors.leftMargin: 20
-                            anchors.top: parent.top
-                            anchors.topMargin: 130
-                            Row {
-                                spacing: 15
-                                Rectangle {
-                                    color: "#05324D"
-                                    width: 155; height: 120
-                                    Text {
-                                        id: flightlog
-                                        text: qsTr("FLIGHT LOG")
-                                        font.pointSize: 8
-                                        anchors.centerIn: parent
-                                        color: "white"
-                                    }
-
-                                }
-                                Rectangle {
-                                    color: "#05324D"
-                                    width: 155; height: 120
-                                    Text {
-                                        id: firmware_update
-                                        text: qsTr("FIRMWARE UPDATE")
-                                        font.pointSize: 8
-                                        anchors.centerIn: parent
-                                        color: "white"
-                                    }
-                                }
-                                Rectangle {
-                                    color: "#05324D"
-                                    width: 155; height: 120
-                                    Text {
-                                        id: backto_fly
-                                        text: qsTr("BACK TO FLY")
-                                        font.pointSize: 8
-                                        anchors.centerIn: parent
-                                        color: "white"
-                                    }
-                                }
-                            }
-
-                        }
-                    }*/
 
                     Rectangle{
                         id: header2
@@ -3096,11 +3003,11 @@ ApplicationWindow {
                 id: second_rec_division1
                 width: second_rectangle.width
                 height: second_rectangle.height
-                anchors.left: first_rectangle.right
+                //anchors.left: first_rectangle.right
                 color: "#031C28"
                 visible: false
                 border.color: "#05324D"
-                border.width: 2
+                border.width: 1
 
                 ColumnLayout {
                     id: second_rec_column2
@@ -3156,7 +3063,7 @@ ApplicationWindow {
                     }
 
                     Column{
-                        id: rpa_list_column
+                        //id: rpa_list_column
                         Rectangle {
                             id:rpaheader1
                             color: "#031C28"
@@ -3164,7 +3071,7 @@ ApplicationWindow {
                             height: parent.height-50
                             width: second_rec_division1.width
                             border.color: "#05324D"
-                            border.width: 2
+                            border.width: 1
 
                             Text{
                                 id: list_of_rpa_text
@@ -3203,7 +3110,7 @@ ApplicationWindow {
                                     rpaheader1.visible = false
                                     rpa_register_page.visible = true
                                     showPanel(this,"SetupParameterEditor.qml")
-                                    combo_rect.visible = true
+                                    drone_contents.visible = true
                                 }
                             }
 
@@ -3295,7 +3202,7 @@ ApplicationWindow {
                             height: parent.height - 100
                             width: rpaheader1.width
                             border.color: "#05324D"
-                            border.width: 1
+                            border.width: 2
 
                             Rectangle {
                                 id: back_arrow_button
@@ -3342,498 +3249,33 @@ ApplicationWindow {
                                 height: 450
                                 color: "#05324D"
                                 radius: 4
-
-                                Row {
-                                    spacing: 10
-                                    anchors.left: parent.left
-                                    anchors.leftMargin: 20
-                                    anchors.top: parent.top
-                                    anchors.topMargin: 25
-
-                                    Rectangle{
-                                        id:drone_image_container
-                                        width: 75
-                                        height: 75
-                                        radius: width/2
-                                        color: "#031C28"
-                                        //anchors.centerIn: parent
-                                        Image {
-                                            id:drone_image
-                                            source: "qrc:/qmlimages/drone.png" //""
-                                            anchors.fill: drone_image_container
-                                            anchors.centerIn: parent
-                                            layer.enabled: true
-                                            layer.effect: OpacityMask {
-                                                maskSource: drone_image
-                                            }
-                                        }
+                                Loader {
+                                    id: panelLoader
+                                    anchors.fill: parent
+                                    function setSource(source, vehicleComponent) {
+                                        panelLoader.source = ""
+                                        panelLoader.vehicleComponent = vehicleComponent
+                                        panelLoader.source = source
                                     }
 
-                                    Text {
-                                        id: drone_image_text
-                                        anchors.left: drone_image_container.right
-                                        anchors.leftMargin: 10
-                                        text: qsTr("Drone Image")
-                                        color: "White"
-                                        font.pointSize: 12
+                                    function setSourceComponent(sourceComponent, vehicleComponent) {
+                                        panelLoader.sourceComponent = undefined
+                                        panelLoader.vehicleComponent = vehicleComponent
+                                        panelLoader.sourceComponent = sourceComponent
                                     }
 
-                                    Button {
-                                        id: browse_image_button
-                                        anchors.left: drone_image_container.right
-                                        anchors.leftMargin: 10
-                                        anchors.top:drone_image_text.bottom
-                                        anchors.topMargin: 15
-
-                                        contentItem :Text {
-                                            text: "Browse & Upload"
-                                            color: "white"
-                                        }
-                                        background: Rectangle {
-                                            height: 30
-                                            width:135
-                                            color: "#031C28"
-                                            border.color: "orange"
-                                            radius: 4
-                                        }
-                                        onClicked: {
-                                            choose_image_fileDialog.open()
-                                        }
-                                    }
-                                }
-
-                                FileDialog {
-                                    id: choose_image_fileDialog
-                                    title: "Please Choose the Image file *png"
-                                    folder: shortcuts.documents
-                                    nameFilters: [ "png files (*.png)"]
-                                    selectMultiple: false
-                                    visible: false
-                                    onAccepted: {
-                                        console.log("png file accepted")
-                                        drone_image.source = fileUrl.toString()
-                                        //drone_image_container.color = "#031C28"
-                                    }
-                                    onRejected: {
-                                        console.log("select the correct file format")
-                                    }
-                                }
-
-                                Text {
-                                    id: drone_type_text
-                                    anchors.left: drone_contents.left
-                                    anchors.leftMargin: 25
-                                    anchors.top: drone_contents.top
-                                    anchors.topMargin: 120
-                                    text: qsTr("Drone Type")
-                                    color: "White"
-                                    font.pointSize: 10
-                                }
-
-                                Rectangle {
-                                    id: drone_type_combo
-                                    width: 200
-                                    height: 35
-                                    anchors.left: drone_contents.left
-                                    anchors.leftMargin: 25
-                                    anchors.top: drone_type_text.top
-                                    anchors.topMargin: 25
-                                    color: "#031C28"
-                                    border.color: "cyan"
-                                    border.width: 1
-                                    radius: 4
-
-                                    ComboBox {
-                                        id:drone_type_list
-                                        anchors.fill: parent
-                                        currentIndex: -1
-                                        anchors.margins: 4
-                                        displayText: currentIndex === -1 ? "Select Drone Type" : currentText
-                                        model: //["Nano", "Micro", "Small","Medium","Large"]
-                                               ListModel {
-                                            ListElement{
-                                                text: "Nano"
-                                            }
-                                            ListElement{
-                                                text: "Micro"
-                                            }
-                                            ListElement{
-                                                text: "Small"
-                                            }
-                                            ListElement{
-                                                text: "Medium"
-                                            }
-                                            ListElement{
-                                                text: "Large"
-                                            }
-
-                                        }
-
-                                        delegate: ItemDelegate {
-                                            width: drone_type_list.width
-                                            contentItem: Text {
-                                                text: modelData
-                                                verticalAlignment: Text.AlignVCenter
-                                            }
-                                            highlighted: drone_type_list.highlightedIndex === index
-                                        }
-
-                                        indicator: Canvas {
-                                            //                                            id: canvas
-                                            x: drone_type_list.width - width - drone_type_list.rightPadding
-                                            y: drone_type_list.topPadding + (drone_type_list.availableHeight - height) / 2
-                                            width: 12
-                                            height: 8
-                                            contextType: "2d"
-
-                                            onPaint: {
-                                                context.reset();
-                                                context.moveTo(0, 0);
-                                                context.lineTo(width, 0);
-                                                context.lineTo(width / 2, height);
-                                                context.closePath();
-                                                context.fillStyle = "white";/*"#17a81a" : "#21be2b"*/
-                                                context.fill();
-                                            }
-                                        }
-
-                                        contentItem: Text {
-                                            text: drone_type_list.displayText
-                                            color: "white"
-                                            verticalAlignment: Text.AlignVCenter
-                                        }
-
-                                        background: Rectangle {
-                                            implicitWidth: 120
-                                            implicitHeight: 40
-                                            color: "#031C28"
-                                        }
-
-                                        popup: Popup {
-                                            y: drone_type_list.height - 1
-                                            width: drone_type_list.width
-                                            implicitHeight: contentItem.implicitHeight
-                                            padding: 1
-
-                                            contentItem: ListView {
-                                                clip: true
-                                                implicitHeight: contentHeight
-                                                model: drone_type_list.popup.visible ? drone_type_list.delegateModel : null
-                                                currentIndex: drone_type_list.highlightedIndex
-
-                                                ScrollIndicator.vertical: ScrollIndicator { }
-                                            }
-                                        }
-                                    }
-                                }
-                                //                                Text {
-                                //                                    id: drone_model_text
-                                //                                    anchors.right: drone_contents.right
-                                //                                    anchors.rightMargin: 115
-                                //                                    anchors.top: drone_contents.top
-                                //                                    anchors.topMargin: 120
-                                //                                    text: qsTr("Name/Drone's Model Name")
-                                //                                    color: "White"
-                                //                                    font.pointSize: 10
-                                //                                }
-
-                                /*  Rectangle {
-                                    id: drone_model_combo
-                                    width: 200
-                                    height: 35
-                                    anchors.right: drone_contents.right
-                                    anchors.rightMargin: 80
-                                    anchors.top: drone_type_text.top
-                                    anchors.topMargin: 25
-                                    color: "#031C28"
-                                    border.color: "cyan"
-                                    border.width: 1
-                                    radius: 4
-
-
-                                    ComboBox {
-                                        id:drone_model_list
-                                        anchors.fill: parent
-                                        anchors.margins: 4
-                                        currentIndex: -1
-                                        displayText: currentIndex === -1 ? "Select Drone Model" : currentText
-                                        model: //["Model A", "Model B"]
-                                        ListModel {
-                                            ListElement{
-                                                text: "Model A"
-                                            }
-                                            ListElement{
-                                                text: "Model B"
-                                            }
-                                        }
-
-                                        delegate: ItemDelegate {
-                                            width: drone_model_list.width
-                                            contentItem: Text {
-                                                text: modelData
-                                                verticalAlignment: Text.AlignVCenter
-                                            }
-                                            highlighted: drone_model_list.highlightedIndex === index
-                                        }
-
-                                        indicator: Canvas {
-                                            id: canvas1
-                                            x: drone_model_list.width - width - drone_model_list.rightPadding
-                                            y: drone_model_list.topPadding + (drone_model_list.availableHeight - height) / 2
-                                            width: 12
-                                            height: 8
-                                            contextType: "2d"
-
-                                            onPaint: {
-                                                context.reset();
-                                                context.moveTo(0, 0);
-                                                context.lineTo(width, 0);
-                                                context.lineTo(width / 2, height);
-                                                context.closePath();
-                                                context.fillStyle = "white";
-                                                context.fill();
-                                            }
-                                        }
-
-                                        contentItem: Text {
-                                            text: drone_model_list.displayText
-                                            color: "white"
-                                            verticalAlignment: Text.AlignVCenter
-                                        }
-
-                                        background: Rectangle {
-                                            implicitWidth: 120
-                                            implicitHeight: 40
-                                            color: "#031C28"
-                                        }
-
-                                        popup: Popup {
-                                            y: drone_model_list.height - 1
-                                            width: drone_model_list.width
-                                            implicitHeight: contentItem.implicitHeight
-                                            padding: 1
-
-                                            contentItem: ListView {
-                                                clip: true
-                                                implicitHeight: contentHeight
-                                                model: drone_model_list.popup.visible ? drone_model_list.delegateModel : null
-                                                currentIndex: drone_model_list.highlightedIndex
-
-                                                ScrollIndicator.vertical: ScrollIndicator { }
-                                            }
-                                        }
-                                    }
-                                }*/
-
-                                Rectangle {
-                                    id: combo_rect
-                                    width: 300
-                                    height: 180
-                                    anchors.right: drone_contents.right
-                                    color: "#00031C28"
-                                    Loader {
-                                        id: panelLoader
-                                        anchors.left: combo_rect.left
-                                        anchors.leftMargin: 10
-                                        anchors.top:            combo_rect.top
-                                        anchors.topMargin:      120
-                                        function setSource(source, vehicleComponent) {
-                                            panelLoader.source = ""
-                                            panelLoader.vehicleComponent = vehicleComponent
-                                            panelLoader.source = source
-                                        }
-
-                                        function setSourceComponent(sourceComponent, vehicleComponent) {
-                                            panelLoader.sourceComponent = undefined
-                                            panelLoader.vehicleComponent = vehicleComponent
-                                            panelLoader.sourceComponent = sourceComponent
-                                        }
-
-                                        property var vehicleComponent
-                                    }
-                                }
-
-                                Rectangle {
-                                    id: rpa_text
-                                    anchors.left: drone_contents.left
-                                    anchors.leftMargin: 20
-                                    anchors.top: drone_type_combo.top
-                                    anchors.topMargin: 55
-                                    height: 30
-                                    width: drone_contents.width - 35
-                                    color: "#031C28"
-                                    radius: 4
-
-                                    Text {
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        anchors.left: parent.left
-                                        anchors.leftMargin: 10
-                                        text: qsTr ("RPA INFORMATIONS")
-                                        color: "white"
-                                        font.pointSize: 10
-                                    }
-                                }
-
-                                Text {
-                                    id:basic_details_text
-                                    anchors.left: drone_contents.left
-                                    anchors.leftMargin: 30
-                                    anchors.top: drone_type_combo.top
-                                    anchors.topMargin: 100
-                                    text: qsTr("Basic Details")
-                                    font.bold: true
-                                    font.pointSize: 11
-                                    color: "white"
-                                }
-
-                                Text {
-                                    id: drone_name_input
-                                    anchors.left: drone_contents.left
-                                    anchors.leftMargin: 30
-                                    anchors.top: basic_details_text.top
-                                    anchors.topMargin: 25
-                                    text: qsTr("Drone Name")
-                                    font.pointSize: 10
-                                    color: "white"
-                                }
-
-                                Rectangle {
-                                    id:drone_name_input_rect
-                                    anchors.left: drone_contents.left
-                                    anchors.leftMargin: 25
-                                    anchors.top: drone_name_input.top
-                                    anchors.topMargin: 25
-                                    width: 200
-                                    height: 35
-                                    radius: 4
-
-                                    TextField{
-                                        id:drone_name_text
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        anchors.margins: 5
-                                        text: ''
-                                        color: "white"
-                                        background: Rectangle {
-                                            color: "#031C28"
-                                            radius: 4
-                                            border.width: 1
-                                            border.color: "cyan"
-                                            implicitHeight: drone_name_input_rect.height
-                                            implicitWidth: drone_name_input_rect.width
-                                        }
-                                    }
-                                }
-
-                                Text {
-                                    id: uin_input
-                                    anchors.right: drone_contents.right
-                                    anchors.rightMargin: 250
-                                    anchors.top: rpa_text.top
-                                    anchors.topMargin: 70
-                                    text: qsTr("UIN")
-                                    font.pointSize: 10
-                                    color: "white"
-                                }
-
-                                Rectangle {
-                                    id:uin_input_rect
-                                    anchors.right: drone_contents.right
-                                    anchors.rightMargin: 80
-                                    anchors.top: uin_input.top
-                                    anchors.topMargin: 25
-                                    width: 200
-                                    height: 35
-                                    color: "#031C28"
-
-                                    TextField {
-                                        id:uin_input_text
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        anchors.margins: 5
-                                        text: " "
-                                        color: "white"
-                                        background: Rectangle {
-                                            color: "#031C28"
-                                            radius: 4
-                                            border.width: 1
-                                            border.color: "cyan"
-                                            implicitHeight: uin_input_rect.height
-                                            implicitWidth: uin_input_rect.width
-                                        }
-                                    }
+                                    property var vehicleComponent
                                 }
                             }
 
-                            Row {
-                                spacing: 25
-                                //anchors.left: drone_contents.horizontalCenter
-                                anchors.left: drone_contents.left
-                                anchors.leftMargin: parent.width/3.5
-                                anchors.bottom: drone_contents.bottom
-                                anchors.bottomMargin: 20
-                                STYLE.Button {
-                                    id:update_Button
-                                    Text {
-                                        anchors.centerIn: parent
-                                        text: "Update"
-                                        color:"white"
-                                    }
-                                    style: ButtonStyle {
-                                        background: Rectangle {
-                                            implicitHeight: 35
-                                            implicitWidth: 100
-                                            //border.width: 1
-                                            radius: 4
-                                            color: "Green"
-                                        }
-                                    }
-                                    onClicked: {
-                                        rpa_register_page.visible =  false
-                                        rpaheader1.visible = true
-                                        rpadatabase.addData(drone_type_list.currentText,panelLoader.currentText,drone_name_text.text,uin_input_text.text)
-                                        rpadatabase.callSql("SELECT * From RpaList")
-                                        drone_type_list.text = " "
-                                        panelLoader.text = " "
-                                        drone_name_text.text = " "
-                                        uin_input_text.text = " "
-                                    }
-                                }
-
-                                STYLE.Button {
-                                    id: cancel_Button
-                                    Text {
-                                        anchors.centerIn: parent
-                                        text: "Cancel"
-                                        color:"white"
-                                    }
-
-                                    style: ButtonStyle {
-                                        background: Rectangle {
-                                            implicitHeight: 35
-                                            implicitWidth: 100
-                                            //border.width: control.activeFocus ? 2 : 1
-                                            //border.color: "#2c1608"
-                                            radius: 4
-                                            color: "red"
-                                        }
-                                    }
-                                    onClicked:{
-                                        rpaheader1.visible = true
-                                        rpa_register_page.visible = false
-                                    }
-                                }
-                            }
                         }
-
-
                     }
+
                 }
-
             }
+
         }
-
     }
-
-
 
 
 }

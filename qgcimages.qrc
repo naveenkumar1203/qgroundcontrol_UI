@@ -219,5 +219,7 @@
         <file alias="customers_black.png">resources/customers_black.png</file>
         <file alias="Remote_pilot.png">resources/Remote_pilot.png</file>
         <file alias="drone.png">resources/drone.png</file>
+        <file alias="drone_1.png">resources/drone_1.png</file>
+        <file alias="upgrade.png">resources/upgrade.png</file>
     </qresource>
 </RCC>
