@@ -80,6 +80,7 @@
         <file alias="goDrona.png">resources/goDrona.png</file>
         <file alias="backto_fly.png">resources/backto_fly.png</file>
         <file alias="Flight_log.png">resources/Flight_log.png</file>
+        <file alias="log.png">resources/log.png</file>
     </qresource>
     <qresource prefix="/res/firmware">
         <file alias="3drradio.png">resources/firmware/3drradio.png</file>

@@ -111,6 +111,7 @@ ApplicationWindow {
                 text: ""
                 color: "white"
                 leftPadding: 50
+                validator: RegExpValidator{regExp: /.+/}
                 onTextChanged: {
                     login_page_email.border.color = "#C0C0C0"
                 }
@@ -151,7 +152,9 @@ ApplicationWindow {
                 color: "white"
                 leftPadding: 50
                 rightPadding: 50
+                validator: RegExpValidator { regExp: /.+/ }
                 echoMode: TextInput.Password
+                inputMethodHints: Qt.ImhNoPredictiveText
                 onTextChanged: {
                     login_page_password.border.color = "#C0C0C0"
                 }
@@ -228,6 +231,13 @@ ApplicationWindow {
                 color: "#F25822"
                 radius: 4
             }
+            MessageDialog{
+                id:messagedialog1
+                height: 50
+                width: 50
+                text:"please enter your details correctly"
+
+            }
             onPressed: {
                 login_button.color = "#05324D"
             }
@@ -235,8 +245,17 @@ ApplicationWindow {
                 login_button.color = "#F25822"
             }
             onClicked: {
-                database.loginExistingUser(login_page_email_textfield.text,login_page_password_textfield.text)
-                landing_page_rectangle.visible =true
+                if (login_page_email_textfield.text !== "" && login_page_password_textfield.text !== "") {
+                    console.log("Username: " + login_page_email_textfield.text)
+                    console.log("Password: " + login_page_password_textfield.text)
+                    database.loginExistingUser(login_page_email_textfield.text,login_page_password_textfield.text)
+                    landing_page_rectangle.visible =true
+                    second_rectangle.visible = true
+                } else {
+                    messagedialog1.visible = true
+                    console.log("Please enter a username and password.")
+
+                }
             }
         }
         Column{
@@ -2406,6 +2425,40 @@ ApplicationWindow {
                     }
 
                     Rectangle{
+                        id: flight_log_button
+                        width: menu_rect_1.width -15
+                        height: 25
+                        color: "#031C28"
+                        radius: 4
+                        Layout.alignment: Qt.AlignLeft
+                        Layout.leftMargin: 10
+
+                        Image {
+                            id: log_image
+                            source: "/res/log.png"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: flight_log_button.left
+                            anchors.leftMargin: 20
+                        }
+                        Text{
+                            text: "FLIGHT LOG"
+                            color: "white"
+                            font.pointSize: 9
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: log_image.left
+                            anchors.leftMargin: 30
+                        }
+
+                        MouseArea{
+                            anchors.fill: flight_log_button
+                            onClicked: {
+
+                            }
+                        }
+                    }
+
+
+                    Rectangle{
                         id: managerpa_button
                         width: menu_rect_1.width -15
                         height: 25
@@ -2575,6 +2628,39 @@ ApplicationWindow {
                         }
                     }
 
+//                    Rectangle{
+//                        id: flight_log_button
+//                        width: menu_rect_1.width -15
+//                        height: 25
+//                        color: "#031C28"
+//                        radius: 4
+//                        Layout.alignment: Qt.AlignLeft
+//                        Layout.leftMargin: 10
+
+//                        Image {
+//                            id: log_image
+//                            source: "/res/log.png"
+//                            anchors.verticalCenter: parent.verticalCenter
+//                            anchors.left: flight_log_button.left
+//                            anchors.leftMargin: 20
+//                        }
+//                        Text{
+//                            text: "FLIGHT LOG"
+//                            color: "white"
+//                            font.pointSize: 9
+//                            anchors.verticalCenter: parent.verticalCenter
+//                            anchors.left: log_image.left
+//                            anchors.leftMargin: 30
+//                        }
+
+//                        MouseArea{
+//                            anchors.fill: flight_log_button
+//                            onClicked: {
+
+//                            }
+//                        }
+//                    }
+
                     Text{
                         id: insights
                         text: "Insights"
@@ -2681,6 +2767,8 @@ ApplicationWindow {
                             }
                         }
                     }
+
+
                     /*=================== until here===========*/
 
                 }
@@ -2822,7 +2910,7 @@ ApplicationWindow {
                             Row {
                                 spacing: 15
                                 Rectangle {
-                                    color: "#05324D"
+                                    color: "#4D05324D"
                                     width: 130; height: 150
                                     radius: 2
 
@@ -2862,7 +2950,7 @@ ApplicationWindow {
 
                                 }
                                 Rectangle {
-                                    color: "#05324D"
+                                    color: "#4D05324D"
                                     width: 130; height: 150
                                     radius: 2
 
@@ -2874,8 +2962,8 @@ ApplicationWindow {
                                         anchors.topMargin: 15
                                         width: parent.width/2
                                         height: 70
-                                        color: "yellow"
-                                        radius: 3
+                                        color: "black"
+                                        radius: 4
                                         Image {
                                             id: customersimage
                                             anchors.centerIn: parent
@@ -2903,7 +2991,7 @@ ApplicationWindow {
                                 }
 
                                 Rectangle {
-                                    color: "#05324D"
+                                    color: "#4D05324D"
                                     width: 130; height: 150
                                     radius: 2
 
@@ -2916,7 +3004,7 @@ ApplicationWindow {
                                         width: parent.width/2
                                         height: 70
                                         color: "red"
-                                        radius: 3
+                                        radius: 4
                                         Image {
                                             id: remote_pilots_image
                                             anchors.centerIn: parent
@@ -2955,7 +3043,7 @@ ApplicationWindow {
                                         width: parent.width/2
                                         height: 70
                                         color: "Blue"
-                                        radius: 3
+                                        radius: 4
                                         Image {
                                             id: back_to_fly_image
                                             anchors.centerIn: parent
@@ -2981,7 +3069,7 @@ ApplicationWindow {
                                     style: ButtonStyle {
                                         background: Rectangle {
                                             radius: 4
-                                            color: "#05324D"
+                                            color: "#4D05324D"
                                         }
                                     }
                                     onClicked:{
@@ -3141,6 +3229,8 @@ ApplicationWindow {
                                     ScrollBar.horizontal: ScrollBar {
                                         policy: ScrollBar.AsNeeded
                                     }
+
+
                                     property int selectedRowIndex
 
                                     model: rpadatabase
@@ -3162,9 +3252,8 @@ ApplicationWindow {
                                                 Text {
                                                     anchors.centerIn: parent
                                                     text: rpadatabase.headerData(modelData, Qt.Horizontal)
-                                                    //anchors.verticalCenter: parent.verticalCenter
-                                                    //anchors.horizontalCenter: parent.horizontalCenter
                                                     color: "White"
+                                                    font.pointSize: 11
                                                 }
                                             }
                                         }
@@ -3184,8 +3273,9 @@ ApplicationWindow {
                                             color: 'white'
                                             font.pixelSize: 15
                                             verticalAlignment: Text.AlignVCenter
-                                            //horizontalAlignment: Text.AlignHCenter
                                             wrapMode: Text.WordWrap
+                                            selectByKeyboard: false
+                                            selectByMouse: false
                                         }
                                     }
 
