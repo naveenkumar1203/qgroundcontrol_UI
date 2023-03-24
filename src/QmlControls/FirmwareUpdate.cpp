@@ -20,7 +20,7 @@ FirmwareUpdate::FirmwareUpdate(QObject *parent)
 void FirmwareUpdate::checksum_generation_process_model_A()
 {
     QProcess code_checksum_process_model_A;
-    code_checksum_process_model_A.execute("openssl",QStringList()<< "dgst" << "-sha256" << "-out" << "/home/vasanth/firmware_load/new_model_A.txt" << "/home/vasanth/firmware_load/model_A.params");
+    code_checksum_process_model_A.execute("openssl",QStringList()<< "dgst" << "-sha256" << "-out" << "/home/vasanth/firmware_load/new_model_A.txt" << "/home/vasanth/firmware_load/arducopter_param_A.params");
     qDebug() << "code checksum file generated with exit code";
 
     QString generated_checksum_cmd_model_A = "/home/vasanth/firmware_load/new_model_A.txt";
@@ -120,7 +120,7 @@ void FirmwareUpdate::compare_file_model_A()
 }
 void FirmwareUpdate::load_file_model_A()
 {
-    QString filename = "/home/vasanth/firmware_load/model_A.params";
+    QString filename = "/home/vasanth/firmware_load/model_A_change.params";
     QFile file(filename);
     model_A_firmware_load =filename;
     emit firmware_load_model_AChanged();
@@ -143,7 +143,7 @@ void FirmwareUpdate::checksum_generation_process_model_B()
 
 {
     QProcess code_checksum_process_model_B;
-    code_checksum_process_model_B.execute("openssl",QStringList()<< "dgst" << "-sha256" << "-out" << "/home/vasanth/firmware_load/new_model_B.txt" << "/home/vasanth/firmware_load/model_B.params");
+    code_checksum_process_model_B.execute("openssl",QStringList()<< "dgst" << "-sha256" << "-out" << "/home/vasanth/firmware_load/new_model_B.txt" << "/home/vasanth/firmware_load/arducopter_param_B.params");
     qDebug() << "code checksum file generated with exit code";
 
     QString generated_checksum_cmd_model_B = "/home/vasanth/firmware_load/new_model_B.txt";
@@ -239,7 +239,7 @@ void FirmwareUpdate::compare_file_model_B()
 
 void FirmwareUpdate::load_file_model_B()
 {
-    QString filename = "/home/vasanth/firmware_load/model_B.params";
+    QString filename = "/home/vasanth/firmware_load/model_B_change.params";
     QFile file(filename);
     model_B_firmware_load =filename;
     emit firmware_load_model_BChanged();

@@ -16,8 +16,6 @@ class AjayDatabase : public QObject
 public:
     explicit AjayDatabase(QObject *parent = nullptr);
 
-    Q_PROPERTY(QString user READ user WRITE setUser NOTIFY userChanged)
-
     Q_INVOKABLE void newUserData(const QString &industry,
                                  const QString &name,
                                  const QString &mail,
@@ -32,16 +30,23 @@ public:
     Q_INVOKABLE void change_password(const QString &mail,
                                      const QString &newPassword);
 
-    QString user() const;
-    void setUser(const QString &newUser);
+    Q_INVOKABLE void signupExistingUsername(const QString &name);
 
-    void vehicleData(const QString &time, const QString &rollValue);
+    Q_INVOKABLE void signupExistingUsermail(const QString &mail);
+
+    Q_INVOKABLE void signupExistingUsernumber(const QString &number);
+
+    void username_database(const QString &mail);
 
 signals:
     void record_found();
     void incorrect_password();
     void no_record_found();
     void userChanged();
+    void name_record_found();
+    void mail_record_found();
+    void number_record_found();
+    void name_mail_record_found();
 
 public slots:
 

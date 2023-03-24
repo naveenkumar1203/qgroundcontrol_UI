@@ -106,12 +106,21 @@ Rectangle {
             visible:            _activeVehicle && _communicationLost && currentToolbar === flyViewToolbar
         }
 
-//        QGCButton{
-//            text: "Vehicle Log"
-//            onClicked: {
-//                console.log("vehicle log button clicked")
-//            }
-//        }
+        QGCButton {
+            id:                 backButton
+            Layout.alignment: Qt.AlignRight
+            Layout.rightMargin: 50
+            text:               qsTr("Back")
+            font.bold:          true
+            font.pointSize: ScreenTools.defaultFontPointSize * 3//1.5  //: ScreenTools.largeFontPointSize
+            onClicked:          {
+                flightView.visible = false
+                landing_page_rectangle.visible =true
+                toolbar.visible = false
+            }
+            visible:              true
+            //visible:            _activeVehicle && _communicationLost && currentToolbar === flyViewToolbar && currentToolbar === planViewToolbar
+        }
     }
 
     QGCFlickable {

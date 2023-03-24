@@ -1,28 +1,12 @@
 #include "RpaDatabase.h"
 #include "QDebug"
 
+static QString uin_from_db;
+
 
 RpaDatabase::RpaDatabase(QObject *parent) : QSqlQueryModel(parent)
 {
-//    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
-//    db.setHostName("logdata.cbgenywwv2vb.ap-south-1.rds.amazonaws.com");
-//    db.setUserName("admin");
-//    db.setPassword("admin123");
 
-
-//    if(!db.open()){
-//        qDebug() << "Connection to mysql failed";
-
-//    }
-
-    QSqlQueryModel *database_creation = new QSqlQueryModel();
-    database_creation->setQuery("create database RpaInformation");
-
-    QSqlQueryModel *use_database = new QSqlQueryModel();
-    use_database->setQuery("use RpaInformation");
-
-    QSqlQueryModel *create_table = new QSqlQueryModel();
-    create_table->setQuery("create table RpaList(TYPE text,MODEL_NAME text, DRONE_NAME text, UIN text)");
 }
 
 QHash<int, QByteArray> RpaDatabase::roleNames() const
@@ -42,13 +26,12 @@ void RpaDatabase::callSql(QString queryString)
 void RpaDatabase::generateRoleNames()
 {
     m_roleNames.clear();
-//    for( int i = 0; i < record().count(); i ++) {
-//        m_roleNames.insert(Qt::UserRole + i + 1, record().fieldName(i).toUtf8());
-//    }
+
 }
 
 void RpaDatabase::addData(const QString &TYPE,const QString &MODEL_NAME, const QString &DRONE_NAME, const QString &UIN)
 {
+
     QSqlQuery insertData;
     insertData.prepare("insert into RpaList(TYPE, MODEL_NAME, DRONE_NAME, UIN) values(?,?,?,?)");
     insertData.addBindValue(TYPE);
@@ -60,10 +43,28 @@ void RpaDatabase::addData(const QString &TYPE,const QString &MODEL_NAME, const Q
         qDebug()<<"error while inserting values";
     }
 
-//    QSqlQueryModel *create_table = new QSqlQueryModel();
-//    create_table->setQuery("select * from RpaList");
-
-//    QTableView *view = new QTableView;
-//    view->setModel(create_table);
-//    view->show();
 }
+
+void RpaDatabase::existingUIN(const QString &UIN)
+{
+    QSqlQuery searchUin;
+    searchUin.prepare("SELECT UIN FROM RpaList WHERE UIN = :UIN");
+    searchUin.bindValue(":UIN",UIN);
+
+    if(!searchUin.exec()){
+        qDebug()<<"error while searching UIN";
+    }
+
+    if(searchUin.exec()){
+        while (searchUin.next()) {
+            uin_from_db = searchUin.value(0).toString();
+        }
+    }
+
+    if(uin_from_db == UIN){
+        emit uin_record_found();
+        qDebug()<<"Given UIN is already used.";
+    }
+}
+
+

@@ -39,9 +39,6 @@ Item{
     ParameterEditorController {
         id: controller
     }
-    RpaDatabase{
-        id:rpa_database
-    }
 
     //ExclusiveGroup { id: sectionGroup }
 
@@ -129,7 +126,7 @@ Item{
         anchors.leftMargin: 25
         anchors.top: drone_contents.top
         anchors.topMargin: 120
-        text: qsTr("Drone Type")
+        text: qsTr("Drone Type*")
         color: "White"
         font.pointSize: 10
     }
@@ -236,7 +233,7 @@ Item{
         anchors.rightMargin: 100
         anchors.top: drone_contents.top
         anchors.topMargin: 120
-        text: qsTr("Name/Drone's Model Name")
+        text: qsTr("Name/Drone's Model Name*")
         color: "White"
         font.pointSize: 10
     }
@@ -368,7 +365,7 @@ Item{
         anchors.leftMargin: 25
         anchors.top: basic_details_text.top
         anchors.topMargin: 25
-        text: qsTr("Drone Name")
+        text: qsTr("Drone Name*")
         font.pointSize: 10
         color: "white"
     }
@@ -389,6 +386,7 @@ Item{
             anchors.margins: 5
             text: ''
             color: "white"
+            selectByMouse: true
             background: Rectangle {
                 color: "#031C28"
                 radius: 4
@@ -406,7 +404,7 @@ Item{
         anchors.rightMargin: 255
         anchors.top: rpa_text.top
         anchors.topMargin: 70
-        text: qsTr("UIN")
+        text: qsTr("UIN*")
         font.pointSize: 10
         color: "white"
     }
@@ -427,6 +425,7 @@ Item{
             anchors.margins: 5
             text: " "
             color: "white"
+            selectByMouse: true
             background: Rectangle {
                 color: "#031C28"
                 radius: 4
@@ -435,9 +434,15 @@ Item{
                 implicitHeight: uin_input_rect.height
                 implicitWidth: uin_input_rect.width
             }
+            onEditingFinished :{
+                if (uin_input_text.text !== ""){
+                rpadatabase.existingUIN(uin_input_text.text)
+                //uin_input_text.text=""
+                }
+            }
         }
-    }
 
+    }
 
     Row {
         spacing: 25
@@ -460,22 +465,34 @@ Item{
                     color: "Green"
                 }
             }
-            onClicked: {
-                if(drone_model_list.currentText === "Model A") {
-                    firmware_load1.checksum_generation_process_model_A()
 
+            onClicked: {
+
+                if((drone_type_list.currentText == "")||(drone_model_list.currentText == "") ||(drone_name_text.text == "") ||(uin_input_text.text == "")) {
+                    dialog.visible = true
                 }
-                else if(drone_model_list.currentText === "Model B") {
-                    firmware_load1.checksum_generation_process_model_B()
+                else {
+                    if(drone_model_list.currentText === "Model A") {
+                        firmware_load1.checksum_generation_process_model_A()
+
+                    }
+                    else if(drone_model_list.currentText === "Model B") {
+                        firmware_load1.checksum_generation_process_model_B()
+                    }
+//                    else if (uin_input_text.text !== ""){
+//                        rpadatabase.existingUIN(uin_input_text.text)
+//                        //uin_input_text.text=""
+//                    }
+                    rpa_register_page.visible =  false
+                    rpaheader1.visible = true
+                    //rpadatabase.existingUIN(uin_input_text.text)
+                    rpadatabase.addData(drone_type_list.currentText,drone_model_list.currentText,drone_name_text.text,uin_input_text.text)
+                    rpadatabase.callSql("SELECT * From RpaList")
+                    drone_type_list.text = " "
+                    drone_model_list.text = " "
+                    drone_name_text.text = " "
+                    uin_input_text.text = " "
                 }
-                rpa_register_page.visible =  false
-                rpaheader1.visible = true
-                rpadatabase.addData(drone_type_list.currentText,drone_model_list.currentText,drone_name_text.text,uin_input_text.text)
-                rpadatabase.callSql("SELECT * From RpaList")
-                drone_type_list.text = " "
-                drone_model_list.text = " "
-                drone_name_text.text = " "
-                uin_input_text.text = " "
             }
         }
 
@@ -500,6 +517,13 @@ Item{
                 rpa_register_page.visible = false
             }
         }
+    }
+
+    MessageDialog{
+        id:dialog
+        height: 50
+        width: 50
+        text:"please complete the details correctly"
     }
 
 
@@ -531,10 +555,6 @@ Item{
             paramController: _controller
         }
     }
-
-//    RpaDatabase {
-
-//    }
 
 
 }

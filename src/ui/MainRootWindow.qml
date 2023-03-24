@@ -29,7 +29,6 @@ import QGroundControl.FlightMap     1.0
 import AjayDatabase 1.0
 import RpaDatabase 1.0
 
-
 /// @brief Native QML top level window
 /// All properties defined here are visible to all QML pages.
 ApplicationWindow {
@@ -41,14 +40,39 @@ ApplicationWindow {
     AjayDatabase{
         id: database
         onRecord_found: {
+            landing_page_rectangle.visible =true
+            dashboard_rectangle.visible = true
             login_page_rectangle.z = -1
             login_page_rectangle.visible = false
+            //rpadatabase.callSql("USE RpaInformation")
+            rpadatabase.callSql("SELECT * From RpaList")
         }
         onNo_record_found: {
             no_recordDialog.open()
         }
         onIncorrect_password: {
             incorrect_password_Dialog.open()
+        }
+        onName_record_found: {
+            namerecord_Dialog.open()
+        }
+        onMail_record_found: {
+            mailrecord_Dialog.open()
+        }
+        onNumber_record_found: {
+            number_record_Dialog.open()
+        }
+//        onName_mail_record_found: {
+//            mailrecord_Dialog.open()
+//        }
+
+    }
+
+    RpaDatabase {
+        id:rpadatabase
+
+        onUin_record_found: {
+            uinrecord_Dialog.open()
         }
     }
 
@@ -249,8 +273,6 @@ ApplicationWindow {
                     console.log("Username: " + login_page_email_textfield.text)
                     console.log("Password: " + login_page_password_textfield.text)
                     database.loginExistingUser(login_page_email_textfield.text,login_page_password_textfield.text)
-                    landing_page_rectangle.visible =true
-                    second_rectangle.visible = true
                 } else {
                     messagedialog1.visible = true
                     console.log("Please enter a username and password.")
@@ -777,7 +799,7 @@ ApplicationWindow {
                 anchors.topMargin: 20
                 anchors.horizontalCenter: parent.horizontalCenter
                 Label{
-                    text: "Select your industry type*"
+                    text: "Select Your Industry Type*"
                     color: "white"
                 }
                 ComboBox {
@@ -929,7 +951,7 @@ ApplicationWindow {
                     anchors.fill: parent
                     width: 75
                     height: 75
-                    //source: image_file_dialog.fileUrl
+                    source: image_file_dialog.fileUrl
                 }
                 MouseArea{
                     anchors.fill: parent
@@ -985,6 +1007,14 @@ ApplicationWindow {
                                 anchors.leftMargin: 12
                                 anchors.verticalCenter: parent.verticalCenter
                             }
+                            onEditingFinished:{
+                                if (user_name_text.text !== "") {
+                                    database.signupExistingUsername(user_name_text.text)
+                                }
+                                //database.signupExistingUsername(user_name_text.text)
+                                //namerecord_Dialog.open()
+                            }
+
                         }
                     }
                     Column{
@@ -1020,6 +1050,13 @@ ApplicationWindow {
                                 anchors.leftMargin: 12
                                 anchors.verticalCenter: parent.verticalCenter
                             }
+                            onEditingFinished:{
+                                if (user_mail_text.text !== "") {
+                                    database.signupExistingUsermail(user_mail_text.text)
+                                }
+                                //database.signupExistingUsermail(user_mail_text.text)
+                                //mailrecord_Dialog.open()
+                            }
                         }
                     }
                     Column{
@@ -1035,6 +1072,7 @@ ApplicationWindow {
                             text: ""
                             color: "white"
                             leftPadding: 50
+                            inputMethodHints: Qt.ImhFormattedNumbersOnly
                             onTextChanged: {
                                 user_number.border.color = "#C0C0C0"
                             }
@@ -1054,6 +1092,13 @@ ApplicationWindow {
                                 anchors.left: parent.left
                                 anchors.leftMargin: 12
                                 anchors.verticalCenter: parent.verticalCenter
+                            }
+                            onEditingFinished:{
+                                if (user_number_text.text !== "") {
+                                    database.signupExistingUsernumber(user_number_text.text)
+                                }
+                                //database.signupExistingUsernumber(user_number_text.text)
+                                //mailrecord_Dialog.open()
                             }
                         }
                     }
@@ -1238,6 +1283,7 @@ ApplicationWindow {
                             enter_all_fields.open()
                         }
                         else{
+                            //database.signupExistingUser(user_name_text.text,user_mail_text.text,user_number_text.text)
                             second_user_details_page.visible = false
                             third_user_details_page.visible = true
                             second_circle_text.text = "/"
@@ -1461,7 +1507,6 @@ ApplicationWindow {
                         verify_now_button.color = "#F25822"
                     }
                     onClicked: {
-
                         database.newUserData(combobox_text.text,user_name_text.text,user_mail_text.text,user_number_text.text,user_address_text.text,user_locality_text.text,user_password_text.text)
                         new_user_first_page.visible = false
                         third_user_details_page.visible = false
@@ -1550,6 +1595,10 @@ ApplicationWindow {
             }
         }
         standardButtons: Dialog.Ok
+        onButtonClicked: {
+            login_page_email_textfield.text = ""
+            login_page_password_textfield = ""
+        }
     }
     Dialog {
         id: incorrect_password_Dialog
@@ -1577,6 +1626,113 @@ ApplicationWindow {
         standardButtons: Dialog.Ok
     }
     Dialog {
+        id: namerecord_Dialog
+        width: 200
+        height: 100
+        title: "Already Registered Name"
+        Label {
+            text: "Entered Name is Already Registered."
+//            Label{
+//                anchors.top: parent.bottom
+//                anchors.topMargin: 3
+//                text: "Please provide Alternate name"
+//                Label{
+//                    anchors.top: parent.bottom
+//                    anchors.topMargin: 3
+//                    text: "Create a New Account."
+//                }
+//            }
+
+        }
+        standardButtons: Dialog.Ok
+        onButtonClicked: {
+            user_name_text.text = ""
+        }
+    }
+
+    Dialog {
+        id: signout_Dialog
+        width: 200
+        height: 100
+        title: "Sign Out"
+        Label {
+            text: "Are You Sure you want to Sign Out?."
+        }
+        standardButtons: Dialog.Yes | Dialog.No
+        onYes: {
+            landing_page_rectangle.visible = false
+            login_page_rectangle.visible = true
+            login_page_email_textfield.text = ""
+            login_page_password_textfield.text = ""
+        }
+        onNo: {
+            landing_page_rectangle.visible = true
+        }
+    }
+    Dialog {
+        id: mailrecord_Dialog
+        width: 200
+        height: 100
+        title: "Already Registered Name and Mail"
+        Label {
+            text: "Entered Mail is Already Registered."
+        }
+        standardButtons: Dialog.Ok
+        onAccepted: {
+            //login_page_rectangle.visible = true
+            user_mail_text.text = ""
+        }
+    }
+    Dialog {
+        id: number_record_Dialog
+        width: 200
+        height: 100
+        title: "Already Registered Number"
+        Label {
+            text: "Entered Number is Already Registered."
+        }
+        standardButtons: Dialog.Ok
+        onAccepted: {
+            //login_page_rectangle.visible = true
+            user_number_text.text = ""
+        }
+    }
+    Dialog {
+        id: uinrecord_Dialog
+        width: 200
+        height: 100
+        title: "Already used UIN"
+        Label {
+            text: "Entered UIN is Already Used."
+        }
+        standardButtons: Dialog.Ok
+
+    }
+//    Dialog {
+//        id: all_record_Dialog
+//        width: 200
+//        height: 100
+//        title: "Already Registered Name,Mail,Number"
+//        Label {
+//            text: "Given Name,Mail,Number is Already Registered."
+//            Label{
+//                anchors.top: parent.bottom
+//                anchors.topMargin: 3
+//                text: "Please provide Alternate Name,Mail,Number."
+//                Label{
+//                    anchors.top: parent.bottom
+//                    anchors.topMargin: 3
+//                    text: "Create a New Account."
+//                }
+//            }
+
+//        }
+//        standardButtons: Dialog.Ok
+//        onAccepted: {
+//            login_page_rectangle.visible = true
+//        }
+//    }
+    Dialog {
         id: enter_all_fields
         width: 200
         height: 50
@@ -1591,7 +1747,7 @@ ApplicationWindow {
         height: 50
         title: "Mismatch"
         Label {
-            text: "Both passwords donot match"
+            text: "Both passwords do not match"
         }
     }
 
@@ -2317,14 +2473,12 @@ ApplicationWindow {
         z:1
         visible: false
         color: "#031C28"
-        RpaDatabase {
-            id:rpadatabase
-        }
 
-        Component.onCompleted: {
-            rpadatabase.callSql("USE RpaInformation")
-            rpadatabase.callSql("SELECT * From RpaList")
-        }
+
+//        Component.onCompleted: {
+//            rpadatabase.callSql("USE RpaInformation")
+//            rpadatabase.callSql("SELECT * From RpaList")
+//        }
 
         GridLayout {
             columns: 2
@@ -2414,49 +2568,19 @@ ApplicationWindow {
                         }
 
                         MouseArea{
+                            hoverEnabled: true
+                            onEntered: parent.color = '#F25822'
+                            onExited: parent.color = '#031C28'
                             anchors.fill: dashboard_button
                             onClicked: {
-                                second_rectangle.visible = true
+                                dashboard_rectangle.visible = true
                                 dashboard_button.color ="#F25822" || "#031C28"
                                 managerpa_button.color = "#031C28"
-                                second_rec_division1.visible = false
+                                manage_rpa_rectangle.visible = false
+                                flight_log_rectangle.visible = false
                             }
                         }
                     }
-
-                    Rectangle{
-                        id: flight_log_button
-                        width: menu_rect_1.width -15
-                        height: 25
-                        color: "#031C28"
-                        radius: 4
-                        Layout.alignment: Qt.AlignLeft
-                        Layout.leftMargin: 10
-
-                        Image {
-                            id: log_image
-                            source: "/res/log.png"
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: flight_log_button.left
-                            anchors.leftMargin: 20
-                        }
-                        Text{
-                            text: "FLIGHT LOG"
-                            color: "white"
-                            font.pointSize: 9
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: log_image.left
-                            anchors.leftMargin: 30
-                        }
-
-                        MouseArea{
-                            anchors.fill: flight_log_button
-                            onClicked: {
-
-                            }
-                        }
-                    }
-
 
                     Rectangle{
                         id: managerpa_button
@@ -2484,12 +2608,17 @@ ApplicationWindow {
                         }
 
                         MouseArea{
+                            hoverEnabled: true
+                            onEntered: parent.color = '#F25822'
+                            onExited: parent.color = '#031C28'
                             anchors.fill: managerpa_button
                             onClicked: {
-                                second_rec_division1.visible = true
-                                second_rectangle.visible = false
+                                manage_rpa_rectangle.visible = true
+                                dashboard_rectangle.visible = false
+                                flight_log_rectangle.visible = false
                                 dashboard_button.color = "#031C28"
                                 managerpa_button.color = "#F25822"
+                                drone_contents.visible = false
                                 //rpaheader1.visible = true
                                 //table_item.visible = false
                             }
@@ -2524,6 +2653,9 @@ ApplicationWindow {
                         }
 
                         MouseArea{
+                            hoverEnabled: true
+                            onEntered: parent.color = '#F25822'
+                            onExited: parent.color = '#031C28'
                             anchors.fill: customers_button
                             onClicked: {
 
@@ -2557,6 +2689,9 @@ ApplicationWindow {
                         }
 
                         MouseArea{
+                            hoverEnabled: true
+                            onEntered: parent.color = '#F25822'
+                            onExited: parent.color = '#031C28'
                             anchors.fill: remote_button
                             onClicked: {
 
@@ -2589,6 +2724,9 @@ ApplicationWindow {
                         }
 
                         MouseArea{
+                            hoverEnabled: true
+                            onEntered: parent.color = '#F25822'
+                            onExited: parent.color = '#031C28'
                             anchors.fill: missions_button
                             onClicked: {
 
@@ -2621,6 +2759,9 @@ ApplicationWindow {
                         }
 
                         MouseArea{
+                            hoverEnabled: true
+                            onEntered: parent.color = '#F25822'
+                            onExited: parent.color = '#031C28'
                             anchors.fill: manual_button
                             onClicked: {
 
@@ -2628,38 +2769,43 @@ ApplicationWindow {
                         }
                     }
 
-//                    Rectangle{
-//                        id: flight_log_button
-//                        width: menu_rect_1.width -15
-//                        height: 25
-//                        color: "#031C28"
-//                        radius: 4
-//                        Layout.alignment: Qt.AlignLeft
-//                        Layout.leftMargin: 10
+                    Rectangle{
+                        id: flight_log_button
+                        width: menu_rect_1.width -15
+                        height: 25
+                        color: "#031C28"
+                        radius: 4
+                        Layout.alignment: Qt.AlignLeft
+                        Layout.leftMargin: 10
 
-//                        Image {
-//                            id: log_image
-//                            source: "/res/log.png"
-//                            anchors.verticalCenter: parent.verticalCenter
-//                            anchors.left: flight_log_button.left
-//                            anchors.leftMargin: 20
-//                        }
-//                        Text{
-//                            text: "FLIGHT LOG"
-//                            color: "white"
-//                            font.pointSize: 9
-//                            anchors.verticalCenter: parent.verticalCenter
-//                            anchors.left: log_image.left
-//                            anchors.leftMargin: 30
-//                        }
+                        Image {
+                            id: log_image
+                            source: "/res/log.png"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: flight_log_button.left
+                            anchors.leftMargin: 20
+                        }
+                        Text{
+                            text: "FLIGHT LOG"
+                            color: "white"
+                            font.pointSize: 9
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: log_image.left
+                            anchors.leftMargin: 30
+                        }
 
-//                        MouseArea{
-//                            anchors.fill: flight_log_button
-//                            onClicked: {
-
-//                            }
-//                        }
-//                    }
+                        MouseArea{
+                            hoverEnabled: true
+                            onEntered: parent.color = '#F25822'
+                            onExited: parent.color = '#031C28'
+                            anchors.fill: flight_log_button
+                            onClicked: {
+                                flight_log_rectangle.visible = true
+                                manage_rpa_rectangle.visible = false
+                                dashboard_rectangle.visible = false
+                            }
+                        }
+                    }
 
                     Text{
                         id: insights
@@ -2697,6 +2843,9 @@ ApplicationWindow {
                         }
 
                         MouseArea{
+                            hoverEnabled: true
+                            onEntered: parent.color = '#F25822'
+                            onExited: parent.color = '#031C28'
                             anchors.fill: profile_button
                             onClicked: {
 
@@ -2729,6 +2878,9 @@ ApplicationWindow {
                         }
 
                         MouseArea{
+                            hoverEnabled: true
+                            onEntered: parent.color = '#F25822'
+                            onExited: parent.color = '#031C28'
                             anchors.fill: notification_button
                             onClicked: {
 
@@ -2761,9 +2913,12 @@ ApplicationWindow {
                         }
 
                         MouseArea{
+                            hoverEnabled: true
+                            onEntered: parent.color = '#F25822'
+                            onExited: parent.color = '#031C28'
                             anchors.fill: logout_button
                             onClicked: {
-
+                                signout_Dialog.open()
                             }
                         }
                     }
@@ -2775,14 +2930,14 @@ ApplicationWindow {
             }
 
             Rectangle {
-                id: second_rectangle
+                id: dashboard_rectangle
                 //anchors.left: first_rectangle.Left
                 width: screen.width/1.8//parent.width/1.8
                 height: parent.height
                 visible: false
                 color: "#031C28"
                 border.color: "#05324D"
-                border.width: 2
+                border.width: 1
 
                 Column {
                     id: second_rec_column1
@@ -2791,7 +2946,7 @@ ApplicationWindow {
                         id: header
                         color: "#031C28"
                         height: 50
-                        width: second_rectangle.width
+                        width: dashboard_rectangle.width
                         border.color: "#05324D"
                         border.width: 1
 
@@ -2830,268 +2985,277 @@ ApplicationWindow {
                             anchors.rightMargin: 100
                         }
                     }
+                    Column {
 
-                    Rectangle{
-                        id: header2
-                        color: "#031C28"
-                        height: 300
-                        width: second_rectangle.width
-                        border.color: "#05324D"
-                        border.width: 2
-                        Rectangle {
-                            id:name_rect
-                            anchors.left: parent.left
-                            anchors.leftMargin: 20
-                            anchors.top: parent.top
-                            anchors.topMargin: 30
-                            color: "#99F25822"
-                            Text{
-                                id: greet
-                                text: "Hi, "
-                                color : "white"
-                                font.pointSize: 9
-                                anchors.verticalCenter: parent.verticalCenter
-                                //anchors.leftMargin: 5
-
-                            }
-                            Text{
-                                id: username
-                                text: "Chris Hemsworth"
-                                color : "#F25822"
-                                font.pointSize: 9
-                                font.bold: true
-                                anchors.left: greet.right
-                                anchors.verticalCenter: parent.verticalCenter
-                                //anchors.leftMargin: 20
-                            }
-                        }
                         Rectangle{
-                            id:greeting_text_rect
-                            anchors.left: parent.left
-                            anchors.leftMargin: 20
-                            anchors.top: name_rect.top
-                            anchors.topMargin: 25
-                            color: "#99F25822"
-                            Text{
-                                id: greeting_text
-                                text: "Welcome back to "
-                                color : "white"
-                                font.pointSize: 14
-                                anchors.verticalCenter: parent.verticalCenter
+                            id: header2
+                            color: "#031C28"
+                            height: 350
+                            width: dashboard_rectangle.width
+                            border.color: "#05324D"
+                            border.width: 1
+                            Rectangle {
+                                id:name_rect
+                                anchors.left: parent.left
+                                anchors.leftMargin: 20
+                                anchors.top: parent.top
+                                anchors.topMargin: 30
+                                color: "#99F25822"
+                                Text{
+                                    id: greet
+                                    text: "Hi, "
+                                    color : "white"
+                                    font.pointSize: 9
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    //anchors.leftMargin: 5
+
+                                }
+                                Text{
+                                    id: username
+                                    text: "Chris Hemsworth"
+                                    color : "#F25822"
+                                    font.pointSize: 9
+                                    font.bold: true
+                                    anchors.left: greet.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    //anchors.leftMargin: 20
+                                }
+                            }
+                            Rectangle{
+                                id:greeting_text_rect
+                                anchors.left: parent.left
+                                anchors.leftMargin: 20
+                                anchors.top: name_rect.top
+                                anchors.topMargin: 25
+                                color: "#99F25822"
+                                Text{
+                                    id: greeting_text
+                                    text: "Welcome back to "
+                                    color : "white"
+                                    font.pointSize: 14
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                                Text{
+                                    id: godrona_text
+                                    text: "GoDrona"
+                                    color : "white"
+                                    font.bold:true
+                                    font.pointSize: 14
+                                    anchors.left: greeting_text.right
+                                    //anchors.leftMargin: 5
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
                             }
                             Text{
-                                id: godrona_text
-                                text: "GoDrona"
+                                id: overview
+                                text: "OVERVIEW"
                                 color : "white"
-                                font.bold:true
-                                font.pointSize: 14
-                                anchors.left: greeting_text.right
-                                //anchors.leftMargin: 5
-                                anchors.verticalCenter: parent.verticalCenter
+                                font.pointSize: 10
+                                anchors.left: parent.left
+                                anchors.leftMargin: 20
+                                anchors.top: greeting_text_rect.top
+                                anchors.topMargin: 40
+
                             }
-                        }
-                        Text{
-                            id: overview
-                            text: "OVERVIEW"
-                            color : "white"
-                            font.pointSize: 10
-                            anchors.left: parent.left
-                            anchors.leftMargin: 20
-                            anchors.top: greeting_text_rect.top
-                            anchors.topMargin: 40
 
-                        }
-
-                        Row{
-                            anchors.left: parent.left
-                            anchors.leftMargin: 20
-                            anchors.top: overview.top
-                            anchors.topMargin: 25
-                            Row {
-                                spacing: 15
-                                Rectangle {
-                                    color: "#4D05324D"
-                                    width: 130; height: 150
-                                    radius: 2
-
+                            Row{
+                                anchors.left: parent.left
+                                anchors.leftMargin: 20
+                                anchors.top: overview.top
+                                anchors.topMargin: 25
+                                Row {
+                                    spacing: 15
                                     Rectangle {
-                                        id:flight_log_image_rect
-                                        anchors.left: parent.left
-                                        anchors.leftMargin: 30
-                                        anchors.top: parent.top
-                                        anchors.topMargin: 15
-                                        width: parent.width/2
-                                        height: 70
-                                        color: "Green"
-                                        radius: 3
-                                        Image {
-                                            id: flight_log_image
-                                            anchors.centerIn: parent
-                                            source: "qrc:/res/Flight_log.png"
+                                        color: "#4D05324D"
+                                        width: 130; height: 150
+                                        radius: 2
+
+                                        Rectangle {
+                                            id:flight_log_image_rect
+                                            anchors.left: parent.left
+                                            anchors.leftMargin: 30
+                                            anchors.top: parent.top
+                                            anchors.topMargin: 15
+                                            width: parent.width/2
+                                            height: 70
+                                            color: "Green"
+                                            radius: 3
+                                            Image {
+                                                id: flight_log_image
+                                                anchors.centerIn: parent
+                                                source: "qrc:/res/Flight_log.png"
+
+                                            }
+                                            ColorOverlay{
+                                                anchors.fill: flight_log_image
+                                                source:flight_log_image
+                                                color: "white"
+                                            }
 
                                         }
-                                        ColorOverlay{
-                                            anchors.fill: flight_log_image
-                                            source:flight_log_image
+
+                                        Text {
+                                            id: flightlog
+                                            text: qsTr("Drone Log")
+                                            font.pointSize: 9
+                                            anchors.bottom: parent.bottom
+                                            anchors.bottomMargin: 20
+                                            anchors.horizontalCenter: parent.horizontalCenter
                                             color: "white"
                                         }
 
                                     }
-
-                                    Text {
-                                        id: flightlog
-                                        text: qsTr("Drone Log")
-                                        font.pointSize: 9
-                                        anchors.bottom: parent.bottom
-                                        anchors.bottomMargin: 20
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        color: "white"
-                                    }
-
-                                }
-                                Rectangle {
-                                    color: "#4D05324D"
-                                    width: 130; height: 150
-                                    radius: 2
-
                                     Rectangle {
-                                        id:customers_image_rect
-                                        anchors.left: parent.left
-                                        anchors.leftMargin: 30
-                                        anchors.top: parent.top
-                                        anchors.topMargin: 15
-                                        width: parent.width/2
-                                        height: 70
-                                        color: "black"
-                                        radius: 4
-                                        Image {
-                                            id: customersimage
-                                            anchors.centerIn: parent
-                                            source: "qrc:/qmlimages/customers_black.png"
+                                        color: "#4D05324D"
+                                        width: 130; height: 150
+                                        radius: 2
 
-                                        }
-                                        ColorOverlay{
-                                            anchors.fill: customersimage
-                                            source:customersimage
-                                            color: "white"
-                                        }
-
-                                    }
-
-                                    Text {
-                                        id: customers
-                                        text: qsTr("Customers")
-                                        font.pointSize: 9
-                                        anchors.bottom: parent.bottom
-                                        anchors.bottomMargin: 20
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        color: "white"
-                                    }
-
-                                }
-
-                                Rectangle {
-                                    color: "#4D05324D"
-                                    width: 130; height: 150
-                                    radius: 2
-
-                                    Rectangle {
-                                        id:remote_pilots_image_rect
-                                        anchors.left: parent.left
-                                        anchors.leftMargin: 30
-                                        anchors.top: parent.top
-                                        anchors.topMargin: 15
-                                        width: parent.width/2
-                                        height: 70
-                                        color: "red"
-                                        radius: 4
-                                        Image {
-                                            id: remote_pilots_image
-                                            anchors.centerIn: parent
-                                            source: "qrc:/qmlimages/Remote_pilot.png"
-
-                                        }
-                                        ColorOverlay{
-                                            anchors.fill: remote_pilots_image
-                                            source:remote_pilots_image
-                                            color: "white"
-                                        }
-
-                                    }
-
-                                    Text {
-                                        id: remote_pilot_text
-                                        text: qsTr("Remote Pilots")
-                                        font.pointSize: 9
-                                        anchors.bottom: parent.bottom
-                                        anchors.bottomMargin: 20
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        color: "white"
-                                    }
-
-                                }
-                                STYLE.Button {
-                                    id: back_to_fly_Button
-                                    width: 130; height: 150
-
-                                    Rectangle{
-                                        id:back_to_fly_image_rect
-                                        anchors.left: parent.left
-                                        anchors.leftMargin: 30
-                                        anchors.top: parent.top
-                                        anchors.topMargin: 15
-                                        width: parent.width/2
-                                        height: 70
-                                        color: "Blue"
-                                        radius: 4
-                                        Image {
-                                            id: back_to_fly_image
-                                            anchors.centerIn: parent
-                                            source: "qrc:/qmlimages/Back_to_fly.png"
-
-                                        }
-                                        ColorOverlay{
-                                            anchors.fill: back_to_fly_image
-                                            source:back_to_fly_image
-                                            color: "white"
-                                        }
-                                    }
-                                    Text {
-                                        id: back_to_fly_text
-                                        text: qsTr("Back To Fly")
-                                        font.pointSize: 9
-                                        anchors.bottom: parent.bottom
-                                        anchors.bottomMargin: 20
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        color: "white"
-                                    }
-
-                                    style: ButtonStyle {
-                                        background: Rectangle {
+                                        Rectangle {
+                                            id:customers_image_rect
+                                            anchors.left: parent.left
+                                            anchors.leftMargin: 30
+                                            anchors.top: parent.top
+                                            anchors.topMargin: 15
+                                            width: parent.width/2
+                                            height: 70
+                                            color: "black"
                                             radius: 4
-                                            color: "#4D05324D"
+                                            Image {
+                                                id: customersimage
+                                                anchors.centerIn: parent
+                                                source: "qrc:/qmlimages/customers_black.png"
+
+                                            }
+                                            ColorOverlay{
+                                                anchors.fill: customersimage
+                                                source:customersimage
+                                                color: "white"
+                                            }
+
+                                        }
+
+                                        Text {
+                                            id: customers
+                                            text: qsTr("Customers")
+                                            font.pointSize: 9
+                                            anchors.bottom: parent.bottom
+                                            anchors.bottomMargin: 20
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            color: "white"
+                                        }
+
+                                    }
+
+                                    Rectangle {
+                                        color: "#4D05324D"
+                                        width: 130; height: 150
+                                        radius: 2
+
+                                        Rectangle {
+                                            id:remote_pilots_image_rect
+                                            anchors.left: parent.left
+                                            anchors.leftMargin: 30
+                                            anchors.top: parent.top
+                                            anchors.topMargin: 15
+                                            width: parent.width/2
+                                            height: 70
+                                            color: "red"
+                                            radius: 4
+                                            Image {
+                                                id: remote_pilots_image
+                                                anchors.centerIn: parent
+                                                source: "qrc:/qmlimages/Remote_pilot.png"
+
+                                            }
+                                            ColorOverlay{
+                                                anchors.fill: remote_pilots_image
+                                                source:remote_pilots_image
+                                                color: "white"
+                                            }
+
+                                        }
+
+                                        Text {
+                                            id: remote_pilot_text
+                                            text: qsTr("Remote Pilots")
+                                            font.pointSize: 9
+                                            anchors.bottom: parent.bottom
+                                            anchors.bottomMargin: 20
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            color: "white"
+                                        }
+
+                                    }
+                                    STYLE.Button {
+                                        id: back_to_fly_Button
+                                        width: 130; height: 150
+
+                                        Rectangle{
+                                            id:back_to_fly_image_rect
+                                            anchors.left: parent.left
+                                            anchors.leftMargin: 30
+                                            anchors.top: parent.top
+                                            anchors.topMargin: 15
+                                            width: parent.width/2
+                                            height: 70
+                                            color: "Blue"
+                                            radius: 4
+                                            Image {
+                                                id: back_to_fly_image
+                                                anchors.centerIn: parent
+                                                source: "qrc:/qmlimages/Back_to_fly.png"
+
+                                            }
+                                            ColorOverlay{
+                                                anchors.fill: back_to_fly_image
+                                                source:back_to_fly_image
+                                                color: "white"
+                                            }
+                                        }
+                                        Text {
+                                            id: back_to_fly_text
+                                            text: qsTr("Back To Fly")
+                                            font.pointSize: 9
+                                            anchors.bottom: parent.bottom
+                                            anchors.bottomMargin: 20
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            color: "white"
+                                        }
+
+                                        style: ButtonStyle {
+                                            background: Rectangle {
+                                                radius: 4
+                                                color: "#4D05324D"
+                                            }
+                                        }
+                                        MouseArea{
+                                            hoverEnabled: true
+                                            onEntered: back_to_fly_image_rect.color = '#05324D'
+                                            onExited: back_to_fly_image_rect.color = '#4D05324D'
+                                            anchors.fill: back_to_fly_Button
+                                            onClicked:{
+                                                flightView.visible = true
+                                                console.log("flightview clicked")
+                                                login_page_rectangle.visible=false
+                                                landing_page_rectangle.visible = false
+                                                toolbar.visible =true
+                                            }
                                         }
                                     }
-                                    onClicked:{
-                                        flightView.visible = true
-                                        console.log("flightview clicked")
-                                        login_page_rectangle.visible=false
-                                        landing_page_rectangle.visible = false
-                                        toolbar.visible =true
-                                    }
                                 }
-                            }
 
+                            }
                         }
                     }
                 }
             }
 
             Rectangle {
-                id: second_rec_division1
-                width: second_rectangle.width
-                height: second_rectangle.height
-                //anchors.left: first_rectangle.right
+                id: manage_rpa_rectangle
+                width: screen.width/1.8//parent.width/1.8
+                height: parent.height
+//                width: dashboard_rectangle.width
+//                height: dashboard_rectangle.height
                 color: "#031C28"
                 visible: false
                 border.color: "#05324D"
@@ -3108,7 +3272,7 @@ ApplicationWindow {
                             id:rpaheader
                             color: "#031C28"
                             height: 50
-                            width: second_rec_division1.width
+                            width: manage_rpa_rectangle.width
                             visible: true
                             border.color: "#05324D"
                             border.width: 2
@@ -3156,8 +3320,8 @@ ApplicationWindow {
                             id:rpaheader1
                             color: "#031C28"
                             visible:false || true
-                            height: parent.height-50
-                            width: second_rec_division1.width
+                            height: manage_rpa_rectangle.height-50
+                            width: manage_rpa_rectangle.width
                             border.color: "#05324D"
                             border.width: 1
 
@@ -3246,8 +3410,10 @@ ApplicationWindow {
                                             model: rpa_list_table.columns > 0 ? rpa_list_table.columns : 1
                                             Rectangle {
                                                 width: rpa_list_table.columnWidthProvider(modelData)
-                                                height: 30
+                                                height: 35
                                                 color: "#031C28"
+                                                border.width: 2
+                                                border.color: "#05324D"
 
                                                 Text {
                                                     anchors.centerIn: parent
@@ -3265,8 +3431,10 @@ ApplicationWindow {
                                         id:rowrectcolumnsHeader
                                         y: 35
                                         color: "#031C28"
+                                        border.width: 2
+                                        border.color: "#05324D"
 
-                                        TextArea{
+                                        Text{
                                             text: display // This is set in rpa_database.cpp roleNames()
                                             anchors.fill: parent
                                             anchors.margins: 10
@@ -3274,11 +3442,8 @@ ApplicationWindow {
                                             font.pixelSize: 15
                                             verticalAlignment: Text.AlignVCenter
                                             wrapMode: Text.WordWrap
-                                            selectByKeyboard: false
-                                            selectByMouse: false
                                         }
                                     }
-
                                 }
                             }
                         }
@@ -3361,6 +3526,112 @@ ApplicationWindow {
                         }
                     }
 
+                }
+            }
+            Rectangle {
+                id: flight_log_rectangle
+                width: screen.width/1.8//parent.width/1.8
+                height: parent.height
+//                width: dashboard_rectangle.width
+//                height: dashboard_rectangle.height
+                color: "#031C28"
+                visible: false
+                border.color: "#05324D"
+                border.width: 1
+
+                ColumnLayout {
+                    //id: second_rec_column2
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+                    spacing: 5
+
+                    Column{
+                        Rectangle {
+                            id:flight_log_header
+                            color: "#031C28"
+                            height: 50
+                            width: flight_log_rectangle.width
+                            visible: true
+                            border.color: "#05324D"
+                            border.width: 2
+
+                            Image {
+                                id: hamburger_image_flight_log
+                                source: "/res/hamburger_menu.png"
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.left: flight_log_header.left
+                                anchors.leftMargin: 20
+                            }
+
+                            Text {
+                                id: flight_log_text
+                                text: "FLIGHT LOG"
+                                color: "white"
+                                font.pointSize: 10
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.left: hamburger_image_flight_log.left
+                                anchors.leftMargin: 25
+                            }
+
+                            Image {
+                                id: search_image_flight_log
+                                source: "/res/search.png"
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.right: flight_log_header.right
+                                anchors.rightMargin: 180
+                            }
+                            Text{
+                                id: search_flight_log
+                                text: "Search"
+                                color : "white"
+                                font.pointSize: 10
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.right: flight_log_header.right
+                                anchors.rightMargin: 100
+                            }
+                        }
+                    }
+                    Column{
+                        //id: rpa_list_column
+                        Rectangle {
+                            id:flightlog_header1
+                            color: "#031C28"
+                            visible:false || true
+                            height: flight_log_rectangle.height-50
+                            width: flight_log_rectangle.width
+                            border.color: "#05324D"
+                            border.width: 1
+
+                            STYLE.Button {
+                                id:flightlog_download_button
+                                anchors.right: flightlog_header1.right
+                                anchors.rightMargin: 30
+                                anchors.top: parent.top
+                                anchors.topMargin: 20
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: "Download Flight Log"
+                                    color:"white"
+                                }
+                                style: ButtonStyle {
+                                    background: Rectangle {
+                                        implicitHeight: 35
+                                        implicitWidth: 130
+                                        border.width: 1
+                                        border.color: "#F25822"
+                                        radius: 4
+                                        color: "#F25822"
+                                    }
+                                }
+                                onClicked: {
+//                                    flightlog_header1.visible = false
+//                                    rpa_register_page.visible = true
+//                                    showPanel(this,"SetupParameterEditor.qml")
+//                                    drone_contents.visible = true
+                                }
+                            }
+                        }
+                    }
                 }
             }
 

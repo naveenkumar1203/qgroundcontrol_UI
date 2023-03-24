@@ -20,12 +20,16 @@ public:
 
     Q_INVOKABLE void addData(const QString &TYPE,const QString &MODEL_NAME, const QString &DRONE_NAME, const QString &UIN);
 
+    Q_INVOKABLE void existingUIN(const QString &uin);
+
+
 private :
     void generateRoleNames();
     QHash<int, QByteArray> m_roleNames;
 
 
 signals:
+    void uin_record_found();
 
 };
 
