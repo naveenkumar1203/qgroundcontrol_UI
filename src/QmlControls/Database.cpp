@@ -186,6 +186,8 @@ void AjayDatabase::username_database(const QString &mail){
     if(searchName.exec()){
         while (searchName.next()) {
             user_name_from_db = searchName.value(0).toString();
+            m_name = user_name_from_db;
+            qDebug()<<m_name;
         }
     }
 
@@ -210,4 +212,17 @@ void AjayDatabase::username_database(const QString &mail){
 
 
     emit record_found();
+}
+
+QString AjayDatabase::name() const
+{
+    return m_name;
+}
+
+void AjayDatabase::setName(const QString &newName)
+{
+    if (m_name == newName)
+        return;
+    m_name = newName;
+    emit nameChanged();
 }

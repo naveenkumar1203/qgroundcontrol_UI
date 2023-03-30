@@ -38,6 +38,11 @@ public:
 
     void username_database(const QString &mail);
 
+    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
+
+    QString name() const;
+    void setName(const QString &newName);
+
 signals:
     void record_found();
     void incorrect_password();
@@ -48,11 +53,14 @@ signals:
     void number_record_found();
     void name_mail_record_found();
 
+    void nameChanged();
+
 public slots:
 
 private:
     QString m_user;
 
+    QString m_name;
 };
 
 #endif // DATABASE_H

@@ -22,15 +22,25 @@ public:
 
     Q_INVOKABLE void existingUIN(const QString &uin);
 
+    Q_INVOKABLE void checkboxSql(QString queryString);
+
+    Q_PROPERTY(QString model READ model WRITE setModel NOTIFY modelChanged)
+
+    QString model() const;
+    void setModel(const QString &newModel);
 
 private :
     void generateRoleNames();
     QHash<int, QByteArray> m_roleNames;
 
 
+    QString m_model;
+
 signals:
     void uin_record_found();
+    void uin_record_notfound();
 
+    void modelChanged();
 };
 
 #endif // RPADATABASE_H

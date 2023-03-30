@@ -2,6 +2,7 @@
 #include "QDebug"
 
 static QString uin_from_db;
+static QString model_from_db;
 
 
 RpaDatabase::RpaDatabase(QObject *parent) : QSqlQueryModel(parent)
@@ -21,6 +22,36 @@ void RpaDatabase::callSql(QString queryString)
 {
     //qDebug()<< "I am here";
     this->setQuery(queryString);
+}
+
+void RpaDatabase::checkboxSql(QString queryString)
+{
+    QSqlQuery check;
+    check.prepare(queryString);
+    if(!check.exec()){
+        qDebug()<<queryString;
+        qDebug()<<"error in searching a database";
+    }
+    if(check.exec()){
+        while (check.next()) {
+            model_from_db = check.value(0).toString();
+            m_model = model_from_db;
+        }
+    }
+    qDebug()<<model_from_db;
+}
+
+QString RpaDatabase::model() const
+{
+    return m_model;
+}
+
+void RpaDatabase::setModel(const QString &newModel)
+{
+    if (m_model == newModel)
+        return;
+    m_model = newModel;
+    emit modelChanged();
 }
 
 void RpaDatabase::generateRoleNames()
@@ -65,6 +96,11 @@ void RpaDatabase::existingUIN(const QString &UIN)
         emit uin_record_found();
         qDebug()<<"Given UIN is already used.";
     }
+    else{
+        emit uin_record_notfound();
+    }
 }
+
+
 
 
