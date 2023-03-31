@@ -2,14 +2,16 @@
 
 static QString mail_from_db;
 static QString password_from_db;
-static QString user_name_from_db;
+QString user_name_from_db;
 static QString number_from_db;
 static QString name_from_db;
 static QString gmail_from_db;
 
+QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
+
 AjayDatabase::AjayDatabase(QObject *parent) : QObject(parent)
 {
-    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
+    //QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
     db.setHostName("logdata.cbgenywwv2vb.ap-south-1.rds.amazonaws.com");
     db.setUserName("admin");
     db.setPassword("admin123");
@@ -164,6 +166,31 @@ void AjayDatabase::signupExistingUsernumber(const QString &number)
     }
 }
 
+void AjayDatabase::logout()
+{
+    db.removeDatabase("QMYSQL");
+    db.close();
+    emit close_database();
+    if(db.isOpen()){
+        qDebug()<<"The database is still open";
+    }
+    else{
+        qDebug()<<"the database is closed";
+    }
+
+    db.open();
+    QSqlQuery *query = new QSqlQuery(db);
+    query->prepare("use QGC_User_Login");
+    if(!query->exec()){
+        qDebug()<<"The database is closed again";
+    }
+    else {
+        qDebug()<<"The database is opened again";
+    }
+
+}
+
+
 void AjayDatabase::change_password(const QString &mail, const QString &newPassword)
 {
     QSqlQuery changePassword;
@@ -187,15 +214,15 @@ void AjayDatabase::username_database(const QString &mail){
         while (searchName.next()) {
             user_name_from_db = searchName.value(0).toString();
             m_name = user_name_from_db;
-            qDebug()<<m_name;
         }
+        qDebug()<<("username "+m_name);
     }
 
     QSqlQuery createDataBase;
     QString query = "create database "+ user_name_from_db;
     createDataBase.prepare(query);
     if(!createDataBase.exec()){
-        qDebug()<<query;
+        //qDebug()<<query;
         qDebug()<<"error in creating a database";
     }
 

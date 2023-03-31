@@ -36,6 +36,8 @@ public:
 
     Q_INVOKABLE void signupExistingUsernumber(const QString &number);
 
+    Q_INVOKABLE void logout();
+
     void username_database(const QString &mail);
 
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
@@ -51,8 +53,7 @@ signals:
     void name_record_found();
     void mail_record_found();
     void number_record_found();
-    void name_mail_record_found();
-
+    void close_database();
     void nameChanged();
 
 public slots:

@@ -70,7 +70,6 @@ Item{
                rpadatabase.checkboxSql("select MODEL_NAME from RpaList limit 1")
 
                 if(rpadatabase.model == "Model A") {
-                   //console.log("checking")
                    firmware_load1.checksum_generation_process_model_A()
                    flightView.visible = true
                    toolbar.visible =true
@@ -88,7 +87,6 @@ Item{
             else if(check_box1.checked === true){
                 rpadatabase.checkboxSql("select MODEL_NAME from RpaList limit 1 offset 1")
                 if(rpadatabase.model == "Model A") {
-                   //console.log("checking")
                    firmware_load1.checksum_generation_process_model_A()
                    flightView.visible = true
                    toolbar.visible =true
@@ -106,7 +104,40 @@ Item{
             else if(check_box2.checked === true){
                 rpadatabase.checkboxSql("select MODEL_NAME from RpaList limit 1 offset 2")
                 if(rpadatabase.model == "Model A") {
-                   //console.log("checking")
+                   firmware_load1.checksum_generation_process_model_A()
+                   flightView.visible = true
+                   toolbar.visible =true
+                   landing_page_rectangle.visible = false
+
+               }
+               else if(rpadatabase.model == "Model B"){
+                    firmware_load1.checksum_generation_process_model_B()
+                    flightView.visible = true
+                    toolbar.visible =true
+                    landing_page_rectangle.visible = false
+
+                }
+            }
+            else if(check_box3.checked === true){
+                rpadatabase.checkboxSql("select MODEL_NAME from RpaList limit 1 offset 3")
+                if(rpadatabase.model == "Model A") {
+                   firmware_load1.checksum_generation_process_model_A()
+                   flightView.visible = true
+                   toolbar.visible =true
+                   landing_page_rectangle.visible = false
+
+               }
+               else if(rpadatabase.model == "Model B"){
+                    firmware_load1.checksum_generation_process_model_B()
+                    flightView.visible = true
+                    toolbar.visible =true
+                    landing_page_rectangle.visible = false
+
+                }
+            }
+            else if(check_box4.checked === true){
+                rpadatabase.checkboxSql("select MODEL_NAME from RpaList limit 1 offset 4")
+                if(rpadatabase.model == "Model A") {
                    firmware_load1.checksum_generation_process_model_A()
                    flightView.visible = true
                    toolbar.visible =true

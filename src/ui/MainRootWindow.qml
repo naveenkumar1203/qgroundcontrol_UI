@@ -37,6 +37,8 @@ ApplicationWindow {
     minimumHeight:  ScreenTools.isMobile ? Screen.height : Math.min(ScreenTools.defaultFontPixelWidth * 50, Screen.height)
     visible:        true
 
+    property int number: 0
+
     AjayDatabase{
         id: database
         onRecord_found: {
@@ -45,7 +47,7 @@ ApplicationWindow {
             login_page_rectangle.z = -1
             login_page_rectangle.visible = false
             //rpadatabase.callSql("SELECT * From RpaList")
-            rpadatabase.callSql("select * from RpaList limit 3")
+            rpadatabase.callSql("select * from RpaList limit 5")
         }
         onNo_record_found: {
             no_recordDialog.open()
@@ -62,6 +64,12 @@ ApplicationWindow {
         onNumber_record_found: {
             number_record_Dialog.open()
         }
+        onClose_database: {
+            landing_page_rectangle.visible = false
+            login_page_rectangle.visible = true
+            login_page_email_textfield.text = ""
+            login_page_password_textfield.text = ""
+        }
 
     }
 
@@ -76,7 +84,7 @@ ApplicationWindow {
             rpa_register_page.visible =  false
             manage_rpa_header1.visible = true
             rpadatabase.addData(drone_type_list.currentText,drone_model_list.currentText,drone_name_text.text,uin_input_text.text)
-            rpadatabase.callSql("select * from RpaList limit 3")
+            rpadatabase.callSql("select * from RpaList limit 5")
             drone_type_list.currentText = ""
             drone_model_list.text = ""
             drone_name_text.text = ""
@@ -1667,10 +1675,12 @@ ApplicationWindow {
         }
         standardButtons: Dialog.Yes | Dialog.No
         onYes: {
-            landing_page_rectangle.visible = false
-            login_page_rectangle.visible = true
-            login_page_email_textfield.text = ""
-            login_page_password_textfield.text = ""
+            database.logout()
+            //            landing_page_rectangle.visible = false
+            //            login_page_rectangle.visible = true
+            //            login_page_email_textfield.text = ""
+            //            login_page_password_textfield.text = ""
+
         }
         onNo: {
             landing_page_rectangle.visible = true
@@ -2623,6 +2633,10 @@ ApplicationWindow {
                                 flight_log_button.color = "#031C28"
                                 managerpa_button.color = "#F25822"
                                 manage_rpa_header1.visible = true
+                                //console.log(screen.width/1.8)
+                                //console.log(table_item.width)
+                                //console.log(manage_rpa_rectangle.height -50)
+                                //console.log(manage_rpa_header1.height)
                                 showPanel(this,"SetupParameterEditor.qml")
                             }
                         }
@@ -3009,52 +3023,41 @@ ApplicationWindow {
                             color: "#031C28"
                             border.color: "#05324D"
                             border.width: 1
-                            Rectangle{
-                                id:name_rect
+                            Text{
+                                id: greet
                                 anchors.left: parent.left
                                 anchors.leftMargin: 20
                                 anchors.top: parent.top
-                                anchors.topMargin: 25
-                                Label{
-                                    id: greet
-                                    text: "Hi "
-                                    color : "white"
-                                    font.pointSize: 9
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
-                                Label{
-                                    id: username
-                                    text: database.name//"Chris Hemsworth"
-                                    color : "#F25822"
-                                    font.pointSize: 9
-                                    font.bold: true
-                                    anchors.left: greet.right
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    //anchors.leftMargin: 20
-                                }
+                                anchors.topMargin: 20
+                                text: "Hi "
+                                color : "white"
+                                font.pointSize: 10
+                                //anchors.verticalCenter: parent.verticalCenter
                             }
-                            Rectangle{
-                                id:greeting_text_rect
+                            Text{
+                                id: username
+                                text: qsTr(database.name)//"Chris Hemsworth"
+                                color : "#F25822"
+                                font.pointSize: 10
+                                font.bold: true
+                                anchors.left: greet.right
+                                anchors.top: parent.top
+                                anchors.topMargin: 20
+                            }
+                            Timer {
+                                interval: 500; running: true; repeat: true
+                                onTriggered: username.text = database.name
+                            }
+
+                            Text{
+                                id: greeting_text
                                 anchors.left: parent.left
                                 anchors.leftMargin: 20
-                                anchors.top: name_rect.top
-                                anchors.topMargin: 25
-                                Label{
-                                    id: greeting_text
-                                    text: "Welcome back to "
-                                    color : "white"
-                                    font.pointSize: 14
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
-                                Label{
-                                    id: godrona_text
-                                    text: "GoDrona"
-                                    color : "white"
-                                    font.bold:true
-                                    font.pointSize: 14
-                                    anchors.left: greeting_text.right
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
+                                anchors.top: greet.bottom
+                                anchors.topMargin: 15
+                                text: "Welcome back to <b>GoDrona<b>"
+                                color : "white"
+                                font.pointSize: 14
                             }
                             Text{
                                 id: overview
@@ -3063,16 +3066,16 @@ ApplicationWindow {
                                 font.pointSize: 10
                                 anchors.left: parent.left
                                 anchors.leftMargin: 20
-                                anchors.top: greeting_text_rect.top
-                                anchors.topMargin: 40
+                                anchors.top: greeting_text.bottom
+                                anchors.topMargin: 25
 
                             }
 
                             Row{
                                 anchors.left: parent.left
                                 anchors.leftMargin: 20
-                                anchors.top: overview.top
-                                anchors.topMargin: 25
+                                anchors.top: overview.bottom
+                                anchors.topMargin: 15
                                 Row {
                                     spacing: 15
                                     Rectangle {
@@ -3321,7 +3324,7 @@ ApplicationWindow {
                             id:manage_rpa_header1
                             color: "#031C28"
                             visible:false || true
-                            height: screen.height - 50
+                            height: 718//screen.height - 50
                             width: manage_rpa_rectangle.width
                             border.color: "#05324D"
                             border.width: 1
@@ -3494,7 +3497,7 @@ ApplicationWindow {
                                 anchors.top: list_of_rpa_text.bottom
                                 anchors.topMargin: 30
                                 width: manage_rpa_header1.width - 50
-                                height: 350
+                                height: 400
                                 color: "#031C28"
                                 visible: true
 
@@ -3512,10 +3515,10 @@ ApplicationWindow {
 
                                     Repeater {
                                         id: repeater_model
-                                        model: ["TYPE", "MODEL NAME", "DRONE NAME", "UIN"]
+                                        model: ["TYPE", "MODEL NAME", "DRONE NAME", "UIN", "ACTIONS"]
                                         Rectangle {
                                             id: header
-                                            width: (table_rect.width - 40) / 4
+                                            width: (table_rect.width - 40) / 5
                                             height: 40
                                             color: "#031C28"
                                             border.width: 2
@@ -3538,6 +3541,7 @@ ApplicationWindow {
                                     anchors.topMargin: 40
                                     anchors.left: parent.left
                                     clip: true
+
                                     Rectangle{
                                         width: 40
                                         height: 40
@@ -3547,18 +3551,67 @@ ApplicationWindow {
                                         CheckBox{
                                             id: check_box
                                             anchors.fill: parent
-                                            indicator.width: 20;
-                                            indicator.height: 20
+                                            indicator: Rectangle{
+                                                implicitWidth: 16
+                                                implicitHeight: 16
+                                                radius: 2
+                                                color: "#031C28"
+                                                border.width:0.5
+                                                border.color: "#F25822"
+                                                anchors.centerIn: parent
+                                                Rectangle {
+                                                    visible: check_box.checked
+                                                    color: "#F25822"
+                                                    radius: 1
+                                                    anchors.margins: 2
+                                                    anchors.fill: parent
+                                                }
+                                            }
                                             checked: false
                                             onCheckedChanged: {
                                                 if(check_box.checked == true){
-                                                    //console.log("checked")
                                                     check_box1.checked = false
                                                     check_box2.checked = false
+                                                    check_box3.checked = false
+                                                    check_box4.checked = false
                                                 }
                                             }
                                         }
                                     }
+                                    /*Repeater{
+                                        model: tableView.rows
+                                        Rectangle{
+                                            width: 40
+                                            height: 40
+                                            color: "#031C28"
+                                            border.width: 1
+                                            border.color: "#05324D"
+                                            CheckBox{
+                                                function isChecked() {
+                                                    return ((number &(1 << index)) != 0);
+                                                }
+                                                id: check_box
+                                                anchors.centerIn: parent
+                                                checked: isChecked()
+                                                onClicked:  {
+                                                    {
+                                                        if (checked) {
+                                                            number |= (1<<index);
+                                                            console.log(index + " is checked")
+                                                        }
+                                                        else {
+                                                            number &= ~(1<<index);
+                                                            console.log(index + " is not checked")
+                                                        }
+
+                                                        // now rebind the item's checked property
+                                                        checked = Qt.binding(isChecked);
+
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }*/
                                     Rectangle{
                                         width: 40
                                         height: 40
@@ -3568,14 +3621,29 @@ ApplicationWindow {
                                         CheckBox{
                                             id: check_box1
                                             anchors.fill: parent
-                                            indicator.width: 20
-                                            indicator.height: 20
+                                            indicator: Rectangle{
+                                                implicitWidth: 16
+                                                implicitHeight: 16
+                                                radius: 2
+                                                color: "#031C28"
+                                                border.width:0.5
+                                                border.color: "#F25822"
+                                                anchors.centerIn: parent
+                                                Rectangle {
+                                                    visible: check_box1.checked
+                                                    color: "#F25822"
+                                                    radius: 1
+                                                    anchors.margins: 2
+                                                    anchors.fill: parent
+                                                }
+                                            }
                                             checked: false
                                             onCheckedChanged: {
                                                 if(check_box1.checked == true){
-                                                    //console.log("checked")
                                                     check_box.checked = false
                                                     check_box2.checked = false
+                                                    check_box3.checked = false
+                                                    check_box4.checked = false
                                                 }
                                             }
                                         }
@@ -3589,14 +3657,101 @@ ApplicationWindow {
                                         CheckBox{
                                             id: check_box2
                                             anchors.fill: parent
-                                            indicator.width: 20;
-                                            indicator.height: 20
+                                            indicator: Rectangle{
+                                                implicitWidth: 16
+                                                implicitHeight: 16
+                                                radius: 2
+                                                color: "#031C28"
+                                                border.width:0.5
+                                                border.color: "#F25822"
+                                                anchors.centerIn: parent
+                                                Rectangle {
+                                                    visible: check_box2.checked
+                                                    color: "#F25822"
+                                                    radius: 1
+                                                    anchors.margins: 2
+                                                    anchors.fill: parent
+                                                }
+                                            }
                                             checked: false
                                             onCheckedChanged: {
                                                 if(check_box2.checked == true){
-                                                    //console.log("checked")
-                                                    check_box1.checked = false
                                                     check_box.checked = false
+                                                    check_box1.checked = false
+                                                    check_box3.checked = false
+                                                    check_box4.checked = false
+                                                }
+                                            }
+                                        }
+                                    }
+                                    Rectangle{
+                                        width: 40
+                                        height: 40
+                                        color: "#031C28"
+                                        border.width: 1
+                                        border.color: "#05324D"
+                                        CheckBox{
+                                            id: check_box3
+                                            anchors.fill: parent
+                                            indicator: Rectangle{
+                                                implicitWidth: 16
+                                                implicitHeight: 16
+                                                radius: 2
+                                                color: "#031C28"
+                                                border.width:0.5
+                                                border.color: "#F25822"
+                                                anchors.centerIn: parent
+                                                Rectangle {
+                                                    visible: check_box3.checked
+                                                    color: "#F25822"
+                                                    radius: 1
+                                                    anchors.margins: 2
+                                                    anchors.fill: parent
+                                                }
+                                            }
+                                            checked: false
+                                            onCheckedChanged: {
+                                                if(check_box3.checked == true){
+                                                    check_box.checked = false
+                                                    check_box1.checked = false
+                                                    check_box2.checked = false
+                                                    check_box4.checked = false
+                                                }
+                                            }
+                                        }
+                                    }
+                                    Rectangle{
+                                        width: 40
+                                        height: 40
+                                        color: "#031C28"
+                                        border.width: 1
+                                        border.color: "#05324D"
+                                        CheckBox{
+                                            id: check_box4
+                                            anchors.fill: parent
+                                            indicator: Rectangle{
+                                                implicitWidth: 16
+                                                implicitHeight: 16
+                                                radius: 2
+                                                color: "#031C28"
+                                                border.width:0.5
+                                                border.color: "#F25822"
+                                                anchors.centerIn: parent
+                                                Rectangle {
+                                                    visible: check_box4.checked
+                                                    color: "#F25822"
+                                                    radius: 1
+                                                    anchors.margins: 2
+                                                    anchors.fill: parent
+                                                }
+                                            }
+                                            checked: false
+                                            onCheckedChanged: {
+                                                if(check_box4.checked == true){
+                                                    check_box.checked = false
+                                                    check_box1.checked = false
+                                                    check_box2.checked = false
+                                                    check_box3.checked = false
                                                 }
                                             }
                                         }
@@ -3607,14 +3762,13 @@ ApplicationWindow {
                                     anchors.left: parent.left
                                     anchors.leftMargin: 40
                                     anchors.top: parent.top
-                                    anchors.topMargin: 5
+                                    anchors.topMargin: 40
                                     width: (table_rect.width - 40)
                                     height: table_rect.height
                                     clip: true
                                     TableView {
                                         id: tableView
-                                        topMargin: 35
-                                        columnWidthProvider:  function (column) { return 167; }
+                                        columnWidthProvider:  function (column) { return 134; }
                                         rowHeightProvider: function (column) { return 40; }
                                         anchors.fill: parent
                                         boundsBehavior: Flickable.StopAtBounds
@@ -3637,13 +3791,128 @@ ApplicationWindow {
                                                 color: 'white'
                                                 font.pixelSize: 15
                                                 verticalAlignment: Text.AlignVCenter
-                                                //wrapMode: TextArea.WordWrap
+                                            }
+                                        }
+                                    }
+
+                                }
+                                Column{
+                                    id: actions_column
+                                    anchors.top:parent.top
+                                    anchors.topMargin: 40
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 574
+                                    clip: true
+                                    Repeater{
+                                        model: tableView.rows
+                                        Rectangle{
+                                            id: actions_rect
+                                            width: 134
+                                            height: 40
+                                            color: "#031C28"
+                                            border.width: 1
+                                            border.color: "#05324D"
+                                            Row{
+                                                spacing: 5
+                                                anchors.top: actions_rect.top
+                                                anchors.topMargin: 2.5
+                                                anchors.left: actions_rect.left
+                                                anchors.leftMargin: 7
+                                                Rectangle{
+                                                    id: edit_button
+                                                    width: 35
+                                                    height: 35
+                                                    color: "#031C28"
+                                                    radius: 4
+
+                                                    Image {
+                                                        id: edit_image
+                                                        source: "/res/edit.png"
+                                                        anchors.centerIn: parent
+                                                    }
+                                                    ColorOverlay{
+                                                        anchors.fill: edit_image
+                                                        source: edit_image
+                                                        color:"orange"
+                                                    }
+                                                    MouseArea{
+                                                        anchors.fill: edit_button
+                                                        onClicked: {
+
+                                                        }
+                                                    }
+                                                }
+                                                Rectangle{
+                                                    id: delete_button
+                                                    width: 35
+                                                    height: 35
+                                                    color: "#031C28"
+                                                    radius: 4
+
+                                                    Image {
+                                                        id: delete_image
+                                                        source: "/res/delete.png"
+                                                        anchors.centerIn: parent
+                                                    }
+                                                    ColorOverlay{
+                                                        anchors.fill: delete_image
+                                                        source: delete_image
+                                                        color:"red"
+                                                    }
+                                                    MouseArea{
+                                                        anchors.fill: delete_button
+                                                        onClicked: {
+
+                                                        }
+                                                    }
+                                                }
+                                                Rectangle{
+                                                    id: upload_button
+                                                    width: 35
+                                                    height: 35
+                                                    color: "#031C28"
+                                                    radius: 4
+                                                    border.width: 0.5
+                                                    border.color:"#6600FF00"
+
+                                                    Image {
+                                                        id: upload_image
+                                                        source: "/res/upload.png"
+                                                        anchors.centerIn: parent
+                                                    }
+                                                    ColorOverlay{
+                                                        anchors.fill: upload_image
+                                                        source: upload_image
+                                                        color:"#00FF00"
+                                                    }
+                                                    MouseArea{
+                                                        anchors.fill: upload_button
+                                                        onClicked: {
+
+                                                        }
+                                                    }
+                                                }
+
                                             }
                                         }
                                     }
                                 }
                             }
+                            Rectangle{
+                                id: page_number_rect
+                                anchors.left: parent.left
+                                anchors.leftMargin: 20
+                                anchors.top: table_rect.bottom
+                                width: table_rect.width
+                                height: 40
+                                radius: 4
+                                color: "#05324D"
+
+                            }
+
                         }
+
+
                     }
                     Rectangle{
                         id: rpa_register_page
@@ -3750,6 +4019,7 @@ ApplicationWindow {
                                             color: "white"
                                         }
                                         background: Rectangle {
+                                            anchors.centerIn: parent
                                             height: 30
                                             width:135
                                             color: "#031C28"
@@ -4259,10 +4529,6 @@ ApplicationWindow {
                                     }
                                 }
                                 onClicked: {
-                                    //                                        flightlog_header1.visible = false
-                                    //                                        rpa_register_page.visible = true
-                                    //                                        showPanel(this,"SetupParameterEditor.qml")
-                                    //                                        drone_contents.visible = true
                                 }
                             }
                         }

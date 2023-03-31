@@ -81,6 +81,9 @@
         <file alias="backto_fly.png">resources/backto_fly.png</file>
         <file alias="Flight_log.png">resources/Flight_log.png</file>
         <file alias="log.png">resources/log.png</file>
+        <file alias="delete.png">resources/delete.png</file>
+        <file alias="edit.png">resources/edit.png</file>
+        <file alias="upload.png">resources/upload.png</file>
     </qresource>
     <qresource prefix="/res/firmware">
         <file alias="3drradio.png">resources/firmware/3drradio.png</file>
