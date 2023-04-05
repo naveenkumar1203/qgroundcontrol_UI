@@ -14,6 +14,7 @@
 
 #include <Eigen/Eigen>
 
+#include "RpaDatabase.h"
 #include "Vehicle.h"
 #include "MAVLinkProtocol.h"
 #include "FirmwarePluginManager.h"
@@ -67,6 +68,11 @@ QGC_LOGGING_CATEGORY(VehicleLog, "VehicleLog")
 #define DEFAULT_LON -120.083923f
 
 const QString guided_mode_not_supported_by_vehicle = QObject::tr("Guided mode not supported by Vehicle.");
+
+QString current_model;
+QString current_uin;
+QString previous_model;
+QString previous_uin;
 
 const char* Vehicle::_settingsGroup =               "Vehicle%1";        // %1 replaced with mavlink system id
 const char* Vehicle::_joystickEnabledSettingsKey =  "JoystickEnabled";
@@ -769,7 +775,7 @@ void Vehicle::_mavlinkMessageReceived(LinkInterface* link, mavlink_message_t mes
             qWarning() << "Invalid count for SERIAL_CONTROL, discarding." << ser.count;
         } else {
             emit mavlinkSerialControl(ser.device, ser.flags, ser.timeout, ser.baudrate,
-                    QByteArray(reinterpret_cast<const char*>(ser.data), ser.count));
+                                      QByteArray(reinterpret_cast<const char*>(ser.data), ser.count));
         }
     }
         break;
@@ -1548,14 +1554,14 @@ void Vehicle::_handleEvent(uint8_t comp_id, std::unique_ptr<events::parser::Pars
 {
     int severity = -1;
     switch (events::externalLogLevel(event->eventData().log_levels)) {
-        case events::Log::Emergency: severity = MAV_SEVERITY_EMERGENCY; break;
-        case events::Log::Alert: severity = MAV_SEVERITY_ALERT; break;
-        case events::Log::Critical: severity = MAV_SEVERITY_CRITICAL; break;
-        case events::Log::Error: severity = MAV_SEVERITY_ERROR; break;
-        case events::Log::Warning: severity = MAV_SEVERITY_WARNING; break;
-        case events::Log::Notice: severity = MAV_SEVERITY_NOTICE; break;
-        case events::Log::Info: severity = MAV_SEVERITY_INFO; break;
-        default: break;
+    case events::Log::Emergency: severity = MAV_SEVERITY_EMERGENCY; break;
+    case events::Log::Alert: severity = MAV_SEVERITY_ALERT; break;
+    case events::Log::Critical: severity = MAV_SEVERITY_CRITICAL; break;
+    case events::Log::Error: severity = MAV_SEVERITY_ERROR; break;
+    case events::Log::Warning: severity = MAV_SEVERITY_WARNING; break;
+    case events::Log::Notice: severity = MAV_SEVERITY_NOTICE; break;
+    case events::Log::Info: severity = MAV_SEVERITY_INFO; break;
+    default: break;
     }
 
     // handle special groups & protocols
@@ -1566,7 +1572,7 @@ void Vehicle::_handleEvent(uint8_t comp_id, std::unique_ptr<events::parser::Pars
     }
     if (event->group() == "calibration") {
         emit calibrationEventReceived(id(), comp_id, severity,
-                QSharedPointer<events::parser::ParsedEvent>{new events::parser::ParsedEvent{*event}});
+                                      QSharedPointer<events::parser::ParsedEvent>{new events::parser::ParsedEvent{*event}});
         // these are displayed separately
         return;
     }
@@ -1597,10 +1603,10 @@ EventHandler& Vehicle::_eventHandler(uint8_t compid)
             if (sharedLink) {
                 mavlink_message_t message;
                 mavlink_msg_request_event_encode_chan(_mavlink->getSystemId(),
-                        _mavlink->getComponentId(),
-                        sharedLink->mavlinkChannel(),
-                        &message,
-                        &msg);
+                                                      _mavlink->getComponentId(),
+                                                      sharedLink->mavlinkChannel(),
+                                                      &message,
+                                                      &msg);
                 sendMessageOnLinkThreadSafe(sharedLink.get(), message);
             }
         };
@@ -1608,9 +1614,9 @@ EventHandler& Vehicle::_eventHandler(uint8_t compid)
         QString profile = "dev"; // TODO: should be configurable
 
         QSharedPointer<EventHandler> eventHandler{new EventHandler(this, profile,
-                std::bind(&Vehicle::_handleEvent, this, compid, std::placeholders::_1),
-                sendRequestEventMessageCB,
-                _mavlink->getSystemId(), _mavlink->getComponentId(), _id, compid)};
+                                                                   std::bind(&Vehicle::_handleEvent, this, compid, std::placeholders::_1),
+                                                                   sendRequestEventMessageCB,
+                                                                   _mavlink->getSystemId(), _mavlink->getComponentId(), _id, compid)};
         eventData = _events.insert(compid, eventHandler);
     }
     return *eventData->data();
@@ -3792,7 +3798,12 @@ void Vehicle::_initializeCsv()
         return;
     }
     QString now = QDateTime::currentDateTime().toString("yyyy-MM-dd hh-mm-ss");
-    QString fileName = QString("%1 vehicle%2.csv").arg(now).arg(_id);
+    //RpaDatabase obj;
+    QString model = _toolbox->rpadatabase()->model(); //obj.model();
+    QString uin = _toolbox->rpadatabase()->uin(); //obj.uin();
+    //QString fileName = QString("%1 vehicle%2.csv").arg(now).arg(_id);
+
+    QString fileName = QString("%1 %2 %3.csv").arg(now).arg(model).arg(uin);
     QDir saveDir(_toolbox->settingsManager()->appSettings()->telemetrySavePath());
     _csvLogFile.setFileName(saveDir.absoluteFilePath(fileName));
 
@@ -3811,13 +3822,41 @@ void Vehicle::_initializeCsv()
     }
     qCDebug(VehicleLog) << "Facts logged to csv:" << allFactNames;
     stream << "Timestamp," << allFactNames.join(",") << "\n";
+    qDebug()<<"inside initialise csv";
 }
 
 void Vehicle::_writeCsvLine()
 {
+    qDebug()<<"inside write csv";
+    //RpaDatabase obj;
+
     // Only save the logs after the the vehicle gets armed, unless "Save logs even if vehicle was not armed" is checked
     if(!_csvLogFile.isOpen() &&
             (_armed || _toolbox->settingsManager()->appSettings()->telemetrySaveNotArmed()->rawValue().toBool())){
+        _initializeCsv();
+    }
+
+    current_model = _toolbox->rpadatabase()->model(); //obj.model();
+    current_uin = _toolbox->rpadatabase()->uin(); //obj.uin();
+    qDebug()<<"current------------"<<current_model;
+    qDebug()<<"current------------"<<current_uin;
+
+    if(previous_model == "" && previous_uin == ""){
+        previous_model = current_model;
+        previous_uin = current_uin;
+        qDebug()<<"previous------------"<<previous_model;
+        qDebug()<<"previous------------"<<previous_uin;
+    }
+
+    if(current_model != previous_model || current_uin != previous_uin){
+        qDebug()<<"current and previous are not same";
+        qDebug()<<"not same current------------"<<current_model;
+        qDebug()<<"not same current------------"<<current_uin;
+        qDebug()<<"not same previous------------"<<previous_model;
+        qDebug()<<"not same previous------------"<<previous_uin;
+        _csvLogFile.close();
+        previous_model = current_model;
+        previous_uin = current_uin;
         _initializeCsv();
     }
 
@@ -3838,6 +3877,9 @@ void Vehicle::_writeCsvLine()
     for (const QString& groupName: factGroupNames()) {
         for (const QString& factName : getFactGroup(groupName)->factNames()) {
             allFactValues << getFactGroup(groupName)->getFact(factName)->cookedValueString();
+            //RpaDatabase obj;
+            //obj.vehicle_logFile();
+            //obj.logFile_writeValues(allFactValues);
         }
     }
 

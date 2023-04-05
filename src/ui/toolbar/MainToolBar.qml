@@ -106,11 +106,11 @@ Rectangle {
             visible:            _activeVehicle && _communicationLost && currentToolbar === flyViewToolbar
         }
 
-        QGCButton {
+        /*QGCButton {
             id:                 backButton
             Layout.alignment: Qt.AlignRight
             Layout.rightMargin: 50
-            text:               qsTr("Back")
+            //text:               qsTr("Back")
             font.bold:          true
             font.pointSize: ScreenTools.defaultFontPointSize * 3//1.5  //: ScreenTools.largeFontPointSize
             onClicked:          {
@@ -120,8 +120,47 @@ Rectangle {
             }
             visible:              true
             //visible:            _activeVehicle && _communicationLost && currentToolbar === flyViewToolbar && currentToolbar === planViewToolbar
+        }*/
+        Rectangle{
+            id: home_button
+            //anchors.top: parent.top
+            //anchors.verticalCenter: parent.verticalCenter
+            //anchors.right: parent.right
+            //anchors.rightMargin: 30
+            width: 35
+            height: 35
+            color: "#F25822"
+            radius: 10
+
+            Image {
+                id: home_image
+                source: "/res/main_home.png"
+                anchors.centerIn: parent
+            }
+
+            MouseArea{
+                anchors.fill: home_button
+                onClicked: {
+                    console.log("i clicked home")
+                    flightView.visible = false
+                    landing_page_rectangle.visible =true
+                    toolbar.visible = false
+                    //home_button.color = "#05324D"
+                }
+                onPressed: {
+                    home_button.color = "#031C28"
+                }
+                onReleased: {
+                    home_button.color = "#F25822"
+                }
+
+            }
+
         }
+
     }
+
+
 
     QGCFlickable {
         id:                     toolsFlickable

@@ -48,26 +48,32 @@ Item{
 
     //---------------------------------------------
 
-    STYLE.Button {
+    //STYLE.Button {
+    Button {
         Text {
             anchors.centerIn: parent
-            text: "Back to Fly"
+            text: "Fly View"
             color:"white"
         }
-        style: ButtonStyle {
-            background: Rectangle {
-                implicitHeight: 35
-                implicitWidth: 130
-                border.width: 1
-                border.color: "#F25822"
-                radius: 4
-                color: "#F25822"
-            }
+        background: Rectangle {
+            id: fly_button
+            implicitHeight: 35
+            implicitWidth: 130
+            border.width: 1
+            border.color: "#F25822"
+            radius: 4
+            color: "#F25822"
+        }
+        onPressed: {
+            fly_button.color = "#05324D"
+        }
+        onReleased: {
+            fly_button.color = "#F25822"
         }
         onClicked: {
 
             if(check_box.checked === true){
-               rpadatabase.checkboxSql("select MODEL_NAME from RpaList limit 1")
+               rpadatabase.checkboxSqlfly("select MODEL_NAME,UIN from RpaList limit 1")
 
                 if(rpadatabase.model == "Model A") {
                    firmware_load1.checksum_generation_process_model_A()
@@ -85,7 +91,7 @@ Item{
                 }
             }
             else if(check_box1.checked === true){
-                rpadatabase.checkboxSql("select MODEL_NAME from RpaList limit 1 offset 1")
+                rpadatabase.checkboxSqlfly("select MODEL_NAME,UIN from RpaList limit 1 offset 1")
                 if(rpadatabase.model == "Model A") {
                    firmware_load1.checksum_generation_process_model_A()
                    flightView.visible = true
@@ -102,7 +108,7 @@ Item{
                 }
             }
             else if(check_box2.checked === true){
-                rpadatabase.checkboxSql("select MODEL_NAME from RpaList limit 1 offset 2")
+                rpadatabase.checkboxSqlfly("select MODEL_NAME,UIN from RpaList limit 1 offset 2")
                 if(rpadatabase.model == "Model A") {
                    firmware_load1.checksum_generation_process_model_A()
                    flightView.visible = true
@@ -119,7 +125,7 @@ Item{
                 }
             }
             else if(check_box3.checked === true){
-                rpadatabase.checkboxSql("select MODEL_NAME from RpaList limit 1 offset 3")
+                rpadatabase.checkboxSqlfly("select MODEL_NAME,UIN from RpaList limit 1 offset 3")
                 if(rpadatabase.model == "Model A") {
                    firmware_load1.checksum_generation_process_model_A()
                    flightView.visible = true
@@ -136,7 +142,7 @@ Item{
                 }
             }
             else if(check_box4.checked === true){
-                rpadatabase.checkboxSql("select MODEL_NAME from RpaList limit 1 offset 4")
+                rpadatabase.checkboxSqlfly("select MODEL_NAME,UIN from RpaList limit 1 offset 4")
                 if(rpadatabase.model == "Model A") {
                    firmware_load1.checksum_generation_process_model_A()
                    flightView.visible = true
@@ -152,6 +158,11 @@ Item{
 
                 }
             }
+            check_box.checked = false
+            check_box1.checked = false
+            check_box2.checked = false
+            check_box3.checked = false
+            check_box4.checked = false
             /*if(drone_model_list.currentText === "Model A") {
                 firmware_load1.checksum_generation_process_model_A()
 

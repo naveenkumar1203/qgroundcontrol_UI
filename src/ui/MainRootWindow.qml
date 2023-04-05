@@ -37,7 +37,9 @@ ApplicationWindow {
     minimumHeight:  ScreenTools.isMobile ? Screen.height : Math.min(ScreenTools.defaultFontPixelWidth * 50, Screen.height)
     visible:        true
 
-    property int number: 0
+    property int updateButton: 1
+    property bool editUin: true
+    property bool editNumber: true
 
     AjayDatabase{
         id: database
@@ -85,10 +87,15 @@ ApplicationWindow {
             manage_rpa_header1.visible = true
             rpadatabase.addData(drone_type_list.currentText,drone_model_list.currentText,drone_name_text.text,uin_input_text.text)
             rpadatabase.callSql("select * from RpaList limit 5")
-            drone_type_list.currentText = ""
-            drone_model_list.text = ""
+            combo_box1.text = drone_type_list.displayText
+            combo_box2.text = drone_model_list.displayText
             drone_name_text.text = ""
             uin_input_text.text = ""
+            check_box.checked = false
+            check_box1.checked = false
+            check_box2.checked = false
+            check_box3.checked = false
+            check_box4.checked = false
         }
     }
 
@@ -2491,14 +2498,14 @@ ApplicationWindow {
         visible: false
         color: "#031C28"
 
-        GridLayout {
-            columns: 2
-            Layout.alignment: Qt.AlignTop
+        RowLayout {
+            //columns: 3
+            //Layout.alignment: GridLayout.LeftToRight//Qt.AlignTop
 
             Rectangle {
                 id: first_rectangle
                 color: "#031C28"
-                anchors.rightMargin: -border.width
+                //anchors.rightMargin: -border.width
                 width: screen.width/5
                 height:parent.height
                 border.width: 1
@@ -2564,35 +2571,58 @@ ApplicationWindow {
 
                         Image {
                             id: dashboard_image
-                            source: "/res/dashboard.png"
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: dashboard_button.left
                             anchors.leftMargin: 20
+                            source: "/res/dashboard.png"
+                        }
+
+                        ColorOverlay{
+                            anchors.fill: dashboard_image
+                            source: dashboard_image
+                            color: "#60FFFFFF"
                         }
                         Text{
                             text: "DASHBOARD";
-                            color: "white"
+                            color: "#FFFFFF"
                             font.pointSize: 9
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: dashboard_image.left
                             anchors.leftMargin: 30
                         }
 
+
                         MouseArea{
+                            id:mouseArea
                             //                            hoverEnabled: true
                             //                            onEntered: parent.color = '#F25822'
                             //                            onExited: parent.color = '#031C28'
                             anchors.fill: dashboard_button
                             onClicked: {
+                                //                                hoverEnabled: false
                                 dashboard_rectangle.visible = true
+                                logout_button.color = "#031C28"
                                 dashboard_button.color ="#F25822" || "#031C28"
                                 managerpa_button.color = "#031C28"
                                 flight_log_button.color = "#031C28"
                                 manage_rpa_rectangle.visible = false
                                 flight_log_rectangle.visible = false
                                 rpa_register_page.visible = false
+                                check_box.checked = false
+                                check_box1.checked = false
+                                check_box2.checked = false
+                                check_box3.checked = false
+                                check_box4.checked = false
                             }
                         }
+                        /*states: State {
+                            name: "pressed"; when: mouseArea.pressed
+                            PropertyChanges { target: dashboard_button; scale: 1 }
+                        }
+
+                        transitions: Transition {
+                            NumberAnimation { properties: "scale"; duration: 150; easing.type: Easing.InOutQuad }
+                        }*/
                     }
 
                     Rectangle{
@@ -2613,7 +2643,7 @@ ApplicationWindow {
                         }
                         Text{
                             text: "MANAGE RPA";
-                            color: "white"
+                            color: "#FFFFFF"
                             font.pointSize: 9
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: landingrpa_image.left
@@ -2629,14 +2659,16 @@ ApplicationWindow {
                                 manage_rpa_rectangle.visible = true
                                 dashboard_rectangle.visible = false
                                 flight_log_rectangle.visible = false
+                                logout_button.color = "#031C28"
                                 dashboard_button.color = "#031C28"
                                 flight_log_button.color = "#031C28"
                                 managerpa_button.color = "#F25822"
                                 manage_rpa_header1.visible = true
-                                //console.log(screen.width/1.8)
-                                //console.log(table_item.width)
-                                //console.log(manage_rpa_rectangle.height -50)
-                                //console.log(manage_rpa_header1.height)
+                                check_box.checked = false
+                                check_box1.checked = false
+                                check_box2.checked = false
+                                check_box3.checked = false
+                                check_box4.checked = false
                                 showPanel(this,"SetupParameterEditor.qml")
                             }
                         }
@@ -2662,7 +2694,7 @@ ApplicationWindow {
                         }
                         Text{
                             text: "MANAGE CUSTOMERS";
-                            color: "white"
+                            color: "#FFFFFF"
                             font.pointSize: 9
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: customers_image.left
@@ -2698,7 +2730,7 @@ ApplicationWindow {
                         }
                         Text{
                             text: "REMOTE PILOTS"
-                            color: "white"
+                            color: "#FFFFFF"
                             font.pointSize: 9
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: remote_image.left
@@ -2733,7 +2765,7 @@ ApplicationWindow {
                         }
                         Text{
                             text: "MISSIONS"
-                            color: "white"
+                            color: "#FFFFFF"
                             font.pointSize: 9
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: mission_image.left
@@ -2768,7 +2800,7 @@ ApplicationWindow {
                         }
                         Text{
                             text: "MANUAL MISSIONS"
-                            color: "white"
+                            color: "#FFFFFF"
                             font.pointSize: 9
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: manual_mission_image.left
@@ -2804,7 +2836,7 @@ ApplicationWindow {
                         }
                         Text{
                             text: "FLIGHT LOG"
-                            color: "white"
+                            color: "#FFFFFF"
                             font.pointSize: 9
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: log_image.left
@@ -2821,9 +2853,19 @@ ApplicationWindow {
                                 manage_rpa_rectangle.visible = false
                                 dashboard_rectangle.visible = false
                                 rpa_register_page.visible = false
+                                logout_button.color = "#031C28"
                                 flight_log_button.color = "#F25822"
                                 managerpa_button.color = "#031C28"
                                 dashboard_button.color = "#031C28"
+                                check_box.checked = false
+                                check_box1.checked = false
+                                check_box2.checked = false
+                                check_box3.checked = false
+                                check_box4.checked = false
+                                console.log(screen.width)
+                                console.log(screen.width/5)
+                                console.log(screen.width/1.8)
+                                console.log((screen.width/5 - screen.width/1.8))
                             }
                         }
                     }
@@ -2856,7 +2898,7 @@ ApplicationWindow {
                         }
                         Text{
                             text: "PROFILE SETTINGS"
-                            color: "white"
+                            color: "#FFFFFF"
                             font.pointSize: 9
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: settings_image.left
@@ -2864,9 +2906,9 @@ ApplicationWindow {
                         }
 
                         MouseArea{
-                            hoverEnabled: true
-                            onEntered: parent.color = '#F25822'
-                            onExited: parent.color = '#031C28'
+                            //                            hoverEnabled: true
+                            //                            onEntered: parent.color = '#F25822'
+                            //                            onExited: parent.color = '#031C28'
                             anchors.fill: profile_button
                             onClicked: {
 
@@ -2891,7 +2933,7 @@ ApplicationWindow {
                         }
                         Text{
                             text: "NOTIFICATIONS"
-                            color: "white"
+                            color: "#FFFFFF"
                             font.pointSize: 9
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: notification_image.left
@@ -2899,9 +2941,9 @@ ApplicationWindow {
                         }
 
                         MouseArea{
-                            hoverEnabled: true
-                            onEntered: parent.color = '#F25822'
-                            onExited: parent.color = '#031C28'
+                            //                            hoverEnabled: true
+                            //                            onEntered: parent.color = '#F25822'
+                            //                            onExited: parent.color = '#031C28'
                             anchors.fill: notification_button
                             onClicked: {
 
@@ -2926,7 +2968,7 @@ ApplicationWindow {
                         }
                         Text{
                             text: "LOGOUT"
-                            color: "white"
+                            color: "#FFFFFF"
                             font.pointSize: 9
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: logout_image.left
@@ -2934,12 +2976,22 @@ ApplicationWindow {
                         }
 
                         MouseArea{
-                            hoverEnabled: true
-                            onEntered: parent.color = '#F25822'
-                            onExited: parent.color = '#031C28'
+                            //                            hoverEnabled: true
+                            //                            onEntered: parent.color = '#F25822'
+                            //                            onExited: parent.color = '#031C28'
                             anchors.fill: logout_button
                             onClicked: {
                                 signout_Dialog.open()
+                                logout_button.color = "#F25822"
+                                dashboard_button.color ="#031C28"
+                                managerpa_button.color = "#031C28"
+                                flight_log_button.color = "#031C28"
+                                check_box.checked = false
+                                check_box1.checked = false
+                                check_box2.checked = false
+                                check_box3.checked = false
+                                check_box4.checked = false
+                                console.log(database.number)
                             }
                         }
                     }
@@ -2973,7 +3025,7 @@ ApplicationWindow {
                         height: 50
                         width: dashboard_rectangle.width
                         border.color: "#05324D"
-                        border.width: 1
+                        border.width: 2
 
                         Image {
                             id: hamburger_image
@@ -3045,8 +3097,18 @@ ApplicationWindow {
                                 anchors.topMargin: 20
                             }
                             Timer {
-                                interval: 500; running: true; repeat: true
-                                onTriggered: username.text = database.name
+                                interval: 100; running: true; repeat: true
+                                onTriggered:{
+                                    username.text = database.name
+                                    user_name_inprofile.text = database.name
+                                    /*user_industry.text = database.industry
+                                    userprofile_name.text = database.name
+                                    mail_address.text = database.mail
+                                    mobile_number.text = database.number
+                                    address_field.text = database.address
+                                    locality_field.text = database.locality
+                                    password_field.text = database.password*/
+                                }
                             }
 
                             Text{
@@ -3077,16 +3139,16 @@ ApplicationWindow {
                                 anchors.top: overview.bottom
                                 anchors.topMargin: 15
                                 Row {
-                                    spacing: 15
+                                    spacing: 25
                                     Rectangle {
                                         color: "#4D05324D"
-                                        width: 130; height: 150
+                                        width: 155; height: 150
                                         radius: 2
 
                                         Rectangle {
                                             id:flight_log_image_rect
                                             anchors.left: parent.left
-                                            anchors.leftMargin: 30
+                                            anchors.leftMargin: 38
                                             anchors.top: parent.top
                                             anchors.topMargin: 15
                                             width: parent.width/2
@@ -3120,13 +3182,13 @@ ApplicationWindow {
                                     }
                                     Rectangle {
                                         color: "#4D05324D"
-                                        width: 130; height: 150
+                                        width: 155; height: 150
                                         radius: 2
 
                                         Rectangle {
                                             id:customers_image_rect
                                             anchors.left: parent.left
-                                            anchors.leftMargin: 30
+                                            anchors.leftMargin: 38
                                             anchors.top: parent.top
                                             anchors.topMargin: 15
                                             width: parent.width/2
@@ -3161,13 +3223,13 @@ ApplicationWindow {
 
                                     Rectangle {
                                         color: "#4D05324D"
-                                        width: 130; height: 150
+                                        width: 155; height: 150
                                         radius: 2
 
                                         Rectangle {
                                             id:remote_pilots_image_rect
                                             anchors.left: parent.left
-                                            anchors.leftMargin: 30
+                                            anchors.leftMargin: 38
                                             anchors.top: parent.top
                                             anchors.topMargin: 15
                                             width: parent.width/2
@@ -3201,14 +3263,14 @@ ApplicationWindow {
                                     }
                                     Rectangle {
                                         id: back_to_fly_rect
-                                        width: 130; height: 150
+                                        width: 155; height: 150
                                         radius: 2
                                         color: "#4D05324D"
 
                                         Rectangle{
                                             id:back_to_fly_image_rect
                                             anchors.left: parent.left
-                                            anchors.leftMargin: 30
+                                            anchors.leftMargin: 38
                                             anchors.top: parent.top
                                             anchors.topMargin: 15
                                             width: parent.width/2
@@ -3229,7 +3291,7 @@ ApplicationWindow {
                                         }
                                         Text {
                                             id: back_to_fly_text
-                                            text: qsTr("Back To Fly")
+                                            text: qsTr("Fly View")
                                             font.pointSize: 9
                                             anchors.bottom: parent.bottom
                                             anchors.bottomMargin: 20
@@ -3237,6 +3299,7 @@ ApplicationWindow {
                                             color: "white"
                                         }
                                         MouseArea{
+                                            id: flyView_mouseArea
                                             hoverEnabled: true
                                             onEntered: back_to_fly_rect.color = '#05324D'
                                             onExited: back_to_fly_rect.color = '#4D05324D'
@@ -3250,10 +3313,8 @@ ApplicationWindow {
                                                 toolbar.visible =true
                                             }
                                         }
-
                                     }
                                 }
-
                             }
                         }
                     }
@@ -3373,8 +3434,7 @@ ApplicationWindow {
                             }
 
 
-                            STYLE.Button {
-                                id:register_rpa_button
+                            Button {
                                 anchors.right: manage_rpa_header1.right
                                 anchors.rightMargin: 30
                                 anchors.top: parent.top
@@ -3384,21 +3444,32 @@ ApplicationWindow {
                                     text: "Register RPA"
                                     color:"white"
                                 }
-                                style: ButtonStyle {
-                                    background: Rectangle {
-                                        implicitHeight: 35
-                                        implicitWidth: 130
-                                        border.width: 1
-                                        border.color: "#F25822"
-                                        radius: 4
-                                        color: "#F25822"
-                                    }
+                                background: Rectangle {
+                                    id:register_rpa_button
+                                    implicitHeight: 35
+                                    implicitWidth: 130
+                                    border.width: 1
+                                    border.color: "#F25822"
+                                    radius: 4
+                                    color: "#F25822"
+                                }
+                                onPressed: {
+                                    register_rpa_button.color = "#05324D"
+                                }
+                                onReleased: {
+                                    register_rpa_button.color = "#F25822"
                                 }
                                 onClicked: {
                                     manage_rpa_header1.visible = false
                                     rpa_register_page.visible = true
                                     drone_contents.visible = true
+                                    check_box.checked = false
+                                    check_box1.checked = false
+                                    check_box2.checked = false
+                                    check_box3.checked = false
+                                    check_box4.checked = false
                                 }
+
                             }
 
                             //                            Item {
@@ -3515,7 +3586,7 @@ ApplicationWindow {
 
                                     Repeater {
                                         id: repeater_model
-                                        model: ["TYPE", "MODEL NAME", "DRONE NAME", "UIN", "ACTIONS"]
+                                        model: ["TYPE", "MODEL NAME", "DRONE NAME", "UIN", "ACTIONS"] //, "ACTIONS"
                                         Rectangle {
                                             id: header
                                             width: (table_rect.width - 40) / 5
@@ -3768,7 +3839,7 @@ ApplicationWindow {
                                     clip: true
                                     TableView {
                                         id: tableView
-                                        columnWidthProvider:  function (column) { return 134; }
+                                        columnWidthProvider:  function (column) { return 134; } //167
                                         rowHeightProvider: function (column) { return 40; }
                                         anchors.fill: parent
                                         boundsBehavior: Flickable.StopAtBounds
@@ -3838,7 +3909,28 @@ ApplicationWindow {
                                                     MouseArea{
                                                         anchors.fill: edit_button
                                                         onClicked: {
+                                                            /*updateButton = 0;
+                                                            if(check_box.checked === true){
+                                                                rpadatabase.checkboxSqledit("select type,model_name, drone_name, uin  from RpaList limit 1")
+                                                                rpa_register_page.visible =  true
+                                                                manage_rpa_header1.visible = false
+                                                                console.log(rpadatabase.type)
+                                                                console.log(rpadatabase.model)
+                                                                console.log(rpadatabase.droneName)
+                                                                console.log(rpadatabase.uin)
+                                                                combo_box1.text = rpadatabase.type
+                                                                combo_box2.text = rpadatabase.model
+                                                                drone_name_text.text = rpadatabase.droneName
+                                                                uin_input_text.text = rpadatabase.uin
+                                                                uin_input_text.enabled = false
+                                                            }*/
 
+                                                        }
+                                                        onPressed: {
+                                                            edit_button.color = "#F25822"
+                                                        }
+                                                        onReleased: {
+                                                            edit_button.color = "#031C28"
                                                         }
                                                     }
                                                 }
@@ -3862,7 +3954,11 @@ ApplicationWindow {
                                                     MouseArea{
                                                         anchors.fill: delete_button
                                                         onClicked: {
-
+                                                            /*if(check_box.checked === true){
+                                                                rpadatabase.deleteContents("delete from RpaList limit 1")
+                                                                rpadatabase.callSql("select * from RpaList limit 5")
+                                                                console.log("row erased")
+                                                            }*/
                                                         }
                                                     }
                                                 }
@@ -3933,18 +4029,34 @@ ApplicationWindow {
                             anchors.leftMargin: 20
                             anchors.top: rpa_register_page.top
                             anchors.topMargin: 20
+                            width: 25
+                            height: 25
+                            color: "#031C28"
 
                             Image {
+                                //id: back_arrow
                                 source: "/res/back_arrow.png"
+                                anchors.centerIn: parent
                                 MouseArea {
                                     anchors.fill: parent
+                                    onPressed: {
+                                        back_arrow_button.color = "#F25822"
+                                    }
+                                    onReleased: {
+                                        back_arrow_button.color = "#05324D"
+                                    }
                                     onClicked : {
                                         rpa_register_page.visible =  false
                                         manage_rpa_header1.visible = true
-                                        drone_type_list.currentText = ""
-                                        drone_model_list.text = ""
+                                        combo_box1.text = drone_type_list.displayText
+                                        combo_box2.text = drone_model_list.displayText
                                         drone_name_text.text = ""
                                         uin_input_text.text = ""
+                                        check_box.checked = false
+                                        check_box1.checked = false
+                                        check_box2.checked = false
+                                        check_box3.checked = false
+                                        check_box4.checked = false
                                     }
                                 }
                             }
@@ -3957,9 +4069,9 @@ ApplicationWindow {
                             font.pointSize: 10
                             font.bold: true
                             anchors.left: back_arrow_button.left
-                            anchors.leftMargin: 25
+                            anchors.leftMargin: 30
                             anchors.top: parent.top
-                            anchors.topMargin: 20
+                            anchors.topMargin: 25
                         }
 
                         Rectangle {
@@ -4096,7 +4208,6 @@ ApplicationWindow {
                                         ListElement{
                                             text: "Large"
                                         }
-
                                     }
 
                                     delegate: ItemDelegate {
@@ -4122,12 +4233,13 @@ ApplicationWindow {
                                             context.lineTo(width, 0);
                                             context.lineTo(width / 2, height);
                                             context.closePath();
-                                            context.fillStyle = "white";/*"#17a81a" : "#21be2b"*/
+                                            context.fillStyle = "white";//"#17a81a" : "#21be2b"
                                             context.fill();
                                         }
                                     }
 
                                     contentItem: Text {
+                                        id: combo_box1
                                         text: drone_type_list.displayText
                                         color: "white"
                                         verticalAlignment: Text.AlignVCenter
@@ -4173,7 +4285,7 @@ ApplicationWindow {
                                 height: 35
                                 anchors.right: drone_contents.right
                                 anchors.rightMargin: 80
-                                anchors.top: drone_type_text.top
+                                anchors.top: drone_model_text.top
                                 anchors.topMargin: 25
                                 color: "#031C28"
                                 border.color: "cyan"
@@ -4226,6 +4338,7 @@ ApplicationWindow {
                                     }
 
                                     contentItem: Text {
+                                        id: combo_box2
                                         text: drone_model_list.displayText
                                         color: "white"
                                         verticalAlignment: Text.AlignVCenter
@@ -4350,6 +4463,7 @@ ApplicationWindow {
 
                                 TextField {
                                     id:uin_input_text
+                                    enabled: editUin ? true : false
                                     anchors.verticalCenter: parent.verticalCenter
                                     anchors.margins: 5
                                     text: ""
@@ -4374,56 +4488,82 @@ ApplicationWindow {
                             anchors.leftMargin: parent.width/3
                             anchors.bottom: drone_contents.bottom
                             anchors.bottomMargin: 20
-                            STYLE.Button {
-                                id:update_Button
+                            Button {
                                 Text {
                                     anchors.centerIn: parent
                                     text: "Update"
                                     color:"white"
                                 }
-                                style: ButtonStyle {
-                                    background: Rectangle {
-                                        implicitHeight: 35
-                                        implicitWidth: 100
-                                        radius: 4
-                                        color: "Green"
-                                    }
+                                background: Rectangle {
+                                    id:update_Button
+                                    implicitHeight: 35
+                                    implicitWidth: 100
+                                    radius: 4
+                                    color: "Green"
                                 }
-
+                                onPressed: {
+                                    update_Button.color = "#05324D"
+                                }
+                                onReleased: {
+                                    update_Button.color = "Green"
+                                }
                                 onClicked: {
+                                    //if(updateButton === 1){
+                                        if((combo_box1.text === "")||(combo_box2.text === "") ||(drone_name_text.text == "") ||(uin_input_text.text == "")) {
+                                            dialog.visible = true
+                                        }
+                                        else{
+                                            rpadatabase.existingUIN(uin_input_text.text)
+                                            dialog2.visible = true
+                                        }
+                                    //}
+                                    /*else{
+                                        rpadatabase.update_contents(combo_box1.text, combo_box2.text, drone_name_text.text,uin_input_text.text)
+                                        rpa_register_page.visible = false
+                                        check_box.checked = false
+                                        check_box1.checked = false
+                                        check_box2.checked = false
+                                        check_box3.checked = false
+                                        check_box4.checked = false
+                                        manage_rpa_header1.visible = true
+                                        dialog3.visible = true
+                                    }*/
 
-                                    if((drone_type_list.currentText == "")||(drone_model_list.currentText == "") ||(drone_name_text.text == "") ||(uin_input_text.text == "")) {
-                                        dialog.visible = true
-                                    }
-                                    else{
-                                        rpadatabase.existingUIN(uin_input_text.text)
-                                    }
                                 }
                             }
 
-                            STYLE.Button {
-                                id: cancel_Button
+                            Button {
                                 Text {
                                     anchors.centerIn: parent
                                     text: "Cancel"
                                     color:"white"
                                 }
 
-                                style: ButtonStyle {
-                                    background: Rectangle {
-                                        implicitHeight: 35
-                                        implicitWidth: 100
-                                        radius: 4
-                                        color: "red"
-                                    }
+                                background: Rectangle {
+                                    id: cancel_Button
+                                    implicitHeight: 35
+                                    implicitWidth: 100
+                                    radius: 4
+                                    color: "red"
+                                }
+                                onPressed: {
+                                    cancel_Button.color = "#05324D"
+                                }
+                                onReleased: {
+                                    cancel_Button.color = "red"
                                 }
                                 onClicked:{
                                     manage_rpa_header1.visible = true
                                     rpa_register_page.visible = false
-                                    drone_type_list.currentText = ""
-                                    drone_model_list.text = ""
+                                    combo_box1.text = drone_type_list.displayText
+                                    combo_box2.text = drone_model_list.displayText
                                     drone_name_text.text = ""
                                     uin_input_text.text = ""
+                                    check_box.checked = false
+                                    check_box1.checked = false
+                                    check_box2.checked = false
+                                    check_box3.checked = false
+                                    check_box4.checked = false
                                 }
                             }
                         }
@@ -4434,11 +4574,291 @@ ApplicationWindow {
                             width: 50
                             text:"please fill the details correctly"
                         }
+
+                        MessageDialog{
+                            id:dialog2
+                            height: 50
+                            width: 50
+                            text:"Registered Successfully."
+                        }
+                        MessageDialog{
+                            id:dialog3
+                            height: 50
+                            width: 50
+                            text:"Updated Successfully."
+                        }
                     }
 
                 }
 
-                //}
+                /*Rectangle {
+                    id: manage_customers_rectangle
+                    width: second_rectangle.width//parent.width/1.8
+                    //height: parent.height
+                    visible: false
+                    color: "#031C28"
+                    border.color: "#05324D"
+                    border.width: 1
+                    Rectangle {
+                        id: manage_customers_header
+                        color: "#031C28"
+                        height: 50
+                        width: manage_customers_rectangle.width
+                        border.color: "#05324D"
+                        border.width: 1
+
+                        Image {
+                            id: hamburger_image_mc
+                            source: "/res/hamburger_menu.png"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: manage_customers_header.left
+                            anchors.leftMargin: 20
+                        }
+
+                        Text {
+                            id: dashboard_text_mc
+                            text: "MANAGE CUSTOMERS"
+                            color: "white"
+                            font.pointSize: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: hamburger_image_mc.left
+                            anchors.leftMargin: 25
+                        }
+
+                        Image {
+                            id: search_image_mc
+                            source: "/res/search.png"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: manage_customers_header.right
+                            anchors.rightMargin: 180
+                        }
+                        Text{
+                            id: search_mc
+                            text: "Search"
+                            color : "white"
+                            font.pointSize: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: manage_customers_header.right
+                            anchors.rightMargin: 100
+                        }
+                    }
+
+                    Column {
+                        id: mc_rectangle_column
+                        anchors.left: parent.left
+                        anchors.top: manage_customers_header.bottom
+
+                        Rectangle{
+                            id: manage_customers_header1
+                            height: screen.height - 50//350
+                            width: manage_customers_rectangle.width
+                            color: "#031C28"
+                            border.color: "#05324D"
+                            border.width: 1
+                        }
+                    }
+                }
+                Rectangle {
+                    id: remote_pilots_rectangle
+                    width: second_rectangle.width//parent.width/1.8
+                    //height: parent.height
+                    visible: false
+                    color: "#031C28"
+                    border.color: "#05324D"
+                    border.width: 1
+                    Rectangle {
+                        id: remote_pilots_header
+                        color: "#031C28"
+                        height: 50
+                        width: remote_pilots_rectangle.width
+                        border.color: "#05324D"
+                        border.width: 1
+
+                        Image {
+                            id: hamburger_image_rp
+                            source: "/res/hamburger_menu.png"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: remote_pilots_header.left
+                            anchors.leftMargin: 20
+                        }
+
+                        Text {
+                            id: dashboard_text_rp
+                            text: "REMOTE PILOTS"
+                            color: "white"
+                            font.pointSize: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: hamburger_image_rp.left
+                            anchors.leftMargin: 25
+                        }
+
+                        Image {
+                            id: search_image_rp
+                            source: "/res/search.png"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: remote_pilots_header.right
+                            anchors.rightMargin: 180
+                        }
+                        Text{
+                            id: search_rp
+                            text: "Search"
+                            color : "white"
+                            font.pointSize: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: remote_pilots_header.right
+                            anchors.rightMargin: 100
+                        }
+                    }
+
+                    Column {
+                        id: rp_rectangle_column
+                        anchors.left: parent.left
+                        anchors.top: remote_pilots_header.bottom
+
+                        Rectangle{
+                            id: remote_pilots_header1
+                            height: screen.height - 50//350
+                            width: remote_pilots_rectangle.width
+                            color: "#031C28"
+                            border.color: "#05324D"
+                            border.width: 1
+                        }
+                    }
+                }
+                Rectangle {
+                    id: missions_rectangle
+                    width: second_rectangle.width//parent.width/1.8
+                    //height: parent.height
+                    visible: false
+                    color: "#031C28"
+                    border.color: "#05324D"
+                    border.width: 1
+                    Rectangle {
+                        id: missions_header
+                        color: "#031C28"
+                        height: 50
+                        width: missions_rectangle.width
+                        border.color: "#05324D"
+                        border.width: 1
+
+                        Image {
+                            id: hamburger_image_m
+                            source: "/res/hamburger_menu.png"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: missions_header.left
+                            anchors.leftMargin: 20
+                        }
+
+                        Text {
+                            id: dashboard_text_m
+                            text: "MANAGE CUSTOMERS"
+                            color: "white"
+                            font.pointSize: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: hamburger_image_m.left
+                            anchors.leftMargin: 25
+                        }
+
+                        Image {
+                            id: search_image_m
+                            source: "/res/search.png"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: missions_header.right
+                            anchors.rightMargin: 180
+                        }
+                        Text{
+                            id: search_m
+                            text: "Search"
+                            color : "white"
+                            font.pointSize: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: missions_header.right
+                            anchors.rightMargin: 100
+                        }
+                    }
+
+                    Column {
+                        id: m_rectangle_column
+                        anchors.left: parent.left
+                        anchors.top: missions_header.bottom
+
+                        Rectangle{
+                            id: missions_header1
+                            height: screen.height - 50//350
+                            width: missions_rectangle.width
+                            color: "#031C28"
+                            border.color: "#05324D"
+                            border.width: 1
+                        }
+                    }
+                }
+                Rectangle {
+                    id: manual_missions_rectangle
+                    width: second_rectangle.width//parent.width/1.8
+                    //height: parent.height
+                    visible: false
+                    color: "#031C28"
+                    border.color: "#05324D"
+                    border.width: 1
+                    Rectangle {
+                        id: manual_missions_header
+                        color: "#031C28"
+                        height: 50
+                        width: dashboard_rectangle.width
+                        border.color: "#05324D"
+                        border.width: 1
+
+                        Image {
+                            id: hamburger_image_mm
+                            source: "/res/hamburger_menu.png"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: manual_missions_header.left
+                            anchors.leftMargin: 20
+                        }
+
+                        Text {
+                            id: dashboard_text_mm
+                            text: "MANAGE CUSTOMERS"
+                            color: "white"
+                            font.pointSize: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: hamburger_image_mm.left
+                            anchors.leftMargin: 25
+                        }
+
+                        Image {
+                            id: search_image_mm
+                            source: "/res/search.png"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: manual_missions_header.right
+                            anchors.rightMargin: 180
+                        }
+                        Text{
+                            id: search_mm
+                            text: "Search"
+                            color : "white"
+                            font.pointSize: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: manual_missions_header.right
+                            anchors.rightMargin: 100
+                        }
+                    }
+
+                    Column {
+                        id: mm_rectangle_column
+                        anchors.left: parent.left
+                        anchors.top: manual_missions_header.bottom
+
+                        Rectangle{
+                            id: manual_missions_header1
+                            height: screen.height - 50//350
+                            width: dashboard_rectangle.width
+                            color: "#031C28"
+                            border.color: "#05324D"
+                            border.width: 1
+                        }
+                    }
+                }*/
                 Rectangle {
                     id: flight_log_rectangle
                     width: screen.width/1.8//parent.width/1.8
@@ -4535,7 +4955,471 @@ ApplicationWindow {
                     }
 
                 }
+
             }
+            Rectangle{
+                id:third_rectangle
+                width: screen.width/2.813 - 160
+                height: parent.height
+                color: "#031C28"
+                border.color: "#05324D"
+                border.width: 1
+
+                Rectangle {
+                    id: users_profile_rectangle
+                    width: third_rectangle.width
+                    color: "#031C28"
+                    border.color: "#05324D"
+                    border.width: 1
+                    Rectangle{
+                        id: users_profile_header
+                        color: "#031C28"
+                        height: 50
+                        width: users_profile_rectangle.width
+                        border.color: "#05324D"
+                        border.width: 2
+
+                        Rectangle{
+                            id: bell_button
+                            anchors.left: users_profile_header.left
+                            anchors.leftMargin: 20
+                            anchors.verticalCenter: parent.verticalCenter
+                            height: 40
+                            width: 40
+                            radius: 20
+                            color: "#05324D"
+
+                            Image {
+                                id: bell_image
+                                source:"/res/bell.png"
+                                anchors.centerIn: parent
+                            }
+                            ColorOverlay{
+                                anchors.fill: bell_image
+                                source: bell_image
+                                color:"white"
+                            }
+                            MouseArea{
+                                anchors.fill: bell_button
+                                onClicked:{
+
+                                }
+                                onPressed: {
+                                    bell_button.color = "#F25822"
+                                }
+                                onReleased: {
+                                    bell_button.color = "#05324D"
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            id: mail_button
+                            anchors.left: bell_button.right
+                            anchors.leftMargin: 15
+                            anchors.verticalCenter: parent.verticalCenter
+                            height: 40
+                            width: 40
+                            radius: 20
+                            color: "#05324D"
+
+                            Image {
+                                id: mail_image
+                                source:"/res/mail.png"
+                                anchors.centerIn: parent
+                            }
+                            ColorOverlay{
+                                anchors.fill: mail_image
+                                source: mail_image
+                                color:"white"
+                            }
+                            MouseArea{
+                                anchors.fill: mail_button
+                                onClicked:{
+
+                                }
+                                onPressed: {
+                                    mail_button.color = "#F25822"
+                                }
+                                onReleased: {
+                                    mail_button.color = "#05324D"
+                                }
+                            }
+                        }
+                        Rectangle {
+                            id: image_rect
+                            //anchors.left: mail_button.right
+                            //anchors.leftMargin: 35
+                            anchors.right: users_profile_header.right
+                            anchors.rightMargin: 80
+                            anchors.verticalCenter: parent.verticalCenter
+                            height: 40
+                            width: 40
+                            radius: width/2
+                            color: "#05324D"
+                            border.width: 1
+                            border.color: "#F25822"
+
+                            Image {
+                                id: user_image_inprofile
+                                //source:"qrc:/qmlimages/drone_1.png"
+                                anchors.fill: parent
+                            }
+
+                            MouseArea{
+                                anchors.fill: image_rect
+                                onClicked:{
+                                    //database.profile_contents("select industry,address,locality,password from UsersLoginInfo where number="+database.number)
+                                    //database.username_
+                                    users_profile_header1.visible = false
+                                    users_information_header1.visible = true
+                                    user_industry.text = database.industry
+                                    userprofile_name.text = database.name
+                                    mail_address.text = database.mail
+                                    mobile_number.text = database.number
+                                    address_field.text = database.address
+                                    locality_field.text = database.locality
+                                    password_field.text = database.password
+                                }
+                                onPressed: {
+                                    image_rect.color = "#F25822"
+                                }
+                                onReleased: {
+                                    image_rect.color = "#05324D"
+                                }
+                            }
+                        }
+                        Column {
+                            spacing: 5
+                            anchors.left: image_rect.right
+                            anchors.leftMargin: 10
+                            anchors.top: users_profile_header.top
+                            anchors.topMargin: 5
+
+                            Text {
+                                id: user_name_inprofile
+                                text: qsTr(database.name)
+                                color:"white"
+                                font.pointSize: 12
+                            }
+                            Text {
+                                text: "OEM"
+                                color: "#F25822"
+                            }
+
+                        }
+                    }
+                    Rectangle {
+                        id: users_profile_header1
+                        anchors.top: users_profile_header.bottom
+                        height: 600
+                        width: users_profile_rectangle.width
+                        visible: true || false
+                        color: "#031C28"
+                        border.width: 1
+                        border.color: "#05324D"
+
+                        Column{
+                            spacing: 10
+                            anchors.left: parent.left
+                            anchors.leftMargin: 20
+                            anchors.top: parent.top
+                            anchors.topMargin: 20
+                            Text {
+                                text : "Subscription"
+                                color: "white"
+                                font.bold: true
+                                font.pointSize: 10
+                            }
+
+                            Rectangle {
+                                height: 100
+                                width: third_rectangle.width -50
+                                color: "#031C28"
+                                border.width: 1
+                                border.color: "cyan"
+
+                                Text {
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 10
+                                    anchors.top: parent.top
+                                    anchors.topMargin: 10
+                                    text: "Your Current Active Plan is"
+                                    color: "#ffffff"
+                                    font.pointSize: 9
+                                }
+                            }
+                        }
+                    }
+                    Rectangle {
+                        id: users_information_header1
+                        anchors.top: users_profile_header.bottom
+                        height: 600
+                        width: users_profile_rectangle.width
+                        visible: false
+                        color: "#031C28"
+                        border.width: 1
+                        border.color: "#05324D"
+
+                        Column{
+                            spacing: 15
+                            anchors.left: users_information_header1.left
+                            anchors.leftMargin: 20
+                            anchors.top: users_information_header1.top
+                            anchors.topMargin: 20
+                            Column{
+                                spacing:5
+                                Text{
+                                    text: "Your Industry"
+                                    color: "white"
+                                    font.pointSize: 9
+                                }
+                                TextField{
+                                    id: user_industry
+                                    width: 250
+                                    height: 35
+                                    anchors.margins: 5
+                                    text: database.industry
+                                    color:"white"
+                                    background: Rectangle{
+                                        color: "#031C28"
+                                        radius: 4
+                                        border.width: 1
+                                        border.color: "white"
+                                        implicitHeight: user_industry.height
+                                        implicitWidth: user_industry.width
+                                    }
+                                }
+                            }
+                            Column{
+                                spacing:5
+                                Text{
+                                    text: " Your Name"
+                                    color: "white"
+                                    font.pointSize: 9
+                                }
+                                TextField{
+                                    id: userprofile_name
+                                    width: 200
+                                    height: 35
+                                    anchors.margins: 5
+                                    text: database.name
+                                    color:"white"
+                                    background: Rectangle{
+                                        color: "#031C28"
+                                        radius: 4
+                                        border.width: 1
+                                        border.color: "white"
+                                        implicitHeight: userprofile_name.height
+                                        implicitWidth: userprofile_name.width
+                                    }
+                                }
+                            }
+                            Column{
+                                spacing:5
+                                Text{
+                                    text: "Mail Address"
+                                    color: "white"
+                                    font.pointSize: 9
+                                }
+                                TextField{
+                                    id: mail_address
+                                    width: 200
+                                    height: 35
+                                    anchors.margins: 5
+                                    text: database.mail
+                                    color:"white"
+                                    background: Rectangle{
+                                        color: "#031C28"
+                                        radius: 4
+                                        border.width: 1
+                                        border.color: "white"
+                                        implicitHeight: mail_address.height
+                                        implicitWidth: mail_address.width
+                                    }
+                                }
+                            }
+                            Column{
+                                spacing:5
+                                Text{
+                                    text: "Mobile number"
+                                    color: "white"
+                                    font.pointSize: 9
+                                }
+                                TextField{
+                                    id: mobile_number
+                                    readOnly: true
+                                    width: 200
+                                    height: 35
+                                    anchors.margins: 5
+                                    text: database.number
+                                    color:"white"
+                                    background: Rectangle{
+                                        color: "#031C28"
+                                        radius: 4
+                                        border.width: 1
+                                        border.color: "white"
+                                        implicitHeight: mobile_number.height
+                                        implicitWidth: mobile_number.width
+                                    }
+                                }
+                            }
+                            Column{
+                                spacing:5
+                                Text{
+                                    text: "Address"
+                                    color: "white"
+                                    font.pointSize: 9
+                                }
+                                TextField{
+                                    id: address_field
+                                    width: 200
+                                    height: 35
+                                    anchors.margins: 5
+                                    text: database.address
+                                    color:"white"
+                                    background: Rectangle{
+                                        color: "#031C28"
+                                        radius: 4
+                                        border.width: 1
+                                        border.color: "white"
+                                        implicitHeight: address_field.height
+                                        implicitWidth: address_field.width
+                                    }
+                                }
+                            }
+                            Column{
+                                spacing:5
+                                Text{
+                                    text: "Locality"
+                                    color: "white"
+                                    font.pointSize: 9
+                                }
+                                TextField{
+                                    id: locality_field
+                                    width: 200
+                                    height: 35
+                                    anchors.margins: 5
+                                    text: database.locality
+                                    color:"white"
+                                    background: Rectangle{
+                                        color: "#031C28"
+                                        radius: 4
+                                        border.width: 1
+                                        border.color: "white"
+                                        implicitHeight: locality_field.height
+                                        implicitWidth: locality_field.width
+                                    }
+                                }
+                            }
+                            Column{
+                                spacing:5
+                                Text{
+                                    text: "Password"
+                                    color: "white"
+                                    font.pointSize: 9
+                                }
+                                TextField{
+                                    id: password_field
+                                    enabled: editNumber ? true : false
+                                    width: 200
+                                    height: 35
+                                    anchors.margins: 5
+                                    text: database.password
+                                    color:"white"
+                                    background: Rectangle{
+                                        color: "#031C28"
+                                        radius: 4
+                                        border.width: 1
+                                        border.color: "white"
+                                        implicitHeight: password_field.height
+                                        implicitWidth: password_field.width
+                                    }
+                                }
+                            }
+
+                        }
+                        Rectangle {
+                            id: update_profile
+                            width: 60
+                            height: 30
+                            anchors.right: users_information_header1.right
+                            anchors.rightMargin: 100
+                            anchors.bottom: users_information_header1.bottom
+                            anchors.bottomMargin: 40
+                            color: "#031C28"
+                            radius: 4
+                            border.width: 1
+                            border.color: "#F25822"
+
+                            Text {
+                                text:"Update"
+                                color: "white"
+                                font.pointSize: 10
+                                anchors.centerIn: parent
+                            }
+
+                            MouseArea {
+                                anchors.fill: update_profile
+                                onClicked: {
+                                    //reflect all the updated info to the database
+                                    database.update_profile_contents(user_industry.text,userprofile_name.text, mail_address.text,mobile_number.text,address_field.text,locality_field.text,password_field.text)
+                                    users_profile_header1.visible = true
+                                    users_information_header1.visible = false
+                                    dialog1.visible = true
+                                }
+                                onPressed: {
+                                    update_profile.color = "#F25822"
+                                }
+                                onReleased: {
+                                    update_profile.color = "#05324D"
+                                }
+                            }
+                        }
+                        Rectangle {
+                            id: back_to_profile
+                            width: 60
+                            height: 30
+                            anchors.left: update_profile.right
+                            anchors.leftMargin: 20
+                            anchors.bottom: users_information_header1.bottom
+                            anchors.bottomMargin: 40
+                            color: "#031C28"
+                            radius: 4
+                            border.width: 1
+                            border.color: "#F25822"
+
+                            Text {
+                                text:"Back"
+                                color: "white"
+                                font.pointSize: 10
+                                anchors.centerIn: parent
+                            }
+
+                            MouseArea {
+                                anchors.fill: back_to_profile
+                                onClicked: {
+                                    users_profile_header1.visible = true
+                                    users_information_header1.visible = false
+                                }
+                                onPressed: {
+                                    back_to_profile.color = "#F25822"
+                                }
+                                onReleased: {
+                                    back_to_profile.color = "#05324D"
+                                }
+                            }
+                        }
+                        MessageDialog{
+                            id:dialog1
+                            height: 50
+                            width: 50
+                            text:"Profile Updated Successfully."
+                        }
+                    }
+                }
+            }
+
         }
     }
 }

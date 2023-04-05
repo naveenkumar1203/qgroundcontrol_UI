@@ -84,6 +84,9 @@
         <file alias="delete.png">resources/delete.png</file>
         <file alias="edit.png">resources/edit.png</file>
         <file alias="upload.png">resources/upload.png</file>
+        <file alias="main_home.png">resources/main_home.png</file>
+        <file alias="bell.png">resources/bell.png</file>
+        <file alias="mail.png">resources/mail.png</file>
     </qresource>
     <qresource prefix="/res/firmware">
         <file alias="3drradio.png">resources/firmware/3drradio.png</file>

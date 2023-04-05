@@ -1,11 +1,16 @@
 #include "Database.h"
 
-static QString mail_from_db;
-static QString password_from_db;
-QString user_name_from_db;
-static QString number_from_db;
-static QString name_from_db;
-static QString gmail_from_db;
+static QString mail_from_db; // loginexistinguser
+static QString password_from_db; // loginexistinguser
+QString user_name_from_db; //create_database
+static QString number_from_db; // signupexistingusernumber
+static QString name_from_db; // signupexistingusername
+static QString gmail_from_db; // signupexistingusermail
+static QString address_from_db;
+static QString locality_from_db;
+static QString userpassword_from_db;
+static QString industry_from_db;
+static QString mobilenumber_from_db;
 
 QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
 
@@ -71,6 +76,7 @@ void AjayDatabase::loginExistingUser(const QString &mail, const QString &passwor
     if(searchMail.exec()){
         while (searchMail.next()) {
             mail_from_db = searchMail.value(0).toString();
+            m_mail = mail_from_db;
         }
     }
 
@@ -82,7 +88,7 @@ void AjayDatabase::loginExistingUser(const QString &mail, const QString &passwor
 
     if(mail_from_db == mail){
         if(password_from_db == password){
-            username_database(mail);
+            usernumber_database(mail);
             //emit record_found();
         }
     }
@@ -111,6 +117,7 @@ void AjayDatabase::signupExistingUsername(const QString &name)
     if(searchName.exec()){
         while (searchName.next()) {
             name_from_db = searchName.value(0).toString();
+            m_name = name_from_db;
         }
     }
 
@@ -157,6 +164,7 @@ void AjayDatabase::signupExistingUsernumber(const QString &number)
     if(searchNumber.exec()){
         while (searchNumber.next()) {
             number_from_db = searchNumber.value(0).toString();
+            m_number = number_from_db;
         }
     }
 
@@ -165,6 +173,105 @@ void AjayDatabase::signupExistingUsernumber(const QString &number)
         qDebug()<<"Given Number is already registered";
     }
 }
+
+void AjayDatabase::update_profile_contents(const QString &industry, const QString &name, const QString &mail, const QString &number, const QString &address, const QString &locality, const QString &password)
+{
+    QSqlQueryModel *use_database = new QSqlQueryModel();
+    use_database->setQuery("use QGC_User_Login");
+
+    QSqlQuery profileContents;
+    profileContents.prepare("UPDATE UsersLoginInfo SET industry=:industry,name=:name,mail=:mail,address=:address,locality=:locality,password=:password WHERE number=:number");
+    //profileContents.prepare("UPDATE UsersLoginInfo SET name=:name WHERE number=:number");
+    profileContents.bindValue(":industry",industry);
+    profileContents.bindValue(":name",name);
+    profileContents.bindValue(":mail",mail);
+    profileContents.bindValue(":address",address);
+    profileContents.bindValue(":locality",locality);
+    profileContents.bindValue(":password",password);
+    profileContents.bindValue(":number",number);
+    qDebug()<<industry + name + mail + address + number + locality + password;
+
+    if(!profileContents.exec()){
+        //qDebug()<<queryString;
+        qDebug()<<"error in updating profile_contents";
+    }
+    usernumber_database(mail);
+
+}
+
+/*void AjayDatabase::address(const QString &address)
+{
+    QSqlQuery searchAddress;
+    searchAddress.prepare("SELECT address FROM UsersLoginInfo WHERE address = :address");
+    searchAddress.bindValue(":address",address);
+
+    if(!searchAddress.exec()){
+        qDebug()<<"error while searching address";
+    }
+
+    if(searchAddress.exec()){
+        while (searchAddress.next()) {
+            address_from_db = searchAddress.value(0).toString();
+            m_address = address_from_db;
+        }
+    }
+}
+
+void AjayDatabase::locality(const QString &locality)
+{
+    QSqlQuery searchLocality;
+    searchLocality.prepare("SELECT locality FROM UsersLoginInfo WHERE locality = :locality");
+    searchLocality.bindValue(":locality",locality);
+
+    if(!searchLocality.exec()){
+        qDebug()<<"error while searching locality";
+    }
+
+    if(searchLocality.exec()){
+        while (searchLocality.next()) {
+            locality_from_db = searchLocality.value(0).toString();
+            m_locality = locality_from_db;
+        }
+    }
+}
+
+void AjayDatabase::number(const QString &number)
+{
+    QSqlQuery searchNumber;
+    searchNumber.prepare("SELECT number FROM UsersLoginInfo WHERE number = :number");
+    searchNumber.bindValue(":number",number);
+
+    if(!searchNumber.exec()){
+        qDebug()<<"error while searching number";
+    }
+
+    if(searchNumber.exec()){
+        while (searchNumber.next()) {
+            mobilenumber_from_db = searchNumber.value(0).toString();
+            m_number = mobilenumber_from_db;
+        }
+    }
+}
+
+void AjayDatabase::password(const QString &password)
+{
+    QSqlQuery searchPassword;
+    searchPassword.prepare("SELECT password FROM UsersLoginInfo WHERE password = :password");
+    searchPassword.bindValue(":password",password);
+
+    if(!searchPassword.exec()){
+        qDebug()<<"error while searching password";
+    }
+
+    if(searchPassword.exec()){
+        while (searchPassword.next()) {
+            userpassword_from_db = searchPassword.value(0).toString();
+            m_password = userpassword_from_db;
+        }
+    }
+}*/
+
+
 
 void AjayDatabase::logout()
 {
@@ -205,21 +312,35 @@ void AjayDatabase::change_password(const QString &mail, const QString &newPasswo
 }
 
 
-void AjayDatabase::username_database(const QString &mail){
-    QSqlQuery searchName;
-    searchName.prepare("SELECT name FROM UsersLoginInfo WHERE mail = :mail");
-    searchName.bindValue(":mail",mail);
+void AjayDatabase::usernumber_database(const QString &mail){
+    qDebug()<<("called here");
+    QSqlQuery searchNumber;
+    searchNumber.prepare("SELECT industry,number,address,locality,password,name FROM UsersLoginInfo WHERE mail = :mail");
+    searchNumber.bindValue(":mail",mail);
+    if(!searchNumber.exec()){
+        qDebug()<<("error in username");
+    }
 
-    if(searchName.exec()){
-        while (searchName.next()) {
-            user_name_from_db = searchName.value(0).toString();
+    if(searchNumber.exec()){
+        while (searchNumber.next()) {
+            industry_from_db = searchNumber.value(0).toString();
+            m_industry = industry_from_db;
+            mobilenumber_from_db = searchNumber.value(1).toString();
+            m_number = mobilenumber_from_db;
+            address_from_db = searchNumber.value(2).toString();
+            m_address = address_from_db;
+            locality_from_db = searchNumber.value(3).toString();
+            m_locality = locality_from_db;
+            userpassword_from_db = searchNumber.value(4).toString();
+            m_password = userpassword_from_db;
+            user_name_from_db = searchNumber.value(5).toString();
             m_name = user_name_from_db;
         }
-        qDebug()<<("username "+m_name);
+        qDebug()<<("username "+m_number);
     }
 
     QSqlQuery createDataBase;
-    QString query = "create database "+ user_name_from_db;
+    QString query = "create database "+ mobilenumber_from_db;
     createDataBase.prepare(query);
     if(!createDataBase.exec()){
         //qDebug()<<query;
@@ -227,7 +348,7 @@ void AjayDatabase::username_database(const QString &mail){
     }
 
     QSqlQuery useDataBase;
-    QString query2 = "use " + user_name_from_db;
+    QString query2 = "use " + mobilenumber_from_db;
     useDataBase.prepare(query2);
     if(!useDataBase.exec()){
         qDebug()<<query2;
@@ -237,6 +358,8 @@ void AjayDatabase::username_database(const QString &mail){
     QSqlQueryModel *create_table = new QSqlQueryModel();
     create_table->setQuery("create table RpaList(TYPE text,MODEL_NAME text, DRONE_NAME text, UIN text)");
 
+    QSqlQueryModel *create_table1 = new QSqlQueryModel();
+    create_table1->setQuery("create table FirmwareLog(Info text,Date text,Time text)");
 
     emit record_found();
 }
@@ -252,4 +375,80 @@ void AjayDatabase::setName(const QString &newName)
         return;
     m_name = newName;
     emit nameChanged();
+}
+
+QString AjayDatabase::mail() const
+{
+    return m_mail;
+}
+
+void AjayDatabase::setMail(const QString &newMail)
+{
+    if (m_mail == newMail)
+        return;
+    m_mail = newMail;
+    emit mailChanged();
+}
+
+QString AjayDatabase::address() const
+{
+    return m_address;
+}
+
+void AjayDatabase::setAddress(const QString &newAddress)
+{
+    if (m_address == newAddress)
+        return;
+    m_address = newAddress;
+    emit addressChanged();
+}
+
+QString AjayDatabase::locality() const
+{
+    return m_locality;
+}
+
+void AjayDatabase::setLocality(const QString &newLocality)
+{
+    if (m_locality == newLocality)
+        return;
+    m_locality = newLocality;
+    emit localityChanged();
+}
+
+QString AjayDatabase::password() const
+{
+    return m_password;
+}
+void AjayDatabase::setPassword(const QString &newPassword)
+{
+    if (m_password == newPassword)
+        return;
+    m_password = newPassword;
+    emit passwordChanged();
+}
+
+QString AjayDatabase::number() const
+{
+    return m_number;
+}
+void AjayDatabase::setNumber(const QString &newNumber)
+{
+    if (m_number == newNumber)
+        return;
+    m_number = newNumber;
+    emit numberChanged();
+}
+
+QString AjayDatabase::industry() const
+{
+    return m_industry;
+}
+
+void AjayDatabase::setIndustry(const QString &newIndustry)
+{
+    if (m_industry == newIndustry)
+        return;
+    m_industry = newIndustry;
+    emit industryChanged();
 }

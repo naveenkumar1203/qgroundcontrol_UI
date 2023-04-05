@@ -46,6 +46,7 @@
 #include "RallyPointManager.h"
 #include "FTPManager.h"
 #include "ImageProtocolManager.h"
+#include "RpaDatabase.h"
 
 class Actuators;
 class EventHandler;

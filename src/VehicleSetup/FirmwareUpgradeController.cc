@@ -408,30 +408,30 @@ void FirmwareUpgradeController::_firmwareDownloadProgress(qint64 curr, qint64 to
 void FirmwareUpgradeController::_firmwareDownloadComplete(QString /*remoteFile*/, QString localFile, QString errorMsg)
 {
     if (errorMsg.isEmpty()) {
-    _appendStatusLog(tr("Download complete"));
-    
-    FirmwareImage* image = new FirmwareImage(this);
-    
-    connect(image, &FirmwareImage::statusMessage, this, &FirmwareUpgradeController::_status);
-    connect(image, &FirmwareImage::errorMessage, this, &FirmwareUpgradeController::_error);
-    
-    if (!image->load(localFile, _bootloaderBoardID)) {
-        _errorCancel(tr("Image load failed"));
-        return;
-    }
-    
-    // We can't proceed unless we have the bootloader
-    if (!_bootloaderFound) {
-        _errorCancel(tr("Bootloader not found"));
-        return;
-    }
-    
-    if (_bootloaderBoardFlashSize != 0 && image->imageSize() > _bootloaderBoardFlashSize) {
-        _errorCancel(tr("Image size of %1 is too large for board flash size %2").arg(image->imageSize()).arg(_bootloaderBoardFlashSize));
-        return;
-    }
+        _appendStatusLog(tr("Download complete"));
 
-    _threadController->flash(image);
+        FirmwareImage* image = new FirmwareImage(this);
+
+        connect(image, &FirmwareImage::statusMessage, this, &FirmwareUpgradeController::_status);
+        connect(image, &FirmwareImage::errorMessage, this, &FirmwareUpgradeController::_error);
+
+        if (!image->load(localFile, _bootloaderBoardID)) {
+            _errorCancel(tr("Image load failed"));
+            return;
+        }
+
+        // We can't proceed unless we have the bootloader
+        if (!_bootloaderFound) {
+            _errorCancel(tr("Bootloader not found"));
+            return;
+        }
+
+        if (_bootloaderBoardFlashSize != 0 && image->imageSize() > _bootloaderBoardFlashSize) {
+            _errorCancel(tr("Image size of %1 is too large for board flash size %2").arg(image->imageSize()).arg(_bootloaderBoardFlashSize));
+            return;
+        }
+
+        _threadController->flash(image);
     } else {
         _errorCancel(errorMsg);
     }
@@ -461,6 +461,16 @@ void FirmwareUpgradeController::_flashComplete(void)
     
     _appendStatusLog(tr("Upgrade complete"), true);
     _appendStatusLog("------------------------------------------", false);
+    QString cd = QDate::currentDate().toString();
+    QString ct = QTime::currentTime().toString();
+    QSqlQuery insertData;
+    insertData.prepare("insert into FirmwareLog(Info,Date,Time) values(?,?,?)");
+    insertData.addBindValue("Firmware Upgrade completed successfully");
+    insertData.addBindValue(cd);
+    insertData.addBindValue(ct);
+    if(!insertData.exec()){
+        qDebug()<<"error while updating firmware log";
+    }
     emit flashComplete();
     qgcApp()->toolbox()->linkManager()->setConnectionsAllowed();
 }
@@ -522,6 +532,16 @@ void FirmwareUpgradeController::_errorCancel(const QString& msg)
     emit error();
     cancel();
     qgcApp()->toolbox()->linkManager()->setConnectionsAllowed();
+    QString cd = QDate::currentDate().toString();
+    QString ct = QTime::currentTime().toString();
+    QSqlQuery insertData;
+    insertData.prepare("insert into FirmwareLog(Info,Date,Time) values(?,?,?)");
+    insertData.addBindValue("Firmware Upgrade is unsuccessfull");
+    insertData.addBindValue(cd);
+    insertData.addBindValue(ct);
+    if(!insertData.exec()){
+        qDebug()<<"error while updating firmware log";
+    }
 }
 
 void FirmwareUpgradeController::_eraseStarted(void)
