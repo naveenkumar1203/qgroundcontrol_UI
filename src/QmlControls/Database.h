@@ -36,16 +36,7 @@ public:
 
     Q_INVOKABLE void signupExistingUsernumber(const QString &number);
 
-/*    Q_INVOKABLE void address(const QString &address);
-
-    Q_INVOKABLE void locality(const QString &locality);
-
-    Q_INVOKABLE void number(const QString &number);
-
-    Q_INVOKABLE void password(const QString &password);*/
-
-    Q_INVOKABLE void update_profile_contents(const QString &industry,
-                                             const QString &name,
+    Q_INVOKABLE void update_profile_contents(const QString &name,
                                              const QString &mail,
                                              const QString &number,
                                              const QString &address,
@@ -54,7 +45,7 @@ public:
 
     Q_INVOKABLE void logout();
 
-    void usernumber_database(const QString &mail);
+    void username_database(const QString &mail,const int flag);
 
     Q_PROPERTY(QString industry READ industry WRITE setIndustry NOTIFY industryChanged)
 
@@ -104,14 +95,11 @@ signals:
     void nameChanged();
     void mailChanged();
     void numberChanged();
-
     void addressChanged();
-
     void localityChanged();
-
     void passwordChanged();
-
     void industryChanged();
+    void connectionNotopened();
 
 public slots:
 

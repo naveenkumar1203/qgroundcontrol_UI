@@ -9,8 +9,8 @@ static QString gmail_from_db; // signupexistingusermail
 static QString address_from_db;
 static QString locality_from_db;
 static QString userpassword_from_db;
-static QString industry_from_db;
 static QString mobilenumber_from_db;
+static QString previous_username;
 
 QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
 
@@ -35,7 +35,7 @@ AjayDatabase::AjayDatabase(QObject *parent) : QObject(parent)
     use_database->setQuery("use QGC_User_Login");
 
     QSqlQueryModel *create_table = new QSqlQueryModel();
-    create_table->setQuery("create table UsersLoginInfo(industry text,name text,mail text,number text,address text,locality text,password text)");
+    create_table->setQuery("create table UsersLoginInfo(industry text,name text,mail text,number int,address text,locality text,password text)");
 
 }
 
@@ -88,7 +88,7 @@ void AjayDatabase::loginExistingUser(const QString &mail, const QString &passwor
 
     if(mail_from_db == mail){
         if(password_from_db == password){
-            usernumber_database(mail);
+            username_database(mail,0);
             //emit record_found();
         }
     }
@@ -174,104 +174,28 @@ void AjayDatabase::signupExistingUsernumber(const QString &number)
     }
 }
 
-void AjayDatabase::update_profile_contents(const QString &industry, const QString &name, const QString &mail, const QString &number, const QString &address, const QString &locality, const QString &password)
+void AjayDatabase::update_profile_contents(const QString &name, const QString &mail, const QString &number, const QString &address, const QString &locality, const QString &password)
 {
     QSqlQueryModel *use_database = new QSqlQueryModel();
     use_database->setQuery("use QGC_User_Login");
 
     QSqlQuery profileContents;
-    profileContents.prepare("UPDATE UsersLoginInfo SET industry=:industry,name=:name,mail=:mail,address=:address,locality=:locality,password=:password WHERE number=:number");
+    profileContents.prepare("UPDATE UsersLoginInfo SET name=:name,mail=:mail,address=:address,locality=:locality,password=:password WHERE number=:number");
     //profileContents.prepare("UPDATE UsersLoginInfo SET name=:name WHERE number=:number");
-    profileContents.bindValue(":industry",industry);
     profileContents.bindValue(":name",name);
     profileContents.bindValue(":mail",mail);
     profileContents.bindValue(":address",address);
     profileContents.bindValue(":locality",locality);
     profileContents.bindValue(":password",password);
     profileContents.bindValue(":number",number);
-    qDebug()<<industry + name + mail + address + number + locality + password;
 
     if(!profileContents.exec()){
         //qDebug()<<queryString;
         qDebug()<<"error in updating profile_contents";
     }
-    usernumber_database(mail);
+    username_database(mail,1);
 
 }
-
-/*void AjayDatabase::address(const QString &address)
-{
-    QSqlQuery searchAddress;
-    searchAddress.prepare("SELECT address FROM UsersLoginInfo WHERE address = :address");
-    searchAddress.bindValue(":address",address);
-
-    if(!searchAddress.exec()){
-        qDebug()<<"error while searching address";
-    }
-
-    if(searchAddress.exec()){
-        while (searchAddress.next()) {
-            address_from_db = searchAddress.value(0).toString();
-            m_address = address_from_db;
-        }
-    }
-}
-
-void AjayDatabase::locality(const QString &locality)
-{
-    QSqlQuery searchLocality;
-    searchLocality.prepare("SELECT locality FROM UsersLoginInfo WHERE locality = :locality");
-    searchLocality.bindValue(":locality",locality);
-
-    if(!searchLocality.exec()){
-        qDebug()<<"error while searching locality";
-    }
-
-    if(searchLocality.exec()){
-        while (searchLocality.next()) {
-            locality_from_db = searchLocality.value(0).toString();
-            m_locality = locality_from_db;
-        }
-    }
-}
-
-void AjayDatabase::number(const QString &number)
-{
-    QSqlQuery searchNumber;
-    searchNumber.prepare("SELECT number FROM UsersLoginInfo WHERE number = :number");
-    searchNumber.bindValue(":number",number);
-
-    if(!searchNumber.exec()){
-        qDebug()<<"error while searching number";
-    }
-
-    if(searchNumber.exec()){
-        while (searchNumber.next()) {
-            mobilenumber_from_db = searchNumber.value(0).toString();
-            m_number = mobilenumber_from_db;
-        }
-    }
-}
-
-void AjayDatabase::password(const QString &password)
-{
-    QSqlQuery searchPassword;
-    searchPassword.prepare("SELECT password FROM UsersLoginInfo WHERE password = :password");
-    searchPassword.bindValue(":password",password);
-
-    if(!searchPassword.exec()){
-        qDebug()<<"error while searching password";
-    }
-
-    if(searchPassword.exec()){
-        while (searchPassword.next()) {
-            userpassword_from_db = searchPassword.value(0).toString();
-            m_password = userpassword_from_db;
-        }
-    }
-}*/
-
-
 
 void AjayDatabase::logout()
 {
@@ -290,6 +214,18 @@ void AjayDatabase::logout()
     query->prepare("use QGC_User_Login");
     if(!query->exec()){
         qDebug()<<"The database is closed again";
+        db.setHostName("logdata.cbgenywwv2vb.ap-south-1.rds.amazonaws.com");
+        db.setUserName("admin");
+        db.setPassword("admin123");
+
+        if(db.open()){
+            qDebug()<<"connection opened";
+        }
+        else if(!db.open()){
+            qDebug()<<"connection not opened";
+            emit connectionNotopened();
+        }
+
     }
     else {
         qDebug()<<"The database is opened again";
@@ -312,56 +248,88 @@ void AjayDatabase::change_password(const QString &mail, const QString &newPasswo
 }
 
 
-void AjayDatabase::usernumber_database(const QString &mail){
+void AjayDatabase::username_database(const QString &mail,const int flag){
+
     qDebug()<<("called here");
-    QSqlQuery searchNumber;
-    searchNumber.prepare("SELECT industry,number,address,locality,password,name FROM UsersLoginInfo WHERE mail = :mail");
-    searchNumber.bindValue(":mail",mail);
-    if(!searchNumber.exec()){
+    QSqlQuery searchName;
+    searchName.prepare("SELECT number,address,locality,password,name FROM UsersLoginInfo WHERE mail = :mail");
+    searchName.bindValue(":mail",mail);
+    if(!searchName.exec()){
         qDebug()<<("error in username");
     }
 
-    if(searchNumber.exec()){
-        while (searchNumber.next()) {
-            industry_from_db = searchNumber.value(0).toString();
-            m_industry = industry_from_db;
-            mobilenumber_from_db = searchNumber.value(1).toString();
+    if(searchName.exec()){
+        while (searchName.next()) {
+            mobilenumber_from_db = searchName.value(0).toString();
             m_number = mobilenumber_from_db;
-            address_from_db = searchNumber.value(2).toString();
+            address_from_db = searchName.value(1).toString();
             m_address = address_from_db;
-            locality_from_db = searchNumber.value(3).toString();
+            locality_from_db = searchName.value(2).toString();
             m_locality = locality_from_db;
-            userpassword_from_db = searchNumber.value(4).toString();
+            userpassword_from_db = searchName.value(3).toString();
             m_password = userpassword_from_db;
-            user_name_from_db = searchNumber.value(5).toString();
+            user_name_from_db = searchName.value(4).toString();
             m_name = user_name_from_db;
         }
-        qDebug()<<("username "+m_number);
+        qDebug()<<("username "+m_name);
     }
 
-    QSqlQuery createDataBase;
-    QString query = "create database "+ mobilenumber_from_db;
-    createDataBase.prepare(query);
-    if(!createDataBase.exec()){
-        //qDebug()<<query;
-        qDebug()<<"error in creating a database";
+    if(flag == 0){
+        previous_username = user_name_from_db;
+        QSqlQuery createDataBase;
+        QString query = "create database "+ user_name_from_db;
+        createDataBase.prepare(query);
+        if(!createDataBase.exec()){
+            qDebug()<<"error in creating a database";
+        }
+
+        QSqlQuery useDataBase;
+        QString query2 = "use " + user_name_from_db;
+        useDataBase.prepare(query2);
+        if(!useDataBase.exec()){
+            qDebug()<<query2;
+            qDebug()<<"error in using a database";
+        }
+
+        QSqlQueryModel *create_table = new QSqlQueryModel();
+        create_table->setQuery("create table RpaList(TYPE text,MODEL_NAME text, DRONE_NAME text, UIN text)");
+
+        QSqlQueryModel *create_table1 = new QSqlQueryModel();
+        create_table1->setQuery("create table FirmwareLog(Info text,Date text,Time text)");
+
+        emit record_found();
+}
+    if(flag == 1){
+        QSqlQueryModel *database_creation = new QSqlQueryModel();
+        database_creation->setQuery("create database "+user_name_from_db);
+
+        qDebug()<<previous_username + user_name_from_db;
+
+        QString query = "rename table "+ previous_username + ".RpaList to " + user_name_from_db + ".RpaList";
+        QString query1 = "rename table "+ previous_username + ".FirmwareLog to " + user_name_from_db + ".FirmwareLog";
+        QString query3 = "drop database "+ previous_username;
+
+        QSqlQuery renameRpatable;
+        renameRpatable.prepare(query);
+        if(!renameRpatable.exec()){
+            qDebug()<<renameRpatable.lastError();
+            qDebug()<<"error in renaming table1";
+        }
+
+        QSqlQuery renameFirmwaretable;
+        renameFirmwaretable.prepare(query1);
+        if(!renameFirmwaretable.exec()){
+            qDebug()<<renameFirmwaretable.lastError();
+            qDebug()<<"error in renaming table2";
+        }
+
+        QSqlQuery deleteDatabase;
+        deleteDatabase.prepare(query3);
+        if(!deleteDatabase.exec()){
+            qDebug()<<"error in deleting database";
+        }
+        previous_username = user_name_from_db;
     }
-
-    QSqlQuery useDataBase;
-    QString query2 = "use " + mobilenumber_from_db;
-    useDataBase.prepare(query2);
-    if(!useDataBase.exec()){
-        qDebug()<<query2;
-        qDebug()<<"error in using a database";
-    }
-
-    QSqlQueryModel *create_table = new QSqlQueryModel();
-    create_table->setQuery("create table RpaList(TYPE text,MODEL_NAME text, DRONE_NAME text, UIN text)");
-
-    QSqlQueryModel *create_table1 = new QSqlQueryModel();
-    create_table1->setQuery("create table FirmwareLog(Info text,Date text,Time text)");
-
-    emit record_found();
 }
 
 QString AjayDatabase::name() const

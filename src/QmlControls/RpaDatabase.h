@@ -26,10 +26,9 @@ public:
 
     Q_INVOKABLE void checkboxSqledit(QString queryString);
 
-//    Q_INVOKABLE void update_contents(const QString &UIN,
-//                                     const QString &newTYPE,const QString &newMODEL_NAME, const QString &newDRONE_NAME);
+    Q_INVOKABLE void update_table_contents(const QString &TYPE,const QString &MODEL_NAME, const QString &DRONE_NAME, const QString &UIN);
 
-//    Q_INVOKABLE void delete_contents();
+    Q_INVOKABLE void delete_table_contents(QString queryString);
 
     Q_PROPERTY(QString type READ type WRITE setType NOTIFY typeChanged)
 

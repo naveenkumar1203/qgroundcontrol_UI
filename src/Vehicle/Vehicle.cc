@@ -3804,8 +3804,11 @@ void Vehicle::_initializeCsv()
     //QString fileName = QString("%1 vehicle%2.csv").arg(now).arg(_id);
 
     QString fileName = QString("%1 %2 %3.csv").arg(now).arg(model).arg(uin);
-    QDir saveDir(_toolbox->settingsManager()->appSettings()->telemetrySavePath());
+    //QDir saveDir(_toolbox->settingsManager()->appSettings()->telemetrySavePath());
+    QString flightlog_filename = _toolbox->settingsManager()->appSettings()->telemetrySavePath();
+    QDir saveDir (flightlog_filename);
     _csvLogFile.setFileName(saveDir.absoluteFilePath(fileName));
+    emit flightlog_filenameChanged();
 
     if (!_csvLogFile.open(QIODevice::Append)) {
         qCWarning(VehicleLog) << "unable to open file for csv logging, Stopping csv logging!";
@@ -3823,6 +3826,20 @@ void Vehicle::_initializeCsv()
     qCDebug(VehicleLog) << "Facts logged to csv:" << allFactNames;
     stream << "Timestamp," << allFactNames.join(",") << "\n";
     qDebug()<<"inside initialise csv";
+}
+
+QString Vehicle::flightlog_filename() const
+{
+    QString flightlog_filename = "file://"+ _toolbox->settingsManager()->appSettings()->telemetrySavePath();
+    return flightlog_filename;
+}
+
+void Vehicle::setFlightlog_filename(const QString &newFlightlog_filename)
+{
+    if (m_flightlog_filename == newFlightlog_filename)
+        return;
+    m_flightlog_filename = newFlightlog_filename;
+
 }
 
 void Vehicle::_writeCsvLine()

@@ -56,14 +56,14 @@ void RpaDatabase::checkboxSqledit(QString queryString)
     }
     if(check.exec()){
         while (check.next()) {
+            type_from_db = check.value(0).toString();
+            m_type = type_from_db;
             model_from_db = check.value(1).toString();
             m_model = model_from_db;
             name_from_db = check.value(2).toString();
             m_droneName = name_from_db;
-            type_from_db = check.value(0).toString();
-            m_type = type_from_db;
-            uin_from_db = check.value(3).toString();
-            m_uin = uin_from_db;
+            uin_from_db_first = check.value(3).toString();
+            m_uin = uin_from_db_first;
         }
     }
     qDebug()<<m_type;
@@ -72,32 +72,38 @@ void RpaDatabase::checkboxSqledit(QString queryString)
     qDebug()<<m_uin;
 }
 
-/*void RpaDatabase::update_contents(const QString &UIN,
-                                  const QString &newTYPE,const QString &newMODEL_NAME, const QString &newDRONE_NAME)
+void RpaDatabase::update_table_contents(const QString &TYPE,const QString &MODEL_NAME, const QString &DRONE_NAME, const QString &UIN)
 {
-    QSqlQuery updateContents;
+    QSqlQuery tableContents;
     //UPDATE UsersLoginInfo SET password="wd" WHERE mail="w";
-    updateContents.prepare("UPDATE RpaList SET TYPE=?, MODEL_NAME =?, DRONE_NAME =? WHERE UIN=?");
-    updateContents.addBindValue(newTYPE);
-    updateContents.addBindValue(newMODEL_NAME);
-    updateContents.addBindValue(newDRONE_NAME);
-    updateContents.addBindValue(UIN);
+    tableContents.prepare("UPDATE RpaList SET TYPE=:TYPE,MODEL_NAME=:MODEL_NAME,DRONE_NAME=:DRONE_NAME WHERE UIN=:UIN");
+    tableContents.bindValue(":TYPE",TYPE);
+    tableContents.bindValue(":MODEL_NAME",MODEL_NAME);
+    tableContents.bindValue(":DRONE_NAME",DRONE_NAME);
+    tableContents.bindValue(":UIN",UIN);
+    qDebug()<<TYPE;
+    qDebug()<<MODEL_NAME;
+    qDebug()<<DRONE_NAME;
+    qDebug()<<UIN;
 
-    if(!updateContents.exec()){
+    if(!tableContents.exec()){
         qDebug()<<"error while updating contents";
     }
-    qDebug()<<UIN;
+
 }
 
-void RpaDatabase::delete_contents()
+void RpaDatabase::delete_table_contents(QString queryString)
 {
     QSqlQuery deleteContents;
-    deleteContents.prepare("Delete from RpaList Limit 1");
+    deleteContents.prepare(queryString);
+    qDebug()<<queryString;
+    //deleteContents.prepare("delete from RpaList where UIN:"+uin_from_db_first);
 
     if(!deleteContents.exec()){
+        qDebug()<<deleteContents.lastError();
         qDebug()<<"error while deleting";
     }
-}*/
+}
 
 QString RpaDatabase::type() const
 {

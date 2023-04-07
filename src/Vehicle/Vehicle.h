@@ -277,6 +277,7 @@ public:
     Q_PROPERTY(VehicleLinkManager*      vehicleLinkManager  READ vehicleLinkManager CONSTANT)
     Q_PROPERTY(VehicleObjectAvoidance*  objectAvoidance     READ objectAvoidance    CONSTANT)
     Q_PROPERTY(Autotune*                autotune            READ autotune           CONSTANT)
+    Q_PROPERTY(QString flightlog_filename READ flightlog_filename WRITE setFlightlog_filename NOTIFY flightlog_filenameChanged)
 
     // FactGroup object model properties
 
@@ -833,6 +834,9 @@ public:
     void setEventsMetadata(uint8_t compid, const QString& metadataJsonFileName, const QString& translationJsonFileName);
     void setActuatorsMetadata(uint8_t compid, const QString& metadataJsonFileName, const QString& translationJsonFileName);
 
+    QString flightlog_filename() const;
+    void setFlightlog_filename(const QString &newFlightlog_filename);
+
 public slots:
     void setVtolInFwdFlight                 (bool vtolInFwdFlight);
     void _offlineFirmwareTypeSettingChanged (QVariant varFirmwareType); // Should only be used by MissionControler to set firmware from Plan file
@@ -943,6 +947,8 @@ signals:
     void initialConnectComplete         ();
 
     void sensorsParametersResetAck      (bool success);
+
+    void flightlog_filenameChanged();
 
 private slots:
     void _mavlinkMessageReceived            (LinkInterface* link, mavlink_message_t message);
@@ -1378,6 +1384,9 @@ private:
     // Settings keys
     static const char* _settingsGroup;
     static const char* _joystickEnabledSettingsKey;
+
+    QString m_flightlog_filename;
+
 };
 
 Q_DECLARE_METATYPE(Vehicle::MavCmdResultFailureCode_t)
