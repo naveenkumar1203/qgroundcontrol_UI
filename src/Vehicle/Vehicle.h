@@ -47,6 +47,8 @@
 #include "FTPManager.h"
 #include "ImageProtocolManager.h"
 #include "RpaDatabase.h"
+#include "AWSOperations.h"
+#include "Database.h"
 
 class Actuators;
 class EventHandler;
@@ -1056,6 +1058,7 @@ private:
 
     QTimer              _csvLogTimer;
     QFile               _csvLogFile;
+    QFile               _userTextFile;
 
     bool            _joystickEnabled = false;
 

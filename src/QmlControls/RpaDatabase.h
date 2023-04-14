@@ -28,7 +28,7 @@ public:
 
     Q_INVOKABLE void update_table_contents(const QString &TYPE,const QString &MODEL_NAME, const QString &DRONE_NAME, const QString &UIN);
 
-    Q_INVOKABLE void delete_table_contents(QString queryString);
+    Q_INVOKABLE void delete_table_contents(QString number); //queryString
 
     Q_PROPERTY(QString type READ type WRITE setType NOTIFY typeChanged)
 

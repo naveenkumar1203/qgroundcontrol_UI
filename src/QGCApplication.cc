@@ -105,6 +105,8 @@
 #include "FirmwareUpdate.h"
 #include "Database.h"
 #include "RpaDatabase.h"
+#include "AWSOperations.h"
+
 
 #if defined(QGC_ENABLE_PAIRING)
 #include "PairingManager.h"
@@ -522,6 +524,7 @@ void QGCApplication::_initCommon()
     qmlRegisterType<AjayDatabase>                   ("AjayDatabase",             1, 0, "AjayDatabase");
     qmlRegisterType<FirmwareUpdate>                 ("FirmwareUpdate",             1, 0, "FirmwareUpdate");
     qmlRegisterType<RpaDatabase>                    ("RpaDatabase",             1, 0, "RpaDatabase");
+    qmlRegisterType<AWSOperations>                    ("AWSOperations",             1, 0, "AWSOperations");
 
 
 #ifndef __mobile__

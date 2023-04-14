@@ -158,12 +158,20 @@ Item{
 
                 }
             }
-            check_box.checked = false
-            check_box1.checked = false
-            check_box2.checked = false
-            check_box3.checked = false
-            check_box4.checked = false
-            /*if(drone_model_list.currentText === "Model A") {
+            /*else if(check_box.checked === true || check_box1.checked === true || check_box2.checked === true || check_box3.checked === true ||check_box4.checked === true){
+                console.log("model not selected------>")
+                rpadatabase.checkboxSqlfly("select MODEL_NAME,UIN from RpaList")
+                if(rpadatabase.model === ""){
+                    select_the_modelDialog.open()
+                    console.log("model not selected")
+                }
+            }
+            else if(check_box.checked !== true || check_box1.checked !== true || check_box2.checked !== true || check_box3.checked !== true ||check_box4.checked !== true){
+                console.log("check_box is not selected")
+                select_the_checkboxDialog.open()
+            }
+
+            if(drone_model_list.currentText === "Model A") {
                 firmware_load1.checksum_generation_process_model_A()
 
             }
@@ -173,8 +181,33 @@ Item{
             else if (uin_input_text.text !== ""){
                 rpadatabase.existingUIN(uin_input_text.text)
                 //uin_input_text.text=""
-            }*/
+            }
+*/
 
+            check_box.checked = false
+            check_box1.checked = false
+            check_box2.checked = false
+            check_box3.checked = false
+            check_box4.checked = false
+
+        }
+    }
+    Dialog {
+        id: select_the_modelDialog
+        width: 200
+        height: 50
+        title: "Select the Model"
+        Label {
+            text: "Please Select the Model."
+        }
+    }
+    Dialog {
+        id: select_the_checkboxDialog
+        width: 200
+        height: 50
+        title: "Model not Selected"
+        Label {
+            text: "You have to select the model before you fly."
         }
     }
 

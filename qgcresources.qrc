@@ -87,6 +87,22 @@
         <file alias="main_home.png">resources/main_home.png</file>
         <file alias="bell.png">resources/bell.png</file>
         <file alias="mail.png">resources/mail.png</file>
+        <file alias="backtologin.png">resources/backtologin.jpg</file>
+        <file alias="backtologin-removebg-preview.png">resources/backtologin-removebg-preview.png</file>
+        <file alias="forgotpassword.png">resources/forgotpassword.png</file>
+        <file alias="godrona-logo.png">resources/godrona-logo.png</file>
+        <file alias="mailLogo.png">resources/mailLogo.png</file>
+        <file alias="new_member.png">resources/new_member.png</file>
+        <file alias="organization.png">resources/organization.png</file>
+        <file alias="password.jpg">resources/password.jpg</file>
+        <file alias="password.png">resources/password.png</file>
+        <file alias="password_hide.png">resources/password_hide.png</file>
+        <file alias="password_show.png">resources/password_show.png</file>
+        <file alias="user_image.png">resources/user_image.png</file>
+        <file alias="user_locality.png">resources/user_locality.png</file>
+        <file alias="user_location.png">resources/user_location.png</file>
+        <file alias="user_phone.png">resources/user_phone.png</file>
+        <file alias="user_photo.png">resources/user_photo.png</file>
     </qresource>
     <qresource prefix="/res/firmware">
         <file alias="3drradio.png">resources/firmware/3drradio.png</file>

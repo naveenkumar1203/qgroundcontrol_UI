@@ -32,6 +32,9 @@
 #include "QGCApplication.h"
 #include "ADSBVehicleManager.h"
 #include "RpaDatabase.h"
+#include "AWSOperations.h"
+#include "Database.h"
+
 #if defined(QGC_ENABLE_PAIRING)
 #include "PairingManager.h"
 #endif

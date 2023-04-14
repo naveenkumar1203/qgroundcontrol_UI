@@ -36,6 +36,14 @@ public:
 
     Q_INVOKABLE void signupExistingUsernumber(const QString &number);
 
+//    Q_INVOKABLE void existingUserProfilename(const QString &name);
+
+    Q_INVOKABLE void existingUserProfilemail(const QString &mail);
+
+//    Q_INVOKABLE void existingUserProfilenumber(const QString &number);
+
+    Q_INVOKABLE void forgotPasswordmail(const QString &mail);
+
     Q_INVOKABLE void update_profile_contents(const QString &name,
                                              const QString &mail,
                                              const QString &number,
@@ -45,7 +53,7 @@ public:
 
     Q_INVOKABLE void logout();
 
-    void username_database(const QString &mail,const int flag);
+    void username_database(const QString &mail);
 
     Q_PROPERTY(QString industry READ industry WRITE setIndustry NOTIFY industryChanged)
 
@@ -61,6 +69,7 @@ public:
 
     Q_PROPERTY(QString password READ password WRITE setPassword NOTIFY passwordChanged)
 
+    Q_PROPERTY(QString awsname READ awsname WRITE setAwsname NOTIFY awsnameChanged)
 
     QString name() const;
     void setName(const QString &newName);
@@ -83,7 +92,11 @@ public:
     QString industry() const;
     void setIndustry(const QString &newIndustry);
 
+    QString awsname() const;
+    void setAwsname(const QString &newAwsname);
+
 signals:
+    //void connection_not_established();
     void record_found();
     void incorrect_password();
     void no_record_found();
@@ -100,6 +113,9 @@ signals:
     void passwordChanged();
     void industryChanged();
     void connectionNotopened();
+    void forgotmail_record_notfound();
+
+    void awsnameChanged();
 
 public slots:
 
@@ -112,6 +128,7 @@ private:
     QString m_locality;
     QString m_password;
     QString m_industry;
+    QString m_awsname;
 };
 
 #endif // DATABASE_H

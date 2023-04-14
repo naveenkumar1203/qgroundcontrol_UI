@@ -73,6 +73,10 @@ QString current_model;
 QString current_uin;
 QString previous_model;
 QString previous_uin;
+QString user_name;
+QString file_name;
+QString folder_location;
+int vehicle_armed = 0;
 
 const char* Vehicle::_settingsGroup =               "Vehicle%1";        // %1 replaced with mavlink system id
 const char* Vehicle::_joystickEnabledSettingsKey =  "JoystickEnabled";
@@ -3806,11 +3810,26 @@ void Vehicle::_initializeCsv()
     QString fileName = QString("%1 %2 %3.csv").arg(now).arg(model).arg(uin);
     //QDir saveDir(_toolbox->settingsManager()->appSettings()->telemetrySavePath());
     QString flightlog_filename = _toolbox->settingsManager()->appSettings()->telemetrySavePath();
+    qDebug()<<flightlog_filename;
+    folder_location = flightlog_filename;
+    file_name = fileName;
     QDir saveDir (flightlog_filename);
     _csvLogFile.setFileName(saveDir.absoluteFilePath(fileName));
+
+    QString userName = _toolbox->ajaydatabase()->awsname();
+    QString user_text_file = QString("%1.txt").arg(userName);
+    qDebug()<<"user_text_file.........."<<user_text_file;
+    QDir saveDir1 (flightlog_filename);
+    _userTextFile.setFileName(saveDir1.absoluteFilePath(user_text_file));
+
     emit flightlog_filenameChanged();
 
     if (!_csvLogFile.open(QIODevice::Append)) {
+        qCWarning(VehicleLog) << "unable to open file for csv logging, Stopping csv logging!";
+        return;
+    }
+
+    if (!_userTextFile.open(QIODevice::Append)) {
         qCWarning(VehicleLog) << "unable to open file for csv logging, Stopping csv logging!";
         return;
     }
@@ -3853,24 +3872,26 @@ void Vehicle::_writeCsvLine()
         _initializeCsv();
     }
 
+    user_name = _toolbox->ajaydatabase()->awsname();
+
     current_model = _toolbox->rpadatabase()->model(); //obj.model();
     current_uin = _toolbox->rpadatabase()->uin(); //obj.uin();
-    qDebug()<<"current------------"<<current_model;
-    qDebug()<<"current------------"<<current_uin;
+    //qDebug()<<"current------------"<<current_model;
+    //qDebug()<<"current------------"<<current_uin;
 
     if(previous_model == "" && previous_uin == ""){
         previous_model = current_model;
         previous_uin = current_uin;
-        qDebug()<<"previous------------"<<previous_model;
-        qDebug()<<"previous------------"<<previous_uin;
+        //qDebug()<<"previous------------"<<previous_model;
+        //qDebug()<<"previous------------"<<previous_uin;
     }
 
     if(current_model != previous_model || current_uin != previous_uin){
-        qDebug()<<"current and previous are not same";
-        qDebug()<<"not same current------------"<<current_model;
-        qDebug()<<"not same current------------"<<current_uin;
-        qDebug()<<"not same previous------------"<<previous_model;
-        qDebug()<<"not same previous------------"<<previous_uin;
+        //qDebug()<<"current and previous are not same";
+        //qDebug()<<"not same current------------"<<current_model;
+        //qDebug()<<"not same current------------"<<current_uin;
+        //qDebug()<<"not same previous------------"<<previous_model;
+        //qDebug()<<"not same previous------------"<<previous_uin;
         _csvLogFile.close();
         previous_model = current_model;
         previous_uin = current_uin;
@@ -3879,6 +3900,11 @@ void Vehicle::_writeCsvLine()
 
     if(!_csvLogFile.isOpen()){
         return;
+    }
+
+    if(_armed){
+        vehicle_armed = 1 ;
+        //qDebug()<<"vehicle is armed";
     }
 
     QStringList allFactValues;
@@ -3901,6 +3927,16 @@ void Vehicle::_writeCsvLine()
     }
 
     stream << allFactValues.join(",") << "\n";
+
+    if(!_armed){
+            if (vehicle_armed == 1){
+                //qDebug()<<"vehicle is not armed";
+                QTextStream stream(&_userTextFile);
+                stream << file_name;
+                _toolbox->awsoperations()->s3_function(user_name,file_name,folder_location);
+            }
+            vehicle_armed = 0;
+        }
 }
 
 #if !defined(NO_ARDUPILOT_DIALECT)

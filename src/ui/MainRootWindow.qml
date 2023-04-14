@@ -7,12 +7,10 @@
  *
  ****************************************************************************/
 
-//import QtQuick          2.11
 import QtQuick.Controls 2.4
 import QtQuick.Controls 2.15
 import QtQuick.Dialogs  1.3
 import QtQuick.Layouts  1.11
-//import QtQuick.Window   2.11
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Controls 1.4 as STYLE
 import Qt.labs.qmlmodels 1.0
@@ -30,6 +28,7 @@ import QGroundControl.FlightMap     1.0
 
 import AjayDatabase 1.0
 import RpaDatabase 1.0
+import AWSOperations 1.0
 
 /// @brief Native QML top level window
 /// All properties defined here are visible to all QML pages.
@@ -42,11 +41,30 @@ ApplicationWindow {
     property int updateButton: 1
     property bool editUin: true
     property int number: 0
-    //property bool editNumber: true
+    property real rectangleWidth: (table_rect.width - 40) / 5
+
+    AWSOperations{
+        id: aws
+    }
 
     AjayDatabase{
         id: database
+        /*onConnection_not_established: {
+            connection_not_established_dialog.open()
+            first_rectangle.visible = false
+            second_rectangle.visile = false
+            third_rectangle.visible = false
+            landing_page_rectangle.visible =false
+            dashboard_rectangle.visible = false
+            users_profile_header1.visible = false
+            manage_rpa_rectangle.visible = false
+            flight_log_rectangle.visible = false
+            users_information_header1.visible = false
+            rpa_register_page.visible = false
+        }*/
+
         onRecord_found: {
+            console.log(rectangleWidth)
             landing_page_rectangle.visible =true
             dashboard_rectangle.visible = true
             login_page_rectangle.z = -1
@@ -55,13 +73,12 @@ ApplicationWindow {
             rpadatabase.callSql("select * from RpaList limit 5")
             landing_page_rectangle.visible =true
             dashboard_rectangle.visible = true
+            users_profile_header1.visible = true
             manage_rpa_rectangle.visible = false
             flight_log_rectangle.visible = false
-            users_profile_header1.visible = true
             users_information_header1.visible = false
-            manage_rpa_rectangle.visible = false
             rpa_register_page.visible = false
-            dashboard_button.color = "#031C28"
+            dashboard_button.color = "#F25822"
             managerpa_button.color = "#031C28"
             flight_log_button.color = "#031C28"
             logout_button.color = "#031C28"
@@ -74,6 +91,8 @@ ApplicationWindow {
         }
         onName_record_found: {
             namerecord_Dialog.open()
+            //namerecord_Dialog.visible = true
+            //console.log("record found")
         }
         onMail_record_found: {
             mailrecord_Dialog.open()
@@ -90,6 +109,9 @@ ApplicationWindow {
         }
         onConnectionNotopened: {
             connectionLostdialog.open()
+        }
+        onForgotmail_record_notfound: {
+            mailrecord_not_found.open()
         }
 
     }
@@ -138,7 +160,7 @@ ApplicationWindow {
             anchors.horizontalCenter: parent.horizontalCenter
             width: 90
             height: 90
-            //source: "qrc:/../../../../Downloads/godrona-logo.png"
+            source: "/res/godrona-logo.png"//"qrc:/../../../../Downloads/godrona-logo.png"
         }
         Column{
             id: login_page_label
@@ -177,6 +199,8 @@ ApplicationWindow {
                 text: ""
                 color: "white"
                 leftPadding: 50
+                placeholderText: qsTr("example@gmail.com")
+                inputMethodHints: Qt.ImhEmailCharactersOnly
                 validator: RegExpValidator{regExp: /.+/}
                 onTextChanged: {
                     login_page_email.border.color = "#C0C0C0"
@@ -193,7 +217,7 @@ ApplicationWindow {
                     width: 25
                     height: 25
                     fillMode: Image.PreserveAspectFit
-                    //source: "qrc:/../../../../Downloads/mailLogo.png"
+                    source: "/res/mailLogo.png"//"qrc:/../../../../Downloads/mailLogo.png"
                     anchors.left: parent.left
                     anchors.leftMargin: 12
                     anchors.verticalCenter: parent.verticalCenter
@@ -216,6 +240,7 @@ ApplicationWindow {
                 height: 35
                 text: ""
                 color: "white"
+                placeholderText: qsTr("Password")
                 leftPadding: 50
                 rightPadding: 50
                 validator: RegExpValidator { regExp: /.+/ }
@@ -236,7 +261,7 @@ ApplicationWindow {
                     width: 23
                     height: 23
                     fillMode: Image.PreserveAspectFit
-                    //source: "qrc:/../../../../Downloads/password.png"
+                    source: "/res/password.png"//"qrc:/../../../../Downloads/password.png"
                     anchors.left: parent.left
                     anchors.leftMargin: 8
                     anchors.verticalCenter: parent.verticalCenter
@@ -246,7 +271,7 @@ ApplicationWindow {
                     width: 25
                     height: 25
                     fillMode: Image.PreserveAspectFit
-                    //source: "qrc:/../../../../Downloads/password_hide.png"
+                    source: "/res/password_hide.png"//"qrc:/../../../../Downloads/password_hide.png"
                     anchors.right: parent.right
                     anchors.rightMargin: 12
                     anchors.verticalCenter: parent.verticalCenter
@@ -265,7 +290,7 @@ ApplicationWindow {
                     width: 25
                     height: 25
                     fillMode: Image.PreserveAspectFit
-                    //source: "qrc:/../../../../Downloads/password_show.png"
+                    source: "/res/password_show.png"//"qrc:/../../../../Downloads/password_show.png"
                     anchors.right: parent.right
                     anchors.rightMargin: 12
                     anchors.verticalCenter: parent.verticalCenter
@@ -302,7 +327,6 @@ ApplicationWindow {
                 height: 50
                 width: 50
                 text:"please enter your details correctly"
-
             }
             onPressed: {
                 login_button.color = "#05324D"
@@ -337,7 +361,7 @@ ApplicationWindow {
                     width: 50
                     height: 50
                     anchors.horizontalCenter: parent.horizontalCenter
-                    source: "/res/action.svg" //"qrc:/../../../../Downloads/new_member.png"
+                    source: "/res/new_member.png" //"qrc:/../../../../Downloads/new_member.png"
 
                 }
                 MouseArea{
@@ -364,7 +388,7 @@ ApplicationWindow {
                     width: 50
                     height: 50
                     anchors.horizontalCenter: parent.horizontalCenter
-                    source: "/res/action.svg" //"qrc:/../../../../Downloads/forgotpassword.png"
+                    source: "/res/forgotpassword.png" //"qrc:/../../../../Downloads/forgotpassword.png"
                 }
                 MouseArea{
                     anchors.fill: forgot_password_logo
@@ -424,6 +448,8 @@ ApplicationWindow {
                     height: 35
                     text: ""
                     color: "white"
+                    placeholderText: qsTr("example@gmail.com")
+                    inputMethodHints: Qt.ImhEmailCharactersOnly
                     leftPadding: 50
                     onTextChanged: {
                         forgot_password_page_email.border.color = "#C0C0C0"
@@ -440,10 +466,13 @@ ApplicationWindow {
                         width: 25
                         height: 25
                         fillMode: Image.PreserveAspectFit
-                        //source: "qrc:/../../../../Downloads/mailLogo.png"
+                        source: "/res/mailLogo.png"//"qrc:/../../../../Downloads/mailLogo.png"
                         anchors.left: parent.left
                         anchors.leftMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
+                    }
+                    onEditingFinished : {
+                        database.forgotPasswordmail(forgot_password_mail_text.text)
                     }
                 }
             }
@@ -469,8 +498,15 @@ ApplicationWindow {
                     submit_button.color = "#F25822"
                 }
                 onClicked: {
-                    forgot_password_page_rectangle.visible = false
-                    reset_password_page_rectangle.visible = true
+                    if(forgot_password_mail_text.text !== database.mail){
+                        database.forgotPasswordmail(forgot_password_mail_text.text)
+                        console.log("mail is not found")
+                    }
+                    else {
+                        forgot_password_page_rectangle.visible = false
+                        reset_password_page_rectangle.visible = true
+                        console.log("Mail is found")
+                    }
                 }
             }
             Label{
@@ -496,7 +532,7 @@ ApplicationWindow {
             anchors.bottomMargin: 40
             width: 75
             height: 75
-            //source: "qrc:/../../../../Downloads/backtologin-removebg-preview.png"
+            source: "/res/backtologin-removebg-preview.png"//"qrc:/../../../../Downloads/backtologin-removebg-preview.png"
             Label{
                 anchors.top: parent.bottom
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -562,6 +598,7 @@ ApplicationWindow {
                     color: "white"
                     leftPadding: 50
                     rightPadding: 50
+                    placeholderText: qsTr("password")
                     echoMode: TextInput.Password
                     onTextChanged: {
                         new_password.border.color = "#C0C0C0"
@@ -578,7 +615,7 @@ ApplicationWindow {
                         width: 23
                         height: 23
                         fillMode: Image.PreserveAspectFit
-                        //source: "qrc:/../../../../Downloads/password.png"
+                        source: "/res/password.png"//"qrc:/../../../../Downloads/password.png"
                         anchors.left: parent.left
                         anchors.leftMargin: 8
                         anchors.verticalCenter: parent.verticalCenter
@@ -588,7 +625,7 @@ ApplicationWindow {
                         width: 25
                         height: 25
                         fillMode: Image.PreserveAspectFit
-                        //source: "qrc:/../../../../Downloads/password_hide.png"
+                        source: "/res/password_hide.png"//"qrc:/../../../../Downloads/password_hide.png"
                         anchors.right: parent.right
                         anchors.rightMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
@@ -607,7 +644,7 @@ ApplicationWindow {
                         width: 25
                         height: 25
                         fillMode: Image.PreserveAspectFit
-                        //source: "qrc:/../../../../Downloads/password_show.png"
+                        source: "/res/password_show.png"//"qrc:/../../../../Downloads/password_show.png"
                         anchors.right: parent.right
                         anchors.rightMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
@@ -634,6 +671,7 @@ ApplicationWindow {
                     height: 35
                     text: ""
                     color: "white"
+                    placeholderText: qsTr("password")
                     leftPadding: 50
                     rightPadding: 50
                     echoMode: TextInput.Password
@@ -652,7 +690,7 @@ ApplicationWindow {
                         width: 23
                         height: 23
                         fillMode: Image.PreserveAspectFit
-                        //source: "qrc:/../../../../Downloads/password.png"
+                        source: "/res/password.png"//"qrc:/../../../../Downloads/password.png"
                         anchors.left: parent.left
                         anchors.leftMargin: 8
                         anchors.verticalCenter: parent.verticalCenter
@@ -662,7 +700,7 @@ ApplicationWindow {
                         width: 25
                         height: 25
                         fillMode: Image.PreserveAspectFit
-                        //source: "qrc:/../../../../Downloads/password_hide.png"
+                        source: "/res/password_hide.png"//"qrc:/../../../../Downloads/password_hide.png"
                         anchors.right: parent.right
                         anchors.rightMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
@@ -681,7 +719,7 @@ ApplicationWindow {
                         height: 25
                         visible: false
                         fillMode: Image.PreserveAspectFit
-                        //source: "qrc:/../../../../Downloads/password_show.png"
+                        source: "/res/password_show.png"//"qrc:/../../../../Downloads/password_show.png"
                         anchors.right: parent.right
                         anchors.rightMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
@@ -720,9 +758,12 @@ ApplicationWindow {
                 onClicked: {
                     if(new_password_textfield.text != confirm_password_textfield.text){
                         password_mismatch.open()
+                        new_password_textfield.text = ""
+                        confirm_password_textfield.text = ""
                     }
                     else{
                         database.change_password(forgot_password_mail_text.text,new_password_textfield.text)
+                        password_updated.open()
                         reset_password_page_rectangle.visible = false
                         login_page_rectangle.visible = true
                     }
@@ -891,20 +932,20 @@ ApplicationWindow {
                         color: "white"
                         verticalAlignment: Text.AlignVCenter
                         elide: Text.ElideRight
-                        onTextChanged: {
-                            if(combobox_text.text == "Drone Education & Training"){
-                                organization_image.visible = true
-                            }
-                            else{
-                                organization_image.visible = false
-                            }
-                        }
+//                        onTextChanged: {
+//                            if(combobox_text.text == "Drone Education & Training"){
+//                                organization_image.visible = true
+//                            }
+//                            else{
+//                                organization_image.visible = false
+//                            }
+//                        }
                         Image{
                             id: organization_image
                             width: 25
                             height: 25
                             anchors.verticalCenter: parent.verticalCenter
-                            //source: "qrc:/../../../../Downloads/organization.png"
+                            source: "/res/organization.png"//"qrc:/../../../../Downloads/organization.png"
                         }
                     }
                     background: Rectangle {
@@ -987,7 +1028,7 @@ ApplicationWindow {
                     anchors.left: user_image.left
                     anchors.leftMargin: user_image.radius + 20
                     anchors.verticalCenter: parent.verticalCenter
-                    //source: "qrc:/../../../../Downloads/user_photo.png"
+                    source: "/res/user_photo.png"//"qrc:/../../../../Downloads/user_photo.png"
                 }
                 Image{
                     anchors.fill: parent
@@ -1002,293 +1043,317 @@ ApplicationWindow {
                     }
                 }
             }
-            ScrollView {
+
+            Rectangle{
                 id: scrollview
                 width: parent.width
                 height: parent.height / 2
                 anchors.top: user_image.bottom
-                clip: true
-                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-                ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-                Column{
-                    id: column
-                    spacing: 30
-                    anchors.left: parent.left
-                    anchors.leftMargin: 50
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    Column{
-                        spacing: 10
-                        Label{
-                            text: "Full Name*"
-                            color: "white"
-                        }
-                        TextField{
-                            id: user_name_text
-                            width: 300
-                            height: 35
-                            text: ""
-                            color: "white"
-                            leftPadding: 50
-                            onTextChanged: {
-                                user_name.border.color = "#C0C0C0"
-                            }
-                            background: Rectangle
-                            {
-                                id: user_name
-                                anchors.fill: parent
-                                color: "#031C28"
-                                border.color: "#05324D"
-                                border.width: 1.5
-                            }
-                            Image {
-                                width: 23
-                                height: 23
-                                fillMode: Image.PreserveAspectFit
-                                //source: "qrc:/../../../../Downloads/user_image.png"
-                                anchors.left: parent.left
-                                anchors.leftMargin: 12
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                            onEditingFinished:{
-                                if (user_name_text.text !== "") {
-                                    database.signupExistingUsername(user_name_text.text)
+                anchors.topMargin: 2
+                border.width: 1
+                border.color: "#05324D"
+                color: "#031C28"
+                ScrollView {
+                    anchors.fill: parent
+                    clip: true
+                    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                    ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+                        Column{
+                            id: column
+                            spacing: 30
+                            anchors.left: parent.left
+                            anchors.leftMargin: 50
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            Column{
+                                spacing: 10
+                                Label{
+                                    text: "Full Name*"
+                                    color: "white"
                                 }
-                                //database.signupExistingUsername(user_name_text.text)
-                                //namerecord_Dialog.open()
-                            }
+                                TextField{
+                                    id: user_name_text
+                                    width: 300
+                                    height: 35
+                                    text: ""
+                                    color: "white"
+                                    placeholderText: qsTr("Your Name")
+                                    leftPadding: 50
+                                    onTextChanged: {
+                                        user_name.border.color = "#C0C0C0"
+                                    }
+                                    background: Rectangle
+                                    {
+                                        id: user_name
+                                        anchors.fill: parent
+                                        color: "#031C28"
+                                        border.color: "#05324D"
+                                        border.width: 1.5
+                                    }
+                                    Image {
+                                        width: 23
+                                        height: 23
+                                        fillMode: Image.PreserveAspectFit
+                                        source: "/res/user_image.png"//"qrc:/../../../../Downloads/user_image.png"
+                                        anchors.left: parent.left
+                                        anchors.leftMargin: 12
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                    onEditingFinished:{
+                                        if (user_name_text.text !== "") {
+                                            database.signupExistingUsername(user_name_text.text)
+                                        }
+                                        //database.signupExistingUsername(user_name_text.text)
+                                        //namerecord_Dialog.open()
 
-                        }
-                    }
-                    Column{
-                        spacing: 10
-                        Label{
-                            text: "Email Address*"
-                            color: "white"
-                        }
-                        TextField{
-                            id: user_mail_text
-                            width: 300
-                            height: 35
-                            text: ""
-                            color: "white"
-                            leftPadding: 50
-                            onTextChanged: {
-                                user_mail.border.color = "#C0C0C0"
-                            }
-                            background: Rectangle
-                            {
-                                id: user_mail
-                                anchors.fill: parent
-                                color: "#031C28"
-                                border.color: "#05324D"
-                                border.width: 1.5
-                            }
-                            Image {
-                                width: 25
-                                height: 25
-                                fillMode: Image.PreserveAspectFit
-                                //source: "qrc:/../../../../Downloads/mailLogo.png"
-                                anchors.left: parent.left
-                                anchors.leftMargin: 12
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                            onEditingFinished:{
-                                if (user_mail_text.text !== "") {
-                                    database.signupExistingUsermail(user_mail_text.text)
+                                    }
+
                                 }
-                                //database.signupExistingUsermail(user_mail_text.text)
-                                //mailrecord_Dialog.open()
                             }
-                        }
-                    }
-                    Column{
-                        spacing: 10
-                        Label{
-                            text: "Mobile Number*"
-                            color: "white"
-                        }
-                        TextField{
-                            id: user_number_text
-                            width: 300
-                            height: 35
-                            text: ""
-                            color: "white"
-                            leftPadding: 50
-                            inputMethodHints: Qt.ImhFormattedNumbersOnly
-                            onTextChanged: {
-                                user_number.border.color = "#C0C0C0"
-                            }
-                            background: Rectangle
-                            {
-                                id: user_number
-                                anchors.fill: parent
-                                color: "#031C28"
-                                border.color: "#05324D"
-                                border.width: 1.5
-                            }
-                            Image {
-                                width: 25
-                                height: 25
-                                fillMode: Image.PreserveAspectFit
-                                //source: "qrc:/../../../../Downloads/user_phone.png"
-                                anchors.left: parent.left
-                                anchors.leftMargin: 12
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                            onEditingFinished:{
-                                if (user_number_text.text !== "") {
-                                    database.signupExistingUsernumber(user_number_text.text)
+                            Column{
+                                spacing: 10
+                                Label{
+                                    text: "Email Address*"
+                                    color: "white"
                                 }
-                                //database.signupExistingUsernumber(user_number_text.text)
-                                //mailrecord_Dialog.open()
-                            }
-                        }
-                    }
-                    Column{
-                        spacing: 10
-                        Label{
-                            text: "Address Line*"
-                            color: "white"
-                        }
-                        TextField{
-                            id: user_address_text
-                            width: 300
-                            height: 35
-                            text: ""
-                            color: "white"
-                            leftPadding: 50
-                            onTextChanged: {
-                                user_address.border.color = "#C0C0C0"
-                            }
-                            background: Rectangle
-                            {
-                                id: user_address
-                                anchors.fill: parent
-                                color: "#031C28"
-                                border.color: "#05324D"
-                                border.width: 1.5
-                            }
-                            Image {
-                                width: 30
-                                height: 30
-                                fillMode: Image.PreserveAspectFit
-                                //source: "qrc:/../../../../Downloads/user_location.png"
-                                anchors.left: parent.left
-                                anchors.leftMargin: 12
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                        }
-                    }
-                    Column{
-                        spacing: 10
-                        Label{
-                            text: "Locality*"
-                            color: "white"
-                        }
-                        TextField{
-                            id: user_locality_text
-                            width: 300
-                            height: 35
-                            text: ""
-                            color: "white"
-                            leftPadding: 50
-                            onTextChanged: {
-                                user_locality.border.color = "#C0C0C0"
-                            }
-                            background: Rectangle
-                            {
-                                id: user_locality
-                                anchors.fill: parent
-                                color: "#031C28"
-                                border.color: "#05324D"
-                                border.width: 1.5
-                            }
-                            Image {
-                                width: 25
-                                height: 25
-                                fillMode: Image.PreserveAspectFit
-                                //source: "qrc:/../../../../Downloads/user_locality.png"
-                                anchors.left: parent.left
-                                anchors.leftMargin: 12
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                        }
-                    }
-                    Column{
-                        spacing: 10
-                        Label{
-                            text: "Password*"
-                            color: "white"
-                        }
-                        TextField{
-                            id: user_password_text
-                            width: 300
-                            height: 35
-                            text: ""
-                            color: "white"
-                            leftPadding: 50
-                            rightPadding: 50
-                            echoMode: TextInput.Password
-                            onTextChanged: {
-                                user_password.border.color = "#C0C0C0"
-                            }
-                            background: Rectangle
-                            {
-                                id: user_password
-                                anchors.fill: parent
-                                color: "#031C28"
-                                border.color: "#05324D"
-                                border.width: 1.5
-                            }
-                            Image {
-                                width: 23
-                                height: 23
-                                fillMode: Image.PreserveAspectFit
-                                //source: "qrc:/../../../../Downloads/password.png"
-                                anchors.left: parent.left
-                                anchors.leftMargin: 8
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                            Image {
-                                id: password_hide_image1
-                                width: 25
-                                height: 25
-                                fillMode: Image.PreserveAspectFit
-                                //source: "qrc:/../../../../Downloads/password_hide.png"
-                                anchors.right: parent.right
-                                anchors.rightMargin: 12
-                                anchors.verticalCenter: parent.verticalCenter
-                                MouseArea{
-                                    anchors.fill: parent
-                                    onClicked: {
-                                        password_hide_image1.visible = false
-                                        password_show_image1.visible = true
-                                        user_password_text.echoMode = TextInput.Normal
+                                TextField{
+                                    id: user_mail_text
+                                    width: 300
+                                    height: 35
+                                    text: ""
+                                    color: "white"
+                                    placeholderText: qsTr("example@gmail.com")
+                                    inputMethodHints: Qt.ImhEmailCharactersOnly
+                                    leftPadding: 50
+                                    onTextChanged: {
+                                        user_mail.border.color = "#C0C0C0"
+                                    }
+                                    background: Rectangle
+                                    {
+                                        id: user_mail
+                                        anchors.fill: parent
+                                        color: "#031C28"
+                                        border.color: "#05324D"
+                                        border.width: 1.5
+                                    }
+                                    Image {
+                                        width: 25
+                                        height: 25
+                                        fillMode: Image.PreserveAspectFit
+                                        source: "/res/mailLogo.png"//"qrc:/../../../../Downloads/mailLogo.png"
+                                        anchors.left: parent.left
+                                        anchors.leftMargin: 12
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                    onEditingFinished:{
+                                        if (user_mail_text.text !== "") {
+                                            database.signupExistingUsermail(user_mail_text.text)
+                                        }
+                                        //database.signupExistingUsermail(user_mail_text.text)
+                                        //mailrecord_Dialog.open()
                                     }
                                 }
                             }
-                            Image {
-                                id: password_show_image1
-                                visible: false
-                                width: 25
-                                height: 25
-                                fillMode: Image.PreserveAspectFit
-                                //source: "qrc:/../../../../Downloads/password_show.png"
-                                anchors.right: parent.right
-                                anchors.rightMargin: 12
-                                anchors.verticalCenter: parent.verticalCenter
-                                MouseArea{
-                                    anchors.fill: parent
-                                    onClicked: {
-                                        password_show_image1.visible = false
-                                        password_hide_image1.visible = true
-                                        user_password_text.echoMode = TextInput.Password
+                            Column{
+                                spacing: 10
+                                Label{
+                                    text: "Mobile Number*"
+                                    color: "white"
+                                }
+                                TextField{
+                                    id: user_number_text
+                                    width: 300
+                                    height: 35
+                                    text: ""
+                                    color: "white"
+                                    placeholderText: qsTr("Your Mobile Number")
+                                    leftPadding: 70
+                                    inputMethodHints: Qt.ImhFormattedNumbersOnly
+                                    onTextChanged: {
+                                        user_number.border.color = "#C0C0C0"
+                                    }
+                                    background: Rectangle
+                                    {
+                                        id: user_number
+                                        anchors.fill: parent
+                                        color: "#031C28"
+                                        border.color: "#05324D"
+                                        border.width: 1.5
+                                    }
+                                    Image {
+                                        id:image
+                                        width: 25
+                                        height: 25
+                                        fillMode: Image.PreserveAspectFit
+                                        source: "/res/user_phone.png"//"qrc:/../../../../Downloads/user_phone.png"
+                                        anchors.left: parent.left
+                                        anchors.leftMargin: 12
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                    Label {
+                                        anchors.left: image.right
+                                        anchors.leftMargin:3
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        text: "+91"
+                                        color: "white"
+                                    }
+                                    onEditingFinished:{
+                                        if (user_number_text.text !== "") {
+                                            database.signupExistingUsernumber(user_number_text.text)
+                                        }
+                                        //database.signupExistingUsernumber(user_number_text.text)
+                                        //numberrecord_Dialog.open()
+                                    }
+                                }
+                            }
+                            Column{
+                                spacing: 10
+                                Label{
+                                    text: "Address Line*"
+                                    color: "white"
+                                }
+                                TextField{
+                                    id: user_address_text
+                                    width: 300
+                                    height: 35
+                                    text: ""
+                                    color: "white"
+                                    placeholderText: qsTr("Your Address")
+                                    leftPadding: 50
+                                    onTextChanged: {
+                                        user_address.border.color = "#C0C0C0"
+                                    }
+                                    background: Rectangle
+                                    {
+                                        id: user_address
+                                        anchors.fill: parent
+                                        color: "#031C28"
+                                        border.color: "#05324D"
+                                        border.width: 1.5
+                                    }
+                                    Image {
+                                        width: 30
+                                        height: 30
+                                        fillMode: Image.PreserveAspectFit
+                                        source: "/res/user_location.png"//"qrc:/../../../../Downloads/user_location.png"
+                                        anchors.left: parent.left
+                                        anchors.leftMargin: 12
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                }
+                            }
+                            Column{
+                                spacing: 10
+                                Label{
+                                    text: "Locality*"
+                                    color: "white"
+                                }
+                                TextField{
+                                    id: user_locality_text
+                                    width: 300
+                                    height: 35
+                                    text: ""
+                                    color: "white"
+                                    placeholderText: qsTr("Your Locality")
+                                    leftPadding: 50
+                                    onTextChanged: {
+                                        user_locality.border.color = "#C0C0C0"
+                                    }
+                                    background: Rectangle
+                                    {
+                                        id: user_locality
+                                        anchors.fill: parent
+                                        color: "#031C28"
+                                        border.color: "#05324D"
+                                        border.width: 1.5
+                                    }
+                                    Image {
+                                        width: 25
+                                        height: 25
+                                        fillMode: Image.PreserveAspectFit
+                                        source: "/res/user_locality.png"//"qrc:/../../../../Downloads/user_locality.png"
+                                        anchors.left: parent.left
+                                        anchors.leftMargin: 12
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                }
+                            }
+                            Column{
+                                spacing: 10
+                                Label{
+                                    text: "Password*"
+                                    color: "white"
+                                }
+                                TextField{
+                                    id: user_password_text
+                                    width: 300
+                                    height: 35
+                                    text: ""
+                                    color: "white"
+                                    placeholderText: qsTr("password")
+                                    leftPadding: 50
+                                    rightPadding: 50
+                                    echoMode: TextInput.Password
+                                    onTextChanged: {
+                                        user_password.border.color = "#C0C0C0"
+                                    }
+                                    background: Rectangle
+                                    {
+                                        id: user_password
+                                        anchors.fill: parent
+                                        color: "#031C28"
+                                        border.color: "#05324D"
+                                        border.width: 1.5
+                                    }
+                                    Image {
+                                        width: 23
+                                        height: 23
+                                        fillMode: Image.PreserveAspectFit
+                                        source: "/res/password.png"//"qrc:/../../../../Downloads/password.png"
+                                        anchors.left: parent.left
+                                        anchors.leftMargin: 8
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+                                    Image {
+                                        id: password_hide_image1
+                                        width: 25
+                                        height: 25
+                                        fillMode: Image.PreserveAspectFit
+                                        source: "/res/password_hide.png"//"qrc:/../../../../Downloads/password_hide.png"
+                                        anchors.right: parent.right
+                                        anchors.rightMargin: 12
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        MouseArea{
+                                            anchors.fill: parent
+                                            onClicked: {
+                                                password_hide_image1.visible = false
+                                                password_show_image1.visible = true
+                                                user_password_text.echoMode = TextInput.Normal
+                                            }
+                                        }
+                                    }
+                                    Image {
+                                        id: password_show_image1
+                                        visible: false
+                                        width: 25
+                                        height: 25
+                                        fillMode: Image.PreserveAspectFit
+                                        source: "/res/password_show.png"//"qrc:/../../../../Downloads/password_show.png"
+                                        anchors.right: parent.right
+                                        anchors.rightMargin: 12
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        MouseArea{
+                                            anchors.fill: parent
+                                            onClicked: {
+                                                password_show_image1.visible = false
+                                                password_hide_image1.visible = true
+                                                user_password_text.echoMode = TextInput.Password
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
             }
             Column{
                 anchors.top: scrollview.bottom
@@ -1595,7 +1660,7 @@ ApplicationWindow {
             anchors.bottomMargin: 40
             width: 75
             height: 75
-            //source: "qrc:/../../../../Downloads/backtologin-removebg-preview.png"
+            source: "/res/backtologin-removebg-preview.png"//"qrc:/../../../../Downloads/backtologin-removebg-preview.png"
             Label{
                 anchors.top: parent.bottom
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -1678,6 +1743,22 @@ ApplicationWindow {
         }
         standardButtons: Dialog.Ok
     }
+    /*Label{
+        id:namerecord_Dialog
+        anchors.left: parent.left
+        anchors.leftMargin: 50
+        anchors.bottom: user_name.bottom
+        anchors.bottomMargin: 5
+        visible: false
+        text: "*Entered Name is Already taken"
+        color: "red"
+        background: Rectangle{
+            width: 100
+            height: 7
+            color: "#031C28"
+        }
+    }*/
+
     Dialog {
         id: namerecord_Dialog
         width: 200
@@ -1728,7 +1809,7 @@ ApplicationWindow {
         id: mailrecord_Dialog
         width: 200
         height: 100
-        title: "Already Registered Name and Mail"
+        title: "Already Registered Mail"
         Label {
             text: "Entered Mail is Already Registered."
         }
@@ -1787,7 +1868,25 @@ ApplicationWindow {
     //            login_page_rectangle.visible = true
     //        }
     //    }
+    Dialog {
+        id: mailrecord_not_found
+        width: 200
+        height: 50
+        title: "Wrong Mail ID"
+        Label {
+            text: "Please provide your Valid Mail Id"
+        }
+    }
 
+    Dialog {
+        id: connection_not_established_dialog
+        width: 200
+        height: 50
+        title: "Connection Lost"
+        Label {
+            text: "Connection not established, Please try after Sometime."
+        }
+    }
     Dialog {
         id: connectionLostdialog
         width: 200
@@ -1813,6 +1912,15 @@ ApplicationWindow {
         title: "Mismatch"
         Label {
             text: "Both passwords do not match"
+        }
+    }
+    Dialog {
+        id: password_updated
+        width: 200
+        height: 50
+        title: "Updated"
+        Label {
+            text: "Password changed and Updated."
         }
     }
 
@@ -2540,13 +2648,12 @@ ApplicationWindow {
         color: "#031C28"
 
         RowLayout {
-            //columns: 3
-            //Layout.alignment: GridLayout.LeftToRight//Qt.AlignTop
+            //anchors.centerIn: parent
+            spacing: 0
 
             Rectangle {
                 id: first_rectangle
                 color: "#031C28"
-                //anchors.rightMargin: -border.width
                 width: screen.width/5
                 height:parent.height
                 border.width: 1
@@ -2656,14 +2763,14 @@ ApplicationWindow {
                                 check_box4.checked = false
                             }
                         }
-                        /*states: State {
+                        states: State {
                             name: "pressed"; when: mouseArea.pressed
                             PropertyChanges { target: dashboard_button; scale: 1 }
                         }
 
                         transitions: Transition {
-                            NumberAnimation { properties: "scale"; duration: 50; easing.type: Easing.InOutQuad }
-                        }*/
+                            NumberAnimation { properties: "scale"; duration: 150; easing.type: Easing.InOutQuad }
+                        }
                     }
 
                     Rectangle{
@@ -2890,6 +2997,7 @@ ApplicationWindow {
                             //                            onExited: parent.color = '#031C28'
                             anchors.fill: flight_log_button
                             onClicked: {
+                                aws.read_text_file(database.awsname,QGroundControl.settingsManager.appSettings.telemetrySavePath)
                                 flight_log_rectangle.visible = true
                                 manage_rpa_rectangle.visible = false
                                 dashboard_rectangle.visible = false
@@ -2906,7 +3014,7 @@ ApplicationWindow {
                                 console.log(screen.width)
                                 console.log(screen.width/5)
                                 console.log(screen.width/1.8)
-                                console.log((screen.width/5 - screen.width/1.8))
+                                console.log((screen.width/1.8 - screen.width/5))
                             }
                         }
                     }
@@ -3050,7 +3158,6 @@ ApplicationWindow {
                 color: "#031C28"
                 border.color: "#05324D"
                 border.width: 1
-
 
                 Rectangle {
                     id: dashboard_rectangle
@@ -3357,7 +3464,6 @@ ApplicationWindow {
                 Rectangle {
                     id: manage_rpa_rectangle
                     width: screen.width/1.8//parent.width/1.8
-                    height: parent.height
                     //width: dashboard_rectangle.width
                     //height: dashboard_rectangle.height
                     color: "#031C28"
@@ -3445,7 +3551,7 @@ ApplicationWindow {
                                 width: 130
                                 height: 35
                                 radius: 4
-                                color: "#60031C28"
+                                color: "red"//"#60031C28"
 
                                 Loader {
                                     id: panelLoader
@@ -3660,6 +3766,7 @@ ApplicationWindow {
                                         color: "#031C28"
                                         border.width: 1
                                         border.color: "#05324D"
+                                        visible: tableView.rows > 0
                                         CheckBox{
                                             id: check_box
                                             anchors.fill: parent
@@ -3679,11 +3786,11 @@ ApplicationWindow {
                                                     anchors.fill: parent
                                                 }
                                             }
-                                            //visible: {
-                                            //    if(tableView.rows == 1){
-                                            //        check_box.visible = true;
-                                            //    }
-                                            //}
+//                                            visible: {
+//                                                if(tableView.rows == 1){
+//                                                    check_box.visible = true;
+//                                                }
+//                                            }
 
                                             checked: false
                                             onCheckedChanged: {
@@ -3736,6 +3843,7 @@ ApplicationWindow {
                                         color: "#031C28"
                                         border.width: 1
                                         border.color: "#05324D"
+                                        visible: tableView.rows > 1
                                         CheckBox{
                                             id: check_box1
                                             anchors.fill: parent
@@ -3772,6 +3880,7 @@ ApplicationWindow {
                                         color: "#031C28"
                                         border.width: 1
                                         border.color: "#05324D"
+                                        visible: tableView.rows > 2
                                         CheckBox{
                                             id: check_box2
                                             anchors.fill: parent
@@ -3808,6 +3917,7 @@ ApplicationWindow {
                                         color: "#031C28"
                                         border.width: 1
                                         border.color: "#05324D"
+                                        visible: tableView.rows > 3
                                         CheckBox{
                                             id: check_box3
                                             anchors.fill: parent
@@ -3844,6 +3954,7 @@ ApplicationWindow {
                                         color: "#031C28"
                                         border.width: 1
                                         border.color: "#05324D"
+                                        visible: tableView.rows > 4
                                         CheckBox{
                                             id: check_box4
                                             anchors.fill: parent
@@ -3886,7 +3997,7 @@ ApplicationWindow {
                                     clip: true
                                     TableView {
                                         id: tableView
-                                        columnWidthProvider:  function (column) { return 134; } //167
+                                        columnWidthProvider:  function (column) { return rectangleWidth; } //167 repeater_model.width 134
                                         rowHeightProvider: function (column) { return 40; }
                                         anchors.fill: parent
                                         boundsBehavior: Flickable.StopAtBounds
@@ -3921,8 +4032,8 @@ ApplicationWindow {
                                     anchors.left: parent.left
                                     anchors.leftMargin: 574
                                     clip: true
-                                    Repeater{
-                                        model: tableView.rows
+//                                    Repeater{
+//                                        model: tableView.rows
                                         Rectangle{
                                             id: actions_rect
                                             width: 134
@@ -3930,12 +4041,13 @@ ApplicationWindow {
                                             color: "#031C28"
                                             border.width: 1
                                             border.color: "#05324D"
+                                            visible: tableView.rows > 0
                                             Row{
-                                                spacing: 5
+                                                spacing: 15
                                                 anchors.top: actions_rect.top
                                                 anchors.topMargin: 2.5
                                                 anchors.left: actions_rect.left
-                                                anchors.leftMargin: 7
+                                                anchors.leftMargin: 25
                                                 Rectangle{
                                                     id: edit_button
                                                     width: 35
@@ -3960,34 +4072,33 @@ ApplicationWindow {
                                                             if(updateButton === 0){
                                                                 console.log("in edit button if"+ updateButton)
                                                                 if(check_box.checked === true){
-                                                                    rpadatabase.checkboxSqledit("select type,model_name,drone_name,uin from RpaList limit 1")
+                                                                    rpadatabase.checkboxSqledit("select * from RpaList limit 1")
+                                                                    //rpadatabase.checkboxSqledit("select * from RpaList where UIN ='" + rpadatabase.uin +" ")
                                                                     rpa_register_page.visible =  true
                                                                     manage_rpa_header1.visible = false
                                                                     console.log(rpadatabase.type)
                                                                     console.log(rpadatabase.model)
                                                                     console.log(rpadatabase.droneName)
                                                                     console.log(rpadatabase.uin)
-                                                                    //combo_box1.text = rpadatabase.type
-                                                                    //combo_box2.text = rpadatabase.model
-                                                                    if(rpadatabase.type == "Nano"){
+                                                                    if(rpadatabase.type === "Nano"){
                                                                         drone_type_list.currentIndex = 0
                                                                     }
-                                                                    if(rpadatabase.type == "Micro"){
+                                                                    if(rpadatabase.type === "Micro"){
                                                                         drone_type_list.currentIndex = 1
                                                                     }
-                                                                    if(rpadatabase.type == "Small"){
+                                                                    if(rpadatabase.type === "Small"){
                                                                         drone_type_list.currentIndex = 2
                                                                     }
-                                                                    if(rpadatabase.type == "Medium"){
+                                                                    if(rpadatabase.type === "Medium"){
                                                                         drone_type_list.currentIndex = 3
                                                                     }
-                                                                    if(rpadatabase.type == "Large"){
+                                                                    if(rpadatabase.type === "Large"){
                                                                         drone_type_list.currentIndex = 4
                                                                     }
-                                                                    if(rpadatabase.model == "Model A"){
+                                                                    if(rpadatabase.model === "Model A"){
                                                                         drone_model_list.currentIndex = 0
                                                                     }
-                                                                    if(rpadatabase.model == "Model B"){
+                                                                    if(rpadatabase.model === "Model B"){
                                                                         drone_model_list.currentIndex = 1
                                                                     }
                                                                     drone_name_text.text = rpadatabase.droneName
@@ -4027,10 +4138,8 @@ ApplicationWindow {
                                                         anchors.fill: delete_button
                                                         onClicked: {
                                                             if(check_box.checked === true){
-                                                                console.log(model.index)
-                                                                //rpadatabase.delete_table_contents(uin_input_text.text)
-                                                                rpadatabase.delete_table_contents("delete from RpaList Limit 1")
-                                                                //rpadatabase.delete_table_contents("delete from RpaList where UIN = "+uin_input_text.text)
+                                                                 //rpadatabase.delete_table_contents("delete from RpaList Limit 1")
+                                                                rpadatabase.delete_table_contents(1)
                                                                 rpadatabase.callSql("select * from RpaList limit 5")
                                                                 deleteDialog.visible = true
                                                                 console.log("row erased")
@@ -4049,7 +4158,7 @@ ApplicationWindow {
                                                         }
                                                     }
                                                 }
-                                                Rectangle{
+                                                /*Rectangle{
                                                     id: upload_button
                                                     width: 35
                                                     height: 35
@@ -4074,14 +4183,514 @@ ApplicationWindow {
 
                                                         }
                                                     }
-                                                }
-
+                                                }*/
                                             }
                                         }
-                                    }
+                                        Rectangle{
+                                            id: actions_rect1
+                                            width: 134
+                                            height: 40
+                                            color: "#031C28"
+                                            border.width: 1
+                                            border.color: "#05324D"
+                                            visible: tableView.rows > 1
+                                            Row{
+                                                spacing: 15
+                                                anchors.top: actions_rect1.top
+                                                anchors.topMargin: 2.5
+                                                anchors.left: actions_rect1.left
+                                                anchors.leftMargin: 25
+                                                Rectangle{
+                                                    id: edit_button1
+                                                    width: 35
+                                                    height: 35
+                                                    color: "#031C28"
+                                                    radius: 4
+
+                                                    Image {
+                                                        id: edit_image1
+                                                        source: "/res/edit.png"
+                                                        anchors.centerIn: parent
+                                                    }
+                                                    ColorOverlay{
+                                                        anchors.fill: edit_image1
+                                                        source: edit_image1
+                                                        color:"orange"
+                                                    }
+                                                    MouseArea{
+                                                        anchors.fill: edit_button1
+                                                        onClicked: {
+                                                            updateButton = 0;
+                                                            if(updateButton === 0){
+                                                                console.log("in edit button if"+ updateButton)
+                                                                if(check_box1.checked === true){
+                                                                    rpadatabase.checkboxSqledit("select * from RpaList limit 1 offset 1")
+                                                                    rpa_register_page.visible =  true
+                                                                    manage_rpa_header1.visible = false
+                                                                    console.log(rpadatabase.type)
+                                                                    console.log(rpadatabase.model)
+                                                                    console.log(rpadatabase.droneName)
+                                                                    console.log(rpadatabase.uin)
+                                                                    if(rpadatabase.type === "Nano"){
+                                                                        drone_type_list.currentIndex = 0
+                                                                    }
+                                                                    if(rpadatabase.type === "Micro"){
+                                                                        drone_type_list.currentIndex = 1
+                                                                    }
+                                                                    if(rpadatabase.type === "Small"){
+                                                                        drone_type_list.currentIndex = 2
+                                                                    }
+                                                                    if(rpadatabase.type === "Medium"){
+                                                                        drone_type_list.currentIndex = 3
+                                                                    }
+                                                                    if(rpadatabase.type === "Large"){
+                                                                        drone_type_list.currentIndex = 4
+                                                                    }
+                                                                    if(rpadatabase.model === "Model A"){
+                                                                        drone_model_list.currentIndex = 0
+                                                                    }
+                                                                    if(rpadatabase.model === "Model B"){
+                                                                        drone_model_list.currentIndex = 1
+                                                                    }
+                                                                    drone_name_text.text = rpadatabase.droneName
+                                                                    uin_input_text.text = rpadatabase.uin
+                                                                    uin_input_text.enabled = false
+                                                                    updateButton = 2
+                                                                }
+                                                            }
+
+                                                        }
+                                                        onPressed: {
+                                                            edit_button1.color = "#F25822"
+                                                        }
+                                                        onReleased: {
+                                                            edit_button1.color = "#031C28"
+                                                        }
+                                                    }
+                                                }
+                                                Rectangle{
+                                                    id: delete_button1
+                                                    width: 35
+                                                    height: 35
+                                                    color: "#031C28"
+                                                    radius: 4
+
+                                                    Image {
+                                                        id: delete_image1
+                                                        source: "/res/delete.png"
+                                                        anchors.centerIn: parent
+                                                    }
+                                                    ColorOverlay{
+                                                        anchors.fill: delete_image1
+                                                        source: delete_image
+                                                        color:"red"
+                                                    }
+                                                    MouseArea{
+                                                        anchors.fill: delete_button1
+                                                        onClicked: {
+                                                            if(check_box1.checked === true){
+                                                                //rpadatabase.delete_table_contents("delete from RpaList Limit 1")
+                                                                rpadatabase.delete_table_contents(2)
+                                                                rpadatabase.callSql("select * from RpaList limit 5")
+                                                                deleteDialog.visible = true
+                                                                console.log("row erased")
+                                                                check_box.checked = false
+                                                                check_box1.checked = false
+                                                                check_box2.checked = false
+                                                                check_box3.checked = false
+                                                                check_box4.checked = false
+                                                            }
+                                                        }
+                                                        onPressed: {
+                                                            delete_button1.color = "#F25822"
+                                                        }
+                                                        onReleased: {
+                                                            delete_button1.color = "#031C28"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        Rectangle{
+                                            id: actions_rect2
+                                            width: 134
+                                            height: 40
+                                            color: "#031C28"
+                                            border.width: 1
+                                            border.color: "#05324D"
+                                            visible: tableView.rows > 2
+                                            Row{
+                                                spacing: 15
+                                                anchors.top: actions_rect2.top
+                                                anchors.topMargin: 2.5
+                                                anchors.left: actions_rect2.left
+                                                anchors.leftMargin: 25
+                                                Rectangle{
+                                                    id: edit_button2
+                                                    width: 35
+                                                    height: 35
+                                                    color: "#031C28"
+                                                    radius: 4
+
+                                                    Image {
+                                                        id: edit_image2
+                                                        source: "/res/edit.png"
+                                                        anchors.centerIn: parent
+                                                    }
+                                                    ColorOverlay{
+                                                        anchors.fill: edit_image2
+                                                        source: edit_image2
+                                                        color:"orange"
+                                                    }
+                                                    MouseArea{
+                                                        anchors.fill: edit_button2
+                                                        onClicked: {
+                                                            updateButton = 0;
+                                                            if(updateButton === 0){
+                                                                console.log("in edit button if"+ updateButton)
+                                                                if(check_box2.checked === true){
+                                                                    rpadatabase.checkboxSqledit("select * from RpaList limit 1 offset 2")
+                                                                    rpa_register_page.visible =  true
+                                                                    manage_rpa_header1.visible = false
+                                                                    console.log(rpadatabase.type)
+                                                                    console.log(rpadatabase.model)
+                                                                    console.log(rpadatabase.droneName)
+                                                                    console.log(rpadatabase.uin)
+                                                                    if(rpadatabase.type === "Nano"){
+                                                                        drone_type_list.currentIndex = 0
+                                                                    }
+                                                                    if(rpadatabase.type === "Micro"){
+                                                                        drone_type_list.currentIndex = 1
+                                                                    }
+                                                                    if(rpadatabase.type === "Small"){
+                                                                        drone_type_list.currentIndex = 2
+                                                                    }
+                                                                    if(rpadatabase.type === "Medium"){
+                                                                        drone_type_list.currentIndex = 3
+                                                                    }
+                                                                    if(rpadatabase.type === "Large"){
+                                                                        drone_type_list.currentIndex = 4
+                                                                    }
+                                                                    if(rpadatabase.model === "Model A"){
+                                                                        drone_model_list.currentIndex = 0
+                                                                    }
+                                                                    if(rpadatabase.model === "Model B"){
+                                                                        drone_model_list.currentIndex = 1
+                                                                    }
+                                                                    drone_name_text.text = rpadatabase.droneName
+                                                                    uin_input_text.text = rpadatabase.uin
+                                                                    uin_input_text.enabled = false
+                                                                    updateButton = 2
+                                                                }
+                                                            }
+
+                                                        }
+                                                        onPressed: {
+                                                            edit_button2.color = "#F25822"
+                                                        }
+                                                        onReleased: {
+                                                            edit_button2.color = "#031C28"
+                                                        }
+                                                    }
+                                                }
+                                                Rectangle{
+                                                    id: delete_button2
+                                                    width: 35
+                                                    height: 35
+                                                    color: "#031C28"
+                                                    radius: 4
+
+                                                    Image {
+                                                        id: delete_image2
+                                                        source: "/res/delete.png"
+                                                        anchors.centerIn: parent
+                                                    }
+                                                    ColorOverlay{
+                                                        anchors.fill: delete_image2
+                                                        source: delete_image2
+                                                        color:"red"
+                                                    }
+                                                    MouseArea{
+                                                        anchors.fill: delete_button2
+                                                        onClicked: {
+                                                            if(check_box2.checked === true){
+                                                                //rpadatabase.delete_table_contents("delete from RpaList where UIN = ' " + rpadatabase.uin + "'")
+                                                                rpadatabase.delete_table_contents(3)
+                                                                rpadatabase.callSql("select * from RpaList limit 5")
+                                                                deleteDialog.visible = true
+                                                                console.log("row erased")
+                                                                check_box.checked = false
+                                                                check_box1.checked = false
+                                                                check_box2.checked = false
+                                                                check_box3.checked = false
+                                                                check_box4.checked = false
+                                                            }
+                                                        }
+                                                        onPressed: {
+                                                            delete_button2.color = "#F25822"
+                                                        }
+                                                        onReleased: {
+                                                            delete_button2.color = "#031C28"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        Rectangle{
+                                            id: actions_rect3
+                                            width: 134
+                                            height: 40
+                                            color: "#031C28"
+                                            border.width: 1
+                                            border.color: "#05324D"
+                                            visible: tableView.rows > 3
+                                            Row{
+                                                spacing: 15
+                                                anchors.top: actions_rect3.top
+                                                anchors.topMargin: 2.5
+                                                anchors.left: actions_rect3.left
+                                                anchors.leftMargin: 25
+                                                Rectangle{
+                                                    id: edit_button3
+                                                    width: 35
+                                                    height: 35
+                                                    color: "#031C28"
+                                                    radius: 4
+
+                                                    Image {
+                                                        id: edit_image3
+                                                        source: "/res/edit.png"
+                                                        anchors.centerIn: parent
+                                                    }
+                                                    ColorOverlay{
+                                                        anchors.fill: edit_image3
+                                                        source: edit_image3
+                                                        color:"orange"
+                                                    }
+                                                    MouseArea{
+                                                        anchors.fill: edit_button3
+                                                        onClicked: {
+                                                            updateButton = 0;
+                                                            if(updateButton === 0){
+                                                                console.log("in edit button if"+ updateButton)
+                                                                if(check_box3.checked === true){
+                                                                    rpadatabase.checkboxSqledit("select * from RpaList limit 1 offset 3")
+                                                                    rpa_register_page.visible =  true
+                                                                    manage_rpa_header1.visible = false
+                                                                    console.log(rpadatabase.type)
+                                                                    console.log(rpadatabase.model)
+                                                                    console.log(rpadatabase.droneName)
+                                                                    console.log(rpadatabase.uin)
+                                                                    if(rpadatabase.type === "Nano"){
+                                                                        drone_type_list.currentIndex = 0
+                                                                    }
+                                                                    if(rpadatabase.type === "Micro"){
+                                                                        drone_type_list.currentIndex = 1
+                                                                    }
+                                                                    if(rpadatabase.type === "Small"){
+                                                                        drone_type_list.currentIndex = 2
+                                                                    }
+                                                                    if(rpadatabase.type === "Medium"){
+                                                                        drone_type_list.currentIndex = 3
+                                                                    }
+                                                                    if(rpadatabase.type === "Large"){
+                                                                        drone_type_list.currentIndex = 4
+                                                                    }
+                                                                    if(rpadatabase.model === "Model A"){
+                                                                        drone_model_list.currentIndex = 0
+                                                                    }
+                                                                    if(rpadatabase.model === "Model B"){
+                                                                        drone_model_list.currentIndex = 1
+                                                                    }
+                                                                    drone_name_text.text = rpadatabase.droneName
+                                                                    uin_input_text.text = rpadatabase.uin
+                                                                    uin_input_text.enabled = false
+                                                                    updateButton = 2
+                                                                }
+                                                            }
+
+                                                        }
+                                                        onPressed: {
+                                                            edit_button3.color = "#F25822"
+                                                        }
+                                                        onReleased: {
+                                                            edit_button3.color = "#031C28"
+                                                        }
+                                                    }
+                                                }
+                                                Rectangle{
+                                                    id: delete_button3
+                                                    width: 35
+                                                    height: 35
+                                                    color: "#031C28"
+                                                    radius: 4
+
+                                                    Image {
+                                                        id: delete_image3
+                                                        source: "/res/delete.png"
+                                                        anchors.centerIn: parent
+                                                    }
+                                                    ColorOverlay{
+                                                        anchors.fill: delete_image3
+                                                        source: delete_image3
+                                                        color:"red"
+                                                    }
+                                                    MouseArea{
+                                                        anchors.fill: delete_button3
+                                                        onClicked: {
+                                                            if(check_box2.checked === true){
+                                                                //rpadatabase.delete_table_contents("delete from RpaList where UIN = ' " + rpadatabase.uin + "'")
+                                                                rpadatabase.delete_table_contents(4)
+                                                                rpadatabase.callSql("select * from RpaList limit 5")
+                                                                deleteDialog.visible = true
+                                                                console.log("row erased")
+                                                                check_box.checked = false
+                                                                check_box1.checked = false
+                                                                check_box2.checked = false
+                                                                check_box3.checked = false
+                                                                check_box4.checked = false
+                                                            }
+                                                        }
+                                                        onPressed: {
+                                                            delete_button3.color = "#F25822"
+                                                        }
+                                                        onReleased: {
+                                                            delete_button3.color = "#031C28"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        Rectangle{
+                                            id: actions_rect4
+                                            width: 134
+                                            height: 40
+                                            color: "#031C28"
+                                            border.width: 1
+                                            border.color: "#05324D"
+                                            visible: tableView.rows > 4
+                                            Row{
+                                                spacing: 15
+                                                anchors.top: actions_rect4.top
+                                                anchors.topMargin: 2.5
+                                                anchors.left: actions_rect4.left
+                                                anchors.leftMargin: 25
+                                                Rectangle{
+                                                    id: edit_button4
+                                                    width: 35
+                                                    height: 35
+                                                    color: "#031C28"
+                                                    radius: 4
+
+                                                    Image {
+                                                        id: edit_image4
+                                                        source: "/res/edit.png"
+                                                        anchors.centerIn: parent
+                                                    }
+                                                    ColorOverlay{
+                                                        anchors.fill: edit_image4
+                                                        source: edit_image4
+                                                        color:"orange"
+                                                    }
+                                                    MouseArea{
+                                                        anchors.fill: edit_button4
+                                                        onClicked: {
+                                                            updateButton = 0;
+                                                            if(updateButton === 0){
+                                                                console.log("in edit button if"+ updateButton)
+                                                                if(check_box4.checked === true){
+                                                                    rpadatabase.checkboxSqledit("select * from RpaList limit 1 offset 4")
+                                                                    rpa_register_page.visible =  true
+                                                                    manage_rpa_header1.visible = false
+                                                                    console.log(rpadatabase.type)
+                                                                    console.log(rpadatabase.model)
+                                                                    console.log(rpadatabase.droneName)
+                                                                    console.log(rpadatabase.uin)
+                                                                    if(rpadatabase.type === "Nano"){
+                                                                        drone_type_list.currentIndex = 0
+                                                                    }
+                                                                    if(rpadatabase.type === "Micro"){
+                                                                        drone_type_list.currentIndex = 1
+                                                                    }
+                                                                    if(rpadatabase.type === "Small"){
+                                                                        drone_type_list.currentIndex = 2
+                                                                    }
+                                                                    if(rpadatabase.type === "Medium"){
+                                                                        drone_type_list.currentIndex = 3
+                                                                    }
+                                                                    if(rpadatabase.type === "Large"){
+                                                                        drone_type_list.currentIndex = 4
+                                                                    }
+                                                                    if(rpadatabase.model === "Model A"){
+                                                                        drone_model_list.currentIndex = 0
+                                                                    }
+                                                                    if(rpadatabase.model === "Model B"){
+                                                                        drone_model_list.currentIndex = 1
+                                                                    }
+                                                                    drone_name_text.text = rpadatabase.droneName
+                                                                    uin_input_text.text = rpadatabase.uin
+                                                                    uin_input_text.enabled = false
+                                                                    updateButton = 2
+                                                                }
+                                                            }
+
+                                                        }
+                                                        onPressed: {
+                                                            edit_button4.color = "#F25822"
+                                                        }
+                                                        onReleased: {
+                                                            edit_button4.color = "#031C28"
+                                                        }
+                                                    }
+                                                }
+                                                Rectangle{
+                                                    id: delete_button4
+                                                    width: 35
+                                                    height: 35
+                                                    color: "#031C28"
+                                                    radius: 4
+
+                                                    Image {
+                                                        id: delete_image4
+                                                        source: "/res/delete.png"
+                                                        anchors.centerIn: parent
+                                                    }
+                                                    ColorOverlay{
+                                                        anchors.fill: delete_image4
+                                                        source: delete_image4
+                                                        color:"red"
+                                                    }
+                                                    MouseArea{
+                                                        anchors.fill: delete_button4
+                                                        onClicked: {
+                                                            if(check_box4.checked === true){
+                                                                //console.log(model.index)
+                                                                //rpadatabase.delete_table_contents("delete from RpaList where UIN = ' " + rpadatabase.uin + "'")
+                                                                rpadatabase.delete_table_contents(5)
+                                                                rpadatabase.callSql("select * from RpaList limit 5")
+                                                                deleteDialog.visible = true
+                                                                console.log("row erased")
+                                                                check_box.checked = false
+                                                                check_box1.checked = false
+                                                                check_box2.checked = false
+                                                                check_box3.checked = false
+                                                                check_box4.checked = false
+                                                            }
+                                                        }
+                                                        onPressed: {
+                                                            delete_button4.color = "#F25822"
+                                                        }
+                                                        onReleased: {
+                                                            delete_button4.color = "#031C28"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    //}
                                 }
                             }
-                            Rectangle{
+                            /*Rectangle{
                                 id: page_number_rect
                                 anchors.left: parent.left
                                 anchors.leftMargin: 20
@@ -4091,7 +4700,7 @@ ApplicationWindow {
                                 radius: 4
                                 color: "#05324D"
 
-                            }
+                            }*/
 
                         }
 
@@ -4557,6 +5166,7 @@ ApplicationWindow {
                                     text: ""
                                     color: "white"
                                     selectByMouse: true
+                                    maximumLength: 8
                                     background: Rectangle {
                                         color: "#031C28"
                                         radius: 4
@@ -4604,8 +5214,8 @@ ApplicationWindow {
                                         }
                                         else{
                                             rpadatabase.existingUIN(uin_input_text.text)
-                                            uinDialog.visible = true
-                                            console.log("in update button if"+ updateButton)
+                                            //uinDialog.visible = true
+                                            console.log("in update button if "+ updateButton)
                                         }
                                     }
                                     else if(updateButton == 2){
@@ -4615,8 +5225,6 @@ ApplicationWindow {
                                         manage_rpa_header1.visible = true
                                         rpadatabase.callSql("select * from RpaList limit 5")
                                         tableDialog.visible = true
-                                        //combo_box1.text = ""
-                                        //combo_box2.text = ""
                                         drone_type_list.currentIndex = -1
                                         drone_model_list.currentIndex = -1
                                         drone_name_text.text = ""
@@ -5037,7 +5645,107 @@ ApplicationWindow {
                             width: flight_log_rectangle.width
                             border.color: "#05324D"
                             border.width: 1
+                            Timer {
+                                interval: 100; running: true; repeat: true
+                                onTriggered:{
+                                    folder_list_model.model = aws.name
+                                }
+                            }
+
                             ListView {
+                                id: folder_list_model
+                                anchors.fill: parent
+                                model: aws.name
+                                delegate: RowLayout {
+                                    id: rowLayout
+                                    width: parent.width
+                                    height: 40
+                                    spacing: 50
+
+                                    CheckBox {
+                                        id: log_checkBox
+                                        Layout.alignment: Qt.AlignVCenter
+                                        indicator: Rectangle{
+                                            implicitWidth: 16
+                                            implicitHeight: 16
+                                            radius: 2
+                                            color: "#031C28"
+                                            border.width:0.5
+                                            border.color: "#F25822"
+                                            anchors.centerIn: parent
+
+                                            Rectangle {
+                                                visible: log_checkBox.checked
+                                                color: "#F25822"
+                                                radius: 1
+                                                anchors.margins: 2
+                                                anchors.fill: parent
+                                            }
+                                        }
+                                    }
+
+                                    Text {
+                                        id: fileNameText
+                                        text: modelData //fileName
+                                        color: "white"
+                                        font.pointSize: 11
+                                        Layout.alignment: Qt.AlignVCenter
+                                    }
+
+
+                                    Button {
+                                        id: downloadButton
+                                        Text {
+                                            anchors.centerIn: parent
+                                            text: "Download"
+                                            color:"white"
+                                        }
+                                        background: Rectangle {
+                                            id:log_download_button
+                                            implicitHeight: 30
+                                            implicitWidth: 120
+                                            border.width: 1
+                                            border.color: "#F25822"
+                                            radius: 4
+                                            color: enabled ? "#F25822" : "#DA2C43"
+                                        }
+                                        enabled: log_checkBox.checked
+
+                                        Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+                                        onPressed: {
+                                            log_download_button.color = "#05324D"
+                                        }
+                                        onReleased: {
+                                            log_download_button.color = "#F25822"
+                                        }
+
+                                        onClicked: {
+                                            //var sourceFile = folderModel.folder + "/" + fileName;
+                                            //console.log("Source file path: " + sourceFile);
+
+                                            var fileDialog = Qt.createQmlObject('import QtQuick.Dialogs 1.3; FileDialog {}', downloadButton);
+                                            fileDialog.selectExisting = false;
+                                            fileDialog.selectMultiple = false;
+                                            fileDialog.title = "Save file";
+
+                                            fileDialog.accepted.connect(function() {
+                                                var destFile = fileDialog.fileUrls.length > 0 ? fileDialog.fileUrls[0].toString() : "";
+                                                console.log("Destination file path: " + destFile);
+                                                var destFileLoaction;
+                                                function pfx_file_location_function(str)
+                                                {
+                                                    destFileLoaction = str.slice(str.lastIndexOf("file://")+7)
+                                                }
+                                                pfx_file_location_function(destFile);
+                                                aws.download_file(modelData,destFileLoaction);
+                                            });
+                                            log_checkBox.checked = false
+                                            fileDialog.open();
+                                        }
+                                    }
+                                }
+                            }
+                            /*ListView {
                                 anchors.fill: parent
 
                                 FolderListModel {
@@ -5126,17 +5834,15 @@ ApplicationWindow {
                                         }
                                     }
                                 }
-                            }
+                            }*/
 
                         }
                     }
-
                 }
-
             }
             Rectangle{
                 id:third_rectangle
-                width: screen.width/2.813 - 160
+                width: screen.width/4.1
                 height: parent.height
                 color: "#031C28"
                 border.color: "#05324D"
@@ -5274,6 +5980,7 @@ ApplicationWindow {
 
                             Text {
                                 id: user_name_inprofile
+                                wrapMode: Text.WordWrap
                                 text: qsTr(database.name)
                                 color:"white"
                                 font.pointSize: 12
@@ -5353,9 +6060,11 @@ ApplicationWindow {
                                 }
                                 TextField{
                                     id: userprofile_name
+                                    readOnly: true
                                     width: 200
                                     height: 35
                                     anchors.margins: 5
+                                    placeholderText: qsTr("User Name")
                                     text: database.name
                                     color:"white"
                                     background: Rectangle{
@@ -5366,6 +6075,11 @@ ApplicationWindow {
                                         implicitHeight: userprofile_name.height
                                         implicitWidth: userprofile_name.width
                                     }
+                                    /*onAccepted: {
+                                        if(userprofile_name.text != ""){
+                                            database.existingUserProfilename(userprofile_name.text)
+                                        }
+                                    }*/
                                 }
                             }
                             Column{
@@ -5380,6 +6094,7 @@ ApplicationWindow {
                                     width: 200
                                     height: 35
                                     anchors.margins: 5
+                                    placeholderText: qsTr("user@gmail.com")
                                     text: database.mail
                                     color:"white"
                                     background: Rectangle{
@@ -5389,6 +6104,11 @@ ApplicationWindow {
                                         border.color: "#05324D"
                                         implicitHeight: mail_address.height
                                         implicitWidth: mail_address.width
+                                    }
+                                    onAccepted :{
+                                        if(mail_address.text != ""){
+                                            database.existingUserProfilemail(mail_address.text)
+                                        }
                                     }
                                 }
                             }
@@ -5429,6 +6149,7 @@ ApplicationWindow {
                                     width: 200
                                     height: 35
                                     anchors.margins: 5
+                                    placeholderText: qsTr("User Address")
                                     text: database.address
                                     color:"white"
                                     background: Rectangle{
@@ -5453,6 +6174,7 @@ ApplicationWindow {
                                     width: 200
                                     height: 35
                                     anchors.margins: 5
+                                    placeholderText: qsTr("User Locality")
                                     text: database.locality
                                     color:"white"
                                     background: Rectangle{
@@ -5474,10 +6196,10 @@ ApplicationWindow {
                                 }
                                 TextField{
                                     id: password_field
-                                    enabled: editNumber ? true : false
                                     width: 200
                                     height: 35
                                     anchors.margins: 5
+                                    placeholderText: qsTr("password")
                                     text: database.password
                                     color:"white"
                                     background: Rectangle{
@@ -5516,15 +6238,20 @@ ApplicationWindow {
                                 anchors.fill: update_profile
                                 onClicked: {
                                     //reflect all the updated info to the database
-                                    database.update_profile_contents(userprofile_name.text, mail_address.text,mobile_number.text,address_field.text,locality_field.text,password_field.text)
-                                    users_profile_header1.visible = true
-                                    users_information_header1.visible = false
-                                    profileDialog.visible = true
-                                    mail_address.text = database.mail
-                                    mobile_number.text = database.number
-                                    address_field.text = database.address
-                                    locality_field.text = database.locality
-                                    password_field.text = database.password
+                                    if(userprofile_name.text == "" || mail_address.text == "" || locality_field.text == "" || address_field.text == "" || password_field.text == ""){
+                                        popupDialog.open()
+                                    }
+                                    else {
+                                        database.update_profile_contents(userprofile_name.text, mail_address.text,mobile_number.text,address_field.text,locality_field.text,password_field.text)
+                                        users_profile_header1.visible = true
+                                        users_information_header1.visible = false
+                                        profileDialog.open()
+                                        mail_address.text = database.mail
+                                        mobile_number.text = database.number
+                                        address_field.text = database.address
+                                        locality_field.text = database.locality
+                                        password_field.text = database.password
+                                    }
                                 }
                                 onPressed: {
                                     update_profile.color = "#F25822"
@@ -5534,6 +6261,13 @@ ApplicationWindow {
                                 }
                             }
                         }
+                        MessageDialog{
+                            id: popupDialog
+                            height: 50
+                            width: 50
+                            text:"Please Fill all the Details"
+                        }
+
                         Rectangle {
                             id: back_to_profile
                             width: 60

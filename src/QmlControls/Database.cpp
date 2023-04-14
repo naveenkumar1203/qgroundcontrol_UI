@@ -1,4 +1,5 @@
 #include "Database.h"
+#include <QMessageBox>
 
 static QString mail_from_db; // loginexistinguser
 static QString password_from_db; // loginexistinguser
@@ -10,7 +11,11 @@ static QString address_from_db;
 static QString locality_from_db;
 static QString userpassword_from_db;
 static QString mobilenumber_from_db;
-static QString previous_username;
+//static QString previous_username;
+//QString profilename_from_db;
+QString profilemail_from_db;
+//QString profilenumber_from_db;
+QString forgotmail_from_db;
 
 QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
 
@@ -26,6 +31,12 @@ AjayDatabase::AjayDatabase(QObject *parent) : QObject(parent)
     }
     else if(!db.open()){
         qDebug()<<"connection not opened";
+        QMessageBox msgbox;
+        msgbox.setText("Connection Not Established. Please Check Your Internet Connection.");
+        msgbox.setStyleSheet("color:white;background:#05324D");
+        msgbox.setDefaultButton(QMessageBox::Ok);
+        msgbox.exec();
+        //emit connection_not_established();
     }
 
     QSqlQueryModel *database_creation = new QSqlQueryModel();
@@ -88,7 +99,7 @@ void AjayDatabase::loginExistingUser(const QString &mail, const QString &passwor
 
     if(mail_from_db == mail){
         if(password_from_db == password){
-            username_database(mail,0);
+            username_database(mail);
             //emit record_found();
         }
     }
@@ -111,6 +122,7 @@ void AjayDatabase::signupExistingUsername(const QString &name)
     searchName.bindValue(":name",name);
 
     if(!searchName.exec()){
+        qDebug()<<searchName.lastError();
         qDebug()<<"error while searching name";
     }
 
@@ -174,6 +186,118 @@ void AjayDatabase::signupExistingUsernumber(const QString &number)
     }
 }
 
+/*void AjayDatabase::existingUserProfilename(const QString &name)
+{
+
+    QSqlQuery *query = new QSqlQuery();
+    query->prepare("use QGC_User_Login");
+    if(!query->exec()){
+        qDebug()<<"database not changed";
+    }
+
+    QSqlQuery searchName;
+    searchName.prepare("SELECT name FROM UsersLoginInfo WHERE name = :name");
+    searchName.bindValue(":name",name);
+
+    if(!searchName.exec()){
+        qDebug()<<"error while searching profilename";
+    }
+
+    if(searchName.exec()){
+        while (searchName.next()) {
+            profilename_from_db = searchName.value(0).toString();
+            //m_name = profilename_from_db;
+        }
+    }
+
+    if(profilename_from_db == name){
+        emit name_record_found();
+        qDebug()<<"Entered Name is already Used";
+    }
+}*/
+
+void AjayDatabase::existingUserProfilemail(const QString &mail)
+{
+    QSqlQuery *query = new QSqlQuery();
+    query->prepare("use QGC_User_Login");
+    if(!query->exec()){
+        qDebug()<<"database not changed";
+    }
+
+    QSqlQuery searchMail;
+    searchMail.prepare("SELECT mail FROM UsersLoginInfo WHERE mail = :mail");
+    searchMail.bindValue(":mail",mail);
+
+    if(!searchMail.exec()){
+        qDebug()<<"error while searching profilemail";
+    }
+
+    if(searchMail.exec()){
+        while (searchMail.next()) {
+            profilemail_from_db = searchMail.value(0).toString();
+            //m_mail = profilemail_from_db;
+        }
+    }
+
+    if(profilemail_from_db == mail){
+        emit mail_record_found();
+        qDebug()<<"Entered Mail is already Used";
+    }
+}
+
+void AjayDatabase::forgotPasswordmail(const QString &mail)
+{
+    QSqlQuery searchMail;
+    searchMail.prepare("SELECT mail FROM UsersLoginInfo WHERE mail = :mail");
+    searchMail.bindValue(":mail",mail);
+
+    if(!searchMail.exec()){
+        qDebug()<<searchMail.lastError();
+        qDebug()<<"error while searching profile mail";
+    }
+
+    if(searchMail.exec()){
+        while (searchMail.next()) {
+            forgotmail_from_db = searchMail.value(0).toString();
+            m_mail = forgotmail_from_db;
+        }
+    }
+
+    if(forgotmail_from_db != mail){
+        emit forgotmail_record_notfound();
+        qDebug()<<"Entered Mail is not correct";
+    }
+}
+
+/*void AjayDatabase::existingUserProfilenumber(const QString &number)
+{
+    QSqlQuery *query = new QSqlQuery();
+    query->prepare("use QGC_User_Login");
+    if(!query->exec()){
+        qDebug()<<"database not changed";
+    }
+
+    QSqlQuery searchNumber;
+    searchNumber.prepare("SELECT number FROM UsersLoginInfo WHERE number = :number");
+    searchNumber.bindValue(":number",number);
+
+    if(!searchNumber.exec()){
+        qDebug()<<"error while searching profilenumber";
+    }
+
+    if(searchNumber.exec()){
+        while (searchNumber.next()) {
+            profilenumber_from_db = searchNumber.value(0).toString();
+            m_number = profilenumber_from_db;
+        }
+    }
+
+    if(profilenumber_from_db == number){
+        emit number_record_found();
+        qDebug()<<"Entered Number is already Used";
+    }
+}*/
+
 void AjayDatabase::update_profile_contents(const QString &name, const QString &mail, const QString &number, const QString &address, const QString &locality, const QString &password)
 {
     QSqlQueryModel *use_database = new QSqlQueryModel();
@@ -193,7 +317,7 @@ void AjayDatabase::update_profile_contents(const QString &name, const QString &m
         //qDebug()<<queryString;
         qDebug()<<"error in updating profile_contents";
     }
-    username_database(mail,1);
+    username_database(mail);
 
 }
 
@@ -248,7 +372,7 @@ void AjayDatabase::change_password(const QString &mail, const QString &newPasswo
 }
 
 
-void AjayDatabase::username_database(const QString &mail,const int flag){
+void AjayDatabase::username_database(const QString &mail){ //,const int flag
 
     qDebug()<<("called here");
     QSqlQuery searchName;
@@ -274,7 +398,30 @@ void AjayDatabase::username_database(const QString &mail,const int flag){
         qDebug()<<("username "+m_name);
     }
 
-    if(flag == 0){
+    QSqlQuery createDataBase;
+    QString query = "create database "+ user_name_from_db;
+    createDataBase.prepare(query);
+    if(!createDataBase.exec()){
+        qDebug()<<"error in creating a database";
+    }
+
+    QSqlQuery useDataBase;
+    QString query2 = "use " + user_name_from_db;
+    useDataBase.prepare(query2);
+    if(!useDataBase.exec()){
+        qDebug()<<query2;
+        qDebug()<<"error in using a database";
+    }
+
+    QSqlQueryModel *create_table = new QSqlQueryModel();
+    create_table->setQuery("create table RpaList(TYPE text,MODEL_NAME text, DRONE_NAME text, UIN text)");
+
+    QSqlQueryModel *create_table1 = new QSqlQueryModel();
+    create_table1->setQuery("create table FirmwareLog(Info text,Date text,Time text)");
+
+    emit record_found();
+
+    /*if(flag == 0){
         previous_username = user_name_from_db;
         QSqlQuery createDataBase;
         QString query = "create database "+ user_name_from_db;
@@ -298,7 +445,7 @@ void AjayDatabase::username_database(const QString &mail,const int flag){
         create_table1->setQuery("create table FirmwareLog(Info text,Date text,Time text)");
 
         emit record_found();
-}
+    }
     if(flag == 1){
         QSqlQueryModel *database_creation = new QSqlQueryModel();
         database_creation->setQuery("create database "+user_name_from_db);
@@ -329,7 +476,7 @@ void AjayDatabase::username_database(const QString &mail,const int flag){
             qDebug()<<"error in deleting database";
         }
         previous_username = user_name_from_db;
-    }
+    }*/
 }
 
 QString AjayDatabase::name() const
@@ -419,4 +566,17 @@ void AjayDatabase::setIndustry(const QString &newIndustry)
         return;
     m_industry = newIndustry;
     emit industryChanged();
+}
+
+QString AjayDatabase::awsname() const
+{
+    return user_name_from_db;//m_awsname;
+}
+
+void AjayDatabase::setAwsname(const QString &newAwsname)
+{
+    if (m_awsname == newAwsname)
+        return;
+    m_awsname = newAwsname;
+    emit awsnameChanged();
 }

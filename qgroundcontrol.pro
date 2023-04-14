@@ -33,6 +33,8 @@ TEMPLATE = app
 QGCROOT  = $$PWD
 
 QML_IMPORT_PATH += $$PWD/src/QmlControls
+INCLUDEPATH = /usr/include/python3.8
+LIBS += -lpython3.8
 
 #
 # OS Specific settings
@@ -440,6 +442,7 @@ contains (DEFINES, QGC_ENABLE_PAIRING) {
 #
 
 HEADERS += \
+    src/QmlControls/AWSOperations.h \
     src/QmlControls/Database.h \
     src/QmlControls/FirmwareUpdate.h \
     src/QmlControls/QmlUnitsConversion.h \
@@ -457,6 +460,7 @@ contains (DEFINES, QGC_ENABLE_PAIRING) {
 }
 
 SOURCES += \
+    src/QmlControls/AWSOperations.cpp \
     src/QmlControls/Database.cpp \
     src/QmlControls/FirmwareUpdate.cpp \
     src/QmlControls/RpaDatabase.cpp \

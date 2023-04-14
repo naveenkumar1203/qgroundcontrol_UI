@@ -40,6 +40,7 @@ void RpaDatabase::checkboxSqlfly(QString queryString)
             model_from_db = check.value(0).toString();
             uin_from_db_first = check.value(1).toString();
             m_model = model_from_db;
+            //m_model = "";
             m_uin = uin_from_db_first;
         }
     }
@@ -92,16 +93,37 @@ void RpaDatabase::update_table_contents(const QString &TYPE,const QString &MODEL
 
 }
 
-void RpaDatabase::delete_table_contents(QString queryString)
+void RpaDatabase::delete_table_contents(QString number) //queryString
 {
-    QSqlQuery deleteContents;
-    deleteContents.prepare(queryString);
-    qDebug()<<queryString;
-    //deleteContents.prepare("delete from RpaList where UIN:"+uin_from_db_first);
+//    QSqlQuery deleteContents;
+//    deleteContents.prepare(queryString);
+//    qDebug()<<queryString;
+//    //deleteContents.prepare("delete from RpaList where UIN:"+uin_from_db_first);
 
-    if(!deleteContents.exec()){
-        qDebug()<<deleteContents.lastError();
-        qDebug()<<"error while deleting";
+//    if(!deleteContents.exec()){
+//        qDebug()<<deleteContents.lastError();
+//        qDebug()<<"error while deleting";
+//    }
+    QString uin_number;
+    QSqlQuery searchquery;
+    QString searchquerystring = "SELECT uin FROM RpaList limit " + number;
+    searchquery.prepare(searchquerystring);
+    if(searchquery.exec()){
+        while(searchquery.next()){
+            uin_number  = searchquery.value(0).toString();
+        }
+    }
+    if(!searchquery.exec()){
+        qDebug()<<"unable to execute search query";
+    }
+
+    QSqlQuery deletequery;
+    QString deletequerystring1 = "DELETE FROM RpaList where UIN='" + uin_number + "'";
+    qDebug()<<deletequerystring1;
+    deletequery.prepare(deletequerystring1);
+
+    if(!deletequery.exec()){
+        qDebug()<<"unable to execute delete query";
     }
 }
 
