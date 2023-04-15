@@ -79,16 +79,20 @@ void AWSOperations::read_text_file(QString user_text_file,QString user_text_file
 
     QFile file(filepath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+        m_name.clear();
         qDebug()<<"error";
     }
-    QTextStream in(&file);
-    QString line;
+    else {
+        m_name.clear();
+        QTextStream in(&file);
+        QString line;
 
-    while (!file.atEnd()) {
-        line = in.readLine();
-        m_name << line.split(".csv");
-        m_name.removeAll("");
-        m_name.removeDuplicates();
+        while (!file.atEnd()) {
+            line = in.readLine();
+            m_name << line.split(".csv");
+            m_name.removeAll("");
+            m_name.removeDuplicates();
+        }
     }
 
 }

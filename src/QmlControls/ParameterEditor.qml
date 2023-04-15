@@ -71,7 +71,10 @@ Item{
             fly_button.color = "#F25822"
         }
         onClicked: {
-
+            if(check_box.checked === false && check_box1.checked === false && check_box2.checked === false && check_box3.checked === false && check_box4.checked === false){
+                select_the_modelDialog.open()
+                console.log("model not selected")
+            }
             if(check_box.checked === true){
                rpadatabase.checkboxSqlfly("select MODEL_NAME,UIN from RpaList limit 1")
 
@@ -192,17 +195,17 @@ Item{
 
         }
     }
+//    Dialog {
+//        id: select_the_modelDialog
+//        width: 200
+//        height: 50
+//        title: "Select the Model"
+//        Label {
+//            text: "Please Select the Model."
+//        }
+//    }
     Dialog {
         id: select_the_modelDialog
-        width: 200
-        height: 50
-        title: "Select the Model"
-        Label {
-            text: "Please Select the Model."
-        }
-    }
-    Dialog {
-        id: select_the_checkboxDialog
         width: 200
         height: 50
         title: "Model not Selected"

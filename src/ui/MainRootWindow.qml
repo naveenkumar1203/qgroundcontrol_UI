@@ -1021,6 +1021,7 @@ ApplicationWindow {
                 height: 75
                 radius: width / 2
                 color: "white"
+                clip: true
                 anchors.horizontalCenter: parent.horizontalCenter
                 Image{
                     width: 25
@@ -1031,10 +1032,16 @@ ApplicationWindow {
                     source: "/res/user_photo.png"//"qrc:/../../../../Downloads/user_photo.png"
                 }
                 Image{
-                    anchors.fill: parent
+                    id:user_profile_image
+                    anchors.fill: user_image
                     width: 75
                     height: 75
                     source: image_file_dialog.fileUrl
+                    fillMode: Image.PreserveAspectCrop
+                    layer.enabled: true
+                    layer.effect: OpacityMask {
+                        maskSource: user_image
+                    }
                 }
                 MouseArea{
                     anchors.fill: parent
@@ -1165,6 +1172,7 @@ ApplicationWindow {
                                     height: 35
                                     text: ""
                                     color: "white"
+                                    maximumLength: 10
                                     placeholderText: qsTr("Your Mobile Number")
                                     leftPadding: 70
                                     inputMethodHints: Qt.ImhFormattedNumbersOnly
@@ -1197,14 +1205,26 @@ ApplicationWindow {
                                         color: "white"
                                     }
                                     onEditingFinished:{
+                                        if(user_number_text.text < user_number_text.maximumLength){
+                                            console.log(user_number_text.length)
+                                            wrong_numberDialog.open()
+                                        }
                                         if (user_number_text.text !== "") {
                                             database.signupExistingUsernumber(user_number_text.text)
                                         }
-                                        //database.signupExistingUsernumber(user_number_text.text)
-                                        //numberrecord_Dialog.open()
                                     }
                                 }
                             }
+                            Dialog {
+                                id: wrong_numberDialog
+                                width: 200
+                                height: 100
+                                title: "Not a Valid Number"
+                                Label {
+                                    text: "Please provide a Valid Mobile Number"
+                                }
+                            }
+
                             Column{
                                 spacing: 10
                                 Label{
@@ -1682,6 +1702,9 @@ ApplicationWindow {
         folder: shortcuts.documents
         nameFilters: [ "(*.png *.jpg)"]
         selectMultiple: false
+        onAccepted: {
+            console.log("You chose: " + image_file_dialog.fileUrls)
+        }
     }
     Rectangle{
         id: welcome_page
@@ -3988,8 +4011,9 @@ ApplicationWindow {
                                 }
                                 Item{
                                     id:table_item
-                                    anchors.left: parent.left
-                                    anchors.leftMargin: 40
+                                    //anchors.left: parent.left
+                                    //anchors.leftMargin: 40
+                                    anchors.left: checkbox_column.right
                                     anchors.top: parent.top
                                     anchors.topMargin: 40
                                     width: (table_rect.width - 40)
@@ -3997,7 +4021,7 @@ ApplicationWindow {
                                     clip: true
                                     TableView {
                                         id: tableView
-                                        columnWidthProvider:  function (column) { return rectangleWidth; } //167 repeater_model.width 134
+                                        columnWidthProvider:  function (column) { return rectangleWidth; } //167  134
                                         rowHeightProvider: function (column) { return 40; }
                                         anchors.fill: parent
                                         boundsBehavior: Flickable.StopAtBounds
@@ -4029,8 +4053,9 @@ ApplicationWindow {
                                     id: actions_column
                                     anchors.top:parent.top
                                     anchors.topMargin: 40
-                                    anchors.left: parent.left
-                                    anchors.leftMargin: 574
+                                    //anchors.left: parent.left
+                                    anchors.right: table_item.right
+                                    //anchors.leftMargin: 574
                                     clip: true
 //                                    Repeater{
 //                                        model: tableView.rows
@@ -5745,97 +5770,6 @@ ApplicationWindow {
                                     }
                                 }
                             }
-                            /*ListView {
-                                anchors.fill: parent
-
-                                FolderListModel {
-                                    id: folderModel
-                                    showDirs: true
-                                    showDirsFirst: true
-                                    folder: QGroundControl.multiVehicleManager.activeVehicle ? QGroundControl.multiVehicleManager.activeVehicle.flightlog_filename : ""
-                                    nameFilters: ["*csv*"]
-                                }
-
-                                model: folderModel
-
-                                delegate: RowLayout {
-                                    id: rowLayout
-                                    width: parent.width
-                                    height: 30
-                                    spacing: 30
-
-
-                                    CheckBox {
-                                        id: log_checkBox
-                                        Layout.alignment: Qt.AlignVCenter
-                                        indicator: Rectangle{
-                                            implicitWidth: 16
-                                            implicitHeight: 16
-                                            radius: 2
-                                            color: "#031C28"
-                                            border.width:0.5
-                                            border.color: "#F25822"
-                                            anchors.centerIn: parent
-
-                                            Rectangle {
-                                                visible: log_checkBox.checked
-                                                color: "#F25822"
-                                                radius: 1
-                                                anchors.margins: 2
-                                                anchors.fill: parent
-                                            }
-                                        }
-                                    }
-
-
-                                    Text {
-                                        id: fileNameText
-                                        text: fileName
-                                        color: "white"
-                                        font.pointSize: 11
-                                        Layout.alignment: Qt.AlignVCenter
-                                    }
-
-
-                                    Button {
-                                        id: downloadButton
-                                        Text {
-                                            anchors.centerIn: parent
-                                            text: "Download"
-                                            color:"white"
-                                        }
-                                        background: Rectangle {
-                                            id:log_download_button
-                                            implicitHeight: 30
-                                            implicitWidth: 120
-                                            border.width: 1
-                                            border.color: "#F25822"
-                                            radius: 4
-                                            color: "#F25822"
-                                        }
-                                        enabled: log_checkBox.checked
-
-                                        Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-                                        onClicked: {
-                                            var sourceFile = folderModel.folder + "/" + fileName;
-                                            console.log("Source file path: " + sourceFile);
-
-                                            var fileDialog = Qt.createQmlObject('import QtQuick.Dialogs 1.3; FileDialog {}', downloadButton);
-                                            fileDialog.selectExisting = false;
-                                            fileDialog.selectMultiple = false;
-                                            fileDialog.title = "Save file";
-
-                                            fileDialog.accepted.connect(function() {
-                                                var destFile = fileDialog.fileUrls.length > 0 ? fileDialog.fileUrls[0].toString() : "";
-                                                console.log("Destination file path: " + destFile);
-                                            });
-
-                                            fileDialog.open();
-                                        }
-                                    }
-                                }
-                            }*/
-
                         }
                     }
                 }
@@ -5938,6 +5872,7 @@ ApplicationWindow {
                             anchors.verticalCenter: parent.verticalCenter
                             height: 40
                             width: 40
+                            clip:true
                             radius: width/2
                             color: "#05324D"
                             border.width: 1
@@ -5945,8 +5880,13 @@ ApplicationWindow {
 
                             Image {
                                 id: user_image_inprofile
-                                //source:"qrc:/qmlimages/drone_1.png"
-                                anchors.fill: parent
+                                source:user_profile_image.source//"qrc:/qmlimages/drone_1.png"
+                                anchors.fill: image_rect
+                                fillMode: Image.PreserveAspectCrop
+                                layer.enabled: true
+                                layer.effect: OpacityMask {
+                                    maskSource: image_rect
+                                }
                             }
 
                             MouseArea{
