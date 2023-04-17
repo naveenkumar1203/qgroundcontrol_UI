@@ -36,7 +36,6 @@ AjayDatabase::AjayDatabase(QObject *parent) : QObject(parent)
         msgbox.setStyleSheet("color:white;background:#05324D");
         msgbox.setDefaultButton(QMessageBox::Ok);
         msgbox.exec();
-        //emit connection_not_established();
     }
 
     QSqlQueryModel *database_creation = new QSqlQueryModel();
@@ -347,16 +346,18 @@ void AjayDatabase::logout()
         }
         else if(!db.open()){
             qDebug()<<"connection not opened";
+//            QMessageBox msgbox;
+//            msgbox.setText("Connection Not Established. Please Check Your Internet Connection.");
+//            msgbox.setStyleSheet("color:white;background:#05324D");
+//            msgbox.setDefaultButton(QMessageBox::Ok);
+//            msgbox.exec();
             emit connectionNotopened();
         }
-
     }
     else {
         qDebug()<<"The database is opened again";
     }
-
 }
-
 
 void AjayDatabase::change_password(const QString &mail, const QString &newPassword)
 {
@@ -372,7 +373,8 @@ void AjayDatabase::change_password(const QString &mail, const QString &newPasswo
 }
 
 
-void AjayDatabase::username_database(const QString &mail){ //,const int flag
+void AjayDatabase::username_database(const QString &mail) //,const int flag
+{
 
     qDebug()<<("called here");
     QSqlQuery searchName;

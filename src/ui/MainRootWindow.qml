@@ -1130,6 +1130,7 @@ ApplicationWindow {
                                     color: "white"
                                     placeholderText: qsTr("example@gmail.com")
                                     inputMethodHints: Qt.ImhEmailCharactersOnly
+                                    validator: RegExpValidator{regExp:/[A-Z0-9a-z._-]{1,}@(\\w+)(\\.(\\w+))(\\.(\\w+))?(\\.(\\w+))?$"*/}
                                     leftPadding: 50
                                     onTextChanged: {
                                         user_mail.border.color = "#C0C0C0"
@@ -1175,7 +1176,7 @@ ApplicationWindow {
                                     maximumLength: 10
                                     placeholderText: qsTr("Your Mobile Number")
                                     leftPadding: 70
-                                    inputMethodHints: Qt.ImhFormattedNumbersOnly
+                                    validator: RegExpValidator{regExp: /[0-9,/]*/}
                                     onTextChanged: {
                                         user_number.border.color = "#C0C0C0"
                                     }
@@ -1205,8 +1206,9 @@ ApplicationWindow {
                                         color: "white"
                                     }
                                     onEditingFinished:{
-                                        if(user_number_text.text < user_number_text.maximumLength){
-                                            console.log(user_number_text.length)
+                                        console.log("Edit Finished")
+                                        if(user_number_text.text.length < user_number_text.maximumLength && user_number_text.text.length >= 1){
+                                            console.log(user_number_text.text.length + " mobile number length")
                                             wrong_numberDialog.open()
                                         }
                                         if (user_number_text.text !== "") {
@@ -1916,7 +1918,7 @@ ApplicationWindow {
         height: 50
         title: "Connection Lost"
         Label {
-            text: "Connection seems Lost, Please try after Sometime."
+            text: "Connection Lost, Please check your Internet Connection."
         }
     }
     Dialog {
@@ -5754,6 +5756,8 @@ ApplicationWindow {
                                             fileDialog.title = "Save file";
 
                                             fileDialog.accepted.connect(function() {
+                                                log_download_button.color = "#DA2C43"
+                                                log_checkBox.checked = false
                                                 var destFile = fileDialog.fileUrls.length > 0 ? fileDialog.fileUrls[0].toString() : "";
                                                 console.log("Destination file path: " + destFile);
                                                 var destFileLoaction;
@@ -5764,7 +5768,10 @@ ApplicationWindow {
                                                 pfx_file_location_function(destFile);
                                                 aws.download_file(modelData,destFileLoaction);
                                             });
-                                            log_checkBox.checked = false
+                                            fileDialog.rejected.connect(function(){
+                                                log_download_button.color = "#DA2C43";
+                                                log_checkBox.checked = false
+                                            });
                                             fileDialog.open();
                                         }
                                     }
@@ -5889,7 +5896,7 @@ ApplicationWindow {
                                 }
                             }
 
-                            MouseArea{
+                            /*MouseArea{
                                 anchors.fill: image_rect
                                 onClicked:{
                                     //database.profile_contents("select industry,address,locality,password from UsersLoginInfo where number="+database.number)
@@ -5909,7 +5916,7 @@ ApplicationWindow {
                                 onReleased: {
                                     image_rect.color = "#05324D"
                                 }
-                            }
+                            }*/
                         }
                         Column {
                             spacing: 5
@@ -5923,7 +5930,7 @@ ApplicationWindow {
                                 wrapMode: Text.WordWrap
                                 text: qsTr(database.name)
                                 color:"white"
-                                font.pointSize: 12
+                                font.pointSize: 10
                                 //font.pixelSize: 0.1 * parent.height
                             }
                             Text {
@@ -5943,12 +5950,52 @@ ApplicationWindow {
                         border.width: 1
                         border.color: "#05324D"
 
+                        Rectangle {
+                            id: go_to_profile
+                            anchors.right: parent.right
+                            anchors.rightMargin: 15
+                            anchors.top: parent.top
+                            anchors.topMargin: 10
+                            color: "#05324D"
+                            border.color: "#F25822"
+                            border.width: 0.5
+                            width: 100
+                            height: 30
+                            radius: 3
+                            Text {
+                                text: "Your Profile"
+                                color: "#FFFFFF"
+                                font.pointSize: 10
+                                anchors.centerIn: parent
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                            MouseArea{
+                                anchors.fill: go_to_profile
+                                onClicked: {
+                                    users_profile_header1.visible = false
+                                    users_information_header1.visible = true
+                                    userprofile_name.text = database.name
+                                    mail_address.text = database.mail
+                                    mobile_number.text = database.number
+                                    address_field.text = database.address
+                                    locality_field.text = database.locality
+                                    password_field.text = database.password
+                                }
+                                onPressed: {
+                                    go_to_profile.color = "#F25822"
+                                }
+                                onReleased: {
+                                    go_to_profile.color = "#05324D"
+                                }
+                            }
+                        }
+
                         Column{
                             spacing: 10
                             anchors.left: parent.left
                             anchors.leftMargin: 20
                             anchors.top: parent.top
-                            anchors.topMargin: 20
+                            anchors.topMargin: 45
                             Text {
                                 text : "Subscription"
                                 color: "white"
