@@ -71,7 +71,6 @@
         <file alias="logout.png">resources/logout.png</file>
         <file alias="notification.png">resources/notification.png</file>
         <file alias="settings.png">resources/settings.png</file>
-        <file alias="manual_mission.png">resources/manual_mission.png</file>
         <file alias="mission.png">resources/mission.png</file>
         <file alias="remote.png">resources/remote.png</file>
         <file alias="customers.png">resources/customers.png</file>
@@ -103,6 +102,7 @@
         <file alias="user_location.png">resources/user_location.png</file>
         <file alias="user_phone.png">resources/user_phone.png</file>
         <file alias="user_photo.png">resources/user_photo.png</file>
+        <file alias="create_mission.png">resources/create_mission.png</file>
     </qresource>
     <qresource prefix="/res/firmware">
         <file alias="3drradio.png">resources/firmware/3drradio.png</file>

@@ -54,7 +54,7 @@ ApplicationWindow {
             first_rectangle.visible = false
             second_rectangle.visile = false
             third_rectangle.visible = false
-            landing_page_rectangle.visible =false
+            _rectangle.visible =false
             dashboard_rectangle.visible = false
             users_profile_header1.visible = false
             manage_rpa_rectangle.visible = false
@@ -65,13 +65,13 @@ ApplicationWindow {
 
         onRecord_found: {
             console.log(rectangleWidth)
-            landing_page_rectangle.visible =true
+            _rectangle.visible =true
             dashboard_rectangle.visible = true
             login_page_rectangle.z = -1
             login_page_rectangle.visible = false
             //rpadatabase.callSql("SELECT * From RpaList")
             rpadatabase.callSql("select * from RpaList limit 5")
-            landing_page_rectangle.visible =true
+            _rectangle.visible =true
             dashboard_rectangle.visible = true
             users_profile_header1.visible = true
             manage_rpa_rectangle.visible = false
@@ -101,7 +101,7 @@ ApplicationWindow {
             number_record_Dialog.open()
         }
         onClose_database: {
-            landing_page_rectangle.visible = false
+            _rectangle.visible = false
             login_page_rectangle.visible = true
             login_page_email_textfield.text = ""
             login_page_password_textfield.text = ""
@@ -170,7 +170,7 @@ ApplicationWindow {
             anchors.top: login_page_godrona_image.bottom
             anchors.topMargin: 60
             Label{
-                text: "LOGIN ACCOUNT"
+                text: "LOGIN/SIGN-IN ACCOUNT"
                 color: "white"
                 font.bold: true
                 font.pixelSize: 20
@@ -342,7 +342,6 @@ ApplicationWindow {
                 } else {
                     messagedialog1.visible = true
                     console.log("Please enter a username and password.")
-
                 }
             }
         }
@@ -367,8 +366,13 @@ ApplicationWindow {
                 MouseArea{
                     anchors.fill: new_user_logo
                     onClicked: {
+                        password_hide_image.visible = true
+                        password_show_image.visible = false
                         new_user_first_page.visible = true
                         first_user_details_page.visible = true
+                        login_page_email_textfield.text = ""
+                        login_page_password_textfield.text = ""
+                        login_page_password_textfield.echoMode = TextInput.Password
                     }
                 }
             }
@@ -393,8 +397,13 @@ ApplicationWindow {
                 MouseArea{
                     anchors.fill: forgot_password_logo
                     onClicked: {
+                        password_hide_image.visible = true
+                        password_show_image.visible = false
                         login_page_rectangle.visible = false
                         forgot_password_page_rectangle.visible = true
+                        login_page_email_textfield.text = ""
+                        login_page_password_textfield.text = ""
+                        login_page_password_textfield.echoMode = TextInput.Password
                     }
                 }
             }
@@ -421,6 +430,10 @@ ApplicationWindow {
                 onClicked: {
                     forgot_password_page_rectangle.visible = false
                     login_page_rectangle.visible = true
+                    forgot_password_mail_text.text = ""
+                    password_hide_image.visible = true
+                    password_show_image.visible = false
+                    login_page_password_textfield.echoMode = TextInput.Password
                 }
             }
         }
@@ -498,14 +511,17 @@ ApplicationWindow {
                     submit_button.color = "#F25822"
                 }
                 onClicked: {
+
                     if(forgot_password_mail_text.text !== database.mail){
                         database.forgotPasswordmail(forgot_password_mail_text.text)
                         console.log("mail is not found")
+                        //forgot_password_mail_text.text = ""
                     }
                     else {
                         forgot_password_page_rectangle.visible = false
                         reset_password_page_rectangle.visible = true
                         console.log("Mail is found")
+                        //forgot_password_mail_text.text = ""
                     }
                 }
             }
@@ -544,6 +560,16 @@ ApplicationWindow {
                 onClicked: {
                     forgot_password_page_rectangle.visible = false
                     login_page_rectangle.visible = true
+                    user_name_text.text = ""
+                    user_mail_text.text = ""
+                    user_number_text.text = ""
+                    user_address_text.text = ""
+                    user_locality_text.text = ""
+                    user_password_text.text = ""
+                    forgot_password_mail_text.text =""
+                    password_show_image.visible = false
+                    password_hide_image.visible = true
+                    login_page_password_textfield.echoMode = TextInput.Password
                 }
             }
         }
@@ -568,6 +594,16 @@ ApplicationWindow {
                 onClicked: {
                     reset_password_page_rectangle.visible = false
                     forgot_password_page_rectangle.visible = true
+                    new_password_hide_image.visible = true
+                    new_password_show_image.visible = false
+                    confirm_password_hide_image.visible = true
+                    confirm_password_show_image.visible = false
+                    password_hide_image.visible = true
+                    password_show_image.visible = false
+                    new_password_textfield.echoMode = TextInput.Password
+                    confirm_password_textfield.echoMode = TextInput.Password
+                    new_password_textfield.text = ""
+                    confirm_password_textfield.text = ""
                 }
             }
         }
@@ -756,16 +792,27 @@ ApplicationWindow {
                     reset_submit_button.color = "#F25822"
                 }
                 onClicked: {
+
                     if(new_password_textfield.text != confirm_password_textfield.text){
+                       console.log("mismatch")
                         password_mismatch.open()
                         new_password_textfield.text = ""
                         confirm_password_textfield.text = ""
                     }
                     else{
+                        console.log("matched")
                         database.change_password(forgot_password_mail_text.text,new_password_textfield.text)
                         password_updated.open()
                         reset_password_page_rectangle.visible = false
                         login_page_rectangle.visible = true
+                        new_password_hide_image.visible = true
+                        new_password_show_image.visible = false
+                        new_password_textfield.echoMode = TextInput.Password
+                        confirm_password_textfield.echoMode = TextInput.Password
+                        confirm_password_hide_image.visible =true
+                        confirm_password_show_image.visible = false
+                        new_password_textfield.text = ""
+                        confirm_password_textfield.text = ""
                     }
                 }
             }
@@ -799,6 +846,17 @@ ApplicationWindow {
                 onClicked: {
                     new_user_first_page.visible = false
                     login_page_rectangle.visible = true
+                    user_name_text.text = ""
+                    user_mail_text.text = ""
+                    user_number_text.text = ""
+                    user_address_text.text = ""
+                    user_locality_text.text = ""
+                    user_password_text.text = ""
+                    control.currentIndex = -1
+                    password_hide_image.visible = true
+                    password_show_image.visible = false
+                    password_show_image1.visible = false
+                    password_hide_image1.visible = true
                 }
             }
         }
@@ -889,6 +947,8 @@ ApplicationWindow {
                     id: control
                     model: ["Drone Education & Training","Asset Inspection","Security & Surveillance","Public Survey","Oil & Gas Inspection","Industrial Inspection","Agricultural Usage","Goods Delivery"]
                     width: 200
+                    currentIndex: -1
+                    displayText: currentIndex === -1 ? "Select Industry Type" : currentText
                     delegate: ItemDelegate {
                         width: control.width
                         contentItem: Text {
@@ -1003,6 +1063,7 @@ ApplicationWindow {
                         first_circle_text.text = "/"
                         first_circle.color = "green"
                         second_circle.color = "#F25822"
+                        control.currentIndex = -1
                     }
                 }
             }
@@ -1130,7 +1191,7 @@ ApplicationWindow {
                                     color: "white"
                                     placeholderText: qsTr("example@gmail.com")
                                     inputMethodHints: Qt.ImhEmailCharactersOnly
-                                    validator: RegExpValidator{regExp:/[A-Z0-9a-z._-]{1,}@(\\w+)(\\.(\\w+))(\\.(\\w+))?(\\.(\\w+))?$"*/}
+                                    //validator: RegExpValidator{regExp:/[A-Z0-9a-z._-]{1,}@(\\w+)(\\.(\\w+))(\\.(\\w+))?(\\.(\\w+))?$"*/}
                                     leftPadding: 50
                                     onTextChanged: {
                                         user_mail.border.color = "#C0C0C0"
@@ -1424,6 +1485,8 @@ ApplicationWindow {
                             user_address_text.text == ""
                             user_locality_text.text == ""
                             user_password_text.text == ""
+                            password_hide_image1.visible = true
+                            password_show_image1.visible = false
                         }
                     }
                 }
@@ -1441,6 +1504,15 @@ ApplicationWindow {
                             second_circle.color = "#031C28"
                             second_user_details_page.visible = false
                             first_user_details_page.visible = true
+                            user_name_text.text == ""
+                            user_mail_text.text == ""
+                            user_number_text.text == ""
+                            user_address_text.text == ""
+                            user_locality_text.text == ""
+                            user_password_text.text == ""
+                            control.currentIndex = -1
+                            password_hide_image1.visible = true
+                            password_show_image1.visible = false
                         }
                     }
                 }
@@ -1820,14 +1892,14 @@ ApplicationWindow {
         standardButtons: Dialog.Yes | Dialog.No
         onYes: {
             database.logout()
-            //            landing_page_rectangle.visible = false
+            //            _rectangle.visible = false
             //            login_page_rectangle.visible = true
             //            login_page_email_textfield.text = ""
             //            login_page_password_textfield.text = ""
 
         }
         onNo: {
-            landing_page_rectangle.visible = true
+            _rectangle.visible = true
         }
     }
     Dialog {
@@ -2252,9 +2324,9 @@ ApplicationWindow {
     header: MainToolBar {
         id:         toolbar
         height:     ScreenTools.toolbarHeight
-        //visible:    (login_page_rectangle.z != 1) && (landing_page_rectangle.z != 1) && !QGroundControl.videoManager.fullScreen
+        //visible:    (login_page_rectangle.z != 1) && (_rectangle.z != 1) && !QGroundControl.videoManager.fullScreen
         visible:{
-            if(login_page_rectangle || landing_page_rectangle){
+            if(login_page_rectangle || _rectangle){
                 toolbar.visible = false
             }
         }
@@ -2666,43 +2738,70 @@ ApplicationWindow {
     /**************************Landing Page**********************************/
 
     Rectangle {
-        id: landing_page_rectangle
+        id: _rectangle
         anchors.fill: parent
         z:1
         visible: false
         color: "#031C28"
 
         RowLayout {
-            //anchors.centerIn: parent
+            anchors.fill: parent
             spacing: 0
 
             Rectangle {
                 id: first_rectangle
                 color: "#031C28"
-                width: screen.width/5
-                height:parent.height
+                Layout.preferredWidth: mainWindow.width/5
+                Layout.maximumWidth: mainWindow.width/5 + 100
+                Layout.minimumWidth: mainWindow.width/5 - 100
+                Layout.preferredHeight: mainWindow.height
                 border.width: 1
                 border.color: "#05324D"
 
                 ColumnLayout {
                     id: menu_column
+                    //anchors.fill: parent
                     spacing: 12
 
-                    Image {
-                        id: brand_logo
-                        Layout.alignment: Qt.AlignCenter
-                        Layout.topMargin: 15
-                        Layout.preferredHeight: 80
-                        Layout.preferredWidth: 80
-                        source: "/res/goDrona.png"
+                    Rectangle{
+                        id:brand_rect
+                        height: 100
+                        Layout.fillWidth: true
+                        width: first_rectangle.width
+                        color: "#031C28"
+                        Text {
+                            id: brand_text
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: brand_rect.left
+                            anchors.leftMargin:20
+                            text: qsTr("Go Drona")
+                            font.pointSize: 13
+                            font.bold: true
+                            color: "white"
+                        }
+                        Rectangle{
+                            id: brand_logo
+                            width: 90
+                            height: 90
+                            anchors.right: brand_rect.right
+                            anchors.rightMargin: 20
+                            anchors.verticalCenter: parent.verticalCenter
+                            color: "#031C28"
+                            Image {
+                                anchors.fill: parent
+                                source: "/res/goDrona.png"
+                            }
+                        }
                     }
-
                     Rectangle {
                         id: menu_rect_1
                         color: "#05324D"
                         height: 25
-                        width: first_rectangle.width //- 2
+                        width: first_rectangle.width
                         Layout.alignment: Qt.AlignLeft
+                        Layout.fillWidth: true
+                        //Layout.top: brand_row.bottom
+
 
                         Image {
                             id: home_image
@@ -2788,14 +2887,14 @@ ApplicationWindow {
                                 check_box4.checked = false
                             }
                         }
-                        states: State {
+                        /*states: State {
                             name: "pressed"; when: mouseArea.pressed
                             PropertyChanges { target: dashboard_button; scale: 1 }
                         }
 
                         transitions: Transition {
                             NumberAnimation { properties: "scale"; duration: 150; easing.type: Easing.InOutQuad }
-                        }
+                        }*/
                     }
 
                     Rectangle{
@@ -2956,7 +3055,7 @@ ApplicationWindow {
                         }
                     }
                     Rectangle{
-                        id: manual_button
+                        id: create_button
                         width: menu_rect_1.width -15
                         height: 25
                         color: "#031C28"
@@ -2965,18 +3064,18 @@ ApplicationWindow {
                         Layout.leftMargin: 10
 
                         Image {
-                            id: manual_mission_image
-                            source: "/res/manual_mission.png"
+                            id: create_mission_image
+                            source: "/res/create_mission.png"
                             anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: manual_button.left
+                            anchors.left: create_button.left
                             anchors.leftMargin: 20
                         }
                         Text{
-                            text: "MANUAL MISSIONS"
+                            text: "CREATE MISSIONS"
                             color: "#FFFFFF"
                             font.pointSize: 9
                             anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: manual_mission_image.left
+                            anchors.left: create_mission_image.left
                             anchors.leftMargin: 30
                         }
 
@@ -2984,7 +3083,7 @@ ApplicationWindow {
                             //                            hoverEnabled: true
                             //                            onEntered: parent.color = '#F25822'
                             //                            onExited: parent.color = '#031C28'
-                            anchors.fill: manual_button
+                            anchors.fill: create_button
                             onClicked: {
 
                             }
@@ -3178,16 +3277,17 @@ ApplicationWindow {
 
             Rectangle {
                 id: second_rectangle
-                width: screen.width/1.8
-                height: parent.height
+                Layout.preferredWidth: mainWindow.width/1.8
+                Layout.maximumWidth: mainWindow.width/1.8 + 100
+                Layout.minimumWidth: mainWindow.width/1.8 - 100
+                Layout.preferredHeight: mainWindow.height
                 color: "#031C28"
                 border.color: "#05324D"
                 border.width: 1
 
                 Rectangle {
                     id: dashboard_rectangle
-                    width: second_rectangle.width//parent.width/1.8
-                    //height: parent.height
+                    width: second_rectangle.width
                     visible: false
                     color: "#031C28"
                     border.color: "#05324D"
@@ -3226,7 +3326,7 @@ ApplicationWindow {
                             anchors.rightMargin: 180
                         }
                         Text{
-                            id: search
+                            id: dashboard_text_search
                             text: "Search"
                             color : "white"
                             font.pointSize: 10
@@ -3488,7 +3588,7 @@ ApplicationWindow {
 
                 Rectangle {
                     id: manage_rpa_rectangle
-                    width: screen.width/1.8//parent.width/1.8
+                    width: second_rectangle.width
                     //width: dashboard_rectangle.width
                     //height: dashboard_rectangle.height
                     color: "#031C28"
@@ -3550,7 +3650,7 @@ ApplicationWindow {
                             id:manage_rpa_header1
                             color: "#031C28"
                             visible:false || true
-                            height: 718//screen.height - 50
+                            height: screen.height - 50
                             width: manage_rpa_rectangle.width
                             border.color: "#05324D"
                             border.width: 1
@@ -4063,7 +4163,7 @@ ApplicationWindow {
 //                                        model: tableView.rows
                                         Rectangle{
                                             id: actions_rect
-                                            width: 134
+                                            width: (table_rect.width - 40) / 5//134
                                             height: 40
                                             color: "#031C28"
                                             border.width: 1
@@ -4071,10 +4171,11 @@ ApplicationWindow {
                                             visible: tableView.rows > 0
                                             Row{
                                                 spacing: 15
-                                                anchors.top: actions_rect.top
-                                                anchors.topMargin: 2.5
-                                                anchors.left: actions_rect.left
-                                                anchors.leftMargin: 25
+//                                                anchors.top: actions_rect.top
+//                                                anchors.topMargin: 2.5
+//                                                anchors.left: actions_rect.left
+//                                                anchors.leftMargin: 25
+                                                anchors.centerIn: parent
                                                 Rectangle{
                                                     id: edit_button
                                                     width: 35
@@ -4215,7 +4316,7 @@ ApplicationWindow {
                                         }
                                         Rectangle{
                                             id: actions_rect1
-                                            width: 134
+                                            width: (table_rect.width - 40) / 5
                                             height: 40
                                             color: "#031C28"
                                             border.width: 1
@@ -4223,10 +4324,8 @@ ApplicationWindow {
                                             visible: tableView.rows > 1
                                             Row{
                                                 spacing: 15
-                                                anchors.top: actions_rect1.top
-                                                anchors.topMargin: 2.5
-                                                anchors.left: actions_rect1.left
-                                                anchors.leftMargin: 25
+                                                anchors.centerIn: parent
+
                                                 Rectangle{
                                                     id: edit_button1
                                                     width: 35
@@ -4340,7 +4439,7 @@ ApplicationWindow {
                                         }
                                         Rectangle{
                                             id: actions_rect2
-                                            width: 134
+                                            width: (table_rect.width - 40) / 5
                                             height: 40
                                             color: "#031C28"
                                             border.width: 1
@@ -4348,10 +4447,7 @@ ApplicationWindow {
                                             visible: tableView.rows > 2
                                             Row{
                                                 spacing: 15
-                                                anchors.top: actions_rect2.top
-                                                anchors.topMargin: 2.5
-                                                anchors.left: actions_rect2.left
-                                                anchors.leftMargin: 25
+                                                anchors.centerIn: parent
                                                 Rectangle{
                                                     id: edit_button2
                                                     width: 35
@@ -4465,7 +4561,7 @@ ApplicationWindow {
                                         }
                                         Rectangle{
                                             id: actions_rect3
-                                            width: 134
+                                            width: (table_rect.width - 40) / 5
                                             height: 40
                                             color: "#031C28"
                                             border.width: 1
@@ -4473,10 +4569,7 @@ ApplicationWindow {
                                             visible: tableView.rows > 3
                                             Row{
                                                 spacing: 15
-                                                anchors.top: actions_rect3.top
-                                                anchors.topMargin: 2.5
-                                                anchors.left: actions_rect3.left
-                                                anchors.leftMargin: 25
+                                                anchors.centerIn: parent
                                                 Rectangle{
                                                     id: edit_button3
                                                     width: 35
@@ -4590,7 +4683,7 @@ ApplicationWindow {
                                         }
                                         Rectangle{
                                             id: actions_rect4
-                                            width: 134
+                                            width: (table_rect.width - 40) / 5
                                             height: 40
                                             color: "#031C28"
                                             border.width: 1
@@ -4598,10 +4691,7 @@ ApplicationWindow {
                                             visible: tableView.rows > 4
                                             Row{
                                                 spacing: 15
-                                                anchors.top: actions_rect4.top
-                                                anchors.topMargin: 2.5
-                                                anchors.left: actions_rect4.left
-                                                anchors.leftMargin: 25
+                                                anchors.centerIn: parent
                                                 Rectangle{
                                                     id: edit_button4
                                                     width: 35
@@ -4830,7 +4920,7 @@ ApplicationWindow {
                                         anchors.centerIn: parent
                                         layer.enabled: true
                                         layer.effect: OpacityMask {
-                                            maskSource: drone_image
+                                            maskSource: drone_image_container
                                         }
                                     }
                                 }
@@ -5339,8 +5429,7 @@ ApplicationWindow {
 
                 /*Rectangle {
                     id: manage_customers_rectangle
-                    width: second_rectangle.width//parent.width/1.8
-                    //height: parent.height
+                    width: second_rectangle.width
                     visible: false
                     color: "#031C28"
                     border.color: "#05324D"
@@ -5406,8 +5495,7 @@ ApplicationWindow {
                 }
                 Rectangle {
                     id: remote_pilots_rectangle
-                    width: second_rectangle.width//parent.width/1.8
-                    //height: parent.height
+                    width: second_rectangle.width
                     visible: false
                     color: "#031C28"
                     border.color: "#05324D"
@@ -5473,8 +5561,7 @@ ApplicationWindow {
                 }
                 Rectangle {
                     id: missions_rectangle
-                    width: second_rectangle.width//parent.width/1.8
-                    //height: parent.height
+                    width: second_rectangle.width
                     visible: false
                     color: "#031C28"
                     border.color: "#05324D"
@@ -5540,8 +5627,7 @@ ApplicationWindow {
                 }
                 Rectangle {
                     id: manual_missions_rectangle
-                    width: second_rectangle.width//parent.width/1.8
-                    //height: parent.height
+                    width: second_rectangle.width
                     visible: false
                     color: "#031C28"
                     border.color: "#05324D"
@@ -5607,10 +5693,8 @@ ApplicationWindow {
                 }*/
                 Rectangle {
                     id: flight_log_rectangle
-                    width: screen.width/1.8//parent.width/1.8
+                    width: second_rectangle.width
                     height: parent.height
-                    //                width: dashboard_rectangle.width
-                    //                height: dashboard_rectangle.height
                     color: "#031C28"
                     visible: false
                     border.color: "#05324D"
@@ -5781,10 +5865,11 @@ ApplicationWindow {
                     }
                 }
             }
+
             Rectangle{
                 id:third_rectangle
-                width: screen.width/4.1
-                height: parent.height
+                Layout.fillWidth: true
+                Layout.preferredHeight: mainWindow.height
                 color: "#031C28"
                 border.color: "#05324D"
                 border.width: 1
@@ -5872,8 +5957,6 @@ ApplicationWindow {
                         }
                         Rectangle {
                             id: image_rect
-                            //anchors.left: mail_button.right
-                            //anchors.leftMargin: 35
                             anchors.right: users_profile_header.right
                             anchors.rightMargin: 120
                             anchors.verticalCenter: parent.verticalCenter
@@ -6010,12 +6093,13 @@ ApplicationWindow {
                                 border.width: 1
                                 border.color: "cyan"
 
-                                Text {
+                                Label {
                                     anchors.left: parent.left
                                     anchors.leftMargin: 10
                                     anchors.top: parent.top
                                     anchors.topMargin: 10
                                     text: "Your Current Active Plan is"
+                                    wrapMode: Text.WordWrap
                                     color: "#ffffff"
                                     font.pointSize: 9
                                 }
@@ -6048,7 +6132,7 @@ ApplicationWindow {
                                 TextField{
                                     id: userprofile_name
                                     readOnly: true
-                                    width: 200
+                                    width: third_rectangle.width -50
                                     height: 35
                                     anchors.margins: 5
                                     placeholderText: qsTr("User Name")
@@ -6078,7 +6162,7 @@ ApplicationWindow {
                                 }
                                 TextField{
                                     id: mail_address
-                                    width: 200
+                                    width: third_rectangle.width -50
                                     height: 35
                                     anchors.margins: 5
                                     placeholderText: qsTr("user@gmail.com")
@@ -6109,7 +6193,7 @@ ApplicationWindow {
                                 TextField{
                                     id: mobile_number
                                     readOnly: true
-                                    width: 200
+                                    width: third_rectangle.width -50
                                     height: 35
                                     anchors.margins: 5
                                     text: database.number
@@ -6133,7 +6217,7 @@ ApplicationWindow {
                                 }
                                 TextField{
                                     id: address_field
-                                    width: 200
+                                    width: third_rectangle.width -50
                                     height: 35
                                     anchors.margins: 5
                                     placeholderText: qsTr("User Address")
@@ -6158,7 +6242,7 @@ ApplicationWindow {
                                 }
                                 TextField{
                                     id: locality_field
-                                    width: 200
+                                    width: third_rectangle.width -50
                                     height: 35
                                     anchors.margins: 5
                                     placeholderText: qsTr("User Locality")
@@ -6183,7 +6267,7 @@ ApplicationWindow {
                                 }
                                 TextField{
                                     id: password_field
-                                    width: 200
+                                    width: third_rectangle.width -50
                                     height: 35
                                     anchors.margins: 5
                                     placeholderText: qsTr("password")
@@ -6298,7 +6382,6 @@ ApplicationWindow {
                     }
                 }
             }
-
         }
     }
 }
