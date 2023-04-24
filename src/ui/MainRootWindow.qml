@@ -3121,13 +3121,13 @@ ApplicationWindow {
                             //                            onExited: parent.color = '#031C28'
                             anchors.fill: flight_log_button
                             onClicked: {
+                                light_log_button.color = "#F25822"
                                 aws.read_text_file(database.awsname,QGroundControl.settingsManager.appSettings.telemetrySavePath)
                                 flight_log_rectangle.visible = true
                                 manage_rpa_rectangle.visible = false
                                 dashboard_rectangle.visible = false
                                 rpa_register_page.visible = false
-                                logout_button.color = "#031C28"
-                                flight_log_button.color = "#F25822"
+                                logout_button.color = "#031C28" 
                                 managerpa_button.color = "#031C28"
                                 dashboard_button.color = "#031C28"
                                 check_box.checked = false
