@@ -11,8 +11,8 @@ QString user_text_file_folder;
 QString user_download_path;
 QString text_file_path;
 
-const Aws::String AWS_ACCESS_KEY_ID = "AKIAUJC3XHHYKL7RTI74";
-const Aws::String AWS_SECRET_ACCESS_KEY = "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";
+const Aws::String AWS_ACCESS_KEY_ID = "";
+const Aws::String AWS_SECRET_ACCESS_KEY = "";
 static const char * ALLOCATION_TAG = " ";
 std::string file_to_upload;
 std::string file_name_aws;
