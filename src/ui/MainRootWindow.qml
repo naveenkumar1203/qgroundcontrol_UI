@@ -54,7 +54,7 @@ ApplicationWindow {
             first_rectangle.visible = false
             second_rectangle.visile = false
             third_rectangle.visible = false
-            _rectangle.visible =false
+            landing_page_rectangle.visible =false
             dashboard_rectangle.visible = false
             users_profile_header1.visible = false
             manage_rpa_rectangle.visible = false
@@ -65,13 +65,13 @@ ApplicationWindow {
 
         onRecord_found: {
             console.log(rectangleWidth)
-            _rectangle.visible =true
+            landing_page_rectangle.visible =true
             dashboard_rectangle.visible = true
             login_page_rectangle.z = -1
             login_page_rectangle.visible = false
             //rpadatabase.callSql("SELECT * From RpaList")
             rpadatabase.callSql("select * from RpaList limit 5")
-            _rectangle.visible =true
+            landing_page_rectangle.visible =true
             dashboard_rectangle.visible = true
             users_profile_header1.visible = true
             manage_rpa_rectangle.visible = false
@@ -101,7 +101,7 @@ ApplicationWindow {
             number_record_Dialog.open()
         }
         onClose_database: {
-            _rectangle.visible = false
+            landing_page_rectangle.visible = false
             login_page_rectangle.visible = true
             login_page_email_textfield.text = ""
             login_page_password_textfield.text = ""
@@ -1892,14 +1892,14 @@ ApplicationWindow {
         standardButtons: Dialog.Yes | Dialog.No
         onYes: {
             database.logout()
-            //            _rectangle.visible = false
+            //            landing_page_rectangle.visible = false
             //            login_page_rectangle.visible = true
             //            login_page_email_textfield.text = ""
             //            login_page_password_textfield.text = ""
 
         }
         onNo: {
-            _rectangle.visible = true
+            landing_page_rectangle.visible = true
         }
     }
     Dialog {
@@ -2324,9 +2324,9 @@ ApplicationWindow {
     header: MainToolBar {
         id:         toolbar
         height:     ScreenTools.toolbarHeight
-        //visible:    (login_page_rectangle.z != 1) && (_rectangle.z != 1) && !QGroundControl.videoManager.fullScreen
+        //visible:    (login_page_rectangle.z != 1) && (landing_page_rectangle.z != 1) && !QGroundControl.videoManager.fullScreen
         visible:{
-            if(login_page_rectangle || _rectangle){
+            if(login_page_rectangle || landing_page_rectangle){
                 toolbar.visible = false
             }
         }
@@ -2738,7 +2738,7 @@ ApplicationWindow {
     /**************************Landing Page**********************************/
 
     Rectangle {
-        id: _rectangle
+        id: landing_page_rectangle
         anchors.fill: parent
         z:1
         visible: false

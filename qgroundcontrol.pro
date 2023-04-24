@@ -33,8 +33,12 @@ TEMPLATE = app
 QGCROOT  = $$PWD
 
 QML_IMPORT_PATH += $$PWD/src/QmlControls
-INCLUDEPATH = /usr/include/python3.8
-LIBS += -lpython3.8
+#INCLUDEPATH = /usr/include/python3.8
+#LIBS += -lpython3.8
+INCLUDEPATH += /usr/local-DBUILD_ONLY=s3/include/
+LIBS +=-L/usr/local-DBUILD_ONLY=s3/lib -laws-cpp-sdk-core -laws-cpp-sdk-s3 \
+-laws-cpp-sdk-cognito-sync -laws-cpp-sdk-cognito-idp -laws-cpp-sdk-cognito-identity \
+-laws-cpp-sdk-s3
 
 #
 # OS Specific settings

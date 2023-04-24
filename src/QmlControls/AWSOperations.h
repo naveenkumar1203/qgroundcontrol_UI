@@ -5,6 +5,17 @@
 #include <QDebug>
 #include <QFile>
 
+#include <iostream>
+#include <fstream>
+#include <sys/stat.h>
+#include <aws/core/Aws.h>
+#include <aws/s3/S3Client.h>
+#include <aws/s3/model/PutObjectRequest.h>
+#include "aws/core/auth/AWSCredentialsProvider.h"
+#include <aws/s3/model/GetObjectRequest.h>
+#include <aws/s3/model/ListObjectsRequest.h>
+using namespace Aws::Auth;
+
 class AWSOperations : public QObject
 {
     Q_OBJECT
@@ -19,6 +30,22 @@ public:
 
     QStringList name() const;
     void setName(const QStringList &newName);
+
+    bool PutObject(const Aws::String &bucketName,
+                               const Aws::String &fileName,
+                               const Aws::Client::ClientConfiguration &clientConfig);
+
+    bool GetObject(const Aws::String &objectKey,
+                               const Aws::String &fromBucket,
+                               const Aws::Client::ClientConfiguration &clientConfig);
+
+
+    bool ListObjects(const Aws::String &bucketName,
+                                 const Aws::Client::ClientConfiguration &clientConfig);
+
+//    QString user_text_file_name;
+//    QString user_text_file_folder;
+//    QStringList split_text;
 
 signals:
     void listadded();
