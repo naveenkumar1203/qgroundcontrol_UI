@@ -17,35 +17,35 @@ QString profilemail_from_db;
 //QString profilenumber_from_db;
 QString forgotmail_from_db;
 
-QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
+//QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
 
 AjayDatabase::AjayDatabase(QObject *parent) : QObject(parent)
 {
-    //QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
-    db.setHostName("logdata.cbgenywwv2vb.ap-south-1.rds.amazonaws.com");
-    db.setUserName("admin");
-    db.setPassword("admin123");
+//    //QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
+//    db.setHostName("logdata.cbgenywwv2vb.ap-south-1.rds.amazonaws.com");
+//    db.setUserName("admin");
+//    db.setPassword("admin123");
 
-    if(db.open()){
-        qDebug()<<"connection opened";
-    }
-    else if(!db.open()){
-        qDebug()<<"connection not opened";
-        QMessageBox msgbox;
-        msgbox.setText("Connection Not Established. Please Check Your Internet Connection.");
-        msgbox.setStyleSheet("color:white;background:#05324D");
-        msgbox.setDefaultButton(QMessageBox::Ok);
-        msgbox.exec();
-    }
+//    if(db.open()){
+//        qDebug()<<"connection opened";
+//    }
+//    else if(!db.open()){
+//        qDebug()<<"connection not opened";
+//        QMessageBox msgbox;
+//        msgbox.setText("Connection Not Established. Please Check Your Internet Connection.");
+//        msgbox.setStyleSheet("color:white;background:#05324D");
+//        msgbox.setDefaultButton(QMessageBox::Ok);
+//        msgbox.exec();
+//    }
 
-    QSqlQueryModel *database_creation = new QSqlQueryModel();
-    database_creation->setQuery("create database QGC_User_Login");
+//    QSqlQueryModel *database_creation = new QSqlQueryModel();
+//    database_creation->setQuery("create database QGC_User_Login");
 
-    QSqlQueryModel *use_database = new QSqlQueryModel();
-    use_database->setQuery("use QGC_User_Login");
+//    QSqlQueryModel *use_database = new QSqlQueryModel();
+//    use_database->setQuery("use QGC_User_Login");
 
-    QSqlQueryModel *create_table = new QSqlQueryModel();
-    create_table->setQuery("create table UsersLoginInfo(industry text,name text,mail text,number int,address text,locality text,password text)");
+//    QSqlQueryModel *create_table = new QSqlQueryModel();
+//    create_table->setQuery("create table UsersLoginInfo(industry text,name text,mail text,number int,address text,locality text,password text)");
 
 }
 
@@ -322,41 +322,41 @@ void AjayDatabase::update_profile_contents(const QString &name, const QString &m
 
 void AjayDatabase::logout()
 {
-    db.removeDatabase("QMYSQL");
-    db.close();
-    emit close_database();
-    if(db.isOpen()){
-        qDebug()<<"The database is still open";
-    }
-    else{
-        qDebug()<<"the database is closed";
-    }
+//    db.removeDatabase("QMYSQL");
+//    db.close();
+//    emit close_database();
+//    if(db.isOpen()){
+//        qDebug()<<"The database is still open";
+//    }
+//    else{
+//        qDebug()<<"the database is closed";
+//    }
 
-    db.open();
-    QSqlQuery *query = new QSqlQuery(db);
-    query->prepare("use QGC_User_Login");
-    if(!query->exec()){
-        qDebug()<<"The database is closed again";
-        db.setHostName("logdata.cbgenywwv2vb.ap-south-1.rds.amazonaws.com");
-        db.setUserName("admin");
-        db.setPassword("admin123");
+//    db.open();
+//    QSqlQuery *query = new QSqlQuery(db);
+//    query->prepare("use QGC_User_Login");
+//    if(!query->exec()){
+//        qDebug()<<"The database is closed again";
+//        db.setHostName("logdata.cbgenywwv2vb.ap-south-1.rds.amazonaws.com");
+//        db.setUserName("admin");
+//        db.setPassword("admin123");
 
-        if(db.open()){
-            qDebug()<<"connection opened";
-        }
-        else if(!db.open()){
-            qDebug()<<"connection not opened";
-//            QMessageBox msgbox;
-//            msgbox.setText("Connection Not Established. Please Check Your Internet Connection.");
-//            msgbox.setStyleSheet("color:white;background:#05324D");
-//            msgbox.setDefaultButton(QMessageBox::Ok);
-//            msgbox.exec();
-            emit connectionNotopened();
-        }
-    }
-    else {
-        qDebug()<<"The database is opened again";
-    }
+//        if(db.open()){
+//            qDebug()<<"connection opened";
+//        }
+//        else if(!db.open()){
+//            qDebug()<<"connection not opened";
+////            QMessageBox msgbox;
+////            msgbox.setText("Connection Not Established. Please Check Your Internet Connection.");
+////            msgbox.setStyleSheet("color:white;background:#05324D");
+////            msgbox.setDefaultButton(QMessageBox::Ok);
+////            msgbox.exec();
+//            emit connectionNotopened();
+//        }
+//    }
+//    else {
+//        qDebug()<<"The database is opened again";
+//    }
 }
 
 void AjayDatabase::change_password(const QString &mail, const QString &newPassword)

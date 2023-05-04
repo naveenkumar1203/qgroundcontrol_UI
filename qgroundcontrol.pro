@@ -35,10 +35,10 @@ QGCROOT  = $$PWD
 QML_IMPORT_PATH += $$PWD/src/QmlControls
 #INCLUDEPATH = /usr/include/python3.8
 #LIBS += -lpython3.8
-INCLUDEPATH += /usr/local-DBUILD_ONLY=s3/include/
-LIBS +=-L/usr/local-DBUILD_ONLY=s3/lib -laws-cpp-sdk-core -laws-cpp-sdk-s3 \
--laws-cpp-sdk-cognito-sync -laws-cpp-sdk-cognito-idp -laws-cpp-sdk-cognito-identity \
--laws-cpp-sdk-s3
+#INCLUDEPATH += /usr/local-DBUILD_ONLY=s3/include/
+#LIBS +=-L/usr/local-DBUILD_ONLY=s3/lib -laws-cpp-sdk-core -laws-cpp-sdk-s3 \
+#-laws-cpp-sdk-cognito-sync -laws-cpp-sdk-cognito-idp -laws-cpp-sdk-cognito-identity \
+#-laws-cpp-sdk-s3
 
 #
 # OS Specific settings
@@ -273,6 +273,11 @@ QT += \
     texttospeech \
     core-private
 
+QT += androidextras
+
+LIBS += $$ANDROID_SDK_ROOT/android_openssl/latest/arm/libssl_1_1.so
+LIBS += $$ANDROID_SDK_ROOT/android_openssl/latest/arm/libcrypto_1_1.so
+
 # Multimedia only used if QVC is enabled
 !contains (DEFINES, QGC_DISABLE_UVC) {
     QT += \
@@ -446,9 +451,11 @@ contains (DEFINES, QGC_ENABLE_PAIRING) {
 #
 
 HEADERS += \
-    src/QmlControls/AWSOperations.h \
     src/QmlControls/Database.h \
+    src/QmlControls/FireBaseAccess.h \
+    src/QmlControls/FirebaseHandler.h \
     src/QmlControls/FirmwareUpdate.h \
+    src/QmlControls/QNetworkAccessManagerWithPatch.h \
     src/QmlControls/QmlUnitsConversion.h \
     src/QmlControls/RpaDatabase.h \
     src/Vehicle/VehicleEscStatusFactGroup.h \
@@ -464,8 +471,9 @@ contains (DEFINES, QGC_ENABLE_PAIRING) {
 }
 
 SOURCES += \
-    src/QmlControls/AWSOperations.cpp \
     src/QmlControls/Database.cpp \
+    src/QmlControls/FireBaseAccess.cpp \
+    src/QmlControls/FirebaseHandler.cpp \
     src/QmlControls/FirmwareUpdate.cpp \
     src/QmlControls/RpaDatabase.cpp \
     src/Vehicle/VehicleEscStatusFactGroup.cc \
@@ -1571,3 +1579,4 @@ LinuxBuild {
 
 DISTFILES += \
 
+android: include(/home/vinoth/Android/Sdk/android_openssl/openssl.pri)

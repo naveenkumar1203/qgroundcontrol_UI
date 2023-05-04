@@ -3933,7 +3933,7 @@ void Vehicle::_writeCsvLine()
                 //qDebug()<<"vehicle is not armed";
                 QTextStream stream(&_userTextFile);
                 stream << file_name;
-                _toolbox->awsoperations()->s3_function(user_name,file_name,folder_location);
+               // _toolbox->awsoperations()->s3_function(user_name,file_name,folder_location);
             }
             vehicle_armed = 0;
         }

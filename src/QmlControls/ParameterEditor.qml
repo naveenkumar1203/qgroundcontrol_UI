@@ -54,11 +54,13 @@ Item{
             anchors.centerIn: parent
             text: "Fly View"
             color:"white"
+            font.bold: true
+            font.pointSize:ScreenTools.smallFontPointSize
         }
         background: Rectangle {
             id: fly_button
-            implicitHeight: 35
-            implicitWidth: 130
+            implicitHeight: mainWindow.height/20
+            implicitWidth:  mainWindow.width/8
             border.width: 1
             border.color: "#F25822"
             radius: 4
