@@ -18,6 +18,9 @@
 #include "QGCZlib.h"
 #include "JsonHelper.h"
 #include "LinkManager.h"
+#include "FireBaseAccess.h"
+#include "RpaDatabase.h"
+#include "zlib.h"
 
 #include <QStandardPaths>
 #include <QRegularExpression>
@@ -26,7 +29,7 @@
 #include <QJsonArray>
 #include <QNetworkProxy>
 
-#include "zlib.h"
+class FireBaseAccess;
 
 const char* FirmwareUpgradeController::_manifestFirmwareJsonKey =               "firmware";
 const char* FirmwareUpgradeController::_manifestBoardIdJsonKey =                "board_id";
@@ -135,8 +138,9 @@ FirmwareUpgradeController::FirmwareUpgradeController(void)
     connect(_threadController, &PX4FirmwareUpgradeThreadController::eraseComplete,          this, &FirmwareUpgradeController::_eraseComplete);
     connect(_threadController, &PX4FirmwareUpgradeThreadController::flashComplete,          this, &FirmwareUpgradeController::_flashComplete);
     connect(_threadController, &PX4FirmwareUpgradeThreadController::updateProgress,         this, &FirmwareUpgradeController::_updateProgress);
-    
+
     connect(&_eraseTimer, &QTimer::timeout, this, &FirmwareUpgradeController::_eraseProgressTick);
+    m_networkAccessManager = new QNetworkAccessManager(this);
 
 #if !defined(NO_ARDUPILOT_DIALECT)
     connect(_apmChibiOSSetting,     &Fact::rawValueChanged, this, &FirmwareUpgradeController::_buildAPMFirmwareNames);
@@ -253,7 +257,7 @@ void FirmwareUpgradeController::_foundBoard(bool firstAttempt, const QSerialPort
                                                                                 DefaultVehicleFirmware);
         }
     }
-    
+
     qCDebug(FirmwareUpgradeLog) << _boardType << _boardTypeName;
     emit boardFound();
 }
@@ -277,12 +281,12 @@ void FirmwareUpgradeController::_foundBoardInfo(int bootloaderVersion, int board
     _bootloaderVersion          = static_cast<uint32_t>(bootloaderVersion);
     _bootloaderBoardID          = static_cast<uint32_t>(boardID);
     _bootloaderBoardFlashSize   = static_cast<uint32_t>(flashSize);
-    
+
     _appendStatusLog(tr("Connected to bootloader:"));
     _appendStatusLog(tr("  Version: %1").arg(_bootloaderVersion));
     _appendStatusLog(tr("  Board ID: %1").arg(_bootloaderBoardID));
     _appendStatusLog(tr("  Flash size: %1").arg(_bootloaderBoardFlashSize));
-    
+
     if (_startFlashWhenBootloaderFound) {
         flash(_startFlashWhenBootloaderFoundFirmwareIdentity);
     } else {
@@ -373,7 +377,7 @@ void FirmwareUpgradeController::_getFirmwareFile(FirmwareIdentifier firmwareId)
             return;
         }
     }
-    
+
     if (_firmwareFilename.isEmpty()) {
         _errorCancel(tr("No firmware file selected"));
     } else {
@@ -385,10 +389,10 @@ void FirmwareUpgradeController::_getFirmwareFile(FirmwareIdentifier firmwareId)
 void FirmwareUpgradeController::_downloadFirmware(void)
 {
     Q_ASSERT(!_firmwareFilename.isEmpty());
-    
+
     _appendStatusLog(tr("Downloading firmware..."));
     _appendStatusLog(tr(" From: %1").arg(_firmwareFilename));
-    
+
     QGCFileDownload* downloader = new QGCFileDownload(this);
     connect(downloader, &QGCFileDownload::downloadComplete, this, &FirmwareUpgradeController::_firmwareDownloadComplete);
     connect(downloader, &QGCFileDownload::downloadProgress, this, &FirmwareUpgradeController::_firmwareDownloadProgress);
@@ -456,30 +460,57 @@ QString FirmwareUpgradeController::firmwareTypeAsString(FirmwareBuildType_t type
 ///         appropriate next step.
 void FirmwareUpgradeController::_flashComplete(void)
 {
-    delete _image;
-    _image = nullptr;
-    
-    _appendStatusLog(tr("Upgrade complete"), true);
-    _appendStatusLog("------------------------------------------", false);
-    QString cd = QDate::currentDate().toString();
-    QString ct = QTime::currentTime().toString();
-    QSqlQuery insertData;
-    insertData.prepare("insert into FirmwareLog(Info,Date,Time) values(?,?,?)");
-    insertData.addBindValue("Firmware Upgrade completed successfully");
-    insertData.addBindValue(cd);
-    insertData.addBindValue(ct);
-    if(!insertData.exec()){
-        qDebug()<<"error while updating firmware log";
+    {
+        delete _image;
+        _image = nullptr;
+
+        _appendStatusLog(tr("Upgrade complete"), true);
+        _appendStatusLog("------------------------------------------", false);
+
+        QString cd = QDate::currentDate().toString();
+        QString ct = QTime::currentTime().toString();
+
+        QString cdt = cd + " " + " " + " " + " " + " " + ct;
+
+        QVariantMap newAddition;
+
+        newAddition["status"] = "Firmware Upgrade completed successfully";
+
+        QJsonDocument jsonDoc = QJsonDocument::fromVariant(newAddition);
+
+        QString link = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + usermail + "/FIRMWARELOG/" + cdt + "/.json";
+
+        qDebug()<<"inside firmware " + usermail;
+
+        QUrl userUrl = link;
+        QNetworkRequest newAdditionRequest((QUrl(userUrl)));
+        newAdditionRequest.setHeader(QNetworkRequest::ContentTypeHeader,QString("application/json"));
+        m_networkreply = m_networkAccessManager->put(newAdditionRequest,jsonDoc.toJson());
+
+
+        emit flashComplete();
+        qgcApp()->toolbox()->linkManager()->setConnectionsAllowed();
     }
-    emit flashComplete();
-    qgcApp()->toolbox()->linkManager()->setConnectionsAllowed();
+}
+
+QStringList FirmwareUpgradeController::modellist() const
+{
+    return m_modellist;
+}
+
+void FirmwareUpgradeController::setModellist(const QStringList &newModellist)
+{
+if (m_modellist == newModellist)
+            return;
+m_modellist = newModellist;
+emit modellistChanged();
 }
 
 void FirmwareUpgradeController::_error(const QString& errorString)
 {
     delete _image;
     _image = nullptr;
-    
+
     _errorCancel(QString("Error: %1").arg(errorString));
 }
 
@@ -508,16 +539,16 @@ void FirmwareUpgradeController::_eraseProgressTick(void)
 void FirmwareUpgradeController::_appendStatusLog(const QString& text, bool critical)
 {
     Q_ASSERT(_statusLog);
-    
+
     QVariant returnedValue;
     QVariant varText;
-    
+
     if (critical) {
         varText = QString("<font color=\"yellow\">%1</font>").arg(text);
     } else {
         varText = text;
     }
-    
+
     QMetaObject::invokeMethod(_statusLog,
                               "append",
                               Q_RETURN_ARG(QVariant, returnedValue),
@@ -532,16 +563,24 @@ void FirmwareUpgradeController::_errorCancel(const QString& msg)
     emit error();
     cancel();
     qgcApp()->toolbox()->linkManager()->setConnectionsAllowed();
+    qDebug()<<"USER NAME FROM SIGNAL>>"<<usermail;
+
     QString cd = QDate::currentDate().toString();
     QString ct = QTime::currentTime().toString();
-    QSqlQuery insertData;
-    insertData.prepare("insert into FirmwareLog(Info,Date,Time) values(?,?,?)");
-    insertData.addBindValue("Firmware Upgrade is unsuccessfull");
-    insertData.addBindValue(cd);
-    insertData.addBindValue(ct);
-    if(!insertData.exec()){
-        qDebug()<<"error while updating firmware log";
-    }
+
+    QString cdt = cd + " " + ct;
+    QVariantMap newAddition;
+
+    newAddition["status"] = "Firmware Upgrade is unsuccessfull";
+
+    QJsonDocument jsonDoc = QJsonDocument::fromVariant(newAddition);
+
+    QString link = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + usermail + "/FIRMWARELOG/" + cdt + "/.json";
+
+    QUrl userUrl = link;
+    QNetworkRequest newAdditionRequest((QUrl(userUrl)));
+    newAdditionRequest.setHeader(QNetworkRequest::ContentTypeHeader,QString("application/json"));
+    m_networkreply = m_networkAccessManager->put(newAdditionRequest,jsonDoc.toJson());
 }
 
 void FirmwareUpgradeController::_eraseStarted(void)

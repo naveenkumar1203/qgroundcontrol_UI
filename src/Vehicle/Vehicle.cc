@@ -3803,24 +3803,24 @@ void Vehicle::_initializeCsv()
     }
     QString now = QDateTime::currentDateTime().toString("yyyy-MM-dd hh-mm-ss");
     //RpaDatabase obj;
-    QString model = _toolbox->rpadatabase()->model(); //obj.model();
-    QString uin = _toolbox->rpadatabase()->uin(); //obj.uin();
+    //QString model = _toolbox->rpadatabase()->model(); //obj.model();
+    //QString uin = _toolbox->rpadatabase()->uin(); //obj.uin();
     //QString fileName = QString("%1 vehicle%2.csv").arg(now).arg(_id);
 
-    QString fileName = QString("%1 %2 %3.csv").arg(now).arg(model).arg(uin);
+    //QString fileName = QString("%1 %2 %3.csv").arg(now).arg(model).arg(uin);
     //QDir saveDir(_toolbox->settingsManager()->appSettings()->telemetrySavePath());
     QString flightlog_filename = _toolbox->settingsManager()->appSettings()->telemetrySavePath();
     qDebug()<<flightlog_filename;
     folder_location = flightlog_filename;
-    file_name = fileName;
+    //file_name = fileName;
     QDir saveDir (flightlog_filename);
-    _csvLogFile.setFileName(saveDir.absoluteFilePath(fileName));
+    //_csvLogFile.setFileName(saveDir.absoluteFilePath(fileName));
 
-    QString userName = _toolbox->ajaydatabase()->awsname();
-    QString user_text_file = QString("%1.txt").arg(userName);
-    qDebug()<<"user_text_file.........."<<user_text_file;
+    //QString userName = _toolbox->ajaydatabase()->awsname();
+    //QString user_text_file = QString("%1.txt").arg(userName);
+    //qDebug()<<"user_text_file.........."<<user_text_file;
     QDir saveDir1 (flightlog_filename);
-    _userTextFile.setFileName(saveDir1.absoluteFilePath(user_text_file));
+    //_userTextFile.setFileName(saveDir1.absoluteFilePath(user_text_file));
 
     emit flightlog_filenameChanged();
 
@@ -3872,10 +3872,10 @@ void Vehicle::_writeCsvLine()
         _initializeCsv();
     }
 
-    user_name = _toolbox->ajaydatabase()->awsname();
+    //user_name = _toolbox->ajaydatabase()->awsname();
 
-    current_model = _toolbox->rpadatabase()->model(); //obj.model();
-    current_uin = _toolbox->rpadatabase()->uin(); //obj.uin();
+//    current_model = _toolbox->rpadatabase()->model(); //obj.model();
+//    current_uin = _toolbox->rpadatabase()->uin(); //obj.uin();
     //qDebug()<<"current------------"<<current_model;
     //qDebug()<<"current------------"<<current_uin;
 
@@ -3933,7 +3933,7 @@ void Vehicle::_writeCsvLine()
                 //qDebug()<<"vehicle is not armed";
                 QTextStream stream(&_userTextFile);
                 stream << file_name;
-                _toolbox->awsoperations()->s3_function(user_name,file_name,folder_location);
+              //  _toolbox->awsoperations()->s3_function(user_name,file_name,folder_location);
             }
             vehicle_armed = 0;
         }

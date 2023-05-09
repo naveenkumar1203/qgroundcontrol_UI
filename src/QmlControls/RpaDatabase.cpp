@@ -1,176 +1,334 @@
 #include "RpaDatabase.h"
-#include "QDebug"
+#include "FirmwareUpgradeController.h"
+#include "FireBaseAccess.h"
+#include <QDebug>
+#include <QJsonArray>
+#include <QTimer>
 
-static QString uin_from_db;
-static QString model_from_db;
-static QString name_from_db;
-static QString type_from_db;
-static QString uin_from_db_first;
+QString uin_number;
+QString user;
 
+class FireBaseAccess;
 
-RpaDatabase::RpaDatabase(QObject *parent) : QSqlQueryModel(parent)
+TableModel::TableModel(QObject *parent) :
+    QAbstractTableModel(parent)
 {
-
+    m_networkAccessManager = new QNetworkAccessManager(this);
 }
 
-QHash<int, QByteArray> RpaDatabase::roleNames() const
+TableModel::~TableModel()
 {
-    // Important that you set this
-    // Else display will not work in QML
-
-    return {{Qt::DisplayRole, "display"}};
+    m_networkAccessManager->deleteLater();
 }
 
-void RpaDatabase::callSql(QString queryString)
+void TableModel::network_reply_read()
 {
-    //qDebug()<< "I am here";
-    this->setQuery(queryString);
-}
+    //qDebug()<<m_networkreply->readAll();
+    QByteArray response = m_networkreply->readAll();
+    QJsonDocument doc = QJsonDocument::fromJson(response);
+    QJsonObject object = doc.object();
+    QList<QJsonObject> jsonObjectList;
+    qDebug()<<response;
 
-void RpaDatabase::checkboxSqlfly(QString queryString)
-{
-    QSqlQuery check;
-    check.prepare(queryString);
-    if(!check.exec()){
-        qDebug()<<queryString;
-        qDebug()<<"error in searching a database";
+    if (response == "null"){
+        emit uinNotFound();
     }
-    if(check.exec()){
-        while (check.next()) {
-            model_from_db = check.value(0).toString();
-            uin_from_db_first = check.value(1).toString();
-            m_model = model_from_db;
-            //m_model = "";
-            m_uin = uin_from_db_first;
+    else {
+        emit uinFound();
+    }
+}
+
+void TableModel::network_reply_read_addData()
+{
+    //qDebug()<< m_networkreply->readAll();
+    QByteArray response = m_networkreply->readAll();
+    QJsonDocument doc = QJsonDocument::fromJson(response);
+    QJsonObject object = doc.object();
+    //QList<QJsonObject> jsonObjectList;
+    qDebug()<<"inside add data read";
+    uinlist.clear();
+    typelist.clear();
+    modellist.clear();
+    dronelist.clear();
+    qDebug()<<"cleared list";
+    foreach(const QString& key, object.keys()) {
+        QJsonValue value = object.value(key);
+        QJsonObject jsonObject = value.toObject();
+        qDebug()<<"The Value for Key is" << jsonObject;
+        foreach (const QString& key1, jsonObject.keys()) {
+            if(key1 == "Model"){
+                QJsonValue value = jsonObject.value("Model");
+                modellist.append(value.toString());
+                qDebug()<<"Model appended";
+            }
+            if(key1 == "Type"){
+                QJsonValue value = jsonObject.value("Type");
+                typelist.append(value.toString());
+                qDebug()<<"type appended";
+            }
+            if(key1 == "UINNO"){
+                QJsonValue value = jsonObject.value("UINNO");
+                uinlist.append(value.toString());
+                qDebug()<<"uin appended";
+            }
+            if(key1 == "Name"){
+                QJsonValue value = jsonObject.value("Name");
+                dronelist.append(value.toString());
+                qDebug()<<"drone list appended";
+            }
+            //dronelist.append("dji1");
         }
     }
-    qDebug()<<m_model;
+    qDebug()<<uinlist;
+    qDebug()<<typelist;
+    qDebug()<<modellist;
+
+    setData(index(0,0),"1",2);
 }
 
-void RpaDatabase::checkboxSqledit(QString queryString)
+bool TableModel::setData(const QModelIndex &index1, const QVariant &value, int role)
 {
-    QSqlQuery check;
-    check.prepare(queryString);
-    if(!check.exec()){
-        qDebug()<<queryString;
-        qDebug()<<"error in searching a database";
+
+    QModelIndex topLeft =index(0,0);
+    QModelIndex bottomRight = index(rowCount() -1 , columnCount() -1);
+    emit dataChanged(topLeft,bottomRight,{CheckBoxRole,
+                                          TypeRole,
+                                          ModelRole,
+                                          DroneRole,
+                                          UinRole,
+                                          SqlEditRole});
+
+    qDebug()<<"show table called";
+    //emit showTable();
+    emit dataAdded();
+    return true;
+}
+
+int TableModel::rowCount(const QModelIndex &parent) const
+{
+    Q_UNUSED(parent);
+    return typelist.count();
+}
+
+int TableModel::columnCount(const QModelIndex &parent) const
+{
+    Q_UNUSED(parent);
+    return 4;
+}
+
+QVariant TableModel::data(const QModelIndex & index, int role) const {
+
+    if (index.row() < 0 || index.row() >= typelist.count())
+        return QVariant();
+
+    //    if (role == CheckBoxRole)
+    //        return typelist[index.row()];
+
+    else if (role== TypeRole){
+        return typelist[index.row()]; //.isEnabled();
     }
-    if(check.exec()){
-        while (check.next()) {
-            type_from_db = check.value(0).toString();
-            m_type = type_from_db;
-            model_from_db = check.value(1).toString();
-            m_model = model_from_db;
-            name_from_db = check.value(2).toString();
-            m_droneName = name_from_db;
-            uin_from_db_first = check.value(3).toString();
-            m_uin = uin_from_db_first;
+    else if (role== ModelRole){
+        return modellist[index.row()];
+    }
+    else if (role== DroneRole){
+        return dronelist[index.row()];
+    }
+    else if (role== UinRole){
+        return uinlist[index.row()];
+    }
+    else if (role== SqlEditRole){
+        return uinlist[index.row()];
+    }
+    else {
+        return QVariant();
+    }
+}
+
+void TableModel::delete_query(const QString &name, const QString &number)
+{
+    QString user_mail = name;
+    int pos = user_mail.lastIndexOf("@");
+    //qDebug() << user_mail.left(pos);
+    user_mail = user_mail.left(pos);
+    user = user_mail;
+    QString deleteUin =  uinlist.at(number.toInt());
+    QString user_link = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + user + "/RPA/UIN/" + deleteUin + ".json";
+    m_networkreply = m_networkAccessManager->deleteResource(QNetworkRequest(QUrl(user_link)));
+    emit dataDeleted();
+}
+
+void TableModel::existingUIN(const QString &userName,const QString &uinText)
+{
+    uin_number = uinText;
+    QString user_mail = userName;
+    int pos = user_mail.lastIndexOf("@");
+    user_mail = user_mail.left(pos);
+    user = user_mail;
+    QString user_link = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + user + "/RPA/UIN/" + uinText + "/.json";
+    m_networkreply = m_networkAccessManager->get(QNetworkRequest(QUrl(user_link)));
+    connect(m_networkreply,&QNetworkReply::readyRead,this,&TableModel::network_reply_read);
+
+}
+
+void TableModel::add_rpa(const QString &droneType, const QString &droneModel, const QString &droneName, const QString &uinText)
+{
+    QVariantMap newAddition;
+    newAddition["UINNO"] = uinText;
+    newAddition["Type"] = droneType;
+    newAddition["Model"] = droneModel;
+    newAddition["Name"] = droneName;
+    QJsonDocument jsonDoc = QJsonDocument::fromVariant(newAddition);
+
+    QString link = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + user + "/RPA/UIN/" + uinText + "/.json";
+    QUrl userUrl = link;
+    QNetworkRequest newAdditionRequest((QUrl(userUrl)));
+    newAdditionRequest.setHeader(QNetworkRequest::ContentTypeHeader,QString("application/json"));
+    m_networkreply = m_networkAccessManager->put(newAdditionRequest,jsonDoc.toJson());
+    getData();
+}
+
+void TableModel::getData()
+{
+    qDebug()<<user;
+    qDebug()<<"FIRST ";
+    QString link1 = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + user + "/RPA/UIN/.json";
+    m_networkreply = m_networkAccessManager->get(QNetworkRequest(QUrl(link1)));
+    connect(m_networkreply,&QNetworkReply::readyRead,this,&TableModel::network_reply_read_addData);
+    qDebug()<<"I am ";
+}
+
+void TableModel::manageRpaClicked(const QString &userName)
+{
+    QString user_mail = userName;
+    int pos = user_mail.lastIndexOf("@");
+    //qDebug() << user_mail.left(pos);
+    user_mail = user_mail.left(pos);
+    user = user_mail;
+    getData();
+}
+
+void TableModel::modelSelected(const QString &number)
+{
+    qDebug()<<"in model selected";
+
+    qDebug()<<uinlist.at(number.toInt());
+    m_uin = uinlist.at(number.toInt());
+    qDebug()<<modellist.at(number.toInt());
+    m_model = modellist.at(number.toInt());
+}
+
+void TableModel::firmwareupgrade_data()
+{
+    QString link1 = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + usermail + "/FIRMWARELOG/.json";
+    m_networkreply = m_networkAccessManager->get(QNetworkRequest(QUrl(link1)));
+    connect(m_networkreply,&QNetworkReply::readyRead,this,&TableModel::firmwarelog_contain_data);
+    qDebug()<<"i am enter in the new function ";
+}
+
+void TableModel:: firmwarelog_contain_data()
+{
+    QByteArray response = m_networkreply->readAll();
+    m_networkreply->deleteLater();
+    firmware_apply_read_addData(response);
+}
+
+void TableModel::firmware_apply_read_addData(const QByteArray &response)
+{
+    //QByteArray response = m_networkreply->readAll();
+    QJsonDocument doc = QJsonDocument::fromJson(response);
+    QJsonObject object = doc.object();
+    foreach(const QString& key, object.keys()) {
+        qDebug()<< key;
+        QString date_time = key;
+        QJsonValue value = object.value(key);
+        QJsonObject jsonObject = value.toObject();
+        qDebug()<<"The Value for Key is" << jsonObject;
+        foreach (const QString& key1, jsonObject.keys()) {
+            if(key1 == "status"){
+                QJsonValue value = jsonObject.value("status");
+                QString adddata = date_time + " " + " " + " " + " " + " " + value.toString();
+                m_firmwarelog_list.clear();
+                m_firmwarelog_list.append(adddata);
+                qDebug()<<m_firmwarelog_list;
+                qDebug()<<"error while updating firmware log";
+                qDebug()<<"Model appended";
+            }
         }
-    }
-    qDebug()<<m_type;
-    qDebug()<<m_model;
-    qDebug()<<m_droneName;
-    qDebug()<<m_uin;
-}
 
-void RpaDatabase::update_table_contents(const QString &TYPE,const QString &MODEL_NAME, const QString &DRONE_NAME, const QString &UIN)
-{
-    QSqlQuery tableContents;
-    //UPDATE UsersLoginInfo SET password="wd" WHERE mail="w";
-    tableContents.prepare("UPDATE RpaList SET TYPE=:TYPE,MODEL_NAME=:MODEL_NAME,DRONE_NAME=:DRONE_NAME WHERE UIN=:UIN");
-    tableContents.bindValue(":TYPE",TYPE);
-    tableContents.bindValue(":MODEL_NAME",MODEL_NAME);
-    tableContents.bindValue(":DRONE_NAME",DRONE_NAME);
-    tableContents.bindValue(":UIN",UIN);
-    qDebug()<<TYPE;
-    qDebug()<<MODEL_NAME;
-    qDebug()<<DRONE_NAME;
-    qDebug()<<UIN;
-
-    if(!tableContents.exec()){
-        qDebug()<<"error while updating contents";
+     emit firmwarelog_listChanged();
     }
 
 }
 
-void RpaDatabase::delete_table_contents(QString number) //queryString
+/*void TableModel::checkbox_edit(const QString &name,const QString &number,const QString &droneType, const QString &droneModel, const QString &droneName, const QString &uinText)
 {
-//    QSqlQuery deleteContents;
-//    deleteContents.prepare(queryString);
-//    qDebug()<<queryString;
-//    //deleteContents.prepare("delete from RpaList where UIN:"+uin_from_db_first);
-
-//    if(!deleteContents.exec()){
-//        qDebug()<<deleteContents.lastError();
-//        qDebug()<<"error while deleting";
-//    }
-    QString uin_number;
-    QSqlQuery searchquery;
-    QString searchquerystring = "SELECT uin FROM RpaList limit " + number;
-    searchquery.prepare(searchquerystring);
-    if(searchquery.exec()){
-        while(searchquery.next()){
-            uin_number  = searchquery.value(0).toString();
-        }
-    }
-    if(!searchquery.exec()){
-        qDebug()<<"unable to execute search query";
-    }
-
-    QSqlQuery deletequery;
-    QString deletequerystring1 = "DELETE FROM RpaList where UIN='" + uin_number + "'";
-    qDebug()<<deletequerystring1;
-    deletequery.prepare(deletequerystring1);
-
-    if(!deletequery.exec()){
-        qDebug()<<"unable to execute delete query";
-    }
+    QString user_mail = name;
+    int pos = user_mail.lastIndexOf("@");
+    //qDebug() << user_mail.left(pos);
+    user_mail = user_mail.left(pos);
+    user = user_mail;
+    uinText =  uinlist.at(number.toInt());
+    m_uin = uinText;
+    droneType = typelist.at(number.toInt());
+    m_type = droneType;
+    droneModel = modellist.at(number.toInt());
+    m_model = droneModel;
+    droneName = dronelist.at(number.toInt());
+    m_droneName = droneName;
+//    QString user_link = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + user + "/RPA/UIN/" + editUin + ".json";
+//    m_networkreply = m_networkAccessManager->get(QNetworkRequest(QUrl(user_link)));
+//    connect(m_networkreply,&QNetworkReply::readyRead,this,&TableModel::network_reply_read_editData);
 }
 
-QString RpaDatabase::type() const
+void TableModel::update_rpa(const QString &droneType, const QString &droneModel, const QString &droneName, const QString &uinText)
 {
-    return m_type;
+    m_networkAccessManagerWithPatch = new QNetworkAccessManagerWithPatch(this);
+    QVariantMap newAddition;
+    newAddition["UINNO"] = uinText;
+    newAddition["Type"] = droneType;
+    newAddition["Model"] = droneModel;
+    newAddition["Name"] = droneName;
+    qDebug()<<"newAddition:"<<newAddition;
+    QJsonDocument jsonDoc = QJsonDocument::fromVariant(newAddition);
+    qDebug()<<"jsonDoc:"<<jsonDoc;
+    QNetworkRequest newAdditionRequest(QUrl("https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + user + "/RPA/UIN/" + uinText + "/.json"));
+    newAdditionRequest.setHeader(QNetworkRequest::ContentTypeHeader,QString("application/json"));
+    m_networkAccessManagerWithPatch->patch(newAdditionRequest,jsonDoc.toJson());
+
+}*/
+
+
+QHash<int, QByteArray> TableModel::roleNames() const {
+    QHash<int, QByteArray> roles;
+    roles[CheckBoxRole] = "checkbox";
+    roles[TypeRole] = "type";
+    roles[ModelRole] = "model_name";
+    roles[DroneRole] = "drone_name";
+    roles[UinRole] = "uin_number";
+    roles[SqlEditRole] = "edit_operations";
+    return roles;
 }
 
-void RpaDatabase::setType(const QString &newType)
-{
-    if (m_type == newType)
-        return;
-    m_type = newType;
-    emit typeChanged();
-}
 
-QString RpaDatabase::model() const
-{
-    return model_from_db;//m_model;
-}
-
-void RpaDatabase::setModel(const QString &newModel)
-{
-    if (m_model == newModel)
-        return;
-    m_model = newModel;
-    emit modelChanged();
-}
-
-QString RpaDatabase::droneName() const
+QString TableModel::droneName() const
 {
     return m_droneName;
 }
 
-void RpaDatabase::setDroneName(const QString &newDroneName)
+void TableModel::setDroneName(const QString &newDroneName)
 {
     if (m_droneName == newDroneName)
         return;
     m_droneName = newDroneName;
     emit droneNameChanged();
 }
-QString RpaDatabase::uin() const
+
+QString TableModel::uin() const
 {
-    return uin_from_db_first;//m_uin;
+    return m_uin;
 }
 
-void RpaDatabase::setUin(const QString &newUin)
+void TableModel::setUin(const QString &newUin)
 {
     if (m_uin == newUin)
         return;
@@ -178,59 +336,43 @@ void RpaDatabase::setUin(const QString &newUin)
     emit uinChanged();
 }
 
-void RpaDatabase::generateRoleNames()
+QString TableModel::type() const
 {
-    m_roleNames.clear();
-
+    return m_type;
 }
 
-void RpaDatabase::addData(const QString &TYPE,const QString &MODEL_NAME, const QString &DRONE_NAME, const QString &UIN)
+void TableModel::setType(const QString &newType)
 {
-
-    QSqlQuery insertData;
-    insertData.prepare("insert into RpaList(TYPE, MODEL_NAME, DRONE_NAME, UIN) values(?,?,?,?)");
-    insertData.addBindValue(TYPE);
-    insertData.addBindValue(MODEL_NAME);
-    insertData.addBindValue(DRONE_NAME);
-    insertData.addBindValue(UIN);
-
-    if(!insertData.exec()){
-        qDebug()<<"error while inserting values";
-    }
-
+    if (m_type == newType)
+        return;
+    m_type = newType;
+    emit typeChanged();
 }
 
-void RpaDatabase::existingUIN(const QString &UIN)
+QString TableModel::model() const
 {
-    QSqlQuery searchUin;
-    searchUin.prepare("SELECT UIN FROM RpaList WHERE UIN = :UIN");
-    searchUin.bindValue(":UIN",UIN);
-
-    if(!searchUin.exec()){
-        qDebug()<<"error while searching UIN";
-    }
-
-    if(searchUin.exec()){
-        while (searchUin.next()) {
-            uin_from_db = searchUin.value(0).toString();
-        }
-    }
-
-    if(uin_from_db == UIN){
-        emit uin_record_found();
-        qDebug()<<"Given UIN is already used.";
-    }
-    else{
-        emit uin_record_notfound();
-    }
+    return m_model;
 }
 
+void TableModel::setModel(const QString &newModel)
+{
+    if (m_model == newModel)
+        return;
+    m_model = newModel;
+    emit modelChanged();
+}
 
+QStringList TableModel::firmwarelog_list() const
+{
+    return m_firmwarelog_list;
+}
 
-
-
-
-
-
+void TableModel::setFirmwarelog_list(const QStringList &newFirmwarelog_list)
+{
+    if (m_firmwarelog_list == newFirmwarelog_list)
+                              return;
+    m_firmwarelog_list = newFirmwarelog_list;
+    emit firmwarelog_listChanged();
+}
 
 

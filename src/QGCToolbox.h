@@ -35,8 +35,6 @@ class SettingsManager;
 class AirspaceManager;
 class ADSBVehicleManager;
 class RpaDatabase;
-class AWSOperations;
-class AjayDatabase;
 #if defined(QGC_ENABLE_PAIRING)
 class PairingManager;
 #endif
@@ -73,8 +71,6 @@ public:
     AirspaceManager*            airspaceManager         () { return _airspaceManager; }
     ADSBVehicleManager*         adsbVehicleManager      () { return _adsbVehicleManager; }
     RpaDatabase*                rpadatabase             () { return _rpaDatabaseObject; }
-    AWSOperations*              awsoperations           () { return _awsoperationsObject;}
-    AjayDatabase*               ajaydatabase            () { return _ajaydatabaseObject;}
 #if defined(QGC_ENABLE_PAIRING)
     PairingManager*             pairingManager          () { return _pairingManager; }
 #endif
@@ -116,8 +112,6 @@ private:
     AirspaceManager*            _airspaceManager        = nullptr;
     ADSBVehicleManager*         _adsbVehicleManager     = nullptr;
     RpaDatabase*                _rpaDatabaseObject      = nullptr;
-    AWSOperations*              _awsoperationsObject    = nullptr;
-    AjayDatabase*               _ajaydatabaseObject     = nullptr;
 
 #if defined(QGC_ENABLE_PAIRING)
     PairingManager*             _pairingManager         = nullptr;

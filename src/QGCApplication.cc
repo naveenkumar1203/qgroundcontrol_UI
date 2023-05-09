@@ -103,9 +103,8 @@
 #include "VehicleLinkManager.h"
 #include "Autotune.h"
 #include "FirmwareUpdate.h"
-#include "Database.h"
 #include "RpaDatabase.h"
-#include "AWSOperations.h"
+#include "FireBaseAccess.h"
 
 
 #if defined(QGC_ENABLE_PAIRING)
@@ -521,11 +520,9 @@ void QGCApplication::_initCommon()
     qmlRegisterType<TerrainProfile>                 ("QGroundControl.Controls",             1, 0, "TerrainProfile");
     qmlRegisterType<ToolStripAction>                ("QGroundControl.Controls",             1, 0, "ToolStripAction");
     qmlRegisterType<ToolStripActionList>            ("QGroundControl.Controls",             1, 0, "ToolStripActionList");
-    qmlRegisterType<AjayDatabase>                   ("AjayDatabase",             1, 0, "AjayDatabase");
     qmlRegisterType<FirmwareUpdate>                 ("FirmwareUpdate",             1, 0, "FirmwareUpdate");
-    qmlRegisterType<RpaDatabase>                    ("RpaDatabase",             1, 0, "RpaDatabase");
-    qmlRegisterType<AWSOperations>                    ("AWSOperations",             1, 0, "AWSOperations");
-
+    qmlRegisterType<FireBaseAccess>                ("FireBaseAccess",               1, 0, "FireBaseAccess");
+    qmlRegisterType<TableModel>                     ("TableModel",                  1, 0, "TableModel");
 
 #ifndef __mobile__
 #ifndef NO_SERIAL_LINK
