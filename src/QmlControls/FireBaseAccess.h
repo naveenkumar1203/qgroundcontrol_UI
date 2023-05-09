@@ -8,11 +8,21 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QByteArray>
+#include "QNetworkAccessManagerWithPatch.h"
+#include "RpaDatabase.h"
+#include "FirmwareUpgradeController.h"
+
+extern QString usermail;
 
 class FireBaseAccess : public QObject
 {
     Q_OBJECT
 public:
+
+
+    friend class FirmwareUpgradeController;
+    friend class RpaDatabase;
+
     explicit FireBaseAccess(QObject *parent = nullptr);
     ~FireBaseAccess();
 
@@ -29,8 +39,10 @@ public:
     void password_reset_POST(const QString &url,const QJsonDocument &payload);
     void password_reset_parseResponse(const QByteArray &response);
 
+    void profile_update_parse(const QByteArray &resposne);
 
     Q_INVOKABLE void new_user_registration(const QString &industry,
+                                           const QString &role,
                                            const QString &name,
                                            const QString &mail,
                                            const QString &number,
@@ -44,13 +56,17 @@ public:
 
     Q_INVOKABLE void reset_password(const QString &mail);
 
+    Q_INVOKABLE void update_profile(const QString &name, const QString &mail, const QString &number, const QString &address, const QString &locality);
+
+    Q_INVOKABLE void get_profile_update();
+
     Q_PROPERTY(QString industry READ industry WRITE setindustry NOTIFY industryChanged)
     Q_PROPERTY(QString mail READ mail WRITE setMail NOTIFY mailChanged)
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QString number READ number WRITE setNumber NOTIFY numberChanged)
     Q_PROPERTY(QString address READ address WRITE setAddress NOTIFY addressChanged)
     Q_PROPERTY(QString locality READ locality WRITE setLocality NOTIFY localityChanged)
-
+    Q_PROPERTY(QString role READ role WRITE setRole NOTIFY roleChanged)
     Q_PROPERTY(QString firebasejsonname READ firebasejsonname WRITE setFirebasejsonname NOTIFY firebasejsonnameChanged)
 
     QString name() const;
@@ -74,12 +90,16 @@ public:
     QString locality() const;
     void setLocality(const QString &newLocality);
 
+    QString role() const;
+    void setRole(const QString &newRole);
+
 public slots:
     void new_user_network_reply_read();
     void registered_user_network_reply_read();
     void reset_password_network_reply_read();
     void rds_data_network_reply_read();
     void user_details_network_reply_read();
+    void profile_data_network_reply_read();
 
 signals:
     void userRegisteredSuccessfully();
@@ -89,6 +109,7 @@ signals:
     void incorrectPassword();
     void resetMailFound();
     void resetMailNotFound();
+    void profile_updated();
 
     void nameChanged();
 
@@ -104,10 +125,13 @@ signals:
 
     void localityChanged();
 
+    void roleChanged();
+
 private:
-    QString m_apikey = "AIzaSyAg_vERDdSdzA6cIjCq7VrDKPqoihAFEDU";
+    QString m_apikey = "AIzaSyDuhh-doXjdmw7FvYKF81Kqmv5AlotC2ZY";
     QNetworkAccessManager *m_NetworkAccessManager;
     QNetworkAccessManager *m_NetworkAccessManager1;
+    QNetworkAccessManagerWithPatch *m_networkAccessManagerWithPatch;
     QNetworkReply *m_NetworkReply;
     QNetworkReply *m_NetworkReply1;
 
@@ -118,6 +142,7 @@ private:
     QString m_number;
     QString m_address;
     QString m_locality;
+    QString m_role;
 };
 
 #endif // FIREBASEACCESS_H

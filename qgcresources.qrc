@@ -103,6 +103,7 @@
         <file alias="user_phone.png">resources/user_phone.png</file>
         <file alias="user_photo.png">resources/user_photo.png</file>
         <file alias="create_mission.png">resources/create_mission.png</file>
+        <file alias="firmware.png">resources/firmware.png</file>
     </qresource>
     <qresource prefix="/res/firmware">
         <file alias="3drradio.png">resources/firmware/3drradio.png</file>

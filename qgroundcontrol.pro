@@ -271,7 +271,8 @@ QT += \
     widgets \
     xml \
     texttospeech \
-    core-private
+    core-private \
+    serialport
 
 QT += androidextras
 
@@ -451,9 +452,7 @@ contains (DEFINES, QGC_ENABLE_PAIRING) {
 #
 
 HEADERS += \
-    src/QmlControls/Database.h \
     src/QmlControls/FireBaseAccess.h \
-    src/QmlControls/FirebaseHandler.h \
     src/QmlControls/FirmwareUpdate.h \
     src/QmlControls/QNetworkAccessManagerWithPatch.h \
     src/QmlControls/QmlUnitsConversion.h \
@@ -471,9 +470,7 @@ contains (DEFINES, QGC_ENABLE_PAIRING) {
 }
 
 SOURCES += \
-    src/QmlControls/Database.cpp \
     src/QmlControls/FireBaseAccess.cpp \
-    src/QmlControls/FirebaseHandler.cpp \
     src/QmlControls/FirmwareUpdate.cpp \
     src/QmlControls/RpaDatabase.cpp \
     src/Vehicle/VehicleEscStatusFactGroup.cc \

@@ -27,7 +27,8 @@ import QGroundControl.Controllers   1.0
 import QGroundControl.FactSystem    1.0
 import QGroundControl.FactControls  1.0
 import FirmwareUpdate 1.0
-import RpaDatabase 1.0
+import TableModel 1.0
+
 
 Item{
     id:         _root
@@ -36,12 +37,13 @@ Item{
     property var    _controller:        controller
 
 
-    ParameterEditorController {
+    ParameterEditorController
+    {
         id: controller
     }
 
-    RpaDatabase{
-        id:rpadatabase
+    TableModel{
+        id: rpadatabase
     }
 
     //ExclusiveGroup { id: sectionGroup }
@@ -73,147 +75,30 @@ Item{
             fly_button.color = "#F25822"
         }
         onClicked: {
-            if(check_box.checked === false && check_box1.checked === false && check_box2.checked === false && check_box3.checked === false && check_box4.checked === false){
-                select_the_modelDialog.open()
-                console.log("model not selected")
-            }
-            if(check_box.checked === true){
-               rpadatabase.checkboxSqlfly("select MODEL_NAME,UIN from RpaList limit 1")
+                    if(checkBoxState === 0){
+                                    select_the_modelDialog.open()
+                                    console.log("model not selected")
+                                }
+                                else if(checkBoxState === 1){
+                                    console.log("model is selected")
+                                    console.log(checkBoxNumber)
+                                    //rpadatabase.modelSelected(checkBoxNumber)
+                                    flightView.visible = true
+                                    toolbar.visible =true
+                                    landing_page_rectangle.visible = false
+                                    checkBoxState = 0
 
-                if(rpadatabase.model == "Model A") {
-                   firmware_load1.checksum_generation_process_model_A()
-                   flightView.visible = true
-                   toolbar.visible =true
-                   landing_page_rectangle.visible = false
-
-               }
-               else if(rpadatabase.model == "Model B"){
-                    firmware_load1.checksum_generation_process_model_B()
-                    flightView.visible = true
-                    toolbar.visible =true
-                    landing_page_rectangle.visible = false
-
+                                }
+                                else{
+                                    console.log("no checkboxstate")
+                                }
                 }
-            }
-            else if(check_box1.checked === true){
-                rpadatabase.checkboxSqlfly("select MODEL_NAME,UIN from RpaList limit 1 offset 1")
-                if(rpadatabase.model == "Model A") {
-                   firmware_load1.checksum_generation_process_model_A()
-                   flightView.visible = true
-                   toolbar.visible =true
-                   landing_page_rectangle.visible = false
-
-               }
-               else if(rpadatabase.model == "Model B"){
-                    firmware_load1.checksum_generation_process_model_B()
-                    flightView.visible = true
-                    toolbar.visible =true
-                    landing_page_rectangle.visible = false
-
-                }
-            }
-            else if(check_box2.checked === true){
-                rpadatabase.checkboxSqlfly("select MODEL_NAME,UIN from RpaList limit 1 offset 2")
-                if(rpadatabase.model == "Model A") {
-                   firmware_load1.checksum_generation_process_model_A()
-                   flightView.visible = true
-                   toolbar.visible =true
-                   landing_page_rectangle.visible = false
-
-               }
-               else if(rpadatabase.model == "Model B"){
-                    firmware_load1.checksum_generation_process_model_B()
-                    flightView.visible = true
-                    toolbar.visible =true
-                    landing_page_rectangle.visible = false
-
-                }
-            }
-            else if(check_box3.checked === true){
-                rpadatabase.checkboxSqlfly("select MODEL_NAME,UIN from RpaList limit 1 offset 3")
-                if(rpadatabase.model == "Model A") {
-                   firmware_load1.checksum_generation_process_model_A()
-                   flightView.visible = true
-                   toolbar.visible =true
-                   landing_page_rectangle.visible = false
-
-               }
-               else if(rpadatabase.model == "Model B"){
-                    firmware_load1.checksum_generation_process_model_B()
-                    flightView.visible = true
-                    toolbar.visible =true
-                    landing_page_rectangle.visible = false
-
-                }
-            }
-            else if(check_box4.checked === true){
-                rpadatabase.checkboxSqlfly("select MODEL_NAME,UIN from RpaList limit 1 offset 4")
-                if(rpadatabase.model == "Model A") {
-                   firmware_load1.checksum_generation_process_model_A()
-                   flightView.visible = true
-                   toolbar.visible =true
-                   landing_page_rectangle.visible = false
-
-               }
-               else if(rpadatabase.model == "Model B"){
-                    firmware_load1.checksum_generation_process_model_B()
-                    flightView.visible = true
-                    toolbar.visible =true
-                    landing_page_rectangle.visible = false
-
-                }
-            }
-            /*else if(check_box.checked === true || check_box1.checked === true || check_box2.checked === true || check_box3.checked === true ||check_box4.checked === true){
-                console.log("model not selected------>")
-                rpadatabase.checkboxSqlfly("select MODEL_NAME,UIN from RpaList")
-                if(rpadatabase.model === ""){
-                    select_the_modelDialog.open()
-                    console.log("model not selected")
-                }
-            }
-            else if(check_box.checked !== true || check_box1.checked !== true || check_box2.checked !== true || check_box3.checked !== true ||check_box4.checked !== true){
-                console.log("check_box is not selected")
-                select_the_checkboxDialog.open()
-            }
-
-            if(drone_model_list.currentText === "Model A") {
-                firmware_load1.checksum_generation_process_model_A()
-
-            }
-            else if(drone_model_list.currentText === "Model B") {
-                firmware_load1.checksum_generation_process_model_B()
-            }
-            else if (uin_input_text.text !== ""){
-                rpadatabase.existingUIN(uin_input_text.text)
-                //uin_input_text.text=""
-            }
-*/
-
-            check_box.checked = false
-            check_box1.checked = false
-            check_box2.checked = false
-            check_box3.checked = false
-            check_box4.checked = false
-
-        }
     }
-//    Dialog {
-//        id: select_the_modelDialog
-//        width: 200
-//        height: 50
-//        title: "Select the Model"
-//        Label {
-//            text: "Please Select the Model."
-//        }
-//    }
-    Dialog {
+
+    MessageDialog {
         id: select_the_modelDialog
-        width: 200
-        height: 50
         title: "Model not Selected"
-        Label {
-            text: "You have to select the model before you fly."
-        }
+        text: "You have to select the model before you fly."
     }
 
 

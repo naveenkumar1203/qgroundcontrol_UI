@@ -103,9 +103,7 @@
 #include "VehicleLinkManager.h"
 #include "Autotune.h"
 #include "FirmwareUpdate.h"
-#include "Database.h"
 #include "RpaDatabase.h"
-#include "FirebaseHandler.h"
 #include "FireBaseAccess.h"
 
 
@@ -523,12 +521,9 @@ void QGCApplication::_initCommon()
     qmlRegisterType<TerrainProfile>                 ("QGroundControl.Controls",             1, 0, "TerrainProfile");
     qmlRegisterType<ToolStripAction>                ("QGroundControl.Controls",             1, 0, "ToolStripAction");
     qmlRegisterType<ToolStripActionList>            ("QGroundControl.Controls",             1, 0, "ToolStripActionList");
-    qmlRegisterType<AjayDatabase>                   ("AjayDatabase",             1, 0, "AjayDatabase");
     qmlRegisterType<FirmwareUpdate>                 ("FirmwareUpdate",           1, 0, "FirmwareUpdate");
-    qmlRegisterType<RpaDatabase>                    ("RpaDatabase",              1, 0, "RpaDatabase");
-    qmlRegisterType<FirebaseHandler>                ("FirebaseHandler",          1, 0, "FirebaseHandler");
-    qmlRegisterType<FireBaseAccess>                 ("FireBaseAccess",          1, 0, "FireBaseAccess");
-
+    qmlRegisterType<TableModel>                     ("TableModel",              1, 0, "TableModel");
+    qmlRegisterType<FireBaseAccess>                 ("FireBaseAccess",           1, 0, "FireBaseAccess");
 
 #ifndef __mobile__
 #ifndef NO_SERIAL_LINK

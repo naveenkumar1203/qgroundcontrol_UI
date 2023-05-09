@@ -26,10 +26,10 @@ import QGroundControl.ScreenTools   1.0
 import QGroundControl.FlightDisplay 1.0
 import QGroundControl.FlightMap     1.0
 
-import AjayDatabase 1.0
-import RpaDatabase 1.0
-import FirebaseHandler 1.0
+
+import TableModel 1.0
 import FireBaseAccess 1.0
+
 
 /// @brief Native QML top level window
 /// All properties defined here are visible to all QML pages.
@@ -44,12 +44,26 @@ ApplicationWindow {
     property int number: 0
     property real rectangleWidth: (table_rect.width - 40) / 5
 
-    FirebaseHandler{
-        id:firebase
-    }
+    property int checkBoxState: 0
+    property int checkBoxNumber
 
     FireBaseAccess{
         id: database_access
+        onNameChanged:{
+            profile_timer.start()
+        }
+
+        onAddressChanged: {
+            address_field.text = database_access.address
+        }
+
+        onLocalityChanged: {
+            locality_field.text = database_access.locality
+        }
+
+        onProfile_updated:{
+            database_access.get_profile_update();
+        }
         onSuccessfullLogin: {
             console.log("user logged in successfully")
             landing_page_rectangle.visible =true
@@ -63,10 +77,12 @@ ApplicationWindow {
             flight_log_rectangle.visible = false
             users_information_header1.visible = false
             rpa_register_page.visible = false
+            firmware_log_rectangle.visible = false
             dashboard_button.color = "#F25822"
             managerpa_button.color = "#031C28"
             flight_log_button.color = "#031C28"
             logout_button.color = "#031C28"
+            firmware_button.color = "#031C28"
         }
         onEmailNotFound:{
             no_recordDialog.open()
@@ -76,6 +92,7 @@ ApplicationWindow {
         }
         onUserRegisteredSuccessfully: {
             console.log("new user registered successfully")
+            userRegisteredDialog.open()
             new_user_first_page.visible = false
             third_user_details_page.visible = false
             second_user_details_page.visible = false
@@ -102,30 +119,165 @@ ApplicationWindow {
         }
     }
 
-    RpaDatabase {
-        id:rpadatabase
-
-        onUin_record_found: {
+    TableModel{
+        property int i : 0
+        id: rpadatabase
+        onUinFound:{
+            console.log("uin found")
             uinrecord_Dialog.open()
         }
-
-        onUin_record_notfound: {
-            rpa_register_page.visible =  false
-            manage_rpa_header1.visible = true
-            //rpadatabase.addData(drone_type_list.currentText,drone_model_list.currentText,drone_name_text.text,uin_input_text.text)
-            //firebase.access_firebase(drone_type_list.currentText,drone_model_list.currentText,drone_name_text.text,uin_input_text.text)
-            //rpadatabase.callSql("select * from RpaList limit 5")
-            drone_type_list.currentIndex = -1
-            drone_model_list.currentIndex = -1
-            drone_name_text.text = ""
-            uin_input_text.text = ""
-            uin_input_text.enabled = true
-            check_box.checked = false
-            check_box1.checked = false
-            check_box2.checked = false
-            check_box3.checked = false
-            check_box4.checked = false
+        onUinNotFound:{
+            console.log("uin not found")
+            rpadatabase.add_rpa(drone_type_list.currentText,drone_model_list.currentText,drone_name_text.text,uin_input_text.text)
+            i = 1
         }
+
+        onDataDeleted: {
+            rpadatabase.getData()
+        }
+
+        onDataAdded: {
+                        //rpadatabase.getData()
+                        if(i == 1){
+                            rpadatabase.getData()
+                        }
+
+                        console.log("table is shown")
+                        rpa_register_page.visible =  false
+                        manage_rpa_header1.visible = true
+                        drone_type_list.currentIndex = -1
+                        drone_model_list.currentIndex = -1
+                        drone_name_text.text = ""
+                        uin_input_text.text = ""
+                        const newObject = Qt.createQmlObject(`
+                                                             import QtQuick 2.0
+                                                             import QtQuick.Controls 1.5
+                                                             import QtQuick.Controls.Styles 1.2
+
+                                                             TableView {
+
+                                                                 id: table
+                                                                 anchors.fill: parent
+                                                                 anchors.top: table_rect.top
+                                                                 backgroundVisible: false
+                                                                 model:  rpadatabase
+
+                                                                 style: TableViewStyle {
+                                                                    headerDelegate: Rectangle {
+                                                                        height: textItem.implicitHeight * 2
+                                                                        width: textItem.implicitWidth
+                                                                         color: "#031C28"
+                                                                         border.width: 1
+                                                                         border.color: "#05324D"
+                                                                        Text {
+                                                                            id: textItem
+                                                                            anchors.centerIn: parent
+                                                                            text: styleData.value
+                                                                            font.pointSize: ScreenTools.smallFontPointSize
+                                                                            font.bold:true
+                                                                            elide: Text.ElideRight
+                                                                            color: '#F25822'
+                                                                            renderType: Text.NativeRendering
+                                                                        }
+                                                                    }
+                                                                }
+                                                                 itemDelegate: Rectangle {
+                                                                     anchors.fill:parent
+                                                                     color: "#031C28"
+                                                                     border.width: 1
+                                                                     border.color: "#05324D"
+                                                                     Text {
+                                                                     anchors.centerIn:parent
+                                                                     color: "white"
+                                                                     text: styleData.value
+                                                                     font.pointSize: ScreenTools.smallFontPointSize
+
+                                                                     }
+                                                                 }
+                                                                 TableViewColumn {
+                                                                     id: checkbox
+                                                                     width: parent.width / 8
+                                                                     title: "Select"
+                                                                     movable: false
+                                                                     resizable: false
+                                                                     role: "checkbox"
+                                                                     delegate: Rectangle{
+                                                                         color: "#031C28"
+                                                                         border.width: 2
+                                                                         border.color:"#05324D"
+                                                                         CheckBox {
+                                                                            id: delegate_checkbox
+                                                                            anchors.centerIn: parent
+                                                                            checked: false
+                                                                             onCheckedChanged: {
+                                                                            if(checked == true){
+                                                                                checkBoxState = 1
+                                                                                checkBoxNumber = model.index
+                                                                             }
+                                                             }
+                                                                         }
+                                                                     }
+                                                                 }
+                                                                 TableViewColumn {
+                                                                     width: (parent.width - checkbox.width)/4
+                                                                     id: type_column
+                                                                     title: "Type"
+                                                                     movable: false
+                                                                     resizable: false
+                                                                     role: "type"
+                                                                 }
+                                                                 TableViewColumn{
+                                                                     width: (parent.width - checkbox.width)/4
+                                                                     role: "model_name"
+                                                                     title: "ModelName"
+                                                                     movable: false
+                                                                     resizable: false
+                                                                 }
+                                                                 TableViewColumn{
+                                                                     width: (parent.width - checkbox.width)/4
+                                                                     role: "drone_name"
+                                                                     title: "DroneName"
+                                                                     movable: false
+                                                                     resizable: false
+                                                                 }
+                                                                 TableViewColumn{
+                                                                     width: (parent.width - checkbox.width)/4
+                                                                     title: "UIN"
+                                                                     movable: false
+                                                                     resizable: false
+                                                                     role: "uin_number"
+                                                                 }
+            //                                                     TableViewColumn{
+            //                                                     width: parent.width / 6
+            //                                                     title: "Actions"
+            //                                                     movable: false
+            //                                                     resizable: false
+            //                                                     role: "edit_operations"
+            //                                                     delegate: Rectangle{
+            //                                                     color:"#031C28"
+            //                                                     Row{
+            //                                                     anchors.fill:parent
+            //                                                     Button{
+            //                                                     height: parent.height
+            //                                                     text: "edit"
+            //                                                     }
+            //                                                     Button{
+            //                                                     height: parent.height
+            //                                                     text: "delete"
+            //                                                     onClicked: {
+            //                                                     //rpadatabase.delete_query(database_access.mail,model.index)
+            //                                                     }
+            //                                                     }
+            //                                                     }
+            //                                                     }
+                                                                 //}
+                                                             }
+                                                             `,
+                                                             table_rect,
+                                                             "myDynamicSnippet"
+                                                             );
+                        i = 0
+                    }
     }
 
     function showPanel(button, qmlSource) {
@@ -317,7 +469,6 @@ ApplicationWindow {
                     console.log("Username: " + login_page_email_textfield.text)
                     console.log("Password: " + login_page_password_textfield.text)
                     database_access.registered_user(login_page_email_textfield.text,login_page_password_textfield.text)
-                    //database.loginExistingUser(login_page_email_textfield.text,login_page_password_textfield.text)
                 } else {
                     messagedialog1.visible = true
                     console.log("Please enter a username and password.")
@@ -460,9 +611,9 @@ ApplicationWindow {
                         anchors.leftMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
                     }
-                    onEditingFinished : {
-                        database.forgotPasswordmail(forgot_password_mail_text.text)
-                    }
+//                    onEditingFinished : {
+//                        database.forgotPasswordmail(forgot_password_mail_text.text)
+//                    }
                 }
             }
             Button {
@@ -487,20 +638,7 @@ ApplicationWindow {
                     submit_button.color = "#F25822"
                 }
                 onClicked: {
-
-                    //if(forgot_password_mail_text.text !== database.mail){
-                    //if(forgot_password_mail_text.text !== database_access.mail){
-                    //database.forgotPasswordmail(forgot_password_mail_text.text)
-                    //console.log("mail is not found")
-                    //forgot_password_mail_text.text = ""
-                    //}
-                    //else {
-                    database_access.reset_password(forgot_password_mail_text.text)
-                    //forgot_password_page_rectangle.visible = false
-                    //reset_password_page_rectangle.visible = true
-                    console.log("Mail is found")
-                    //forgot_password_mail_text.text = ""
-                    //}
+                     database_access.reset_password(forgot_password_mail_text.text)
                 }
             }
             Label{
@@ -770,7 +908,6 @@ ApplicationWindow {
                     }
                     else{
                         console.log("matched")
-                        //database.change_password(forgot_password_mail_text.text,new_password_textfield.text)
                         password_updated.open()
                         reset_password_page_rectangle.visible = false
                         login_page_rectangle.visible = true
@@ -1000,6 +1137,97 @@ ApplicationWindow {
                         }
                     }
                 }
+
+                Label{
+                    text: "Select Your Role*"
+                    color: "white"
+                    font.pointSize:ScreenTools.defaultFontPointSize
+                }
+                ComboBox {
+                    id: control_role
+                    model: ["OEM","PILOT","OPERTAOR"]
+                    width: mainWindow.width/3
+                    height: mainWindow.height/10
+                    currentIndex: -1
+                    displayText: currentIndex === -1 ? "Select Role" : currentText
+                    delegate: ItemDelegate {
+                        width: control_role.width
+                        contentItem: Text {
+                            text: control_role.textRole
+                                  ? (Array.isArray(control_role.model) ? modelData[control_role.textRole] : model[control_role.textRole])
+                                  : modelData
+                            color: "black"
+                            font: control_role.font
+                            elide: Text.ElideRight
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        highlighted: control_role.highlightedIndex === index
+                    }
+                    indicator: Canvas {
+                        id: canvas_role
+                        x: control_role.width - width - control_role.rightPadding
+                        y: control_role.topPadding + (control_role.availableHeight - height) / 2
+                        width: 20
+                        height: 20
+                        contextType: "2d"
+                        Connections {
+                            target: control_role
+                            function onPressedChanged() { canvas_role.requestPaint(); }
+                        }
+                        onPaint: {
+                            context.reset();
+                            context.moveTo(0, 0);
+                            context.lineTo(width, 0);
+                            context.lineTo(width / 2, height);
+                            context.closePath();
+                            context.fillStyle = "white"
+                            context.fill();
+                        }
+                    }
+                    contentItem: Text {
+                        id: combobox_role_text
+                        leftPadding: 80
+                        rightPadding: control_role.indicator.width + control_role.spacing
+                        text: control_role.displayText
+                        font: control_role.font
+                        color: "white"
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                        Image{
+                            id: role_image
+                            anchors.left: parent.left
+                            anchors.leftMargin: 20
+                            anchors.verticalCenter: parent.verticalCenter
+                            source: "/res/organization.png"
+                        }
+                    }
+                    background: Rectangle {
+                        implicitWidth: mainWindow.width/3
+                        implicitHeight: mainWindow.height/10
+                        color: "#031C28"
+                        border.color: "#00FFFF"
+                        border.width: control_role.visualFocus ? 2 : 1
+                        radius: 2
+                    }
+                    popup: Popup {
+                        y: control_role.height - 1
+                        width: control_role.width
+                        implicitHeight: contentItem.implicitHeight
+                        padding: 1
+                        contentItem: ListView {
+                            clip: true
+                            implicitHeight: contentHeight
+                            model: control_role.popup.visible ? control_role.delegateModel : null
+                            currentIndex: control_role.highlightedIndex
+
+                            ScrollIndicator.vertical: ScrollIndicator { }
+                        }
+                        background: Rectangle {
+                            border.color: "#00FFFF"
+                            radius: 2
+                        }
+                    }
+                }
                 Button {
                     anchors.top: first_user_details_page.bottom
                     anchors.topMargin: 100
@@ -1025,17 +1253,25 @@ ApplicationWindow {
                         next_step_submit_button.color = "#F25822"
                     }
                     onClicked: {
+                        if(combobox_text.text === "Select Industry Type" || control.currentIndex === -1){
+                            selectIndustryDialog.open()
+                        }
+                        else if(combobox_role_text.text == "Select Role" || control_role.currentIndex == -1){
+                            selectRoleDialog.open()
+                        }
+
+                        else{
                         back_to_login_logo.visible = false
                         first_user_details_page.visible = false
                         second_user_details_page.visible = true
                         first_circle_text.text = "/"
                         first_circle.color = "green"
                         second_circle.color = "#F25822"
-                        //control.currentIndex = -1
                     }
                 }
             }
         }
+    }
         Rectangle{
             id: second_user_details_page
             visible: false
@@ -1044,6 +1280,15 @@ ApplicationWindow {
             anchors.topMargin: 20
             height: parent.height
             color: "#031C28"
+
+            Label {
+                text: "Upload Your Image*"
+                anchors.left: user_image.right
+                anchors.leftMargin: 10
+                anchors.top: parent.top
+                anchors.topMargin: 25
+                color: "white"
+            }
             Rectangle{
                 id: user_image
                 height: mainWindow.height/10
@@ -1091,7 +1336,7 @@ ApplicationWindow {
                     anchors.fill: parent
                     clip: true
                     ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-                    ScrollBar.vertical.policy: ScrollBar.AsNeeded
+                    ScrollBar.vertical.policy: ScrollBar.AlwaysOn
                     Column{
                         id: column
                         spacing: 30
@@ -1130,12 +1375,6 @@ ApplicationWindow {
                                     anchors.leftMargin: 12
                                     anchors.verticalCenter: parent.verticalCenter
                                 }
-                                onEditingFinished:{
-                                    if (user_name_text.text !== "") {
-                                        // database.signupExistingUsername(user_name_text.text)
-                                    }
-                                }
-
                             }
                         }
                         Column{
@@ -1171,13 +1410,6 @@ ApplicationWindow {
                                     anchors.left: parent.left
                                     anchors.leftMargin: 12
                                     anchors.verticalCenter: parent.verticalCenter
-                                }
-                                onEditingFinished:{
-                                    if (user_mail_text.text !== "") {
-                                        database.signupExistingUsermail(user_mail_text.text)
-                                    }
-                                    //database.signupExistingUsermail(user_mail_text.text)
-                                    //mailrecord_Dialog.open()
                                 }
                             }
                         }
@@ -1222,16 +1454,6 @@ ApplicationWindow {
                                     anchors.verticalCenter: parent.verticalCenter
                                     text: "+91"
                                     color: "white"
-                                }
-                                onEditingFinished:{
-                                    console.log("Edit Finished")
-                                    if(user_number_text.text.length < user_number_text.maximumLength && user_number_text.text.length >= 1){
-                                        console.log(user_number_text.text.length + " mobile number length")
-                                        wrong_numberDialog.open()
-                                    }
-                                    if (user_number_text.text !== "") {
-                                        // database.signupExistingUsernumber(user_number_text.text)
-                                    }
                                 }
                             }
                         }
@@ -1418,11 +1640,11 @@ ApplicationWindow {
                                 || user_number_text.text == ""
                                 || user_address_text.text == ""
                                 || user_locality_text.text == ""
-                                || user_password_text.text == ""){
+                                || user_password_text.text == ""
+                               /* || user_image_inprofile.source == ""*/){
                             enter_all_fields.open()
                         }
                         else{
-                            //database.signupExistingUser(user_name_text.text,user_mail_text.text,user_number_text.text)
                             if(user_password_text.text.length < 6){
                                 password_length_error_dialog.open()
                             }
@@ -1432,18 +1654,13 @@ ApplicationWindow {
                                 second_circle_text.text = "/"
                                 second_circle.color = "green"
                                 third_circle.color = "#F25822"
-                                //                                user_name_text.text == ""
-                                //                                user_mail_text.text == ""
-                                //                                user_number_text.text == ""
-                                //                                user_address_text.text == ""
-                                //                                user_locality_text.text == ""
-                                //                                user_password_text.text == ""
                                 password_hide_image1.visible = true
                                 password_show_image1.visible = false
                             }
                         }
                     }
                 }
+
                 Label{
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: "PREVIOUS STEP"
@@ -1465,6 +1682,7 @@ ApplicationWindow {
                             user_locality_text.text == ""
                             user_password_text.text == ""
                             control.currentIndex = -1
+                            control_role.currentIndex = -1
                             password_hide_image1.visible = true
                             password_show_image1.visible = false
                         }
@@ -1674,24 +1892,14 @@ ApplicationWindow {
                         verify_now_button.color = "#F25822"
                     }
                     onClicked: {
-                        //database.newUserData(combobox_text.text,user_name_text.text,user_mail_text.text,user_number_text.text,user_address_text.text,user_locality_text.text,user_password_text.text)
-                        database_access.new_user_registration(combobox_text.text,user_name_text.text,user_mail_text.text,user_number_text.text,user_address_text.text,user_locality_text.text,user_password_text.text)
-                        //                        new_user_first_page.visible = false
-                        //                        third_user_details_page.visible = false
-                        //                        second_user_details_page.visible = false
-                        //                        first_circle.color = "#F25822"
-                        //                        second_circle.color = "#031C28"
-                        //                        third_circle.color = "#031C28"
-                        //                        first_circle_text.text = "1"
-                        //                        second_circle_text.text = "2"
-                        //                        login_page_rectangle.visible = true
+                        database_access.new_user_registration(combobox_text.text,combobox_role_text.text,user_name_text.text,user_mail_text.text,user_number_text.text,user_address_text.text,user_locality_text.text,user_password_text.text);                       new_user_first_page.visible = false
                         user_name_text.text = ''
                         user_mail_text.text = ''
                         user_number_text.text = ''
                         user_address_text.text = ''
                         user_locality_text.text = ''
                         user_password_text.text = ''
-                        user_image.color = "white"
+                        //user_image.color = "white"
                     }
                 }
             }
@@ -1778,31 +1986,43 @@ ApplicationWindow {
         standardButtons: Dialog.Ok
     }
 
-    MessageDialog {
-        id: namerecord_Dialog
-        title: "Already Registered Name"
-        text: qsTr("Entered Name is Already Registered.")
+    MessageDialog{
+        id: selectIndustryDialog
+        title: "Industry Type"
+        text: "Please Select the Industry Type."
         standardButtons: Dialog.Ok
-        onButtonClicked: {
-            user_name_text.text = ""
-        }
     }
 
     MessageDialog {
-        id: signout_Dialog
-        title: "Sign Out"
-        text: qsTr("Are You Sure you want to Sign Out?.")
-        standardButtons: Dialog.Yes | Dialog.No
-        onYes: {
-            landing_page_rectangle.visible = false
-            login_page_rectangle.visible = true
-            login_page_email_textfield.text = ""
-            login_page_password_textfield.text = ""
-        }
-        onNo: {
-            landing_page_rectangle.visible = true
-        }
+        id: selectRoleDialog
+        title: "Role Type"
+        text: "Please Select the Role."
     }
+
+    MessageDialog {
+        id: userRegisteredDialog
+        title:"Registration Successfull"
+        text: "Registered Successfully"
+        standardButtons: Dialog.Ok
+    }
+
+    MessageDialog {
+            id: signout_Dialog
+            title: "Sign Out"
+            text: "Are You Sure you want to Sign Out?."
+            standardButtons: Dialog.Yes | Dialog.No
+            onYes: {
+                landing_page_rectangle.visible = false
+                login_page_rectangle.visible = true
+                login_page_email_textfield.text = ""
+                login_page_password_textfield.text = ""
+                password_hide_image.visible = true
+                password_show_image.visible = false
+            }
+            onNo: {
+                landing_page_rectangle.visible = true
+            }
+        }
     MessageDialog {
         id: mailrecord_Dialog
         title: "Already Registered Mail"
@@ -1812,15 +2032,7 @@ ApplicationWindow {
             user_mail_text.text = ""
         }
     }
-    MessageDialog {
-        id: number_record_Dialog
-        title: "Already Registered Number"
-        text: qsTr("Entered Number is Already Registered.")
-        standardButtons: Dialog.Ok
-        onAccepted: {
-            user_number_text.text = ""
-        }
-    }
+
     MessageDialog {
         id: uinrecord_Dialog
         title: "Already used UIN"
@@ -1862,8 +2074,7 @@ ApplicationWindow {
     MessageDialog {
         id: password_updated
         title: "Updated"
-        //text: qsTr("Password changed and Updated.")
-        text: qsTr("Reset your password using the link sent to your registered Mail.")
+        text: qsTr("Password Reset Link sent to the respective Mail.")
     }
 
     Component.onCompleted: {
@@ -1876,7 +2087,7 @@ ApplicationWindow {
         }
 
         // Start the sequence of first run prompt(s)
-        firstRunPromptManager.nextPrompt()
+      //  firstRunPromptManager.nextPrompt()
     }
 
     QtObject {
@@ -2564,8 +2775,8 @@ ApplicationWindow {
                 Layout.maximumWidth: mainWindow.width/5 + 100
                 Layout.minimumWidth: mainWindow.width/5 - 100
                 Layout.preferredHeight: mainWindow.height
-                border.width: 1
-                border.color: "#05324D"
+               // border.width: 1
+               // border.color: "#05324D"
 
                 ColumnLayout {
                     id: menu_column
@@ -2581,8 +2792,8 @@ ApplicationWindow {
                         Text {
                             id: brand_text
                             anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: brand_rect.left
-                            anchors.leftMargin:20
+                            anchors.right: brand_rect.right
+                            anchors.rightMargin: 40
                             text: qsTr("Go Drona")
                             font.pointSize:ScreenTools.defaultFontPointSize * 1.3
                             font.bold: true
@@ -2592,8 +2803,8 @@ ApplicationWindow {
                             id: brand_logo
                             width: 120
                             height: 120
-                            anchors.right: brand_rect.right
-                            anchors.rightMargin: 40
+                            anchors.left: brand_rect.left
+                            anchors.leftMargin:40
                             anchors.verticalCenter: parent.verticalCenter
                             color: "#031C28"
                             Image {
@@ -2679,18 +2890,16 @@ ApplicationWindow {
                             anchors.fill: dashboard_button
                             onClicked: {
                                 dashboard_rectangle.visible = true
+                                firmware_log_rectangle.visible = false
                                 logout_button.color = "#031C28"
                                 dashboard_button.color ="#F25822" || "#031C28"
                                 managerpa_button.color = "#031C28"
                                 flight_log_button.color = "#031C28"
+                                firmware_button.color = "#031C28"
                                 manage_rpa_rectangle.visible = false
                                 flight_log_rectangle.visible = false
                                 rpa_register_page.visible = false
-                                check_box.checked = false
-                                check_box1.checked = false
-                                check_box2.checked = false
-                                check_box3.checked = false
-                                check_box4.checked = false
+
                             }
                         }
                     }
@@ -2724,19 +2933,17 @@ ApplicationWindow {
                         MouseArea{
                             anchors.fill: managerpa_button
                             onClicked: {
+                                rpadatabase.manageRpaClicked(database_access.mail)
                                 manage_rpa_rectangle.visible = true
                                 dashboard_rectangle.visible = false
                                 flight_log_rectangle.visible = false
+                                firmware_log_rectangle.visible = false
                                 logout_button.color = "#031C28"
                                 dashboard_button.color = "#031C28"
                                 flight_log_button.color = "#031C28"
                                 managerpa_button.color = "#F25822"
+                                firmware_button.color = "#031C28"
                                 manage_rpa_header1.visible = true
-                                check_box.checked = false
-                                check_box1.checked = false
-                                check_box2.checked = false
-                                check_box3.checked = false
-                                check_box4.checked = false
                                 showPanel(this,"SetupParameterEditor.qml")
                             }
                         }
@@ -2912,19 +3119,60 @@ ApplicationWindow {
                                 manage_rpa_rectangle.visible = false
                                 dashboard_rectangle.visible = false
                                 rpa_register_page.visible = false
+                                firmware_log_rectangle.visible = false
                                 logout_button.color = "#031C28"
                                 managerpa_button.color = "#031C28"
                                 dashboard_button.color = "#031C28"
-                                //aws.read_text_file(database.awsname,QGroundControl.settingsManager.appSettings.telemetrySavePath)
-                                check_box.checked = false
-                                check_box1.checked = false
-                                check_box2.checked = false
-                                check_box3.checked = false
-                                check_box4.checked = false
+                                firmware_button.color = "#031C28"
                                 console.log(screen.width)
                                 console.log(screen.width/5)
                                 console.log(screen.width/1.8)
                                 console.log((screen.width/1.8 - screen.width/5))
+                            }
+                        }
+                    }
+
+                    Rectangle{
+                        id: firmware_button
+                        width: menu_rect_1.width -15
+                        height: 50
+                        color: "#031C28"
+                        radius: 4
+                        Layout.alignment: Qt.AlignLeft
+                        Layout.leftMargin: 10
+
+                        Image {
+                            id: firmware_log_image
+                            source: "/res/firmware.png"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: firmware_button.left
+                            anchors.leftMargin: 20
+                        }
+                        Text{
+                            text: "FIRMWARE LOG"
+                            color: "#FFFFFF"
+                            font.pointSize: ScreenTools.smallFontPointSize
+                            font.bold: true
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: firmware_log_image.left
+                            anchors.leftMargin: 35
+                        }
+
+                        MouseArea{
+                            anchors.fill: firmware_button
+                            onClicked: {
+                                firmware_button.color = "#F25822"
+                                firmware_log_rectangle.visible = true
+                                flight_log_rectangle.visible = false
+                                manage_rpa_rectangle.visible = false
+                                dashboard_rectangle.visible = false
+                                rpa_register_page.visible = false
+                                rpadatabase.firmwareupgrade_data()
+                                logout_button.color = "#031C28"
+                                managerpa_button.color = "#031C28"
+                                dashboard_button.color = "#031C28"
+                                flight_log_button.color = "#031C28"
+                                flight_log_rectangle.visible = false
                             }
                         }
                     }
@@ -3040,11 +3288,7 @@ ApplicationWindow {
                                 dashboard_button.color ="#031C28"
                                 managerpa_button.color = "#031C28"
                                 flight_log_button.color = "#031C28"
-                                check_box.checked = false
-                                check_box1.checked = false
-                                check_box2.checked = false
-                                check_box3.checked = false
-                                check_box4.checked = false
+                                firmware_button.color = "#031C28"
                             }
                         }
                     }
@@ -3057,9 +3301,12 @@ ApplicationWindow {
 
             Rectangle {
                 id: second_rectangle
-                Layout.preferredWidth: mainWindow.width/1.8
-                Layout.maximumWidth: mainWindow.width/1.8 + 100
-                Layout.minimumWidth: mainWindow.width/1.8 - 100
+                //                Layout.preferredWidth: mainWindow.width/1.8
+                //                Layout.maximumWidth: mainWindow.width/1.8 + 100
+                //                Layout.minimumWidth: mainWindow.width/1.8 - 100
+                Layout.preferredWidth: mainWindow.width/1.65
+                Layout.maximumWidth: mainWindow.width/1.65 + 100
+                Layout.minimumWidth: mainWindow.width/1.65 - 100
                 Layout.preferredHeight: mainWindow.height
                 color: "#031C28"
                 border.color: "#05324D"
@@ -3143,7 +3390,7 @@ ApplicationWindow {
                             }
                             Text{
                                 id: username
-                                text: qsTr(database_access.name)
+                                text: database_access.name
                                 color : "#F25822"
                                 font.pointSize: ScreenTools.defaultFontPointSize * 1.1
                                 font.bold: true
@@ -3152,17 +3399,18 @@ ApplicationWindow {
                                 anchors.topMargin: 20
                             }
                             Timer {
-                                interval: 100; running: true; repeat: true
-                                onTriggered:{
+                                    id: profile_timer
+                                    interval: 50
+                               onTriggered:{
                                     username.text = database_access.name
+                                    user_role.text = database_access.role
                                     userprofile_name.text = database_access.name
                                     mail_address.text = database_access.mail
                                     mobile_number.text = database_access.number
                                     address_field.text = database_access.address
                                     locality_field.text = database_access.locality
                                     user_name_inprofile.text = database_access.name
-                                    //                                    username.text = database.name
-                                    //                                    user_name_inprofile.text = database.name
+                                    profile_timer.stop()
                                 }
                             }
 
@@ -3339,7 +3587,6 @@ ApplicationWindow {
                                             anchors.horizontalCenter: parent.horizontalCenter
                                             color: "white"
                                         }
-
                                     }
                                     Rectangle {
                                         id: back_to_fly_rect
@@ -3509,6 +3756,7 @@ ApplicationWindow {
 
 
                             Button {
+                                id: register_rpa_button
                                 anchors.right: manage_rpa_header1.right
                                 anchors.rightMargin: 30
                                 anchors.top: parent.top
@@ -3521,7 +3769,7 @@ ApplicationWindow {
                                     font.bold: true
                                 }
                                 background: Rectangle {
-                                    id:register_rpa_button
+                                    id:register_rpa_button_rect
                                     implicitHeight: mainWindow.height/20
                                     implicitWidth:  mainWindow.width/8
                                     border.width: 1
@@ -3530,10 +3778,10 @@ ApplicationWindow {
                                     color: "#F25822"
                                 }
                                 onPressed: {
-                                    register_rpa_button.color = "#05324D"
+                                    register_rpa_button_rect.color = "#05324D"
                                 }
                                 onReleased: {
-                                    register_rpa_button.color = "#F25822"
+                                    register_rpa_button_rect.color = "#F25822"
                                 }
                                 onClicked: {
                                     updateButton = 1
@@ -3541,11 +3789,6 @@ ApplicationWindow {
                                     manage_rpa_header1.visible = false
                                     rpa_register_page.visible = true
                                     drone_contents.visible = true
-                                    check_box.checked = false
-                                    check_box1.checked = false
-                                    check_box2.checked = false
-                                    check_box3.checked = false
-                                    check_box4.checked = false
                                     drone_type_list.currentIndex = -1
                                     drone_model_list.currentIndex = -1
                                     drone_name_text.text = ""
@@ -3554,96 +3797,12 @@ ApplicationWindow {
                                 }
 
                             }
+                            Timer {
+                                interval: 100; running: true; repeat: true
+                                onTriggered:{
 
-                            //                            Item {
-                            //                                id: table_item
-                            //                                anchors.left: manage_rpa_header1.left
-                            //                                anchors.leftMargin: 20
-                            //                                anchors.top: list_of_rpa_text.bottom
-                            //                                anchors.topMargin: 30
-                            //                                width: manage_rpa_header1.width
-                            //                                height: manage_rpa_header1.height + 400
-                            //                                visible: true
-
-                            /*TableView {
-                                    id: rpa_list_table
-                                    topMargin: 35
-                                    columnWidthProvider: function (modelData) { return 177; }
-                                    rowHeightProvider: function (modelData) { return 50; }
-                                    width: table_item.width - 50
-                                    height: 450
-                                    boundsBehavior: Flickable.StopAtBounds
-                                    clip: true
-                                    ScrollBar.vertical: ScrollBar {
-                                        id: tableVerticalBar;
-                                        policy:ScrollBar.AsNeeded
-                                    }
-
-                                    ScrollBar.horizontal: ScrollBar {
-                                        policy: ScrollBar.AsNeeded
-                                    }
-
-                                    MouseArea {
-                                        onClicked: {
-                                            selectedRowIndex = rpa_list_table.currentRow
-                                            console.log(selectedRowIndex)
-                                        }
-                                    }
-
-                                    property int selectedRowIndex
-
-                                    model: rpadatabase
-
-                                    // Table Header
-                                    Row {
-                                        id: columnsHeader
-                                        y: rpa_list_table.contentY
-                                        z: 2
-
-                                        Repeater {
-                                            id: repeater_model
-                                            model: rpa_list_table.columns > 0 ? rpa_list_table.columns : 1
-                                            Rectangle {
-                                                width: rpa_list_table.columnWidthProvider(modelData)
-                                                height: 40
-                                                color: "#031C28"
-                                                border.width: 2
-                                                border.color: "#05324D"
-
-                                                Text {
-                                                    anchors.centerIn: parent
-                                                    text: rpadatabase.headerData(modelData, Qt.Horizontal)
-                                                    color: "White"
-                                                    font.pointSize: 11
-                                                }
-                                            }
-
-                                        }
-                                    }
-
-                                    //Table body
-
-                                    delegate: Rectangle {
-                                        id: table_rows
-                                        y: 35
-                                        //property color rowColor: styleData.row === selectedRowIndex ? "green" : "blue"
-                                        color: "#031C28"
-                                        border.width: 2
-                                        border.color: "#05324D"
-
-
-                                        Text{
-                                            text: display // This is set in rpa_database.cpp roleNames()
-                                            anchors.fill: parent
-                                            anchors.margins: 10
-                                            color: 'white'
-                                            font.pixelSize: 15
-                                            verticalAlignment: Text.AlignVCenter
-                                            wrapMode: Text.WordWrap
-                                        }
-                                    }
-                                }*/
-                            //                            }
+                                }
+                            }
                             Rectangle {
                                 id: table_rect
                                 anchors.left: manage_rpa_header1.left
@@ -3655,984 +3814,8 @@ ApplicationWindow {
                                 color: "#031C28"
                                 visible: true
 
-                                Row{
-                                    id: header_row
-                                    width: parent.width
-                                    height: 40
-                                    Rectangle {
-                                        width:40
-                                        height: 40
-                                        color: "#031C28"
-                                        border.width: 2
-                                        border.color: "#05324D"
-                                    }
-
-                                    Repeater {
-                                        id: repeater_model
-                                        model: ["TYPE", "MODEL NAME", "DRONE NAME", "UIN", "ACTIONS"] //, "ACTIONS"
-                                        Rectangle {
-                                            id: header
-                                            width: (table_rect.width - 40) / 5
-                                            height: 40
-                                            color: "#031C28"
-                                            border.width: 2
-                                            border.color: "#05324D"
-
-                                            Text {
-                                                anchors.centerIn: parent
-                                                text: modelData
-                                                color: "White"
-                                                font.pointSize: 11
-                                            }
-                                        }
-                                    }
-
-                                }
-
-                                Column {
-                                    id: checkbox_column
-                                    anchors.top: parent.top
-                                    anchors.topMargin: 40
-                                    anchors.left: parent.left
-                                    clip: true
-
-                                    Rectangle{
-                                        width: 40
-                                        height: 40
-                                        color: "#031C28"
-                                        border.width: 1
-                                        border.color: "#05324D"
-                                        visible: tableView.rows > 0
-                                        CheckBox{
-                                            id: check_box
-                                            anchors.fill: parent
-                                            indicator: Rectangle{
-                                                implicitWidth: 16
-                                                implicitHeight: 16
-                                                radius: 2
-                                                color: "#031C28"
-                                                border.width:0.5
-                                                border.color: "#F25822"
-                                                anchors.centerIn: parent
-                                                Rectangle {
-                                                    visible: check_box.checked
-                                                    color: "#F25822"
-                                                    radius: 1
-                                                    anchors.margins: 2
-                                                    anchors.fill: parent
-                                                }
-                                            }
-                                            //                                            visible: {
-                                            //                                                if(tableView.rows == 1){
-                                            //                                                    check_box.visible = true;
-                                            //                                                }
-                                            //                                            }
-
-                                            checked: false
-                                            onCheckedChanged: {
-                                                if(check_box.checked == true){
-                                                    check_box1.checked = false
-                                                    check_box2.checked = false
-                                                    check_box3.checked = false
-                                                    check_box4.checked = false
-                                                }
-                                            }
-                                        }
-                                    }
-                                    /*Repeater{
-                                        model: tableView.rows
-                                        Rectangle{
-                                            width: 40
-                                            height: 40
-                                            color: "#031C28"
-                                            border.width: 1
-                                            border.color: "#05324D"
-                                            CheckBox{
-                                                function isChecked() {
-                                                    return ((number &(1 << index)) != 0);
-                                                }
-                                                id: check_box
-                                                anchors.centerIn: parent
-                                                checked: isChecked()
-                                                onClicked:  {
-                                                    {
-                                                        if (checked) {
-                                                            number |= (1<<index);
-                                                            console.log(index + " is checked")
-                                                        }
-                                                        else {
-                                                            number &= ~(1<<index);
-                                                            console.log(index + " is not checked")
-                                                        }
-
-                                                        // now rebind the item's checked property
-                                                        checked = Qt.binding(isChecked);
-
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }*/
-                                    Rectangle{
-                                        width: 40
-                                        height: 40
-                                        color: "#031C28"
-                                        border.width: 1
-                                        border.color: "#05324D"
-                                        visible: tableView.rows > 1
-                                        CheckBox{
-                                            id: check_box1
-                                            anchors.fill: parent
-                                            indicator: Rectangle{
-                                                implicitWidth: 16
-                                                implicitHeight: 16
-                                                radius: 2
-                                                color: "#031C28"
-                                                border.width:0.5
-                                                border.color: "#F25822"
-                                                anchors.centerIn: parent
-                                                Rectangle {
-                                                    visible: check_box1.checked
-                                                    color: "#F25822"
-                                                    radius: 1
-                                                    anchors.margins: 2
-                                                    anchors.fill: parent
-                                                }
-                                            }
-                                            checked: false
-                                            onCheckedChanged: {
-                                                if(check_box1.checked == true){
-                                                    check_box.checked = false
-                                                    check_box2.checked = false
-                                                    check_box3.checked = false
-                                                    check_box4.checked = false
-                                                }
-                                            }
-                                        }
-                                    }
-                                    Rectangle{
-                                        width: 40
-                                        height: 40
-                                        color: "#031C28"
-                                        border.width: 1
-                                        border.color: "#05324D"
-                                        visible: tableView.rows > 2
-                                        CheckBox{
-                                            id: check_box2
-                                            anchors.fill: parent
-                                            indicator: Rectangle{
-                                                implicitWidth: 16
-                                                implicitHeight: 16
-                                                radius: 2
-                                                color: "#031C28"
-                                                border.width:0.5
-                                                border.color: "#F25822"
-                                                anchors.centerIn: parent
-                                                Rectangle {
-                                                    visible: check_box2.checked
-                                                    color: "#F25822"
-                                                    radius: 1
-                                                    anchors.margins: 2
-                                                    anchors.fill: parent
-                                                }
-                                            }
-                                            checked: false
-                                            onCheckedChanged: {
-                                                if(check_box2.checked == true){
-                                                    check_box.checked = false
-                                                    check_box1.checked = false
-                                                    check_box3.checked = false
-                                                    check_box4.checked = false
-                                                }
-                                            }
-                                        }
-                                    }
-                                    Rectangle{
-                                        width: 40
-                                        height: 40
-                                        color: "#031C28"
-                                        border.width: 1
-                                        border.color: "#05324D"
-                                        visible: tableView.rows > 3
-                                        CheckBox{
-                                            id: check_box3
-                                            anchors.fill: parent
-                                            indicator: Rectangle{
-                                                implicitWidth: 16
-                                                implicitHeight: 16
-                                                radius: 2
-                                                color: "#031C28"
-                                                border.width:0.5
-                                                border.color: "#F25822"
-                                                anchors.centerIn: parent
-                                                Rectangle {
-                                                    visible: check_box3.checked
-                                                    color: "#F25822"
-                                                    radius: 1
-                                                    anchors.margins: 2
-                                                    anchors.fill: parent
-                                                }
-                                            }
-                                            checked: false
-                                            onCheckedChanged: {
-                                                if(check_box3.checked == true){
-                                                    check_box.checked = false
-                                                    check_box1.checked = false
-                                                    check_box2.checked = false
-                                                    check_box4.checked = false
-                                                }
-                                            }
-                                        }
-                                    }
-                                    Rectangle{
-                                        width: 40
-                                        height: 40
-                                        color: "#031C28"
-                                        border.width: 1
-                                        border.color: "#05324D"
-                                        visible: tableView.rows > 4
-                                        CheckBox{
-                                            id: check_box4
-                                            anchors.fill: parent
-                                            indicator: Rectangle{
-                                                implicitWidth: 16
-                                                implicitHeight: 16
-                                                radius: 2
-                                                color: "#031C28"
-                                                border.width:0.5
-                                                border.color: "#F25822"
-                                                anchors.centerIn: parent
-                                                Rectangle {
-                                                    visible: check_box4.checked
-                                                    color: "#F25822"
-                                                    radius: 1
-                                                    anchors.margins: 2
-                                                    anchors.fill: parent
-                                                }
-                                            }
-                                            checked: false
-                                            onCheckedChanged: {
-                                                if(check_box4.checked == true){
-                                                    check_box.checked = false
-                                                    check_box1.checked = false
-                                                    check_box2.checked = false
-                                                    check_box3.checked = false
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                Item{
-                                    id:table_item
-                                    //anchors.left: parent.left
-                                    //anchors.leftMargin: 40
-                                    anchors.left: checkbox_column.right
-                                    anchors.top: parent.top
-                                    anchors.topMargin: 40
-                                    width: (table_rect.width - 40)
-                                    height: table_rect.height
-                                    clip: true
-                                    TableView {
-                                        id: tableView
-                                        columnWidthProvider:  function (column) { return rectangleWidth; } //167  134
-                                        rowHeightProvider: function (column) { return 40; }
-                                        anchors.fill: parent
-                                        boundsBehavior: Flickable.StopAtBounds
-                                        clip: true
-
-                                        model: rpadatabase
-
-                                        // Table Body
-
-                                        delegate: Rectangle {
-                                            id:table_row
-                                            implicitHeight: 40
-                                            border.width: 1
-                                            border.color: "#05324D"
-                                            color: "#031C28"
-                                            Text{
-                                                text: display // This is set in mysqlmodel.cpp roleNames()
-                                                anchors.fill: parent
-                                                anchors.margins: 5
-                                                color: 'white'
-                                                font.pixelSize: 15
-                                                verticalAlignment: Text.AlignVCenter
-                                            }
-                                        }
-                                    }
-
-                                }
-                                Column{
-                                    id: actions_column
-                                    anchors.top:parent.top
-                                    anchors.topMargin: 40
-                                    //anchors.left: parent.left
-                                    anchors.right: table_item.right
-                                    //anchors.leftMargin: 574
-                                    clip: true
-                                    //                                    Repeater{
-                                    //                                        model: tableView.rows
-                                    Rectangle{
-                                        id: actions_rect
-                                        width: (table_rect.width - 40) / 5//134
-                                        height: 40
-                                        color: "#031C28"
-                                        border.width: 1
-                                        border.color: "#05324D"
-                                        visible: tableView.rows > 0
-                                        Row{
-                                            spacing: 15
-                                            //                                                anchors.top: actions_rect.top
-                                            //                                                anchors.topMargin: 2.5
-                                            //                                                anchors.left: actions_rect.left
-                                            //                                                anchors.leftMargin: 25
-                                            anchors.centerIn: parent
-                                            Rectangle{
-                                                id: edit_button
-                                                width: 35
-                                                height: 35
-                                                color: "#031C28"
-                                                radius: 4
-
-                                                Image {
-                                                    id: edit_image
-                                                    source: "/res/edit.png"
-                                                    anchors.centerIn: parent
-                                                }
-                                                ColorOverlay{
-                                                    anchors.fill: edit_image
-                                                    source: edit_image
-                                                    color:"orange"
-                                                }
-                                                MouseArea{
-                                                    anchors.fill: edit_button
-                                                    onClicked: {
-                                                        updateButton = 0;
-                                                        if(updateButton === 0){
-                                                            console.log("in edit button if"+ updateButton)
-                                                            if(check_box.checked === true){
-                                                                // rpadatabase.checkboxSqledit("select * from RpaList limit 1")
-                                                                //rpadatabase.checkboxSqledit("select * from RpaList where UIN ='" + rpadatabase.uin +" ")
-                                                                rpa_register_page.visible =  true
-                                                                manage_rpa_header1.visible = false
-                                                                // console.log(rpadatabase.type)
-                                                                //console.log(rpadatabase.model)
-                                                                // console.log(rpadatabase.droneName)
-                                                                // console.log(rpadatabase.uin)
-                                                                //                                                                    if(rpadatabase.type === "Nano"){
-                                                                //                                                                        drone_type_list.currentIndex = 0
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.type === "Micro"){
-                                                                //                                                                        drone_type_list.currentIndex = 1
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.type === "Small"){
-                                                                //                                                                        drone_type_list.currentIndex = 2
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.type === "Medium"){
-                                                                //                                                                        drone_type_list.currentIndex = 3
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.type === "Large"){
-                                                                //                                                                        drone_type_list.currentIndex = 4
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.model === "Model A"){
-                                                                //                                                                        drone_model_list.currentIndex = 0
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.model === "Model B"){
-                                                                //                                                                        drone_model_list.currentIndex = 1
-                                                                //                                                                    }
-                                                                //                                                                    drone_name_text.text = rpadatabase.droneName
-                                                                uin_input_text.text = rpadatabase.uin
-                                                                uin_input_text.enabled = false
-                                                                updateButton = 2
-                                                            }
-                                                        }
-
-                                                    }
-                                                    onPressed: {
-                                                        edit_button.color = "#F25822"
-                                                    }
-                                                    onReleased: {
-                                                        edit_button.color = "#031C28"
-                                                    }
-                                                }
-                                            }
-                                            Rectangle{
-                                                id: delete_button
-                                                width: 35
-                                                height: 35
-                                                color: "#031C28"
-                                                radius: 4
-
-                                                Image {
-                                                    id: delete_image
-                                                    source: "/res/delete.png"
-                                                    anchors.centerIn: parent
-                                                }
-                                                ColorOverlay{
-                                                    anchors.fill: delete_image
-                                                    source: delete_image
-                                                    color:"red"
-                                                }
-                                                MouseArea{
-                                                    anchors.fill: delete_button
-                                                    onClicked: {
-                                                        if(check_box.checked === true){
-                                                            //rpadatabase.delete_table_contents("delete from RpaList Limit 1")
-                                                            //rpadatabase.delete_table_contents(1)
-                                                            // rpadatabase.callSql("select * from RpaList limit 5")
-                                                            deleteDialog.visible = true
-                                                            console.log("row erased")
-                                                            check_box.checked = false
-                                                            check_box1.checked = false
-                                                            check_box2.checked = false
-                                                            check_box3.checked = false
-                                                            check_box4.checked = false
-                                                        }
-                                                    }
-                                                    onPressed: {
-                                                        delete_button.color = "#F25822"
-                                                    }
-                                                    onReleased: {
-                                                        delete_button.color = "#031C28"
-                                                    }
-                                                }
-                                            }
-                                            /*Rectangle{
-                                                    id: upload_button
-                                                    width: 35
-                                                    height: 35
-                                                    color: "#031C28"
-                                                    radius: 4
-                                                    border.width: 0.5
-                                                    border.color:"#6600FF00"
-
-                                                    Image {
-                                                        id: upload_image
-                                                        source: "/res/upload.png"
-                                                        anchors.centerIn: parent
-                                                    }
-                                                    ColorOverlay{
-                                                        anchors.fill: upload_image
-                                                        source: upload_image
-                                                        color:"#00FF00"
-                                                    }
-                                                    MouseArea{
-                                                        anchors.fill: upload_button
-                                                        onClicked: {
-
-                                                        }
-                                                    }
-                                                }*/
-                                        }
-                                    }
-                                    Rectangle{
-                                        id: actions_rect1
-                                        width: (table_rect.width - 40) / 5
-                                        height: 40
-                                        color: "#031C28"
-                                        border.width: 1
-                                        border.color: "#05324D"
-                                        visible: tableView.rows > 1
-                                        Row{
-                                            spacing: 15
-                                            anchors.centerIn: parent
-
-                                            Rectangle{
-                                                id: edit_button1
-                                                width: 35
-                                                height: 35
-                                                color: "#031C28"
-                                                radius: 4
-
-                                                Image {
-                                                    id: edit_image1
-                                                    source: "/res/edit.png"
-                                                    anchors.centerIn: parent
-                                                }
-                                                ColorOverlay{
-                                                    anchors.fill: edit_image1
-                                                    source: edit_image1
-                                                    color:"orange"
-                                                }
-                                                MouseArea{
-                                                    anchors.fill: edit_button1
-                                                    onClicked: {
-                                                        updateButton = 0;
-                                                        if(updateButton === 0){
-                                                            console.log("in edit button if"+ updateButton)
-                                                            if(check_box1.checked === true){
-                                                                //  rpadatabase.checkboxSqledit("select * from RpaList limit 1 offset 1")
-                                                                rpa_register_page.visible =  true
-                                                                manage_rpa_header1.visible = false
-                                                                //                                                                    console.log(rpadatabase.type)
-                                                                //                                                                    console.log(rpadatabase.model)
-                                                                //                                                                    console.log(rpadatabase.droneName)
-                                                                //                                                                    console.log(rpadatabase.uin)
-                                                                //                                                                    if(rpadatabase.type === "Nano"){
-                                                                //                                                                        drone_type_list.currentIndex = 0
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.type === "Micro"){
-                                                                //                                                                        drone_type_list.currentIndex = 1
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.type === "Small"){
-                                                                //                                                                        drone_type_list.currentIndex = 2
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.type === "Medium"){
-                                                                //                                                                        drone_type_list.currentIndex = 3
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.type === "Large"){
-                                                                //                                                                        drone_type_list.currentIndex = 4
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.model === "Model A"){
-                                                                //                                                                        drone_model_list.currentIndex = 0
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.model === "Model B"){
-                                                                //                                                                        drone_model_list.currentIndex = 1
-                                                                //                                                                    }
-                                                                //                                                                    drone_name_text.text = rpadatabase.droneName
-                                                                //                                                                    uin_input_text.text = rpadatabase.uin
-                                                                uin_input_text.enabled = false
-                                                                updateButton = 2
-                                                            }
-                                                        }
-
-                                                    }
-                                                    onPressed: {
-                                                        edit_button1.color = "#F25822"
-                                                    }
-                                                    onReleased: {
-                                                        edit_button1.color = "#031C28"
-                                                    }
-                                                }
-                                            }
-                                            Rectangle{
-                                                id: delete_button1
-                                                width: 35
-                                                height: 35
-                                                color: "#031C28"
-                                                radius: 4
-
-                                                Image {
-                                                    id: delete_image1
-                                                    source: "/res/delete.png"
-                                                    anchors.centerIn: parent
-                                                }
-                                                ColorOverlay{
-                                                    anchors.fill: delete_image1
-                                                    source: delete_image
-                                                    color:"red"
-                                                }
-                                                MouseArea{
-                                                    anchors.fill: delete_button1
-                                                    onClicked: {
-                                                        if(check_box1.checked === true){
-                                                            //rpadatabase.delete_table_contents("delete from RpaList Limit 1")
-                                                            // rpadatabase.delete_table_contents(2)
-                                                            //  rpadatabase.callSql("select * from RpaList limit 5")
-                                                            deleteDialog.visible = true
-                                                            console.log("row erased")
-                                                            check_box.checked = false
-                                                            check_box1.checked = false
-                                                            check_box2.checked = false
-                                                            check_box3.checked = false
-                                                            check_box4.checked = false
-                                                        }
-                                                    }
-                                                    onPressed: {
-                                                        delete_button1.color = "#F25822"
-                                                    }
-                                                    onReleased: {
-                                                        delete_button1.color = "#031C28"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    Rectangle{
-                                        id: actions_rect2
-                                        width: (table_rect.width - 40) / 5
-                                        height: 40
-                                        color: "#031C28"
-                                        border.width: 1
-                                        border.color: "#05324D"
-                                        visible: tableView.rows > 2
-                                        Row{
-                                            spacing: 15
-                                            anchors.centerIn: parent
-                                            Rectangle{
-                                                id: edit_button2
-                                                width: 35
-                                                height: 35
-                                                color: "#031C28"
-                                                radius: 4
-
-                                                Image {
-                                                    id: edit_image2
-                                                    source: "/res/edit.png"
-                                                    anchors.centerIn: parent
-                                                }
-                                                ColorOverlay{
-                                                    anchors.fill: edit_image2
-                                                    source: edit_image2
-                                                    color:"orange"
-                                                }
-                                                MouseArea{
-                                                    anchors.fill: edit_button2
-                                                    onClicked: {
-                                                        updateButton = 0;
-                                                        if(updateButton === 0){
-                                                            console.log("in edit button if"+ updateButton)
-                                                            if(check_box2.checked === true){
-                                                                // rpadatabase.checkboxSqledit("select * from RpaList limit 1 offset 2")
-                                                                rpa_register_page.visible =  true
-                                                                manage_rpa_header1.visible = false
-                                                                //                                                                    console.log(rpadatabase.type)
-                                                                //                                                                    console.log(rpadatabase.model)
-                                                                //                                                                    console.log(rpadatabase.droneName)
-                                                                //                                                                    console.log(rpadatabase.uin)
-                                                                //                                                                    if(rpadatabase.type === "Nano"){
-                                                                //                                                                        drone_type_list.currentIndex = 0
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.type === "Micro"){
-                                                                //                                                                        drone_type_list.currentIndex = 1
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.type === "Small"){
-                                                                //                                                                        drone_type_list.currentIndex = 2
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.type === "Medium"){
-                                                                //                                                                        drone_type_list.currentIndex = 3
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.type === "Large"){
-                                                                //                                                                        drone_type_list.currentIndex = 4
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.model === "Model A"){
-                                                                //                                                                        drone_model_list.currentIndex = 0
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.model === "Model B"){
-                                                                //                                                                        drone_model_list.currentIndex = 1
-                                                                //                                                                    }
-                                                                //                                                                    drone_name_text.text = rpadatabase.droneName
-                                                                //                                                                    uin_input_text.text = rpadatabase.uin
-                                                                uin_input_text.enabled = false
-                                                                updateButton = 2
-                                                            }
-                                                        }
-
-                                                    }
-                                                    onPressed: {
-                                                        edit_button2.color = "#F25822"
-                                                    }
-                                                    onReleased: {
-                                                        edit_button2.color = "#031C28"
-                                                    }
-                                                }
-                                            }
-                                            Rectangle{
-                                                id: delete_button2
-                                                width: 35
-                                                height: 35
-                                                color: "#031C28"
-                                                radius: 4
-
-                                                Image {
-                                                    id: delete_image2
-                                                    source: "/res/delete.png"
-                                                    anchors.centerIn: parent
-                                                }
-                                                ColorOverlay{
-                                                    anchors.fill: delete_image2
-                                                    source: delete_image2
-                                                    color:"red"
-                                                }
-                                                MouseArea{
-                                                    anchors.fill: delete_button2
-                                                    onClicked: {
-                                                        if(check_box2.checked === true){
-                                                            //rpadatabase.delete_table_contents("delete from RpaList where UIN = ' " + rpadatabase.uin + "'")
-                                                            //rpadatabase.delete_table_contents(3)
-                                                            // rpadatabase.callSql("select * from RpaList limit 5")
-                                                            deleteDialog.visible = true
-                                                            console.log("row erased")
-                                                            check_box.checked = false
-                                                            check_box1.checked = false
-                                                            check_box2.checked = false
-                                                            check_box3.checked = false
-                                                            check_box4.checked = false
-                                                        }
-                                                    }
-                                                    onPressed: {
-                                                        delete_button2.color = "#F25822"
-                                                    }
-                                                    onReleased: {
-                                                        delete_button2.color = "#031C28"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    Rectangle{
-                                        id: actions_rect3
-                                        width: (table_rect.width - 40) / 5
-                                        height: 40
-                                        color: "#031C28"
-                                        border.width: 1
-                                        border.color: "#05324D"
-                                        visible: tableView.rows > 3
-                                        Row{
-                                            spacing: 15
-                                            anchors.centerIn: parent
-                                            Rectangle{
-                                                id: edit_button3
-                                                width: 35
-                                                height: 35
-                                                color: "#031C28"
-                                                radius: 4
-
-                                                Image {
-                                                    id: edit_image3
-                                                    source: "/res/edit.png"
-                                                    anchors.centerIn: parent
-                                                }
-                                                ColorOverlay{
-                                                    anchors.fill: edit_image3
-                                                    source: edit_image3
-                                                    color:"orange"
-                                                }
-                                                MouseArea{
-                                                    anchors.fill: edit_button3
-                                                    onClicked: {
-                                                        updateButton = 0;
-                                                        if(updateButton === 0){
-                                                            console.log("in edit button if"+ updateButton)
-                                                            if(check_box3.checked === true){
-                                                                // rpadatabase.checkboxSqledit("select * from RpaList limit 1 offset 3")
-                                                                rpa_register_page.visible =  true
-                                                                manage_rpa_header1.visible = false
-                                                                //                                                                    console.log(rpadatabase.type)
-                                                                //                                                                    console.log(rpadatabase.model)
-                                                                //                                                                    console.log(rpadatabase.droneName)
-                                                                //                                                                    console.log(rpadatabase.uin)
-                                                                //                                                                    if(rpadatabase.type === "Nano"){
-                                                                //                                                                        drone_type_list.currentIndex = 0
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.type === "Micro"){
-                                                                //                                                                        drone_type_list.currentIndex = 1
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.type === "Small"){
-                                                                //                                                                        drone_type_list.currentIndex = 2
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.type === "Medium"){
-                                                                //                                                                        drone_type_list.currentIndex = 3
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.type === "Large"){
-                                                                //                                                                        drone_type_list.currentIndex = 4
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.model === "Model A"){
-                                                                //                                                                        drone_model_list.currentIndex = 0
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.model === "Model B"){
-                                                                //                                                                        drone_model_list.currentIndex = 1
-                                                                //                                                                    }
-                                                                //                                                                    drone_name_text.text = rpadatabase.droneName
-                                                                //                                                                    uin_input_text.text = rpadatabase.uin
-                                                                uin_input_text.enabled = false
-                                                                updateButton = 2
-                                                            }
-                                                        }
-
-                                                    }
-                                                    onPressed: {
-                                                        edit_button3.color = "#F25822"
-                                                    }
-                                                    onReleased: {
-                                                        edit_button3.color = "#031C28"
-                                                    }
-                                                }
-                                            }
-                                            Rectangle{
-                                                id: delete_button3
-                                                width: 35
-                                                height: 35
-                                                color: "#031C28"
-                                                radius: 4
-
-                                                Image {
-                                                    id: delete_image3
-                                                    source: "/res/delete.png"
-                                                    anchors.centerIn: parent
-                                                }
-                                                ColorOverlay{
-                                                    anchors.fill: delete_image3
-                                                    source: delete_image3
-                                                    color:"red"
-                                                }
-                                                MouseArea{
-                                                    anchors.fill: delete_button3
-                                                    onClicked: {
-                                                        if(check_box2.checked === true){
-                                                            //rpadatabase.delete_table_contents("delete from RpaList where UIN = ' " + rpadatabase.uin + "'")
-                                                            // rpadatabase.delete_table_contents(4)
-                                                            //rpadatabase.callSql("select * from RpaList limit 5")
-                                                            deleteDialog.visible = true
-                                                            console.log("row erased")
-                                                            check_box.checked = false
-                                                            check_box1.checked = false
-                                                            check_box2.checked = false
-                                                            check_box3.checked = false
-                                                            check_box4.checked = false
-                                                        }
-                                                    }
-                                                    onPressed: {
-                                                        delete_button3.color = "#F25822"
-                                                    }
-                                                    onReleased: {
-                                                        delete_button3.color = "#031C28"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    Rectangle{
-                                        id: actions_rect4
-                                        width: (table_rect.width - 40) / 5
-                                        height: 40
-                                        color: "#031C28"
-                                        border.width: 1
-                                        border.color: "#05324D"
-                                        visible: tableView.rows > 4
-                                        Row{
-                                            spacing: 15
-                                            anchors.centerIn: parent
-                                            Rectangle{
-                                                id: edit_button4
-                                                width: 35
-                                                height: 35
-                                                color: "#031C28"
-                                                radius: 4
-
-                                                Image {
-                                                    id: edit_image4
-                                                    source: "/res/edit.png"
-                                                    anchors.centerIn: parent
-                                                }
-                                                ColorOverlay{
-                                                    anchors.fill: edit_image4
-                                                    source: edit_image4
-                                                    color:"orange"
-                                                }
-                                                MouseArea{
-                                                    anchors.fill: edit_button4
-                                                    onClicked: {
-                                                        updateButton = 0;
-                                                        if(updateButton === 0){
-                                                            console.log("in edit button if"+ updateButton)
-                                                            if(check_box4.checked === true){
-                                                                // rpadatabase.checkboxSqledit("select * from RpaList limit 1 offset 4")
-                                                                rpa_register_page.visible =  true
-                                                                manage_rpa_header1.visible = false
-                                                                //                                                                    console.log(rpadatabase.type)
-                                                                //                                                                    console.log(rpadatabase.model)
-                                                                //                                                                    console.log(rpadatabase.droneName)
-                                                                //                                                                    console.log(rpadatabase.uin)
-                                                                //                                                                    if(rpadatabase.type === "Nano"){
-                                                                //                                                                        drone_type_list.currentIndex = 0
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.type === "Micro"){
-                                                                //                                                                        drone_type_list.currentIndex = 1
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.type === "Small"){
-                                                                //                                                                        drone_type_list.currentIndex = 2
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.type === "Medium"){
-                                                                //                                                                        drone_type_list.currentIndex = 3
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.type === "Large"){
-                                                                //                                                                        drone_type_list.currentIndex = 4
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.model === "Model A"){
-                                                                //                                                                        drone_model_list.currentIndex = 0
-                                                                //                                                                    }
-                                                                //                                                                    if(rpadatabase.model === "Model B"){
-                                                                //                                                                        drone_model_list.currentIndex = 1
-                                                                //                                                                    }
-                                                                //                                                                    drone_name_text.text = rpadatabase.droneName
-                                                                //                                                                    uin_input_text.text = rpadatabase.uin
-                                                                uin_input_text.enabled = false
-                                                                updateButton = 2
-                                                            }
-                                                        }
-
-                                                    }
-                                                    onPressed: {
-                                                        edit_button4.color = "#F25822"
-                                                    }
-                                                    onReleased: {
-                                                        edit_button4.color = "#031C28"
-                                                    }
-                                                }
-                                            }
-                                            Rectangle{
-                                                id: delete_button4
-                                                width: 35
-                                                height: 35
-                                                color: "#031C28"
-                                                radius: 4
-
-                                                Image {
-                                                    id: delete_image4
-                                                    source: "/res/delete.png"
-                                                    anchors.centerIn: parent
-                                                }
-                                                ColorOverlay{
-                                                    anchors.fill: delete_image4
-                                                    source: delete_image4
-                                                    color:"red"
-                                                }
-                                                MouseArea{
-                                                    anchors.fill: delete_button4
-                                                    onClicked: {
-                                                        if(check_box4.checked === true){
-                                                            //console.log(model.index)
-                                                            //rpadatabase.delete_table_contents("delete from RpaList where UIN = ' " + rpadatabase.uin + "'")
-                                                            // rpadatabase.delete_table_contents(5)
-                                                            // rpadatabase.callSql("select * from RpaList limit 5")
-                                                            deleteDialog.visible = true
-                                                            console.log("row erased")
-                                                            check_box.checked = false
-                                                            check_box1.checked = false
-                                                            check_box2.checked = false
-                                                            check_box3.checked = false
-                                                            check_box4.checked = false
-                                                        }
-                                                    }
-                                                    onPressed: {
-                                                        delete_button4.color = "#F25822"
-                                                    }
-                                                    onReleased: {
-                                                        delete_button4.color = "#031C28"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    //}
-                                }
-                            }
-                            /*Rectangle{
-                                id: page_number_rect
-                                anchors.left: parent.left
-                                anchors.leftMargin: 20
-                                anchors.top: table_rect.bottom
-                                width: table_rect.width
-                                height: 40
-                                radius: 4
-                                color: "#05324D"
-
-                            }*/
-
                         }
-
-
+                    }
                     }
                     Rectangle{
                         id: rpa_register_page
@@ -4676,11 +3859,7 @@ ApplicationWindow {
                                         drone_name_text.text = ""
                                         uin_input_text.text = ""
                                         uin_input_text.enabled = true
-                                        check_box.checked = false
-                                        check_box1.checked = false
-                                        check_box2.checked = false
-                                        check_box3.checked = false
-                                        check_box4.checked = false
+
                                     }
                                 }
                             }
@@ -5154,6 +4333,7 @@ ApplicationWindow {
                                             fillDialog.visible = true
                                         }
                                         else{
+                                            rpadatabase.existingUIN(database_access.mail,uin_input_text.text)                                            //uinDialog.visible = true
                                             console.log("in update button if "+ updateButton)
                                         }
                                     }
@@ -5167,11 +4347,6 @@ ApplicationWindow {
                                         drone_name_text.text = ""
                                         uin_input_text.text = ""
                                         uin_input_text.enabled = true
-                                        check_box.checked = false
-                                        check_box1.checked = false
-                                        check_box2.checked = false
-                                        check_box3.checked = false
-                                        check_box4.checked = false
                                         updateButton = 1
                                         console.log("in update button else when ending"+ updateButton)
                                     }
@@ -5210,11 +4385,7 @@ ApplicationWindow {
                                     drone_name_text.text = ""
                                     uin_input_text.text = ""
                                     uin_input_text.enabled = true
-                                    check_box.checked = false
-                                    check_box1.checked = false
-                                    check_box2.checked = false
-                                    check_box3.checked = false
-                                    check_box4.checked = false
+
                                 }
                             }
                         }
@@ -5224,10 +4395,10 @@ ApplicationWindow {
                             text:qsTr("please fill the details correctly")
                         }
 
-                        MessageDialog{
-                            id:uinDialog
-                            text:qsTr("Registered Successfully.")
-                        }
+//                        MessageDialog{
+//                            id:uinDialog
+//                            text:qsTr("Registered Successfully.")
+//                        }
                         MessageDialog{
                             id:tableDialog
                             text:qsTr("Updated Successfully.")
@@ -5251,7 +4422,7 @@ ApplicationWindow {
                     Rectangle {
                         id:flight_log_header
                         color: "#031C28"
-                        height: 50
+                        height: mainWindow.height/10
                         width: flight_log_rectangle.width
                         visible: true
                         border.color: "#05324D"
@@ -5269,7 +4440,8 @@ ApplicationWindow {
                             id: flight_log_text
                             text: "FLIGHT LOG"
                             color: "white"
-                            font.pointSize: 10
+                            font.pointSize: ScreenTools.smallFontPointSize
+                            font.bold: true
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: hamburger_image_flight_log.left
                             anchors.leftMargin: 35
@@ -5280,7 +4452,7 @@ ApplicationWindow {
                             source: "/res/search.png"
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.right: flight_log_header.right
-                            anchors.rightMargin: 180
+                            anchors.rightMargin: 220
                         }
                         Text{
                             id: search_flight_log
@@ -5404,6 +4576,107 @@ ApplicationWindow {
                                         }
                                     }
                                 }
+                            }
+                        }
+                    }
+                }
+                Rectangle {
+                    id: firmware_log_rectangle
+                    width: second_rectangle.width
+                    height: parent.height
+                    anchors.fill: parent
+                    color: "#031C28"
+                    visible: false
+                    border.color: "#05324D"
+                    border.width: 1
+                    Rectangle {
+                        id:firmware_log_header
+                        color: "#031C28"
+                        height: mainWindow.height/10
+                        width: firmware_log_rectangle.width
+                        visible: true
+                        border.color: "#05324D"
+                        border.width: 2
+
+                        Image {
+                            id: hamburger_image_firmware_log
+                            source: "/res/hamburger_menu.png"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: firmware_log_header.left
+                            anchors.leftMargin: 20
+                        }
+
+                        Text {
+                            id: firmware_log_text
+                            text: "FIRMWARE LOG"
+                            color: "white"
+                            font.pointSize: ScreenTools.smallFontPointSize
+                            font.bold: true
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: hamburger_image_firmware_log.left
+                            anchors.leftMargin: 35
+                        }
+
+                        Image {
+                            id: search_image_firmware_log
+                            source: "/res/search.png"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: firmware_log_header.right
+                            anchors.rightMargin: 220
+                        }
+                        Text{
+                            id: search_firmware_log
+                            text: "Search"
+                            color : "white"
+                            font.bold: true
+                            font.pointSize:ScreenTools.smallFontPointSize
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: firmware_log_header.right
+                            anchors.rightMargin: 100
+                        }
+                    }
+
+                    Column{
+                        anchors.left: parent.left
+                        anchors.top: firmware_log_header.bottom
+
+                        Rectangle {
+                            id:firmware_log_header1
+                            color: "#031C28"
+                            visible:false || true
+                            height: screen.height-50
+                            width: firmware_log_rectangle.width
+                            border.color: "#05324D"
+                            border.width: 1
+                            Timer {
+                                interval: 100; running: true; repeat: true
+                                onTriggered:{
+                                   // firmware_list_model.model = firmware_upgrade.modellist
+                                    firmware_list_model.model = rpadatabase.firmwarelog_list
+
+                                }
+                            }
+
+                            ListView {
+                                id: firmware_list_model
+                                anchors.fill: parent
+                                //model: rpadatabase.modellist
+                                model: rpadatabase.firmwarelog_list
+                                delegate: RowLayout {
+                                    width: parent.width
+                                    height: 40
+                                    spacing: 10
+
+                                    Text {
+                                        id: firmware_info_Text
+                                        text: modelData
+                                        color: "white"
+                                        font.pointSize: ScreenTools.smallFontPointSize
+                                        Layout.alignment: Qt.AlignCenter
+                                    }
+
+                                }
+
                             }
                         }
                     }
@@ -5540,7 +4813,8 @@ ApplicationWindow {
 
                             }
                             Text {
-                                text: "OEM"
+                                id: user_role
+                                text: database_access.role
                                 color: "#F25822"
                                 font.pointSize:ScreenTools.smallFontPointSize * 1.2
                             }
@@ -5567,7 +4841,7 @@ ApplicationWindow {
                             border.color: "#F25822"
                             border.width: 0.5
                             width: mainWindow.width/9
-                            height: mainWindow.height/18
+                            height: mainWindow.height/16
                             radius: 3
                             Text {
                                 text: "Your Profile"
@@ -5581,6 +4855,13 @@ ApplicationWindow {
                                 onClicked: {
                                     users_profile_header1.visible = false
                                     users_information_header1.visible = true
+                                    address_field.activeFocus = true
+                                    locality_field.activeFocus = true
+                                    userprofile_name.text = database_access.name
+                                    mail_address.text = database_access.mail
+                                    mobile_number.text = database_access.number
+                                    address_field.text = database_access.address
+                                    locality_field.text = database_access.locality
                                 }
                                 onPressed: {
                                     go_to_profile.color = "#F25822"
@@ -5596,7 +4877,7 @@ ApplicationWindow {
                             anchors.left: parent.left
                             anchors.leftMargin: 20
                             anchors.top: parent.top
-                            anchors.topMargin: 45
+                            anchors.topMargin: 25
                             Text {
                                 text : "Subscription"
                                 color: "white"
@@ -5684,6 +4965,7 @@ ApplicationWindow {
                                     placeholderText: qsTr("user@gmail.com")
                                     text: database_access.mail
                                     color:"white"
+                                    readOnly: true
                                     font.pointSize:     ScreenTools.smallFontPointSize
                                     background: Rectangle{
                                         color: "#05324D"
@@ -5693,10 +4975,7 @@ ApplicationWindow {
                                         implicitHeight: mail_address.height
                                         implicitWidth: mail_address.width
                                     }
-                                    onAccepted :{
-                                        if(mail_address.text != ""){
-                                        }
-                                    }
+
                                 }
                             }
                             Column{
@@ -5782,6 +5061,8 @@ ApplicationWindow {
                                     }
                                 }
                             }
+
+
                         }
                         Rectangle {
                             id: update_profile
@@ -5806,17 +5087,21 @@ ApplicationWindow {
                             MouseArea {
                                 anchors.fill: update_profile
                                 onClicked: {
-                                    if(userprofile_name.text == "" || mail_address.text == "" || locality_field.text == "" || address_field.text == "" || password_field.text == ""){
-                                        popupDialog.open()
+                                      if(userprofile_name.text == "" || mail_address.text == "" || locality_field.text == "" || address_field.text == ""){
+                                          popupDialog.open()
                                     }
                                     else {
+                                        database_access.update_profile(userprofile_name.text,mail_address.text,mobile_number.text,address_field.text,locality_field.text)
                                         users_profile_header1.visible = true
                                         users_information_header1.visible = false
                                         profileDialog.open()
+                                        userprofile_name = database_access.name
                                         mail_address.text = database_access.mail
                                         mobile_number.text = database_access.number
                                         address_field.text = database_access.address
                                         locality_field.text = database_access.locality
+                                        address_field.activeFocus = false
+                                        locality_field.activeFocus = false
                                     }
                                 }
                                 onPressed: {

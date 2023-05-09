@@ -12,6 +12,9 @@
 #include "PX4FirmwareUpgradeThread.h"
 #include "FirmwareImage.h"
 #include "Fact.h"
+#include "FireBaseAccess.h"
+#include "RpaDatabase.h"
+#include "QGCToolbox.h"
 
 #include <QObject>
 #include <QUrl>
@@ -97,6 +100,7 @@ public:
     Q_PROPERTY(QStringList          apmFirmwareUrls             MEMBER _apmFirmwareUrls                                             NOTIFY apmFirmwareNamesChanged)
     Q_PROPERTY(QString              px4StableVersion            READ px4StableVersion                                               NOTIFY px4StableVersionChanged)
     Q_PROPERTY(QString              px4BetaVersion              READ px4BetaVersion                                                 NOTIFY px4BetaVersionChanged)
+    Q_PROPERTY(QStringList          modellist                   READ modellist                  WRITE setModellist                  NOTIFY modellistChanged)
 
     /// TextArea for log output
     Q_PROPERTY(QQuickItem* statusLog READ statusLog WRITE setStatusLog)
@@ -152,6 +156,10 @@ public:
      * @return availableBoardNames
      */
     Q_INVOKABLE QStringList availableBoardsName(void);
+   // Q_INVOKABLE void getuserData();
+    void network_reply_read_addData();
+    QStringList modellist() const;
+    void setModellist(const QStringList &newModellist);
 
 signals:
     void boardFound                     (void);
@@ -166,6 +174,7 @@ signals:
     void px4StableVersionChanged        (const QString& px4StableVersion);
     void px4BetaVersionChanged          (const QString& px4BetaVersion);
     void downloadingFirmwareListChanged (bool downloadingFirmwareList);
+    void modellistChanged();
 
 private slots:
     void _firmwareDownloadProgress          (qint64 curr, qint64 total);
@@ -297,6 +306,13 @@ private:
 
     FirmwareBuildType_t     _manifestMavFirmwareVersionTypeToFirmwareBuildType  (const QString& manifestMavFirmwareVersionType);
     FirmwareVehicleType_t   _manifestMavTypeToFirmwareVehicleType               (const QString& manifestMavType);
+
+
+    QNetworkReply *m_networkreply;
+    QNetworkAccessManager *m_networkAccessManager;
+    QStringList m_modellist;
+
+    QGCToolbox*         _toolbox = nullptr;
 };
 
 // global hashing function

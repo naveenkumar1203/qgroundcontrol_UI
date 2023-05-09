@@ -47,7 +47,7 @@
 #include "FTPManager.h"
 #include "ImageProtocolManager.h"
 #include "RpaDatabase.h"
-#include "Database.h"
+
 
 class Actuators;
 class EventHandler;
