@@ -26,9 +26,8 @@ import QGroundControl.ScreenTools   1.0
 import QGroundControl.FlightDisplay 1.0
 import QGroundControl.FlightMap     1.0
 
-import AjayDatabase 1.0
-import RpaDatabase 1.0
-import AWSOperations 1.0
+import TableModel 1.0
+import FireBaseAccess 1.0
 
 /// @brief Native QML top level window
 /// All properties defined here are visible to all QML pages.
@@ -43,39 +42,45 @@ ApplicationWindow {
     property int number: 0
     property real rectangleWidth: (table_rect.width - 40) / 5
 
-    AWSOperations{
-        id: aws
+    property int checkBoxState: 0
+    property int checkBoxNumber
+    property var newWindowObject
+    property var group: buttonGroup
+
+    ButtonGroup {
+        id: buttonGroup
+        exclusive: true
     }
 
-    AjayDatabase{
-        id: database
-        /*onConnection_not_established: {
-            connection_not_established_dialog.open()
-            first_rectangle.visible = false
-            second_rectangle.visile = false
-            third_rectangle.visible = false
-            landing_page_rectangle.visible =false
-            dashboard_rectangle.visible = false
-            users_profile_header1.visible = false
-            manage_rpa_rectangle.visible = false
-            flight_log_rectangle.visible = false
-            users_information_header1.visible = false
-            rpa_register_page.visible = false
-        }*/
+    FireBaseAccess{
+        id: database_access
+        onNameChanged:{
+            profile_timer.start()
+        }
 
-        onRecord_found: {
-            console.log(rectangleWidth)
+        onAddressChanged: {
+            address_field.text = database_access.address
+        }
+
+        onLocalityChanged: {
+            locality_field.text = database_access.locality
+        }
+
+        onProfile_updated:{
+            database_access.get_profile_update();
+        }
+        onSuccessfullLogin: {
+            console.log("user logged in successfully")
             landing_page_rectangle.visible =true
             dashboard_rectangle.visible = true
             login_page_rectangle.z = -1
             login_page_rectangle.visible = false
-            //rpadatabase.callSql("SELECT * From RpaList")
-            rpadatabase.callSql("select * from RpaList limit 5")
             landing_page_rectangle.visible =true
             dashboard_rectangle.visible = true
             users_profile_header1.visible = true
             manage_rpa_rectangle.visible = false
             flight_log_rectangle.visible = false
+            firmware_log_rectangle.visible = false
             users_information_header1.visible = false
             rpa_register_page.visible = false
             dashboard_button.color = "#F25822"
@@ -83,63 +88,279 @@ ApplicationWindow {
             flight_log_button.color = "#031C28"
             logout_button.color = "#031C28"
         }
-        onNo_record_found: {
+        onEmailNotFound:{
             no_recordDialog.open()
         }
-        onIncorrect_password: {
+        onIncorrectPassword: {
             incorrect_password_Dialog.open()
         }
-        onName_record_found: {
-            namerecord_Dialog.open()
-            //namerecord_Dialog.visible = true
-            //console.log("record found")
+        onUserRegisteredSuccessfully: {
+            console.log("new user registered successfully")
+            userRegisteredDialog.open()
+            new_user_first_page.visible = false
+            third_user_details_page.visible = false
+            second_user_details_page.visible = false
+            login_page_rectangle.visible = true
+            first_circle.color = "#F25822"
+            second_circle.color = "#031C28"
+            third_circle.color = "#031C28"
+            first_circle_text.text = "1"
+            second_circle_text.text = "2"
+
         }
-        onMail_record_found: {
+        onMailAlreadyExists: {
             mailrecord_Dialog.open()
         }
-        onNumber_record_found: {
-            number_record_Dialog.open()
-        }
-        onClose_database: {
-            landing_page_rectangle.visible = false
+        onResetMailFound: {
+            password_updated.open()
+            forgot_password_page_rectangle.visible = false
             login_page_rectangle.visible = true
-            login_page_email_textfield.text = ""
-            login_page_password_textfield.text = ""
-            updateButton = 1
+            forgot_password_mail_text.text = ""
         }
-        onConnectionNotopened: {
-            connectionLostdialog.open()
-        }
-        onForgotmail_record_notfound: {
-            mailrecord_not_found.open()
-        }
-
-    }
-
-    RpaDatabase {
-        id:rpadatabase
-
-        onUin_record_found: {
-            uinrecord_Dialog.open()
-        }
-
-        onUin_record_notfound: {
-            rpa_register_page.visible =  false
-            manage_rpa_header1.visible = true
-            rpadatabase.addData(drone_type_list.currentText,drone_model_list.currentText,drone_name_text.text,uin_input_text.text)
-            rpadatabase.callSql("select * from RpaList limit 5")
-            drone_type_list.currentIndex = -1
-            drone_model_list.currentIndex = -1
-            drone_name_text.text = ""
-            uin_input_text.text = ""
-            uin_input_text.enabled = true
-            check_box.checked = false
-            check_box1.checked = false
-            check_box2.checked = false
-            check_box3.checked = false
-            check_box4.checked = false
+        onResetMailNotFound: {
+            password_mismatch.open()
+            forgot_password_mail_text.text = ""
         }
     }
+
+    TableModel{
+            property int i : 0
+            id: rpadatabase
+            onUinFound:{
+                console.log("uin found")
+                uinrecord_Dialog.open()
+            }
+            onUinNotFound:{
+                console.log("uin not found")
+                rpadatabase.add_rpa(drone_type_list.currentText,drone_model_list.currentText,drone_name_text.text,uin_input_text.text)
+                i = 1
+            }
+            onDataDeleted: {
+                rpadatabase.getData()
+            }
+
+            onDataAdded: {
+                //rpadatabase.getData()
+                if(i == 1){
+                    rpadatabase.getData()
+                }
+
+                console.log("table is shown")
+                rpa_register_page.visible =  false
+                manage_rpa_header1.visible = true
+                drone_type_list.currentIndex = -1
+                drone_model_list.currentIndex = -1
+                drone_name_text.text = ""
+                uin_input_text.text = ""
+                const newObject = Qt.createQmlObject(`
+                                                     import QtQuick 2.0
+                                                     import QtQuick.Controls 1.5
+                                                     import QtQuick.Controls.Styles 1.2
+                                                     import QtQuick.Controls.Styles 1.4
+                                                     import QtQuick.Controls 2.15
+
+                                                     TableView {
+
+                                                         id: table
+                                                         anchors.fill: parent
+                                                         //width: parent.width
+                                                         //height: parent.height
+                                                         anchors.top: table_rect.top
+                                                         backgroundVisible: false
+                                                         model:  rpadatabase
+
+                                                         style: TableViewStyle {
+                                                            headerDelegate: Rectangle {
+                                                                height: textItem.implicitHeight * 2
+                                                                width: textItem.implicitWidth
+                                                                 color: "#031C28"
+                                                                 border.width: 1
+                                                                 border.color: "#05324D"
+                                                                Text {
+                                                                    id: textItem
+                                                                    anchors.centerIn: parent
+                                                                    text: styleData.value
+                                                                    //font.pixelSize: 15
+                                                                    font.pointSize: ScreenTools.smallFontPointSize
+                                                                    font.bold:true
+                                                                    elide: Text.ElideRight
+                                                                    color: '#F25822'
+                                                                    renderType: Text.NativeRendering
+                                                                }
+                                                            }
+                                                        }
+                                                         itemDelegate: Rectangle {
+                                                             anchors.fill:parent
+                                                             color: "#031C28"
+                                                             border.width: 1
+                                                             border.color: "#05324D"
+                                                             Text {
+                                                                 //anchors.horizontalCenter: parent.horizontalCenter
+                                                                 anchors.centerIn:parent
+                                                                 color: "white"
+                                                                 text: styleData.value
+                                                                 //font.pixelSize: 15
+                                                                 font.pointSize: ScreenTools.smallFontPointSize
+                                                             }
+                                                         }
+                                                         TableViewColumn {
+                                                             id: checkbox
+                                                             width: parent.width / 8
+                                                             title: "Select"
+                                                             movable: false
+                                                             resizable: false
+                                                             role: "checkbox"
+                                                             delegate: Rectangle{
+                                                                 color: "#031C28"
+                                                                 border.width: 1
+                                                                 border.color:"#05324D"
+                                                                 CheckBox {
+                                                                    id: delegate_checkbox
+                                                                    anchors.centerIn: parent
+                                                                    checked: false
+                                                                    indicator: Rectangle{
+                                                                        implicitWidth: 16
+                                                                        implicitHeight: 16
+                                                                        radius: 2
+                                                                        color: "#031C28"
+                                                                        border.width:0.5
+                                                                        border.color: "#F25822"
+                                                                        anchors.centerIn: parent
+                                                                        Rectangle {
+                                                                            //visible: check_box.checked
+                                                                            color: delegate_checkbox.checked ? "#F25822" : "#031C28"
+                                                                            radius: 1
+                                                                            anchors.margins: 2
+                                                                            anchors.fill: parent
+                                                                        }
+                                                                    }
+                                                                     onCheckedChanged: {
+                                                                        if(delegate_checkbox.checked == true){
+                                                                            checkBoxState = 1
+                                                                            checkBoxNumber = model.index
+                                                                            ButtonGroup.group = mainWindow.group
+                                                                         }
+//                                                                         else{
+//                                                                            checkBoxState = 0
+//                                                                         }
+                                                                    }
+                                                                 }
+                                                             }
+                                                         }
+                                                         TableViewColumn {
+                                                             width: (parent.width - checkbox.width)/5
+                                                             id: type_column
+                                                             title: "Type"
+                                                             movable: false
+                                                             resizable: false
+                                                             role: "type"
+                                                         }
+                                                         TableViewColumn{
+                                                             width: (parent.width - checkbox.width)/5
+                                                             role: "model_name"
+                                                             title: "ModelName"
+                                                             movable: false
+                                                             resizable: false
+                                                         }
+                                                         TableViewColumn{
+                                                             width: (parent.width - checkbox.width)/5
+                                                             role: "drone_name"
+                                                             title: "DroneName"
+                                                             movable: false
+                                                             resizable: false
+                                                         }
+                                                         TableViewColumn{
+                                                             width: (parent.width - checkbox.width)/5
+                                                             title: "UIN"
+                                                             movable: false
+                                                             resizable: false
+                                                             role: "uin_number"
+                                                         }
+                                                         TableViewColumn{
+                                                             width: (parent.width - checkbox.width)/5
+                                                             title: "Actions"
+                                                             movable: false
+                                                             resizable: false
+                                                             role: "edit_operations"
+                                                             delegate: Rectangle{
+                                                             color:"#031C28"
+                                                             Row{
+                                                                 anchors.fill:parent
+                                                                 Button{
+                                                                     height: parent.height
+                                                                     width : parent.width/2
+                                                                     //text: "edit"
+                                                                     Text{
+                                                                         text: "edit"
+                                                                         font.pointSize: ScreenTools.smallFontPointSize
+                                                                         //font.pixelSize: 15
+                                                                         anchors.centerIn: parent
+                                                                         color: "white"
+                                                                     }
+                                                                     background: Rectangle {
+                                                                         id: edit_button
+                                                                         implicitWidth: parent.width/2
+                                                                         implicitHeight: parent.height
+                                                                         color: "#F25822"
+                                                                         radius: 4
+                                                                     }
+                                                                     onPressed:{
+                                                                        edit_button.color = "#031C28"
+                                                                     }
+                                                                     onReleased:{
+                                                                        edit_button.color = "#F25822"
+                                                                     }
+                                                                     onClicked: {
+                                                                        //rpadatabase.edit_query(database_access.mail,model.index)
+                                                                           updateButton = 2
+                                                                           manage_rpa_header1.visible = false
+                                                                           rpa_register_page.visible = true
+                                                                           drone_contents.visible = true
+                                                                    }
+                                                                }
+                                                                Button{
+                                                                     height: parent.height
+                                                                     width: parent.width/2
+                                                                     //text: "delete"
+                                                                     Text{
+                                                                         text: "Delete"
+                                                                         font.pointSize: ScreenTools.smallFontPointSize
+                                                                         //font.pixelSize: 15
+                                                                         anchors.centerIn: parent
+                                                                         color: "white"
+                                                                     }
+                                                                     background: Rectangle {
+                                                                         id: delete_button
+                                                                         implicitWidth: parent.width/2
+                                                                         implicitHeight: parent.height
+                                                                         color: "#F25822"
+                                                                         radius: 4
+                                                                     }
+                                                                     onPressed:{
+                                                                        delete_button.color = "#031C28"
+                                                                     }
+                                                                     onReleased:{
+                                                                        delete_button.color = "#F25822"
+                                                                     }
+                                                                     onClicked: {
+                                                                         rpadatabase.delete_query(database_access.mail,model.index)
+                                                                         deleteDialog.open()
+                                                                     }
+                                                                }
+                                                             }
+                                                             }
+                                                         }
+                                                     }
+                                                     `,
+                                                     table_rect,
+                                                     "myDynamicSnippet"
+                                                     );
+                i = 0
+                mainWindow.newWindowObject = newObject
+            }
+        }
+
+
 
     function showPanel(button, qmlSource) {
         if (mainWindow.preventViewSwitch()) {
@@ -153,262 +374,307 @@ ApplicationWindow {
         anchors.fill: parent
         z:1
         color: "#031C28"
-        Image {
-            id: login_page_godrona_image
-            anchors.top: parent.top
-            anchors.topMargin: 20
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: 90
-            height: 90
-            source: "/res/godrona-logo.png"//"qrc:/../../../../Downloads/godrona-logo.png"
-        }
-        Column{
-            id: login_page_label
-            spacing: 10
-            anchors.left: parent.left
-            anchors.leftMargin: 20
-            anchors.top: login_page_godrona_image.bottom
-            anchors.topMargin: 60
-            Label{
-                text: "LOGIN/SIGN-IN ACCOUNT"
-                color: "white"
-                font.bold: true
-                font.pixelSize: 20
-            }
-            Label{
-                text: "- Hello, Welcome back to GoDrona"
-                color: "#F25822"
-                font.bold: true
-                font.pixelSize: 20
-            }
-        }
-        Column{
-            id: login_page_label_email_column
-            spacing: 10
-            anchors.top: login_page_label.bottom
-            anchors.topMargin: 30
-            anchors.horizontalCenter: parent.horizontalCenter
-            Label{
-                text: "Email Address*"
-                color: "white"
-            }
-            TextField{
-                id: login_page_email_textfield
-                width: 300
-                height: 35
-                text: ""
-                color: "white"
-                leftPadding: 50
-                placeholderText: qsTr("example@gmail.com")
-                inputMethodHints: Qt.ImhEmailCharactersOnly
-                validator: RegExpValidator{regExp: /.+/}
-                onTextChanged: {
-                    login_page_email.border.color = "#C0C0C0"
-                }
-                background: Rectangle
-                {
-                    id: login_page_email
-                    anchors.fill: parent
-                    color: "#031C28"
-                    border.color: "#05324D"
-                    border.width: 1.5
-                }
-                Image {
-                    width: 25
-                    height: 25
-                    fillMode: Image.PreserveAspectFit
-                    source: "/res/mailLogo.png"//"qrc:/../../../../Downloads/mailLogo.png"
-                    anchors.left: parent.left
-                    anchors.leftMargin: 12
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-        }
-        Column{
-            id: login_page_label_password_column
-            spacing: 10
-            anchors.top: login_page_label_email_column.bottom
-            anchors.topMargin: 20
-            anchors.horizontalCenter: parent.horizontalCenter
-            Label{
-                text: "Password*"
-                color: "white"
-            }
-            TextField{
-                id: login_page_password_textfield
-                width: 300
-                height: 35
-                text: ""
-                color: "white"
-                placeholderText: qsTr("Password")
-                leftPadding: 50
-                rightPadding: 50
-                validator: RegExpValidator { regExp: /.+/ }
-                echoMode: TextInput.Password
-                inputMethodHints: Qt.ImhNoPredictiveText
-                onTextChanged: {
-                    login_page_password.border.color = "#C0C0C0"
-                }
-                background: Rectangle
-                {
-                    id: login_page_password
-                    anchors.fill: parent
-                    color: "#031C28"
-                    border.color: "#05324D"
-                    border.width: 1.5
-                }
-                Image {
-                    width: 23
-                    height: 23
-                    fillMode: Image.PreserveAspectFit
-                    source: "/res/password.png"//"qrc:/../../../../Downloads/password.png"
-                    anchors.left: parent.left
-                    anchors.leftMargin: 8
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-                Image {
-                    id: password_hide_image
-                    width: 25
-                    height: 25
-                    fillMode: Image.PreserveAspectFit
-                    source: "/res/password_hide.png"//"qrc:/../../../../Downloads/password_hide.png"
-                    anchors.right: parent.right
-                    anchors.rightMargin: 12
-                    anchors.verticalCenter: parent.verticalCenter
-                    MouseArea{
-                        anchors.fill: parent
-                        onClicked: {
-                            password_hide_image.visible = false
-                            password_show_image.visible = true
-                            login_page_password_textfield.echoMode = TextInput.Normal
-                        }
-                    }
-                }
-                Image {
-                    id: password_show_image
-                    visible: false
-                    width: 25
-                    height: 25
-                    fillMode: Image.PreserveAspectFit
-                    source: "/res/password_show.png"//"qrc:/../../../../Downloads/password_show.png"
-                    anchors.right: parent.right
-                    anchors.rightMargin: 12
-                    anchors.verticalCenter: parent.verticalCenter
-                    MouseArea{
-                        anchors.fill: parent
-                        onClicked: {
-                            password_show_image.visible = false
-                            password_hide_image.visible = true
-                            login_page_password_textfield.echoMode = TextInput.Password
-                        }
-                    }
-                }
-            }
-        }
-        Button {
-            anchors.top: login_page_label_password_column.bottom
-            anchors.topMargin: 30
-            anchors.horizontalCenter: parent.horizontalCenter
-            Text{
-                text: "Login Now ->"
-                font.pixelSize: 15
-                anchors.centerIn: parent
-                color: "white"
-            }
-            background: Rectangle {
-                id: login_button
-                implicitWidth: 200
-                implicitHeight: 40
-                color: "#F25822"
-                radius: 4
-            }
-            MessageDialog{
-                id:messagedialog1
-                height: 50
-                width: 50
-                text:"please enter your details correctly"
-            }
-            onPressed: {
-                login_button.color = "#05324D"
-            }
-            onReleased: {
-                login_button.color = "#F25822"
-            }
-            onClicked: {
-                if (login_page_email_textfield.text !== "" && login_page_password_textfield.text !== "") {
-                    console.log("Username: " + login_page_email_textfield.text)
-                    console.log("Password: " + login_page_password_textfield.text)
-                    database.loginExistingUser(login_page_email_textfield.text,login_page_password_textfield.text)
-                } else {
-                    messagedialog1.visible = true
-                    console.log("Please enter a username and password.")
-                }
-            }
-        }
-        Column{
-            spacing: 10
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 50
-            anchors.left: parent.left
-            anchors.leftMargin: 20
-            Label{
-                text: "New to GoDrona ?"
-                color: "white"
-                Image{
-                    id: new_user_logo
-                    anchors.bottom: parent.top
-                    width: 50
-                    height: 50
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    source: "/res/new_member.png" //"qrc:/../../../../Downloads/new_member.png"
 
-                }
-                MouseArea{
-                    anchors.fill: new_user_logo
-                    onClicked: {
-                        password_hide_image.visible = true
-                        password_show_image.visible = false
-                        new_user_first_page.visible = true
-                        first_user_details_page.visible = true
-                        login_page_email_textfield.text = ""
-                        login_page_password_textfield.text = ""
-                        login_page_password_textfield.echoMode = TextInput.Password
+        RowLayout{
+            anchors.fill:parent
+            spacing: 0
+
+            Rectangle{
+                id: login_image_rectangle
+                color: "#031C28"
+                Layout.preferredWidth: mainWindow.width/2
+                Layout.preferredHeight: mainWindow.height
+                Rectangle {
+                    id: user_login_image_rect
+                    anchors.left: parent.left
+                    anchors.leftMargin: 40
+                    anchors.top: parent.top
+                    anchors.topMargin: 40
+                    width: parent.width - 70
+                    height: parent.height - 70
+                    color: "red"
+                    Image{
+                        anchors.fill: user_login_image_rect
+                        source: "/res/User_login.png"
                     }
                 }
             }
-        }
-        Column{
-            spacing: 10
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 50
-            anchors.right: parent.right
-            anchors.rightMargin: 20
-            Label{
-                text: "Forgot Password ?"
-                color: "white"
-                Image{
-                    id: forgot_password_logo
-                    anchors.bottom: parent.top
-                    width: 50
-                    height: 50
+            Rectangle {
+                id: login_credentails
+                color: "#031C28"
+                Layout.fillWidth: true
+                Layout.preferredHeight: mainWindow.height
+                Image {
+                    id: login_page_godrona_image
+                    anchors.top: parent.top
+                    anchors.topMargin: 20
                     anchors.horizontalCenter: parent.horizontalCenter
-                    source: "/res/forgotpassword.png" //"qrc:/../../../../Downloads/forgotpassword.png"
+                    width: 90
+                    height: 90
+                    source: "/res/godrona-logo.png"//"qrc:/../../../../Downloads/godrona-logo.png"
                 }
-                MouseArea{
-                    anchors.fill: forgot_password_logo
+                Column{
+                    id: login_page_label
+                    spacing: 10
+                    anchors.left: parent.left
+                    anchors.leftMargin: 20
+                    anchors.top: login_page_godrona_image.bottom
+                    anchors.topMargin: 60
+                    Label{
+                        text: "LOGIN/SIGN-IN ACCOUNT"
+                        color: "white"
+                        font.bold: true
+                        font.pixelSize: 20
+                    }
+                    Label{
+                        text: "- Hello, Welcome back to GoDrona"
+                        color: "#F25822"
+                        font.bold: true
+                        font.pixelSize: 20
+                    }
+                }
+                Column{
+                    id: login_page_label_email_column
+                    spacing: 10
+                    anchors.top: login_page_label.bottom
+                    anchors.topMargin: 30
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    Label{
+                        text: "Email Address*"
+                        color: "white"
+                    }
+                    TextField{
+                        id: login_page_email_textfield
+                        width: 300
+                        height: 35
+                        text: ""
+                        color: "white"
+                        leftPadding: 50
+                        placeholderText: qsTr("example@gmail.com")
+                        inputMethodHints: Qt.ImhEmailCharactersOnly
+                        validator: RegExpValidator{regExp: /.+/}
+                        onTextChanged: {
+                            login_page_email.border.color = "#C0C0C0"
+                        }
+                        background: Rectangle
+                        {
+                            id: login_page_email
+                            anchors.fill: parent
+                            color: "#031C28"
+                            border.color: "#05324D"
+                            border.width: 1.5
+                        }
+                        Image {
+                            width: 25
+                            height: 25
+                            fillMode: Image.PreserveAspectFit
+                            source: "/res/mailLogo.png"//"qrc:/../../../../Downloads/mailLogo.png"
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+                }
+                Column{
+                    id: login_page_label_password_column
+                    spacing: 10
+                    anchors.top: login_page_label_email_column.bottom
+                    anchors.topMargin: 20
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    Label{
+                        text: "Password*"
+                        color: "white"
+                    }
+                    TextField{
+                        id: login_page_password_textfield
+                        width: 300
+                        height: 35
+                        text: ""
+                        color: "white"
+                        placeholderText: qsTr("Password")
+                        leftPadding: 50
+                        rightPadding: 50
+                        validator: RegExpValidator { regExp: /.+/ }
+                        echoMode: TextInput.Password
+                        inputMethodHints: Qt.ImhNoPredictiveText
+                        onTextChanged: {
+                            login_page_password.border.color = "#C0C0C0"
+                        }
+                        background: Rectangle
+                        {
+                            id: login_page_password
+                            anchors.fill: parent
+                            color: "#031C28"
+                            border.color: "#05324D"
+                            border.width: 1.5
+                        }
+                        Image {
+                            width: 23
+                            height: 23
+                            fillMode: Image.PreserveAspectFit
+                            source: "/res/password.png"//"qrc:/../../../../Downloads/password.png"
+                            anchors.left: parent.left
+                            anchors.leftMargin: 8
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Image {
+                            id: password_hide_image
+                            width: 25
+                            height: 25
+                            fillMode: Image.PreserveAspectFit
+                            source: "/res/password_hide.png"//"qrc:/../../../../Downloads/password_hide.png"
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            MouseArea{
+                                anchors.fill: parent
+                                onClicked: {
+                                    password_hide_image.visible = false
+                                    password_show_image.visible = true
+                                    login_page_password_textfield.echoMode = TextInput.Normal
+                                }
+                            }
+                        }
+                        Image {
+                            id: password_show_image
+                            visible: false
+                            width: 25
+                            height: 25
+                            fillMode: Image.PreserveAspectFit
+                            source: "/res/password_show.png"//"qrc:/../../../../Downloads/password_show.png"
+                            anchors.right: parent.right
+                            anchors.rightMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            MouseArea{
+                                anchors.fill: parent
+                                onClicked: {
+                                    password_show_image.visible = false
+                                    password_hide_image.visible = true
+                                    login_page_password_textfield.echoMode = TextInput.Password
+                                }
+                            }
+                        }
+                    }
+                }
+                Button {
+                    anchors.top: login_page_label_password_column.bottom
+                    anchors.topMargin: 30
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    Text{
+                        text: "Login Now ->"
+                        font.pixelSize: 15
+                        anchors.centerIn: parent
+                        color: "white"
+                    }
+                    background: Rectangle {
+                        id: login_button
+                        implicitWidth: 200
+                        implicitHeight: 40
+                        color: "#F25822"
+                        radius: 4
+                    }
+                    MessageDialog{
+                        id:messagedialog1
+                        height: 50
+                        width: 50
+                        text:"please enter your details correctly"
+                    }
+                    onPressed: {
+                        login_button.color = "#05324D"
+                    }
+                    onReleased: {
+                        login_button.color = "#F25822"
+                    }
                     onClicked: {
-                        password_hide_image.visible = true
-                        password_show_image.visible = false
-                        login_page_rectangle.visible = false
-                        forgot_password_page_rectangle.visible = true
-                        login_page_email_textfield.text = ""
-                        login_page_password_textfield.text = ""
-                        login_page_password_textfield.echoMode = TextInput.Password
+                        if (login_page_email_textfield.text !== "" && login_page_password_textfield.text !== "") {
+                            console.log("Username: " + login_page_email_textfield.text)
+                            console.log("Password: " + login_page_password_textfield.text)
+                            database_access.registered_user(login_page_email_textfield.text,login_page_password_textfield.text)
+                        } else {
+                            messagedialog1.visible = true
+                            console.log("Please enter a username and password.")
+                        }
+                    }
+                }
+                Column{
+                    spacing: 10
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 50
+                    anchors.left: parent.left
+                    anchors.leftMargin: 20
+                    Label{
+                        text: "New to GoDrona ?"
+                        color: "white"
+                        Image{
+                            id: new_user_logo
+                            anchors.bottom: parent.top
+                            width: 50
+                            height: 50
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            source: "/res/new_member.png" //"qrc:/../../../../Downloads/new_member.png"
+
+                        }
+                        MouseArea{
+                            anchors.fill: new_user_logo
+                            onClicked: {
+                                password_hide_image.visible = true
+                                password_show_image.visible = false
+                                new_user_first_page.visible = true
+                                first_user_details_page.visible = true
+                                login_page_email_textfield.text = ""
+                                login_page_password_textfield.text = ""
+                                login_page_password_textfield.echoMode = TextInput.Password
+                                if(first_user_details_page.visible == true){
+                                    console.log("in first user details page")
+                                    new_user_image_rect.source = "/res/First Time Signup screen.png"
+                                }
+                                if (second_user_details_page.visible == true){
+                                    console.log("in second user details page")
+                                    new_user_image_rect.source = "/res/user_details.png"
+                                }
+                                if(third_user_details_page.visible == true){
+                                    console.log("in third user details page")
+                                    new_user_image_rect.source = "/res/otp.png"
+                                }
+                            }
+                        }
+                    }
+                }
+                Column{
+                    spacing: 10
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 50
+                    anchors.right: parent.right
+                    anchors.rightMargin: 20
+                    Label{
+                        text: "Forgot Password ?"
+                        color: "white"
+                        Image{
+                            id: forgot_password_logo
+                            anchors.bottom: parent.top
+                            width: 50
+                            height: 50
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            source: "/res/forgotpassword.png" //"qrc:/../../../../Downloads/forgotpassword.png"
+                        }
+                        MouseArea{
+                            anchors.fill: forgot_password_logo
+                            onClicked: {
+                                password_hide_image.visible = true
+                                password_show_image.visible = false
+                                login_page_rectangle.visible = false
+                                forgot_password_page_rectangle.visible = true
+                                login_page_email_textfield.text = ""
+                                login_page_password_textfield.text = ""
+                                login_page_password_textfield.echoMode = TextInput.Password
+                            }
+                        }
                     }
                 }
             }
         }
     }
+
 
     Rectangle{
         id: forgot_password_page_rectangle
@@ -484,9 +750,6 @@ ApplicationWindow {
                         anchors.leftMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
                     }
-                    onEditingFinished : {
-                        database.forgotPasswordmail(forgot_password_mail_text.text)
-                    }
                 }
             }
             Button {
@@ -511,18 +774,8 @@ ApplicationWindow {
                     submit_button.color = "#F25822"
                 }
                 onClicked: {
+                    database_access.reset_password(forgot_password_mail_text.text)
 
-                    if(forgot_password_mail_text.text !== database.mail){
-                        database.forgotPasswordmail(forgot_password_mail_text.text)
-                        console.log("mail is not found")
-                        //forgot_password_mail_text.text = ""
-                    }
-                    else {
-                        forgot_password_page_rectangle.visible = false
-                        reset_password_page_rectangle.visible = true
-                        console.log("Mail is found")
-                        //forgot_password_mail_text.text = ""
-                    }
                 }
             }
             Label{
@@ -801,7 +1054,6 @@ ApplicationWindow {
                     }
                     else{
                         console.log("matched")
-                        database.change_password(forgot_password_mail_text.text,new_password_textfield.text)
                         password_updated.open()
                         reset_password_page_rectangle.visible = false
                         login_page_rectangle.visible = true
@@ -824,952 +1076,1049 @@ ApplicationWindow {
         z: 1
         visible: false
         color: "#031C28"
-        Label{
-            id: new_user_first_page_label
-            text: "<- Registration"
-            font.pixelSize: 20
-            color: "white"
-            font.bold: true
-            anchors.left: parent.left
-            anchors.leftMargin: 10
-            anchors.top: parent.top
-            anchors.topMargin: 30
-            Label{
-                anchors.top: parent.bottom
-                anchors.topMargin: 20
-                text: "- Lets get the access for our best service"
-                color: "#F25822"
-                font.pixelSize: 15
-            }
-            MouseArea{
-                anchors.fill: parent
-                onClicked: {
-                    new_user_first_page.visible = false
-                    login_page_rectangle.visible = true
-                    user_name_text.text = ""
-                    user_mail_text.text = ""
-                    user_number_text.text = ""
-                    user_address_text.text = ""
-                    user_locality_text.text = ""
-                    user_password_text.text = ""
-                    control.currentIndex = -1
-                    password_hide_image.visible = true
-                    password_show_image.visible = false
-                    password_show_image1.visible = false
-                    password_hide_image1.visible = true
-                }
-            }
-        }
-        Row{
-            id: circle_row
-            anchors.top: new_user_first_page_label.bottom
-            anchors.topMargin: 50
-            anchors.horizontalCenter: parent.horizontalCenter
+
+        RowLayout{
+            anchors.fill: parent
+            spacing: 0
+
             Rectangle{
-                id: first_circle
-                width: 50
-                height: 50
-                radius: width / 2
-                border.color: "#C0C0C0"
-                border.width: 1.5
-                color: "#F25822"
-                Text{
-                    id: first_circle_text
-                    text: "1"
-                    color: "white"
-                    anchors.centerIn: parent
-                }
-            }
-            Repeater{
-                model: 5
-                Text{
-                    text: "-"
-                    color: "white"
-                    anchors.verticalCenter: circle_row.verticalCenter
-                }
-            }
-            Rectangle{
-                id: second_circle
-                width: 50
-                height: 50
-                radius: width / 2
-                border.color: "#C0C0C0"
-                border.width: 1.5
+                id: new_user_image_rectangle
                 color: "#031C28"
-                Text{
-                    id: second_circle_text
-                    text: "2"
-                    color: "white"
-                    anchors.centerIn: parent
+                Layout.preferredWidth: mainWindow.width/2
+                Layout.preferredHeight: mainWindow.height
+                Rectangle {
+                    anchors.left: parent.left
+                    anchors.leftMargin: 40
+                    anchors.top: parent.top
+                    anchors.topMargin: 40
+                    width: parent.width - 70
+                    height: parent.height - 70
+                    color: "red"
+                    Image{
+                        id: new_user_image_rect
+                        anchors.fill: parent
+                        source: "/res/First Time Signup screen.png"
+                    }
                 }
             }
-            Repeater{
-                model: 5
-                Text{
-                    text: "-"
-                    color: "white"
-                    anchors.verticalCenter: circle_row.verticalCenter
-                }
-            }
-            Rectangle{
-                id: third_circle
-                width: 50
-                height: 50
-                radius: width / 2
-                border.color: "#C0C0C0"
-                border.width: 1.5
+            Rectangle {
+                id: user_credentials
                 color: "#031C28"
-                Text{
-                    id: third_circle_text
-                    text: "3"
-                    color: "white"
-                    anchors.centerIn: parent
-                }
-            }
-        }
-        Rectangle{
-            id: first_user_details_page
-            width: parent.width
-            anchors.top: circle_row.bottom
-            anchors.topMargin: 20
-            height: parent.height
-            color: "#031C28"
-            Column{
-                spacing: 20
-                anchors.top: parent.top
-                anchors.topMargin: 20
-                anchors.horizontalCenter: parent.horizontalCenter
+                Layout.fillWidth: true
+                Layout.preferredHeight: mainWindow.height
+
                 Label{
-                    text: "Select Your Industry Type*"
+                    id: new_user_first_page_label
+                    text: "<- Registration"
+                    font.pixelSize: 20
                     color: "white"
-                }
-                ComboBox {
-                    id: control
-                    model: ["Drone Education & Training","Asset Inspection","Security & Surveillance","Public Survey","Oil & Gas Inspection","Industrial Inspection","Agricultural Usage","Goods Delivery"]
-                    width: 200
-                    currentIndex: -1
-                    displayText: currentIndex === -1 ? "Select Industry Type" : currentText
-                    delegate: ItemDelegate {
-                        width: control.width
-                        contentItem: Text {
-                            text: control.textRole
-                                  ? (Array.isArray(control.model) ? modelData[control.textRole] : model[control.textRole])
-                                  : modelData
-                            color: "black"
-                            font: control.font
-                            elide: Text.ElideRight
-                            verticalAlignment: Text.AlignVCenter
-                        }
-                        highlighted: control.highlightedIndex === index
-                    }
-                    indicator: Canvas {
-                        id: canvas
-                        x: control.width - width - control.rightPadding
-                        y: control.topPadding + (control.availableHeight - height) / 2
-                        width: 12
-                        height: 8
-                        contextType: "2d"
-                        Connections {
-                            target: control
-                            function onPressedChanged() { canvas.requestPaint(); }
-                        }
-                        onPaint: {
-                            context.reset();
-                            context.moveTo(0, 0);
-                            context.lineTo(width, 0);
-                            context.lineTo(width / 2, height);
-                            context.closePath();
-                            context.fillStyle = "white"
-                            context.fill();
-                        }
-                    }
-                    contentItem: Text {
-                        id: combobox_text
-                        leftPadding: 30
-                        rightPadding: control.indicator.width + control.spacing
-                        text: control.displayText
-                        font: control.font
-                        color: "white"
-                        verticalAlignment: Text.AlignVCenter
-                        elide: Text.ElideRight
-//                        onTextChanged: {
-//                            if(combobox_text.text == "Drone Education & Training"){
-//                                organization_image.visible = true
-//                            }
-//                            else{
-//                                organization_image.visible = false
-//                            }
-//                        }
-                        Image{
-                            id: organization_image
-                            width: 25
-                            height: 25
-                            anchors.verticalCenter: parent.verticalCenter
-                            source: "/res/organization.png"//"qrc:/../../../../Downloads/organization.png"
-                        }
-                    }
-                    background: Rectangle {
-                        implicitWidth: 120
-                        implicitHeight: 40
-                        color: "#031C28"
-                        border.color: "#00FFFF"
-                        border.width: control.visualFocus ? 2 : 1
-                        radius: 2
-                    }
-                    popup: Popup {
-                        y: control.height - 1
-                        width: control.width
-                        implicitHeight: contentItem.implicitHeight
-                        padding: 1
-                        contentItem: ListView {
-                            clip: true
-                            implicitHeight: contentHeight
-                            model: control.popup.visible ? control.delegateModel : null
-                            currentIndex: control.highlightedIndex
-
-                            ScrollIndicator.vertical: ScrollIndicator { }
-                        }
-                        background: Rectangle {
-                            border.color: "#00FFFF"
-                            radius: 2
-                        }
-                    }
-                }
-                Button {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    Text{
-                        text: "Next Step ->"
-                        font.pixelSize: 15
-                        anchors.centerIn: parent
-                        color: "white"
-                    }
-                    background: Rectangle {
-                        id: next_step_submit_button
-                        implicitWidth: 200
-                        implicitHeight: 40
-                        color: "#F25822"
-                        radius: 4
-                    }
-                    onPressed: {
-                        next_step_submit_button.color = "#05324D"
-                    }
-                    onReleased: {
-                        next_step_submit_button.color = "#F25822"
-                    }
-                    onClicked: {
-                        back_to_login_logo.visible = false
-                        first_user_details_page.visible = false
-                        second_user_details_page.visible = true
-                        first_circle_text.text = "/"
-                        first_circle.color = "green"
-                        second_circle.color = "#F25822"
-                        control.currentIndex = -1
-                    }
-                }
-            }
-        }
-        Rectangle{
-            id: second_user_details_page
-            visible: false
-            width: parent.width
-            anchors.top: circle_row.bottom
-            anchors.topMargin: 20
-            height: parent.height
-            color: "#031C28"
-            Rectangle{
-                id: user_image
-                width: 75
-                height: 75
-                radius: width / 2
-                color: "white"
-                clip: true
-                anchors.horizontalCenter: parent.horizontalCenter
-                Image{
-                    width: 25
-                    height: 25
-                    anchors.left: user_image.left
-                    anchors.leftMargin: user_image.radius + 20
-                    anchors.verticalCenter: parent.verticalCenter
-                    source: "/res/user_photo.png"//"qrc:/../../../../Downloads/user_photo.png"
-                }
-                Image{
-                    id:user_profile_image
-                    anchors.fill: user_image
-                    width: 75
-                    height: 75
-                    source: image_file_dialog.fileUrl
-                    fillMode: Image.PreserveAspectCrop
-                    layer.enabled: true
-                    layer.effect: OpacityMask {
-                        maskSource: user_image
-                    }
-                }
-                MouseArea{
-                    anchors.fill: parent
-                    onClicked: {
-                        image_file_dialog.open()
-                    }
-                }
-            }
-
-            Rectangle{
-                id: scrollview
-                width: parent.width
-                height: parent.height / 2
-                anchors.top: user_image.bottom
-                anchors.topMargin: 2
-                border.width: 1
-                border.color: "#05324D"
-                color: "#031C28"
-                ScrollView {
-                    anchors.fill: parent
-                    clip: true
-                    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-                    ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-                        Column{
-                            id: column
-                            spacing: 30
-                            anchors.left: parent.left
-                            anchors.leftMargin: 50
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            Column{
-                                spacing: 10
-                                Label{
-                                    text: "Full Name*"
-                                    color: "white"
-                                }
-                                TextField{
-                                    id: user_name_text
-                                    width: 300
-                                    height: 35
-                                    text: ""
-                                    color: "white"
-                                    placeholderText: qsTr("Your Name")
-                                    leftPadding: 50
-                                    onTextChanged: {
-                                        user_name.border.color = "#C0C0C0"
-                                    }
-                                    background: Rectangle
-                                    {
-                                        id: user_name
-                                        anchors.fill: parent
-                                        color: "#031C28"
-                                        border.color: "#05324D"
-                                        border.width: 1.5
-                                    }
-                                    Image {
-                                        width: 23
-                                        height: 23
-                                        fillMode: Image.PreserveAspectFit
-                                        source: "/res/user_image.png"//"qrc:/../../../../Downloads/user_image.png"
-                                        anchors.left: parent.left
-                                        anchors.leftMargin: 12
-                                        anchors.verticalCenter: parent.verticalCenter
-                                    }
-                                    onEditingFinished:{
-                                        if (user_name_text.text !== "") {
-                                            database.signupExistingUsername(user_name_text.text)
-                                        }
-                                        //database.signupExistingUsername(user_name_text.text)
-                                        //namerecord_Dialog.open()
-
-                                    }
-
-                                }
-                            }
-                            Column{
-                                spacing: 10
-                                Label{
-                                    text: "Email Address*"
-                                    color: "white"
-                                }
-                                TextField{
-                                    id: user_mail_text
-                                    width: 300
-                                    height: 35
-                                    text: ""
-                                    color: "white"
-                                    placeholderText: qsTr("example@gmail.com")
-                                    inputMethodHints: Qt.ImhEmailCharactersOnly
-                                    //validator: RegExpValidator{regExp:/[A-Z0-9a-z._-]{1,}@(\\w+)(\\.(\\w+))(\\.(\\w+))?(\\.(\\w+))?$"*/}
-                                    leftPadding: 50
-                                    onTextChanged: {
-                                        user_mail.border.color = "#C0C0C0"
-                                    }
-                                    background: Rectangle
-                                    {
-                                        id: user_mail
-                                        anchors.fill: parent
-                                        color: "#031C28"
-                                        border.color: "#05324D"
-                                        border.width: 1.5
-                                    }
-                                    Image {
-                                        width: 25
-                                        height: 25
-                                        fillMode: Image.PreserveAspectFit
-                                        source: "/res/mailLogo.png"//"qrc:/../../../../Downloads/mailLogo.png"
-                                        anchors.left: parent.left
-                                        anchors.leftMargin: 12
-                                        anchors.verticalCenter: parent.verticalCenter
-                                    }
-                                    onEditingFinished:{
-                                        if (user_mail_text.text !== "") {
-                                            database.signupExistingUsermail(user_mail_text.text)
-                                        }
-                                        //database.signupExistingUsermail(user_mail_text.text)
-                                        //mailrecord_Dialog.open()
-                                    }
-                                }
-                            }
-                            Column{
-                                spacing: 10
-                                Label{
-                                    text: "Mobile Number*"
-                                    color: "white"
-                                }
-                                TextField{
-                                    id: user_number_text
-                                    width: 300
-                                    height: 35
-                                    text: ""
-                                    color: "white"
-                                    maximumLength: 10
-                                    placeholderText: qsTr("Your Mobile Number")
-                                    leftPadding: 70
-                                    validator: RegExpValidator{regExp: /[0-9,/]*/}
-                                    onTextChanged: {
-                                        user_number.border.color = "#C0C0C0"
-                                    }
-                                    background: Rectangle
-                                    {
-                                        id: user_number
-                                        anchors.fill: parent
-                                        color: "#031C28"
-                                        border.color: "#05324D"
-                                        border.width: 1.5
-                                    }
-                                    Image {
-                                        id:image
-                                        width: 25
-                                        height: 25
-                                        fillMode: Image.PreserveAspectFit
-                                        source: "/res/user_phone.png"//"qrc:/../../../../Downloads/user_phone.png"
-                                        anchors.left: parent.left
-                                        anchors.leftMargin: 12
-                                        anchors.verticalCenter: parent.verticalCenter
-                                    }
-                                    Label {
-                                        anchors.left: image.right
-                                        anchors.leftMargin:3
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        text: "+91"
-                                        color: "white"
-                                    }
-                                    onEditingFinished:{
-                                        console.log("Edit Finished")
-                                        if(user_number_text.text.length < user_number_text.maximumLength && user_number_text.text.length >= 1){
-                                            console.log(user_number_text.text.length + " mobile number length")
-                                            wrong_numberDialog.open()
-                                        }
-                                        if (user_number_text.text !== "") {
-                                            database.signupExistingUsernumber(user_number_text.text)
-                                        }
-                                    }
-                                }
-                            }
-                            Dialog {
-                                id: wrong_numberDialog
-                                width: 200
-                                height: 100
-                                title: "Not a Valid Number"
-                                Label {
-                                    text: "Please provide a Valid Mobile Number"
-                                }
-                            }
-
-                            Column{
-                                spacing: 10
-                                Label{
-                                    text: "Address Line*"
-                                    color: "white"
-                                }
-                                TextField{
-                                    id: user_address_text
-                                    width: 300
-                                    height: 35
-                                    text: ""
-                                    color: "white"
-                                    placeholderText: qsTr("Your Address")
-                                    leftPadding: 50
-                                    onTextChanged: {
-                                        user_address.border.color = "#C0C0C0"
-                                    }
-                                    background: Rectangle
-                                    {
-                                        id: user_address
-                                        anchors.fill: parent
-                                        color: "#031C28"
-                                        border.color: "#05324D"
-                                        border.width: 1.5
-                                    }
-                                    Image {
-                                        width: 30
-                                        height: 30
-                                        fillMode: Image.PreserveAspectFit
-                                        source: "/res/user_location.png"//"qrc:/../../../../Downloads/user_location.png"
-                                        anchors.left: parent.left
-                                        anchors.leftMargin: 12
-                                        anchors.verticalCenter: parent.verticalCenter
-                                    }
-                                }
-                            }
-                            Column{
-                                spacing: 10
-                                Label{
-                                    text: "Locality*"
-                                    color: "white"
-                                }
-                                TextField{
-                                    id: user_locality_text
-                                    width: 300
-                                    height: 35
-                                    text: ""
-                                    color: "white"
-                                    placeholderText: qsTr("Your Locality")
-                                    leftPadding: 50
-                                    onTextChanged: {
-                                        user_locality.border.color = "#C0C0C0"
-                                    }
-                                    background: Rectangle
-                                    {
-                                        id: user_locality
-                                        anchors.fill: parent
-                                        color: "#031C28"
-                                        border.color: "#05324D"
-                                        border.width: 1.5
-                                    }
-                                    Image {
-                                        width: 25
-                                        height: 25
-                                        fillMode: Image.PreserveAspectFit
-                                        source: "/res/user_locality.png"//"qrc:/../../../../Downloads/user_locality.png"
-                                        anchors.left: parent.left
-                                        anchors.leftMargin: 12
-                                        anchors.verticalCenter: parent.verticalCenter
-                                    }
-                                }
-                            }
-                            Column{
-                                spacing: 10
-                                Label{
-                                    text: "Password*"
-                                    color: "white"
-                                }
-                                TextField{
-                                    id: user_password_text
-                                    width: 300
-                                    height: 35
-                                    text: ""
-                                    color: "white"
-                                    placeholderText: qsTr("password")
-                                    leftPadding: 50
-                                    rightPadding: 50
-                                    echoMode: TextInput.Password
-                                    onTextChanged: {
-                                        user_password.border.color = "#C0C0C0"
-                                    }
-                                    background: Rectangle
-                                    {
-                                        id: user_password
-                                        anchors.fill: parent
-                                        color: "#031C28"
-                                        border.color: "#05324D"
-                                        border.width: 1.5
-                                    }
-                                    Image {
-                                        width: 23
-                                        height: 23
-                                        fillMode: Image.PreserveAspectFit
-                                        source: "/res/password.png"//"qrc:/../../../../Downloads/password.png"
-                                        anchors.left: parent.left
-                                        anchors.leftMargin: 8
-                                        anchors.verticalCenter: parent.verticalCenter
-                                    }
-                                    Image {
-                                        id: password_hide_image1
-                                        width: 25
-                                        height: 25
-                                        fillMode: Image.PreserveAspectFit
-                                        source: "/res/password_hide.png"//"qrc:/../../../../Downloads/password_hide.png"
-                                        anchors.right: parent.right
-                                        anchors.rightMargin: 12
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        MouseArea{
-                                            anchors.fill: parent
-                                            onClicked: {
-                                                password_hide_image1.visible = false
-                                                password_show_image1.visible = true
-                                                user_password_text.echoMode = TextInput.Normal
-                                            }
-                                        }
-                                    }
-                                    Image {
-                                        id: password_show_image1
-                                        visible: false
-                                        width: 25
-                                        height: 25
-                                        fillMode: Image.PreserveAspectFit
-                                        source: "/res/password_show.png"//"qrc:/../../../../Downloads/password_show.png"
-                                        anchors.right: parent.right
-                                        anchors.rightMargin: 12
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        MouseArea{
-                                            anchors.fill: parent
-                                            onClicked: {
-                                                password_show_image1.visible = false
-                                                password_hide_image1.visible = true
-                                                user_password_text.echoMode = TextInput.Password
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-            }
-            Column{
-                anchors.top: scrollview.bottom
-                anchors.topMargin: 20
-                anchors.horizontalCenter: parent.horizontalCenter
-                spacing: 10
-                Button {
-                    Text{
-                        text: "Verify Account ->"
-                        font.pixelSize: 15
-                        anchors.centerIn: parent
-                        color: "white"
-                    }
-                    background: Rectangle {
-                        id: verify_account_button
-                        implicitWidth: 200
-                        implicitHeight: 40
-                        color: "#F25822"
-                        radius: 4
-                    }
-                    onPressed: {
-                        verify_account_button.color = "#05324D"
-                    }
-                    onReleased: {
-                        verify_account_button.color = "#F25822"
-                    }
-                    onClicked: {
-                        if(user_name_text.text == ""
-                                || user_mail_text.text == ""
-                                || user_number_text.text == ""
-                                || user_address_text.text == ""
-                                || user_locality_text.text == ""
-                                || user_password_text.text == ""){
-                            enter_all_fields.open()
-                        }
-                        else{
-                            //database.signupExistingUser(user_name_text.text,user_mail_text.text,user_number_text.text)
-                            second_user_details_page.visible = false
-                            third_user_details_page.visible = true
-                            second_circle_text.text = "/"
-                            second_circle.color = "green"
-                            third_circle.color = "#F25822"
-                            user_name_text.text == ""
-                            user_mail_text.text == ""
-                            user_number_text.text == ""
-                            user_address_text.text == ""
-                            user_locality_text.text == ""
-                            user_password_text.text == ""
-                            password_hide_image1.visible = true
-                            password_show_image1.visible = false
-                        }
-                    }
-                }
-                Label{
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: "PREVIOUS STEP"
                     font.bold: true
-                    color: "white"
+                    anchors.left: parent.left
+                    anchors.leftMargin: 10
+                    anchors.top: parent.top
+                    anchors.topMargin: 30
+                    Label{
+                        anchors.top: parent.bottom
+                        anchors.topMargin: 20
+                        text: "- Lets get the access for our best service"
+                        color: "#F25822"
+                        font.pixelSize: 15
+                    }
                     MouseArea{
                         anchors.fill: parent
                         onClicked: {
-                            first_circle_text.text = "1"
-                            second_circle_text.text = "2"
-                            first_circle.color = "#F25822"
-                            second_circle.color = "#031C28"
-                            second_user_details_page.visible = false
-                            first_user_details_page.visible = true
-                            user_name_text.text == ""
-                            user_mail_text.text == ""
-                            user_number_text.text == ""
-                            user_address_text.text == ""
-                            user_locality_text.text == ""
-                            user_password_text.text == ""
+                            new_user_first_page.visible = false
+                            login_page_rectangle.visible = true
+                            user_name_text.text = ""
+                            user_mail_text.text = ""
+                            user_number_text.text = ""
+                            user_address_text.text = ""
+                            user_locality_text.text = ""
+                            user_password_text.text = ""
                             control.currentIndex = -1
-                            password_hide_image1.visible = true
+                            control_role.currentIndex = -1
+                            password_hide_image.visible = true
+                            password_show_image.visible = false
                             password_show_image1.visible = false
+                            password_hide_image1.visible = true
+                            new_user_image_rect.source = "/res/First Time Signup screen.png"
                         }
                     }
                 }
-            }
-        }
-        Rectangle{
-            id: third_user_details_page
-            visible: false
-            width: parent.width
-            anchors.top: circle_row.bottom
-            anchors.topMargin: 20
-            height: parent.height
-            color: "#031C28"
-            Label{
-                id: otp_label
-                anchors.top: parent.top
-                anchors.topMargin: 20
-                anchors.left: parent.left
-                anchors.leftMargin: 20
-                text: "Please enter the"
-                color: "white"
-                Label{
-                    anchors.left: parent.right
-                    anchors.leftMargin: 3
-                    text: "One Time Password"
-                    color: "#00FFFF"
-                }
-            }
-            Row{
-                id: otp_row
-                spacing: 20
-                anchors.top: otp_label.bottom
-                anchors.topMargin: 10
-                anchors.horizontalCenter: parent.horizontalCenter
-                TextField{
-                    width: 30
-                    height: 30
-                    text: ""
-                    color: "white"
-                    maximumLength: 1
-                    onTextChanged: {
-                        otp.border.color = "green"
-                    }
-                    background: Rectangle
-                    {
-                        id: otp
-                        anchors.fill: parent
-                        color: "#031C28"
-                        border.color: "#05324D"
+                Row{
+                    id: circle_row
+                    anchors.top: new_user_first_page_label.bottom
+                    anchors.topMargin: 50
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    Rectangle{
+                        id: first_circle
+                        width: 50
+                        height: 50
+                        radius: width / 2
+                        border.color: "#C0C0C0"
                         border.width: 1.5
+                        color: "#F25822"
+                        Text{
+                            id: first_circle_text
+                            text: "1"
+                            color: "white"
+                            anchors.centerIn: parent
+                        }
                     }
-                }
-                TextField{
-                    width: 30
-                    height: 30
-                    text: ""
-                    color: "white"
-                    maximumLength: 1
-                    onTextChanged: {
-                        otp1.border.color = "green"
+                    Repeater{
+                        model: 5
+                        Text{
+                            text: "-"
+                            color: "white"
+                            anchors.verticalCenter: circle_row.verticalCenter
+                        }
                     }
-                    background: Rectangle
-                    {
-                        id: otp1
-                        anchors.fill: parent
-                        color: "#031C28"
-                        border.color: "#05324D"
+                    Rectangle{
+                        id: second_circle
+                        width: 50
+                        height: 50
+                        radius: width / 2
+                        border.color: "#C0C0C0"
                         border.width: 1.5
-                    }
-                }
-                TextField{
-                    width: 30
-                    height: 30
-                    text: ""
-                    color: "white"
-                    maximumLength: 1
-                    onTextChanged: {
-                        otp2.border.color = "green"
-                    }
-                    background: Rectangle
-                    {
-                        id: otp2
-                        anchors.fill: parent
                         color: "#031C28"
-                        border.color: "#05324D"
+                        Text{
+                            id: second_circle_text
+                            text: "2"
+                            color: "white"
+                            anchors.centerIn: parent
+                        }
+                    }
+                    Repeater{
+                        model: 5
+                        Text{
+                            text: "-"
+                            color: "white"
+                            anchors.verticalCenter: circle_row.verticalCenter
+                        }
+                    }
+                    Rectangle{
+                        id: third_circle
+                        width: 50
+                        height: 50
+                        radius: width / 2
+                        border.color: "#C0C0C0"
                         border.width: 1.5
-                    }
-                }
-                TextField{
-                    width: 30
-                    height: 30
-                    text: ""
-                    color: "white"
-                    maximumLength: 1
-                    onTextChanged: {
-                        otp3.border.color = "green"
-                    }
-                    background: Rectangle
-                    {
-                        id: otp3
-                        anchors.fill: parent
                         color: "#031C28"
-                        border.color: "#05324D"
-                        border.width: 1.5
+                        Text{
+                            id: third_circle_text
+                            text: "3"
+                            color: "white"
+                            anchors.centerIn: parent
+                        }
                     }
                 }
-                TextField{
-                    width: 30
-                    height: 30
-                    text: ""
-                    color: "white"
-                    maximumLength: 1
-                    onTextChanged: {
-                        otp4.border.color = "green"
+                Rectangle{
+                    id: first_user_details_page
+                    width: parent.width
+                    anchors.top: circle_row.bottom
+                    anchors.topMargin: 20
+                    height: parent.height
+                    color: "#031C28"
+                    Column{
+                        spacing: 20
+                        anchors.top: parent.top
+                        anchors.topMargin: 20
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        Label{
+                            text: "Select Your Industry Type*"
+                            color: "white"
+                        }
+                        ComboBox {
+                            id: control
+                            model: ["Drone Education & Training","Asset Inspection","Security & Surveillance","Public Survey","Oil & Gas Inspection","Industrial Inspection","Agricultural Usage","Goods Delivery"]
+                            width: 200
+                            currentIndex: -1
+                            displayText: currentIndex === -1 ? "Select Industry Type" : currentText
+                            delegate: ItemDelegate {
+                                width: control.width
+                                contentItem: Text {
+                                    text: control.textRole
+                                          ? (Array.isArray(control.model) ? modelData[control.textRole] : model[control.textRole])
+                                          : modelData
+                                    color: "black"
+                                    font: control.font
+                                    elide: Text.ElideRight
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                                highlighted: control.highlightedIndex === index
+                            }
+                            indicator: Canvas {
+                                id: canvas
+                                x: control.width - width - control.rightPadding
+                                y: control.topPadding + (control.availableHeight - height) / 2
+                                width: 12
+                                height: 8
+                                contextType: "2d"
+                                Connections {
+                                    target: control
+                                    function onPressedChanged() { canvas.requestPaint(); }
+                                }
+                                onPaint: {
+                                    context.reset();
+                                    context.moveTo(0, 0);
+                                    context.lineTo(width, 0);
+                                    context.lineTo(width / 2, height);
+                                    context.closePath();
+                                    context.fillStyle = "white"
+                                    context.fill();
+                                }
+                            }
+                            contentItem: Text {
+                                id: combobox_text
+                                leftPadding: 30
+                                rightPadding: control.indicator.width + control.spacing
+                                text: control.displayText
+                                font: control.font
+                                color: "white"
+                                verticalAlignment: Text.AlignVCenter
+                                elide: Text.ElideRight
+                                Image{
+                                    id: organization_image
+                                    width: 25
+                                    height: 25
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    source: "/res/organization.png"//"qrc:/../../../../Downloads/organization.png"
+                                }
+                            }
+                            background: Rectangle {
+                                implicitWidth: 120
+                                implicitHeight: 40
+                                color: "#031C28"
+                                border.color: "#00FFFF"
+                                border.width: control.visualFocus ? 2 : 1
+                                radius: 2
+                            }
+                            popup: Popup {
+                                y: control.height - 1
+                                width: control.width
+                                implicitHeight: contentItem.implicitHeight
+                                padding: 1
+                                contentItem: ListView {
+                                    clip: true
+                                    implicitHeight: contentHeight
+                                    model: control.popup.visible ? control.delegateModel : null
+                                    currentIndex: control.highlightedIndex
+
+                                    ScrollIndicator.vertical: ScrollIndicator { }
+                                }
+                                background: Rectangle {
+                                    border.color: "#00FFFF"
+                                    radius: 2
+                                }
+                            }
+
+                        }
+                        Label{
+                            text: "Select Your Role*"
+                            color: "white"
+                        }
+                        ComboBox {
+                            id: control_role
+                            model: ["OEM","PILOT","OPERTAOR"]
+                            width: 200
+                            currentIndex: -1
+                            displayText: currentIndex === -1 ? "Select Role" : currentText
+                            delegate: ItemDelegate {
+                                width: control_role.width
+                                contentItem: Text {
+                                    text: control_role.textRole
+                                          ? (Array.isArray(control_role.model) ? modelData[control_role.textRole] : model[control_role.textRole])
+                                          : modelData
+                                    color: "black"
+                                    font: control_role.font
+                                    elide: Text.ElideRight
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                                highlighted: control_role.highlightedIndex === index
+                            }
+                            indicator: Canvas {
+                                id: canvas_role
+                                x: control_role.width - width - control_role.rightPadding
+                                y: control_role.topPadding + (control_role.availableHeight - height) / 2
+                                width: 12
+                                height: 8
+                                contextType: "2d"
+                                Connections {
+                                    target: control_role
+                                    function onPressedChanged() { canvas_role.requestPaint(); }
+                                }
+                                onPaint: {
+                                    context.reset();
+                                    context.moveTo(0, 0);
+                                    context.lineTo(width, 0);
+                                    context.lineTo(width / 2, height);
+                                    context.closePath();
+                                    context.fillStyle = "white"
+                                    context.fill();
+                                }
+                            }
+                            contentItem: Text {
+                                id: combobox_role_text
+                                leftPadding: 30
+                                rightPadding: control_role.indicator.width + control_role.spacing
+                                text: control_role.displayText
+                                font: control_role.font
+                                color: "white"
+                                verticalAlignment: Text.AlignVCenter
+                                elide: Text.ElideRight
+                                Image{
+                                    id: role_image
+                                    width: 25
+                                    height: 25
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    source: "/res/role.png"//"qrc:/../../../../Downloads/organization.png"
+                                }
+                            }
+                            background: Rectangle {
+                                implicitWidth: 120
+                                implicitHeight: 40
+                                color: "#031C28"
+                                border.color: "#00FFFF"
+                                border.width: control_role.visualFocus ? 2 : 1
+                                radius: 2
+                            }
+                            popup: Popup {
+                                y: control_role.height - 1
+                                width: control_role.width
+                                implicitHeight: contentItem.implicitHeight
+                                padding: 1
+                                contentItem: ListView {
+                                    clip: true
+                                    implicitHeight: contentHeight
+                                    model: control_role.popup.visible ? control_role.delegateModel : null
+                                    currentIndex: control_role.highlightedIndex
+
+                                    ScrollIndicator.vertical: ScrollIndicator { }
+                                }
+                                background: Rectangle {
+                                    border.color: "#00FFFF"
+                                    radius: 2
+                                }
+                            }
+                        }
+                        Button {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            Text{
+                                text: "Next Step ->"
+                                font.pixelSize: 15
+                                anchors.centerIn: parent
+                                color: "white"
+                            }
+                            background: Rectangle {
+                                id: next_step_submit_button
+                                implicitWidth: 200
+                                implicitHeight: 40
+                                color: "#F25822"
+                                radius: 4
+                            }
+                            onPressed: {
+                                next_step_submit_button.color = "#05324D"
+                            }
+                            onReleased: {
+                                next_step_submit_button.color = "#F25822"
+                            }
+                            onClicked: {
+                                if(combobox_text.text === "Select Industry Type" || control.currentIndex === -1){
+                                    selectIndustryDialog.open()
+                                }
+                                else if(combobox_role_text.text == "Select Role" || control_role.currentIndex == -1){
+                                    selectRoleDialog.open()
+                                }
+
+                                else{
+                                    back_to_login_logo.visible = false
+                                    first_user_details_page.visible = false
+                                    second_user_details_page.visible = true
+                                    new_user_image_rect.source = "/res/user_details.png"
+                                    first_circle_text.text = "/"
+                                    first_circle.color = "green"
+                                    second_circle.color = "#F25822"
+                                    //control.currentIndex = -1
+                                }
+                            }
+                        }
                     }
-                    background: Rectangle
-                    {
-                        id: otp4
-                        anchors.fill: parent
+                }
+                Rectangle{
+                    id: second_user_details_page
+                    visible: false
+                    width: parent.width
+                    anchors.top: circle_row.bottom
+                    anchors.topMargin: 20
+                    height: parent.height
+                    color: "#031C28"
+                    Label {
+                        text: "Upload Your Image*"
+                        //anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.left: user_image.right
+                        anchors.leftMargin: 10
+                        anchors.top: parent.top
+                        anchors.topMargin: 25
+                        color: "white"
+                    }
+                    Rectangle{
+                        id: user_image
+                        width: 75
+                        height: 75
+                        radius: width / 2
+                        color: "white"
+                        clip: true
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        Image{
+                            width: 25
+                            height: 25
+                            anchors.left: user_image.left
+                            anchors.leftMargin: user_image.radius + 20
+                            anchors.verticalCenter: parent.verticalCenter
+                            source: "/res/user_photo.png"//"qrc:/../../../../Downloads/user_photo.png"
+                        }
+                        Image{
+                            id:user_profile_image
+                            anchors.fill: user_image
+                            width: 75
+                            height: 75
+                            source: image_file_dialog.fileUrl
+                            fillMode: Image.PreserveAspectCrop
+                            layer.enabled: true
+                            layer.effect: OpacityMask {
+                                maskSource: user_image
+                            }
+                        }
+                        MouseArea{
+                            anchors.fill: parent
+                            onClicked: {
+                                image_file_dialog.open()
+                            }
+                        }
+                    }
+
+                    Rectangle{
+                        id: scrollview
+                        width: parent.width
+                        height: parent.height / 2
+                        anchors.top: user_image.bottom
+                        anchors.topMargin: 2
+                        border.width: 1
+                        border.color: "#05324D"
                         color: "#031C28"
-                        border.color: "#05324D"
-                        border.width: 1.5
+                        ScrollView {
+                            anchors.fill: parent
+                            clip: true
+                            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+                                Column{
+                                    id: column
+                                    spacing: 30
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 50
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    Column{
+                                        spacing: 10
+                                        Label{
+                                            text: "Full Name*"
+                                            color: "white"
+                                        }
+                                        TextField{
+                                            id: user_name_text
+                                            width: 300
+                                            height: 35
+                                            text: ""
+                                            color: "white"
+                                            placeholderText: qsTr("Your Name")
+                                            leftPadding: 50
+                                            onTextChanged: {
+                                                user_name.border.color = "#C0C0C0"
+                                            }
+                                            background: Rectangle
+                                            {
+                                                id: user_name
+                                                anchors.fill: parent
+                                                color: "#031C28"
+                                                border.color: "#05324D"
+                                                border.width: 1.5
+                                            }
+                                            Image {
+                                                width: 23
+                                                height: 23
+                                                fillMode: Image.PreserveAspectFit
+                                                source: "/res/user_image.png"//"qrc:/../../../../Downloads/user_image.png"
+                                                anchors.left: parent.left
+                                                anchors.leftMargin: 12
+                                                anchors.verticalCenter: parent.verticalCenter
+                                            }
+                                        }
+                                    }
+                                    Column{
+                                        spacing: 10
+                                        Label{
+                                            text: "Email Address*"
+                                            color: "white"
+                                        }
+                                        TextField{
+                                            id: user_mail_text
+                                            width: 300
+                                            height: 35
+                                            text: ""
+                                            color: "white"
+                                            placeholderText: qsTr("example@gmail.com")
+                                            inputMethodHints: Qt.ImhEmailCharactersOnly
+                                            //validator: RegExpValidator{regExp:/[A-Z0-9a-z._-]{1,}@(\\w+)(\\.(\\w+))(\\.(\\w+))?(\\.(\\w+))?$"*/}
+                                            leftPadding: 50
+                                            onTextChanged: {
+                                                user_mail.border.color = "#C0C0C0"
+                                            }
+                                            background: Rectangle
+                                            {
+                                                id: user_mail
+                                                anchors.fill: parent
+                                                color: "#031C28"
+                                                border.color: "#05324D"
+                                                border.width: 1.5
+                                            }
+                                            Image {
+                                                width: 25
+                                                height: 25
+                                                fillMode: Image.PreserveAspectFit
+                                                source: "/res/mailLogo.png"//"qrc:/../../../../Downloads/mailLogo.png"
+                                                anchors.left: parent.left
+                                                anchors.leftMargin: 12
+                                                anchors.verticalCenter: parent.verticalCenter
+                                            }
+                                        }
+                                    }
+                                    Column{
+                                        spacing: 10
+                                        Label{
+                                            text: "Mobile Number*"
+                                            color: "white"
+                                        }
+                                        TextField{
+                                            id: user_number_text
+                                            width: 300
+                                            height: 35
+                                            text: ""
+                                            color: "white"
+                                            maximumLength: 10
+                                            placeholderText: qsTr("Your Mobile Number")
+                                            leftPadding: 70
+                                            validator: RegExpValidator{regExp: /[0-9,/]*/}
+                                            onTextChanged: {
+                                                user_number.border.color = "#C0C0C0"
+                                            }
+                                            background: Rectangle
+                                            {
+                                                id: user_number
+                                                anchors.fill: parent
+                                                color: "#031C28"
+                                                border.color: "#05324D"
+                                                border.width: 1.5
+                                            }
+                                            Image {
+                                                id:image
+                                                width: 25
+                                                height: 25
+                                                fillMode: Image.PreserveAspectFit
+                                                source: "/res/user_phone.png"//"qrc:/../../../../Downloads/user_phone.png"
+                                                anchors.left: parent.left
+                                                anchors.leftMargin: 12
+                                                anchors.verticalCenter: parent.verticalCenter
+                                            }
+                                            Label {
+                                                anchors.left: image.right
+                                                anchors.leftMargin:3
+                                                anchors.verticalCenter: parent.verticalCenter
+                                                text: "+91"
+                                                color: "white"
+                                            }
+                                        }
+                                    }
+
+
+                                    Column{
+                                        spacing: 10
+                                        Label{
+                                            text: "Address Line*"
+                                            color: "white"
+                                        }
+                                        TextField{
+                                            id: user_address_text
+                                            width: 300
+                                            height: 35
+                                            text: ""
+                                            color: "white"
+                                            placeholderText: qsTr("Your Address")
+                                            leftPadding: 50
+                                            onTextChanged: {
+                                                user_address.border.color = "#C0C0C0"
+                                            }
+                                            background: Rectangle
+                                            {
+                                                id: user_address
+                                                anchors.fill: parent
+                                                color: "#031C28"
+                                                border.color: "#05324D"
+                                                border.width: 1.5
+                                            }
+                                            Image {
+                                                width: 30
+                                                height: 30
+                                                fillMode: Image.PreserveAspectFit
+                                                source: "/res/user_location.png"//"qrc:/../../../../Downloads/user_location.png"
+                                                anchors.left: parent.left
+                                                anchors.leftMargin: 12
+                                                anchors.verticalCenter: parent.verticalCenter
+                                            }
+                                        }
+                                    }
+                                    Column{
+                                        spacing: 10
+                                        Label{
+                                            text: "Locality*"
+                                            color: "white"
+                                        }
+                                        TextField{
+                                            id: user_locality_text
+                                            width: 300
+                                            height: 35
+                                            text: ""
+                                            color: "white"
+                                            placeholderText: qsTr("Your Locality")
+                                            leftPadding: 50
+                                            onTextChanged: {
+                                                user_locality.border.color = "#C0C0C0"
+                                            }
+                                            background: Rectangle
+                                            {
+                                                id: user_locality
+                                                anchors.fill: parent
+                                                color: "#031C28"
+                                                border.color: "#05324D"
+                                                border.width: 1.5
+                                            }
+                                            Image {
+                                                width: 25
+                                                height: 25
+                                                fillMode: Image.PreserveAspectFit
+                                                source: "/res/user_locality.png"//"qrc:/../../../../Downloads/user_locality.png"
+                                                anchors.left: parent.left
+                                                anchors.leftMargin: 12
+                                                anchors.verticalCenter: parent.verticalCenter
+                                            }
+                                        }
+                                    }
+                                    Column{
+                                        spacing: 10
+                                        Label{
+                                            text: "Password*"
+                                            color: "white"
+                                        }
+                                        TextField{
+                                            id: user_password_text
+                                            width: 300
+                                            height: 35
+                                            text: ""
+                                            color: "white"
+                                            placeholderText: qsTr("password")
+                                            leftPadding: 50
+                                            rightPadding: 50
+                                            echoMode: TextInput.Password
+                                            onTextChanged: {
+                                                user_password.border.color = "#C0C0C0"
+                                            }
+                                            background: Rectangle
+                                            {
+                                                id: user_password
+                                                anchors.fill: parent
+                                                color: "#031C28"
+                                                border.color: "#05324D"
+                                                border.width: 1.5
+                                            }
+                                            Image {
+                                                width: 23
+                                                height: 23
+                                                fillMode: Image.PreserveAspectFit
+                                                source: "/res/password.png"//"qrc:/../../../../Downloads/password.png"
+                                                anchors.left: parent.left
+                                                anchors.leftMargin: 8
+                                                anchors.verticalCenter: parent.verticalCenter
+                                            }
+                                            Image {
+                                                id: password_hide_image1
+                                                width: 25
+                                                height: 25
+                                                fillMode: Image.PreserveAspectFit
+                                                source: "/res/password_hide.png"//"qrc:/../../../../Downloads/password_hide.png"
+                                                anchors.right: parent.right
+                                                anchors.rightMargin: 12
+                                                anchors.verticalCenter: parent.verticalCenter
+                                                MouseArea{
+                                                    anchors.fill: parent
+                                                    onClicked: {
+                                                        password_hide_image1.visible = false
+                                                        password_show_image1.visible = true
+                                                        user_password_text.echoMode = TextInput.Normal
+                                                    }
+                                                }
+                                            }
+                                            Image {
+                                                id: password_show_image1
+                                                visible: false
+                                                width: 25
+                                                height: 25
+                                                fillMode: Image.PreserveAspectFit
+                                                source: "/res/password_show.png"//"qrc:/../../../../Downloads/password_show.png"
+                                                anchors.right: parent.right
+                                                anchors.rightMargin: 12
+                                                anchors.verticalCenter: parent.verticalCenter
+                                                MouseArea{
+                                                    anchors.fill: parent
+                                                    onClicked: {
+                                                        password_show_image1.visible = false
+                                                        password_hide_image1.visible = true
+                                                        user_password_text.echoMode = TextInput.Password
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                    }
+                    Column{
+                        anchors.top: scrollview.bottom
+                        anchors.topMargin: 20
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        spacing: 10
+                        Button {
+                            Text{
+                                text: "Verify Account ->"
+                                font.pixelSize: 15
+                                anchors.centerIn: parent
+                                color: "white"
+                            }
+                            background: Rectangle {
+                                id: verify_account_button
+                                implicitWidth: 200
+                                implicitHeight: 40
+                                color: "#F25822"
+                                radius: 4
+                            }
+                            onPressed: {
+                                verify_account_button.color = "#05324D"
+                            }
+                            onReleased: {
+                                verify_account_button.color = "#F25822"
+                            }
+                            onClicked: {
+                                if(user_name_text.text == ""
+                                        || user_mail_text.text == ""
+                                        || user_number_text.text == ""
+                                        || user_address_text.text == ""
+                                        || user_locality_text.text == ""
+                                        || user_password_text.text == ""
+                                        /*|| user_image_inprofile.source == ""*/){
+                                    enter_all_fields.open()
+                                }
+                                else{
+                                    if(user_password_text.text.length < 6){
+                                        password_length_error_dialog.open()
+                                    }
+                                    else{
+                                        second_user_details_page.visible = false
+                                        third_user_details_page.visible = true
+                                        new_user_image_rect.source = "/res/otp.png"
+                                        second_circle_text.text = "/"
+                                        second_circle.color = "green"
+                                        third_circle.color = "#F25822"
+                                        password_hide_image1.visible = true
+                                        password_show_image1.visible = false
+                                    }
+                                }
+                            }
+                        }
+                        Label{
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: "PREVIOUS STEP"
+                            font.bold: true
+                            color: "white"
+                            MouseArea{
+                                anchors.fill: parent
+                                onClicked: {
+                                    first_circle_text.text = "1"
+                                    second_circle_text.text = "2"
+                                    first_circle.color = "#F25822"
+                                    second_circle.color = "#031C28"
+                                    second_user_details_page.visible = false
+                                    first_user_details_page.visible = true
+                                    user_name_text.text == ""
+                                    user_mail_text.text == ""
+                                    user_number_text.text == ""
+                                    user_address_text.text == ""
+                                    user_locality_text.text == ""
+                                    user_password_text.text == ""
+                                    control.currentIndex = -1
+                                    control_role.currentIndex = -1
+                                    password_hide_image1.visible = true
+                                    password_show_image1.visible = false
+                                    new_user_image_rect.source = "/res/First Time Signup screen.png"
+                                }
+                            }
+                        }
                     }
                 }
-                TextField{
-                    width: 30
-                    height: 30
-                    text: ""
-                    color: "white"
-                    maximumLength: 1
-                    onTextChanged: {
-                        otp5.border.color = "green"
+                Rectangle{
+                    id: third_user_details_page
+                    visible: false
+                    width: parent.width
+                    anchors.top: circle_row.bottom
+                    anchors.topMargin: 20
+                    height: parent.height
+                    color: "#031C28"
+                    Label{
+                        id: otp_label
+                        anchors.top: parent.top
+                        anchors.topMargin: 20
+                        anchors.left: parent.left
+                        anchors.leftMargin: 20
+                        text: "Please enter the"
+                        color: "white"
+                        Label{
+                            anchors.left: parent.right
+                            anchors.leftMargin: 3
+                            text: "One Time Password"
+                            color: "#00FFFF"
+                        }
                     }
-                    background: Rectangle
-                    {
-                        id: otp5
-                        anchors.fill: parent
-                        color: "#031C28"
-                        border.color: "#05324D"
-                        border.width: 1.5
+                    Row{
+                        id: otp_row
+                        spacing: 20
+                        anchors.top: otp_label.bottom
+                        anchors.topMargin: 10
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        TextField{
+                            width: 30
+                            height: 30
+                            text: ""
+                            color: "white"
+                            maximumLength: 1
+                            onTextChanged: {
+                                otp.border.color = "green"
+                            }
+                            background: Rectangle
+                            {
+                                id: otp
+                                anchors.fill: parent
+                                color: "#031C28"
+                                border.color: "#05324D"
+                                border.width: 1.5
+                            }
+                        }
+                        TextField{
+                            width: 30
+                            height: 30
+                            text: ""
+                            color: "white"
+                            maximumLength: 1
+                            onTextChanged: {
+                                otp1.border.color = "green"
+                            }
+                            background: Rectangle
+                            {
+                                id: otp1
+                                anchors.fill: parent
+                                color: "#031C28"
+                                border.color: "#05324D"
+                                border.width: 1.5
+                            }
+                        }
+                        TextField{
+                            width: 30
+                            height: 30
+                            text: ""
+                            color: "white"
+                            maximumLength: 1
+                            onTextChanged: {
+                                otp2.border.color = "green"
+                            }
+                            background: Rectangle
+                            {
+                                id: otp2
+                                anchors.fill: parent
+                                color: "#031C28"
+                                border.color: "#05324D"
+                                border.width: 1.5
+                            }
+                        }
+                        TextField{
+                            width: 30
+                            height: 30
+                            text: ""
+                            color: "white"
+                            maximumLength: 1
+                            onTextChanged: {
+                                otp3.border.color = "green"
+                            }
+                            background: Rectangle
+                            {
+                                id: otp3
+                                anchors.fill: parent
+                                color: "#031C28"
+                                border.color: "#05324D"
+                                border.width: 1.5
+                            }
+                        }
+                        TextField{
+                            width: 30
+                            height: 30
+                            text: ""
+                            color: "white"
+                            maximumLength: 1
+                            onTextChanged: {
+                                otp4.border.color = "green"
+                            }
+                            background: Rectangle
+                            {
+                                id: otp4
+                                anchors.fill: parent
+                                color: "#031C28"
+                                border.color: "#05324D"
+                                border.width: 1.5
+                            }
+                        }
+                        TextField{
+                            width: 30
+                            height: 30
+                            text: ""
+                            color: "white"
+                            maximumLength: 1
+                            onTextChanged: {
+                                otp5.border.color = "green"
+                            }
+                            background: Rectangle
+                            {
+                                id: otp5
+                                anchors.fill: parent
+                                color: "#031C28"
+                                border.color: "#05324D"
+                                border.width: 1.5
+                            }
+                        }
+                    }
+                    Row{
+                        id: otp_error
+                        spacing: 20
+                        anchors.top: otp_row.bottom
+                        anchors.topMargin: 20
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        Label{
+                            text: "Didn't get the OTP"
+                            color: "white"
+                        }
+                        Label{
+                            text: "Reset Code"
+                            color: "#F25822"
+                        }
+                    }
+                    Column{
+                        id: otp_column
+                        spacing: 100
+                        anchors.top: otp_error.bottom
+                        anchors.topMargin: 40
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        Label{
+                            text: "OTP has been sent to your Mobile"
+                            color: "white"
+                            Label{
+                                anchors.top: parent.bottom
+                                anchors.topMargin: 10
+                                text: "Registered with Go Drona"
+                                color: "white"
+                            }
+                        }
+                        Button {
+                            Text{
+                                text: "Verify Now ->"
+                                font.pixelSize: 15
+                                anchors.centerIn: parent
+                                color: "white"
+                            }
+                            background: Rectangle {
+                                id: verify_now_button
+                                implicitWidth: 200
+                                implicitHeight: 40
+                                color: "#F25822"
+                                radius: 4
+                            }
+                            onPressed: {
+                                verify_now_button.color = "#05324D"
+                            }
+                            onReleased: {
+                                verify_now_button.color = "#F25822"
+                            }
+                            onClicked: {
+                                database_access.new_user_registration(combobox_text.text,combobox_role_text.text,user_name_text.text,user_mail_text.text,user_number_text.text,user_address_text.text,user_locality_text.text,user_password_text.text)
+                                user_name_text.text = ''
+                                user_mail_text.text = ''
+                                user_number_text.text = ''
+                                user_address_text.text = ''
+                                user_locality_text.text = ''
+                                user_password_text.text = ''
+                                //user_image.color = "white"
+                                //user_image.source = ""
+                            }
+                        }
+                    }
+                    Label{
+                        anchors.top: otp_column.bottom
+                        anchors.topMargin: 30
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        text: "PREVIOUS STEP"
+                        font.bold: true
+                        color: "white"
+                        MouseArea{
+                            anchors.fill: parent
+                            onClicked: {
+                                second_circle_text.text = "2"
+                                second_circle.color = "#031C28"
+                                third_circle.color = "#031C28"
+                                third_user_details_page.visible = false
+                                second_user_details_page.visible = true
+                                new_user_image_rect.source = "/res/user_details.png"
+                            }
+                        }
                     }
                 }
-            }
-            Row{
-                id: otp_error
-                spacing: 20
-                anchors.top: otp_row.bottom
-                anchors.topMargin: 20
-                anchors.horizontalCenter: parent.horizontalCenter
-                Label{
-                    text: "Didn't get the OTP"
-                    color: "white"
-                }
-                Label{
-                    text: "Reset Code"
-                    color: "#F25822"
-                }
-            }
-            Column{
-                id: otp_column
-                spacing: 100
-                anchors.top: otp_error.bottom
-                anchors.topMargin: 40
-                anchors.horizontalCenter: parent.horizontalCenter
-                Label{
-                    text: "OTP has been sent to your Mobile"
-                    color: "white"
+                Image{
+                    id: back_to_login_logo
+                    anchors.bottom: parent.bottom
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.bottomMargin: 40
+                    width: 75
+                    height: 75
+                    source: "/res/backtologin-removebg-preview.png"//"qrc:/../../../../Downloads/backtologin-removebg-preview.png"
                     Label{
                         anchors.top: parent.bottom
-                        anchors.topMargin: 10
-                        text: "Registered with Go Drona"
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        text: "Already have an account ?"
                         color: "white"
                     }
-                }
-                Button {
-                    Text{
-                        text: "Verify Now ->"
-                        font.pixelSize: 15
-                        anchors.centerIn: parent
-                        color: "white"
+                    MouseArea{
+                        anchors.fill: parent
+                        onClicked: {
+                            new_user_first_page.visible = false
+                            login_page_rectangle.visible = true
+                        }
                     }
-                    background: Rectangle {
-                        id: verify_now_button
-                        implicitWidth: 200
-                        implicitHeight: 40
-                        color: "#F25822"
-                        radius: 4
-                    }
-                    onPressed: {
-                        verify_now_button.color = "#05324D"
-                    }
-                    onReleased: {
-                        verify_now_button.color = "#F25822"
-                    }
-                    onClicked: {
-                        database.newUserData(combobox_text.text,user_name_text.text,user_mail_text.text,user_number_text.text,user_address_text.text,user_locality_text.text,user_password_text.text)
-                        new_user_first_page.visible = false
-                        third_user_details_page.visible = false
-                        second_user_details_page.visible = false
-                        first_circle.color = "#F25822"
-                        second_circle.color = "#031C28"
-                        third_circle.color = "#031C28"
-                        first_circle_text.text = "1"
-                        second_circle_text.text = "2"
-                        login_page_rectangle.visible = true
-                        user_name_text.text = ''
-                        user_mail_text.text = ''
-                        user_number_text.text = ''
-                        user_address_text.text = ''
-                        user_locality_text.text = ''
-                        user_password_text.text = ''
-                        user_image.color = "white"
-                    }
-                }
-            }
-            Label{
-                anchors.top: otp_column.bottom
-                anchors.topMargin: 30
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: "PREVIOUS STEP"
-                font.bold: true
-                color: "white"
-                MouseArea{
-                    anchors.fill: parent
-                    onClicked: {
-                        second_circle_text.text = "2"
-                        second_circle.color = "#031C28"
-                        third_circle.color = "#031C28"
-                        third_user_details_page.visible = false
-                        second_user_details_page.visible = true
-                    }
-                }
-            }
-        }
-        Image{
-            id: back_to_login_logo
-            anchors.bottom: parent.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottomMargin: 40
-            width: 75
-            height: 75
-            source: "/res/backtologin-removebg-preview.png"//"qrc:/../../../../Downloads/backtologin-removebg-preview.png"
-            Label{
-                anchors.top: parent.bottom
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: "Already have an account ?"
-                color: "white"
-            }
-            MouseArea{
-                anchors.fill: parent
-                onClicked: {
-                    new_user_first_page.visible = false
-                    login_page_rectangle.visible = true
                 }
             }
         }
     }
+
     FileDialog {
         id: image_file_dialog
         title: "Please choose an image file"
@@ -1794,231 +2143,128 @@ ApplicationWindow {
     }
     MessageDialog {
         id: no_recordDialog
-        width: 200
-        height: 100
         title: "New User"
         text: "We think your are a new user"
         informativeText: "Please Sign up/ Create a New Account."
         icon: StandardIcon.Warning
-        /*Label {
-            text: "We think your are a new user"
-            Label{
-                anchors.top: parent.bottom
-                anchors.topMargin: 3
-                text: "So kindly create a new account"
-            }
-        }*/
         standardButtons: Dialog.Ok
         onButtonClicked: {
             login_page_email_textfield.text = ""
             login_page_password_textfield.text = ""
         }
     }
-    Dialog {
+    MessageDialog {
         id: incorrect_password_Dialog
-        width: 260
-        height: 160
-        //icon: standardIcon.Warning
         title: "Password is wrong"
-        Label {
             text: "Entered password is incorrect"
-            Label{
-                anchors.top: parent.bottom
-                anchors.topMargin: 3
-                text: "Please enter the correct password."
-                Label{
-                    anchors.top: parent.bottom
-                    anchors.topMargin: 3
-                    text: "If you have forgot the password,"
-                    Label{
-                        anchors.top: parent.bottom
-                        anchors.topMargin: 3
-                        text: "click the Forgot Password option."
-                    }
-                }
-            }
-        }
         standardButtons: Dialog.Ok
     }
-    /*Label{
-        id:namerecord_Dialog
-        anchors.left: parent.left
-        anchors.leftMargin: 50
-        anchors.bottom: user_name.bottom
-        anchors.bottomMargin: 5
-        visible: false
-        text: "*Entered Name is Already taken"
-        color: "red"
-        background: Rectangle{
-            width: 100
-            height: 7
-            color: "#031C28"
-        }
-    }*/
 
-    Dialog {
-        id: namerecord_Dialog
-        width: 200
-        height: 100
-        title: "Already Registered Name"
-        Label {
-            text: "Entered Name is Already Registered."
-            //            Label{
-            //                anchors.top: parent.bottom
-            //                anchors.topMargin: 3
-            //                text: "Please provide Alternate name"
-            //                Label{
-            //                    anchors.top: parent.bottom
-            //                    anchors.topMargin: 3
-            //                    text: "Create a New Account."
-            //                }
-            //            }
-
-        }
+    MessageDialog{
+        id: selectIndustryDialog
+        title: "Industry Type"
+        text: "Please Select the Industry Type."
         standardButtons: Dialog.Ok
-        onButtonClicked: {
-            user_name_text.text = ""
-        }
+    }
+    MessageDialog {
+        id: selectRoleDialog
+        title: "Role Type"
+        text: "Please Select the Role."
     }
 
-    Dialog {
+//    MessageDialog {
+//        id: profileImageDialog
+//        title: "Profile Image"
+//        text: "Please Upload Your Profile Image."
+//        standardButtons: Dialog.Ok
+//    }
+
+    MessageDialog {
+        id: userRegisteredDialog
+        title:"Registration Successfull"
+        text: "Registered Successfully"
+        standardButtons: Dialog.Ok
+    }
+
+    MessageDialog {
         id: signout_Dialog
-        width: 200
-        height: 100
         title: "Sign Out"
-        Label {
             text: "Are You Sure you want to Sign Out?."
-        }
         standardButtons: Dialog.Yes | Dialog.No
         onYes: {
-            database.logout()
-            //            landing_page_rectangle.visible = false
-            //            login_page_rectangle.visible = true
-            //            login_page_email_textfield.text = ""
-            //            login_page_password_textfield.text = ""
-
+            //rpadatabase.logout()
+            landing_page_rectangle.visible = false
+            login_page_rectangle.visible = true
+            login_page_email_textfield.text = ""
+            login_page_password_textfield.text = ""
+            password_hide_image.visible = true
+            password_show_image.visible = false
         }
         onNo: {
             landing_page_rectangle.visible = true
         }
     }
-    Dialog {
+    MessageDialog {
         id: mailrecord_Dialog
-        width: 200
-        height: 100
         title: "Already Registered Mail"
-        Label {
             text: "Entered Mail is Already Registered."
-        }
         standardButtons: Dialog.Ok
         onAccepted: {
             //login_page_rectangle.visible = true
             user_mail_text.text = ""
         }
     }
-    Dialog {
-        id: number_record_Dialog
-        width: 200
-        height: 100
-        title: "Already Registered Number"
-        Label {
-            text: "Entered Number is Already Registered."
-        }
-        standardButtons: Dialog.Ok
-        onAccepted: {
-            //login_page_rectangle.visible = true
-            user_number_text.text = ""
-        }
-    }
-    Dialog {
+//    MessageDialog {
+//        id: number_record_Dialog
+//        title: "Already Registered Number"
+//            text: "Entered Number is Already Registered."
+//        standardButtons: Dialog.Ok
+//        onAccepted: {
+//            user_number_text.text = ""
+//        }
+//    }
+    MessageDialog {
         id: uinrecord_Dialog
-        width: 200
-        height: 100
         title: "Already used UIN"
-        Label {
             text: "Entered UIN is Already Used."
-        }
         standardButtons: Dialog.Ok
 
     }
-    //    Dialog {
-    //        id: all_record_Dialog
-    //        width: 200
-    //        height: 100
-    //        title: "Already Registered Name,Mail,Number"
-    //        Label {
-    //            text: "Given Name,Mail,Number is Already Registered."
-    //            Label{
-    //                anchors.top: parent.bottom
-    //                anchors.topMargin: 3
-    //                text: "Please provide Alternate Name,Mail,Number."
-    //                Label{
-    //                    anchors.top: parent.bottom
-    //                    anchors.topMargin: 3
-    //                    text: "Create a New Account."
-    //                }
-    //            }
-
-    //        }
-    //        standardButtons: Dialog.Ok
-    //        onAccepted: {
-    //            login_page_rectangle.visible = true
-    //        }
-    //    }
-    Dialog {
+    MessageDialog {
         id: mailrecord_not_found
-        width: 200
-        height: 50
         title: "Wrong Mail ID"
-        Label {
             text: "Please provide your Valid Mail Id"
-        }
     }
 
-    Dialog {
+    MessageDialog {
         id: connection_not_established_dialog
-        width: 200
-        height: 50
         title: "Connection Lost"
-        Label {
             text: "Connection not established, Please try after Sometime."
-        }
     }
-    Dialog {
+    MessageDialog {
         id: connectionLostdialog
-        width: 200
-        height: 50
         title: "Connection Lost"
-        Label {
             text: "Connection Lost, Please check your Internet Connection."
-        }
     }
-    Dialog {
+    MessageDialog {
         id: enter_all_fields
-        width: 200
-        height: 50
         title: "Somefield not filled"
-        Label {
             text: "Please fill all the details"
-        }
     }
-    Dialog {
+    MessageDialog {
         id: password_mismatch
-        width: 200
-        height: 50
         title: "Mismatch"
-        Label {
             text: "Both passwords do not match"
-        }
     }
-    Dialog {
-        id: password_updated
-        width: 200
-        height: 50
-        title: "Updated"
-        Label {
-            text: "Password changed and Updated."
+    MessageDialog {
+            id: password_length_error_dialog
+            title: "Password Length Error"
+            text: "Password Length must be greater than 6"
         }
+    MessageDialog {
+        id: password_updated
+        title: "Updated"
+            text: "Password Reset Link sent to the respective Mail."
     }
 
     Component.onCompleted: {
@@ -2031,7 +2277,7 @@ ApplicationWindow {
         }
 
         // Start the sequence of first run prompt(s)
-        firstRunPromptManager.nextPrompt()
+        //firstRunPromptManager.nextPrompt()
     }
 
     QtObject {
@@ -2755,12 +3001,12 @@ ApplicationWindow {
                 Layout.maximumWidth: mainWindow.width/5 + 100
                 Layout.minimumWidth: mainWindow.width/5 - 100
                 Layout.preferredHeight: mainWindow.height
-                border.width: 1
-                border.color: "#05324D"
+//                border.width: 1
+//                border.color: "#05324D"
 
                 ColumnLayout {
                     id: menu_column
-                    //anchors.fill: parent
+                    anchors.fill: parent
                     spacing: 12
 
                     Rectangle{
@@ -2772,8 +3018,8 @@ ApplicationWindow {
                         Text {
                             id: brand_text
                             anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: brand_rect.left
-                            anchors.leftMargin:20
+                            anchors.right: brand_rect.right
+                            anchors.rightMargin: 40
                             text: qsTr("Go Drona")
                             font.pointSize: 13
                             font.bold: true
@@ -2783,8 +3029,8 @@ ApplicationWindow {
                             id: brand_logo
                             width: 90
                             height: 90
-                            anchors.right: brand_rect.right
-                            anchors.rightMargin: 20
+                            anchors.left: brand_rect.left
+                            anchors.leftMargin:40
                             anchors.verticalCenter: parent.verticalCenter
                             color: "#031C28"
                             Image {
@@ -2813,9 +3059,10 @@ ApplicationWindow {
 
                         Text {
                             id:landing_page_text
-                            text: "LANDING PAGE"
+                            text: "HOME"
                             color: "white"
-                            font.pointSize: 9
+                            font.pointSize: 13
+                            font.bold: true
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: home_image.left
                             anchors.leftMargin: 30
@@ -2877,14 +3124,11 @@ ApplicationWindow {
                                 dashboard_button.color ="#F25822" || "#031C28"
                                 managerpa_button.color = "#031C28"
                                 flight_log_button.color = "#031C28"
+                                firmware_button.color = "#031C28"
                                 manage_rpa_rectangle.visible = false
                                 flight_log_rectangle.visible = false
                                 rpa_register_page.visible = false
-                                check_box.checked = false
-                                check_box1.checked = false
-                                check_box2.checked = false
-                                check_box3.checked = false
-                                check_box4.checked = false
+                                firmware_log_rectangle.visible = false
                             }
                         }
                         /*states: State {
@@ -2923,25 +3167,23 @@ ApplicationWindow {
                         }
 
                         MouseArea{
-                            //                            hoverEnabled: true
-                            //                            onEntered: parent.color = '#F25822'
-                            //                            onExited: parent.color = '#031C28'
                             anchors.fill: managerpa_button
                             onClicked: {
+                                rpadatabase.manageRpaClicked(database_access.mail)
                                 manage_rpa_rectangle.visible = true
                                 dashboard_rectangle.visible = false
                                 flight_log_rectangle.visible = false
+                                firmware_log_rectangle.visible = false
                                 logout_button.color = "#031C28"
                                 dashboard_button.color = "#031C28"
                                 flight_log_button.color = "#031C28"
+                                firmware_button.color = "#031C28"
                                 managerpa_button.color = "#F25822"
                                 manage_rpa_header1.visible = true
-                                check_box.checked = false
-                                check_box1.checked = false
-                                check_box2.checked = false
-                                check_box3.checked = false
-                                check_box4.checked = false
                                 showPanel(this,"SetupParameterEditor.qml")
+                                console.log("table_rect width : "+table_rect.width)
+                                console.log("checkbox width : "+table_rect.width/8)
+                                console.log("rest of width : "+table_rect.width/4)
                             }
                         }
                     }
@@ -3126,19 +3368,62 @@ ApplicationWindow {
                                 manage_rpa_rectangle.visible = false
                                 dashboard_rectangle.visible = false
                                 rpa_register_page.visible = false
-                                logout_button.color = "#031C28" 
+                                firmware_log_rectangle.visible = false
+                                logout_button.color = "#031C28"
                                 managerpa_button.color = "#031C28"
                                 dashboard_button.color = "#031C28"
-                                aws.read_text_file(database.awsname,QGroundControl.settingsManager.appSettings.telemetrySavePath)
-                                check_box.checked = false
-                                check_box1.checked = false
-                                check_box2.checked = false
-                                check_box3.checked = false
-                                check_box4.checked = false
+                                firmware_button.color = "#031C28"
                                 console.log(screen.width)
                                 console.log(screen.width/5)
                                 console.log(screen.width/1.8)
                                 console.log((screen.width/1.8 - screen.width/5))
+                            }
+                        }
+                    }
+
+                    Rectangle{
+                        id: firmware_button
+                        width: menu_rect_1.width -15
+                        height: 25
+                        color: "#031C28"
+                        radius: 4
+                        Layout.alignment: Qt.AlignLeft
+                        Layout.leftMargin: 10
+
+                        Image {
+                            id: firmware_log_image
+                            source: "/res/firmware.png"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: firmware_button.left
+                            anchors.leftMargin: 20
+                        }
+                        Text{
+                            text: "FIRMWARE LOG"
+                            color: "#FFFFFF"
+                            font.pointSize: 9
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: firmware_log_image.left
+                            anchors.leftMargin: 30
+                        }
+
+                        MouseArea{
+                            //                            hoverEnabled: true
+                            //                            onEntered: parent.color = '#F25822'
+                            //                            onExited: parent.color = '#031C28'
+                            anchors.fill: firmware_button
+                            onClicked: {
+                                firmware_button.color = "#F25822"
+                                firmware_log_rectangle.visible = true
+                                flight_log_rectangle.visible = false
+                                manage_rpa_rectangle.visible = false
+                                dashboard_rectangle.visible = false
+                                rpa_register_page.visible = false
+                                logout_button.color = "#031C28"
+                                managerpa_button.color = "#031C28"
+                                dashboard_button.color = "#031C28"
+                                flight_log_button.color = "#031C28"
+                                flight_log_rectangle.visible = false
+                                rpadatabase.firmwareupgrade_data()
                             }
                         }
                     }
@@ -3259,12 +3544,7 @@ ApplicationWindow {
                                 dashboard_button.color ="#031C28"
                                 managerpa_button.color = "#031C28"
                                 flight_log_button.color = "#031C28"
-                                check_box.checked = false
-                                check_box1.checked = false
-                                check_box2.checked = false
-                                check_box3.checked = false
-                                check_box4.checked = false
-                                console.log(database.number)
+                                firmware_button.color = "#031C28"
                             }
                         }
                     }
@@ -3277,9 +3557,9 @@ ApplicationWindow {
 
             Rectangle {
                 id: second_rectangle
-                Layout.preferredWidth: mainWindow.width/1.8
-                Layout.maximumWidth: mainWindow.width/1.8 + 100
-                Layout.minimumWidth: mainWindow.width/1.8 - 100
+                Layout.preferredWidth: mainWindow.width/1.65
+                Layout.maximumWidth: mainWindow.width/1.65 + 100
+                Layout.minimumWidth: mainWindow.width/1.65 - 100
                 Layout.preferredHeight: mainWindow.height
                 color: "#031C28"
                 border.color: "#05324D"
@@ -3361,7 +3641,7 @@ ApplicationWindow {
                             }
                             Text{
                                 id: username
-                                text: qsTr(database.name)//"Chris Hemsworth"
+                                text: database_access.name//"Chris Hemsworth"
                                 color : "#F25822"
                                 font.pointSize: 10
                                 font.bold: true
@@ -3370,10 +3650,18 @@ ApplicationWindow {
                                 anchors.topMargin: 20
                             }
                             Timer {
-                                interval: 100; running: true; repeat: true
+                                id: profile_timer
+                                interval: 50
                                 onTriggered:{
-                                    username.text = database.name
-                                    user_name_inprofile.text = database.name
+                                    username.text = database_access.name
+                                    user_role.text = database_access.role
+                                    userprofile_name.text = database_access.name
+                                    mail_address.text = database_access.mail
+                                    mobile_number.text = database_access.number
+                                    address_field.text = database_access.address
+                                    locality_field.text = database_access.locality
+                                    user_name_inprofile.text = database_access.name
+                                    profile_timer.stop()
                                 }
                             }
 
@@ -3525,6 +3813,11 @@ ApplicationWindow {
                                             anchors.horizontalCenter: parent.horizontalCenter
                                             color: "white"
                                         }
+                                        MouseArea{
+                                            anchors.fill: parent
+                                            onClicked: {
+                                            }
+                                        }
 
                                     }
                                     Rectangle {
@@ -3589,8 +3882,6 @@ ApplicationWindow {
                 Rectangle {
                     id: manage_rpa_rectangle
                     width: second_rectangle.width
-                    //width: dashboard_rectangle.width
-                    //height: dashboard_rectangle.height
                     color: "#031C28"
                     visible: false
                     border.color: "#05324D"
@@ -3700,6 +3991,7 @@ ApplicationWindow {
 
 
                             Button {
+                                id: register_rpa_button
                                 anchors.right: manage_rpa_header1.right
                                 anchors.rightMargin: 30
                                 anchors.top: parent.top
@@ -3710,7 +4002,7 @@ ApplicationWindow {
                                     color:"white"
                                 }
                                 background: Rectangle {
-                                    id:register_rpa_button
+                                    id:register_rpa_button_rect
                                     implicitHeight: 35
                                     implicitWidth: 130
                                     border.width: 1
@@ -3719,10 +4011,10 @@ ApplicationWindow {
                                     color: "#F25822"
                                 }
                                 onPressed: {
-                                    register_rpa_button.color = "#05324D"
+                                    register_rpa_button_rect.color = "#05324D"
                                 }
                                 onReleased: {
-                                    register_rpa_button.color = "#F25822"
+                                    register_rpa_button_rect.color = "#F25822"
                                 }
                                 onClicked: {
                                     updateButton = 1
@@ -3730,11 +4022,6 @@ ApplicationWindow {
                                     manage_rpa_header1.visible = false
                                     rpa_register_page.visible = true
                                     drone_contents.visible = true
-                                    check_box.checked = false
-                                    check_box1.checked = false
-                                    check_box2.checked = false
-                                    check_box3.checked = false
-                                    check_box4.checked = false
                                     drone_type_list.currentIndex = -1
                                     drone_model_list.currentIndex = -1
                                     drone_name_text.text = ""
@@ -3743,1082 +4030,27 @@ ApplicationWindow {
                                 }
 
                             }
+                            Timer {
+                                interval: 50; running: true; repeat: true
+                                onTriggered:{
 
-                            //                            Item {
-                            //                                id: table_item
-                            //                                anchors.left: manage_rpa_header1.left
-                            //                                anchors.leftMargin: 20
-                            //                                anchors.top: list_of_rpa_text.bottom
-                            //                                anchors.topMargin: 30
-                            //                                width: manage_rpa_header1.width
-                            //                                height: manage_rpa_header1.height + 400
-                            //                                visible: true
-
-                            /*TableView {
-                                    id: rpa_list_table
-                                    topMargin: 35
-                                    columnWidthProvider: function (modelData) { return 177; }
-                                    rowHeightProvider: function (modelData) { return 50; }
-                                    width: table_item.width - 50
-                                    height: 450
-                                    boundsBehavior: Flickable.StopAtBounds
-                                    clip: true
-                                    ScrollBar.vertical: ScrollBar {
-                                        id: tableVerticalBar;
-                                        policy:ScrollBar.AsNeeded
-                                    }
-
-                                    ScrollBar.horizontal: ScrollBar {
-                                        policy: ScrollBar.AsNeeded
-                                    }
-
-                                    MouseArea {
-                                        onClicked: {
-                                            selectedRowIndex = rpa_list_table.currentRow
-                                            console.log(selectedRowIndex)
-                                        }
-                                    }
-
-                                    property int selectedRowIndex
-
-                                    model: rpadatabase
-
-                                    // Table Header
-                                    Row {
-                                        id: columnsHeader
-                                        y: rpa_list_table.contentY
-                                        z: 2
-
-                                        Repeater {
-                                            id: repeater_model
-                                            model: rpa_list_table.columns > 0 ? rpa_list_table.columns : 1
-                                            Rectangle {
-                                                width: rpa_list_table.columnWidthProvider(modelData)
-                                                height: 40
-                                                color: "#031C28"
-                                                border.width: 2
-                                                border.color: "#05324D"
-
-                                                Text {
-                                                    anchors.centerIn: parent
-                                                    text: rpadatabase.headerData(modelData, Qt.Horizontal)
-                                                    color: "White"
-                                                    font.pointSize: 11
-                                                }
-                                            }
-
-                                        }
-                                    }
-
-                                    //Table body
-
-                                    delegate: Rectangle {
-                                        id: table_rows
-                                        y: 35
-                                        //property color rowColor: styleData.row === selectedRowIndex ? "green" : "blue"
-                                        color: "#031C28"
-                                        border.width: 2
-                                        border.color: "#05324D"
-
-
-                                        Text{
-                                            text: display // This is set in rpa_database.cpp roleNames()
-                                            anchors.fill: parent
-                                            anchors.margins: 10
-                                            color: 'white'
-                                            font.pixelSize: 15
-                                            verticalAlignment: Text.AlignVCenter
-                                            wrapMode: Text.WordWrap
-                                        }
-                                    }
-                                }*/
-                            //                            }
-                            Rectangle {
-                                id: table_rect
-                                anchors.left: manage_rpa_header1.left
-                                anchors.leftMargin: 20
-                                anchors.top: list_of_rpa_text.bottom
-                                anchors.topMargin: 30
-                                width: manage_rpa_header1.width - 50
-                                height: 400
-                                color: "#031C28"
-                                visible: true
-
-                                Row{
-                                    id: header_row
-                                    width: parent.width
-                                    height: 40
-                                    Rectangle {
-                                        width:40
-                                        height: 40
-                                        color: "#031C28"
-                                        border.width: 2
-                                        border.color: "#05324D"
-                                    }
-
-                                    Repeater {
-                                        id: repeater_model
-                                        model: ["TYPE", "MODEL NAME", "DRONE NAME", "UIN", "ACTIONS"] //, "ACTIONS"
-                                        Rectangle {
-                                            id: header
-                                            width: (table_rect.width - 40) / 5
-                                            height: 40
-                                            color: "#031C28"
-                                            border.width: 2
-                                            border.color: "#05324D"
-
-                                            Text {
-                                                anchors.centerIn: parent
-                                                text: modelData
-                                                color: "White"
-                                                font.pointSize: 11
-                                            }
-                                        }
-                                    }
-
-                                }
-
-                                Column {
-                                    id: checkbox_column
-                                    anchors.top: parent.top
-                                    anchors.topMargin: 40
-                                    anchors.left: parent.left
-                                    clip: true
-
-                                    Rectangle{
-                                        width: 40
-                                        height: 40
-                                        color: "#031C28"
-                                        border.width: 1
-                                        border.color: "#05324D"
-                                        visible: tableView.rows > 0
-                                        CheckBox{
-                                            id: check_box
-                                            anchors.fill: parent
-                                            indicator: Rectangle{
-                                                implicitWidth: 16
-                                                implicitHeight: 16
-                                                radius: 2
-                                                color: "#031C28"
-                                                border.width:0.5
-                                                border.color: "#F25822"
-                                                anchors.centerIn: parent
-                                                Rectangle {
-                                                    visible: check_box.checked
-                                                    color: "#F25822"
-                                                    radius: 1
-                                                    anchors.margins: 2
-                                                    anchors.fill: parent
-                                                }
-                                            }
-//                                            visible: {
-//                                                if(tableView.rows == 1){
-//                                                    check_box.visible = true;
-//                                                }
-//                                            }
-
-                                            checked: false
-                                            onCheckedChanged: {
-                                                if(check_box.checked == true){
-                                                    check_box1.checked = false
-                                                    check_box2.checked = false
-                                                    check_box3.checked = false
-                                                    check_box4.checked = false
-                                                }
-                                            }
-                                        }
-                                    }
-                                    /*Repeater{
-                                        model: tableView.rows
-                                        Rectangle{
-                                            width: 40
-                                            height: 40
-                                            color: "#031C28"
-                                            border.width: 1
-                                            border.color: "#05324D"
-                                            CheckBox{
-                                                function isChecked() {
-                                                    return ((number &(1 << index)) != 0);
-                                                }
-                                                id: check_box
-                                                anchors.centerIn: parent
-                                                checked: isChecked()
-                                                onClicked:  {
-                                                    {
-                                                        if (checked) {
-                                                            number |= (1<<index);
-                                                            console.log(index + " is checked")
-                                                        }
-                                                        else {
-                                                            number &= ~(1<<index);
-                                                            console.log(index + " is not checked")
-                                                        }
-
-                                                        // now rebind the item's checked property
-                                                        checked = Qt.binding(isChecked);
-
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }*/
-                                    Rectangle{
-                                        width: 40
-                                        height: 40
-                                        color: "#031C28"
-                                        border.width: 1
-                                        border.color: "#05324D"
-                                        visible: tableView.rows > 1
-                                        CheckBox{
-                                            id: check_box1
-                                            anchors.fill: parent
-                                            indicator: Rectangle{
-                                                implicitWidth: 16
-                                                implicitHeight: 16
-                                                radius: 2
-                                                color: "#031C28"
-                                                border.width:0.5
-                                                border.color: "#F25822"
-                                                anchors.centerIn: parent
-                                                Rectangle {
-                                                    visible: check_box1.checked
-                                                    color: "#F25822"
-                                                    radius: 1
-                                                    anchors.margins: 2
-                                                    anchors.fill: parent
-                                                }
-                                            }
-                                            checked: false
-                                            onCheckedChanged: {
-                                                if(check_box1.checked == true){
-                                                    check_box.checked = false
-                                                    check_box2.checked = false
-                                                    check_box3.checked = false
-                                                    check_box4.checked = false
-                                                }
-                                            }
-                                        }
-                                    }
-                                    Rectangle{
-                                        width: 40
-                                        height: 40
-                                        color: "#031C28"
-                                        border.width: 1
-                                        border.color: "#05324D"
-                                        visible: tableView.rows > 2
-                                        CheckBox{
-                                            id: check_box2
-                                            anchors.fill: parent
-                                            indicator: Rectangle{
-                                                implicitWidth: 16
-                                                implicitHeight: 16
-                                                radius: 2
-                                                color: "#031C28"
-                                                border.width:0.5
-                                                border.color: "#F25822"
-                                                anchors.centerIn: parent
-                                                Rectangle {
-                                                    visible: check_box2.checked
-                                                    color: "#F25822"
-                                                    radius: 1
-                                                    anchors.margins: 2
-                                                    anchors.fill: parent
-                                                }
-                                            }
-                                            checked: false
-                                            onCheckedChanged: {
-                                                if(check_box2.checked == true){
-                                                    check_box.checked = false
-                                                    check_box1.checked = false
-                                                    check_box3.checked = false
-                                                    check_box4.checked = false
-                                                }
-                                            }
-                                        }
-                                    }
-                                    Rectangle{
-                                        width: 40
-                                        height: 40
-                                        color: "#031C28"
-                                        border.width: 1
-                                        border.color: "#05324D"
-                                        visible: tableView.rows > 3
-                                        CheckBox{
-                                            id: check_box3
-                                            anchors.fill: parent
-                                            indicator: Rectangle{
-                                                implicitWidth: 16
-                                                implicitHeight: 16
-                                                radius: 2
-                                                color: "#031C28"
-                                                border.width:0.5
-                                                border.color: "#F25822"
-                                                anchors.centerIn: parent
-                                                Rectangle {
-                                                    visible: check_box3.checked
-                                                    color: "#F25822"
-                                                    radius: 1
-                                                    anchors.margins: 2
-                                                    anchors.fill: parent
-                                                }
-                                            }
-                                            checked: false
-                                            onCheckedChanged: {
-                                                if(check_box3.checked == true){
-                                                    check_box.checked = false
-                                                    check_box1.checked = false
-                                                    check_box2.checked = false
-                                                    check_box4.checked = false
-                                                }
-                                            }
-                                        }
-                                    }
-                                    Rectangle{
-                                        width: 40
-                                        height: 40
-                                        color: "#031C28"
-                                        border.width: 1
-                                        border.color: "#05324D"
-                                        visible: tableView.rows > 4
-                                        CheckBox{
-                                            id: check_box4
-                                            anchors.fill: parent
-                                            indicator: Rectangle{
-                                                implicitWidth: 16
-                                                implicitHeight: 16
-                                                radius: 2
-                                                color: "#031C28"
-                                                border.width:0.5
-                                                border.color: "#F25822"
-                                                anchors.centerIn: parent
-                                                Rectangle {
-                                                    visible: check_box4.checked
-                                                    color: "#F25822"
-                                                    radius: 1
-                                                    anchors.margins: 2
-                                                    anchors.fill: parent
-                                                }
-                                            }
-                                            checked: false
-                                            onCheckedChanged: {
-                                                if(check_box4.checked == true){
-                                                    check_box.checked = false
-                                                    check_box1.checked = false
-                                                    check_box2.checked = false
-                                                    check_box3.checked = false
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                Item{
-                                    id:table_item
-                                    //anchors.left: parent.left
-                                    //anchors.leftMargin: 40
-                                    anchors.left: checkbox_column.right
-                                    anchors.top: parent.top
-                                    anchors.topMargin: 40
-                                    width: (table_rect.width - 40)
-                                    height: table_rect.height
-                                    clip: true
-                                    TableView {
-                                        id: tableView
-                                        columnWidthProvider:  function (column) { return rectangleWidth; } //167  134
-                                        rowHeightProvider: function (column) { return 40; }
-                                        anchors.fill: parent
-                                        boundsBehavior: Flickable.StopAtBounds
-                                        clip: true
-
-                                        model: rpadatabase
-
-                                        // Table Body
-
-                                        delegate: Rectangle {
-                                            id:table_row
-                                            implicitHeight: 40
-                                            border.width: 1
-                                            border.color: "#05324D"
-                                            color: "#031C28"
-                                            Text{
-                                                text: display // This is set in mysqlmodel.cpp roleNames()
-                                                anchors.fill: parent
-                                                anchors.margins: 5
-                                                color: 'white'
-                                                font.pixelSize: 15
-                                                verticalAlignment: Text.AlignVCenter
-                                            }
-                                        }
-                                    }
-
-                                }
-                                Column{
-                                    id: actions_column
-                                    anchors.top:parent.top
-                                    anchors.topMargin: 40
-                                    //anchors.left: parent.left
-                                    anchors.right: table_item.right
-                                    //anchors.leftMargin: 574
-                                    clip: true
-//                                    Repeater{
-//                                        model: tableView.rows
-                                        Rectangle{
-                                            id: actions_rect
-                                            width: (table_rect.width - 40) / 5//134
-                                            height: 40
-                                            color: "#031C28"
-                                            border.width: 1
-                                            border.color: "#05324D"
-                                            visible: tableView.rows > 0
-                                            Row{
-                                                spacing: 15
-//                                                anchors.top: actions_rect.top
-//                                                anchors.topMargin: 2.5
-//                                                anchors.left: actions_rect.left
-//                                                anchors.leftMargin: 25
-                                                anchors.centerIn: parent
-                                                Rectangle{
-                                                    id: edit_button
-                                                    width: 35
-                                                    height: 35
-                                                    color: "#031C28"
-                                                    radius: 4
-
-                                                    Image {
-                                                        id: edit_image
-                                                        source: "/res/edit.png"
-                                                        anchors.centerIn: parent
-                                                    }
-                                                    ColorOverlay{
-                                                        anchors.fill: edit_image
-                                                        source: edit_image
-                                                        color:"orange"
-                                                    }
-                                                    MouseArea{
-                                                        anchors.fill: edit_button
-                                                        onClicked: {
-                                                            updateButton = 0;
-                                                            if(updateButton === 0){
-                                                                console.log("in edit button if"+ updateButton)
-                                                                if(check_box.checked === true){
-                                                                    rpadatabase.checkboxSqledit("select * from RpaList limit 1")
-                                                                    //rpadatabase.checkboxSqledit("select * from RpaList where UIN ='" + rpadatabase.uin +" ")
-                                                                    rpa_register_page.visible =  true
-                                                                    manage_rpa_header1.visible = false
-                                                                    console.log(rpadatabase.type)
-                                                                    console.log(rpadatabase.model)
-                                                                    console.log(rpadatabase.droneName)
-                                                                    console.log(rpadatabase.uin)
-                                                                    if(rpadatabase.type === "Nano"){
-                                                                        drone_type_list.currentIndex = 0
-                                                                    }
-                                                                    if(rpadatabase.type === "Micro"){
-                                                                        drone_type_list.currentIndex = 1
-                                                                    }
-                                                                    if(rpadatabase.type === "Small"){
-                                                                        drone_type_list.currentIndex = 2
-                                                                    }
-                                                                    if(rpadatabase.type === "Medium"){
-                                                                        drone_type_list.currentIndex = 3
-                                                                    }
-                                                                    if(rpadatabase.type === "Large"){
-                                                                        drone_type_list.currentIndex = 4
-                                                                    }
-                                                                    if(rpadatabase.model === "Model A"){
-                                                                        drone_model_list.currentIndex = 0
-                                                                    }
-                                                                    if(rpadatabase.model === "Model B"){
-                                                                        drone_model_list.currentIndex = 1
-                                                                    }
-                                                                    drone_name_text.text = rpadatabase.droneName
-                                                                    uin_input_text.text = rpadatabase.uin
-                                                                    uin_input_text.enabled = false
-                                                                    updateButton = 2
-                                                                }
-                                                            }
-
-                                                        }
-                                                        onPressed: {
-                                                            edit_button.color = "#F25822"
-                                                        }
-                                                        onReleased: {
-                                                            edit_button.color = "#031C28"
-                                                        }
-                                                    }
-                                                }
-                                                Rectangle{
-                                                    id: delete_button
-                                                    width: 35
-                                                    height: 35
-                                                    color: "#031C28"
-                                                    radius: 4
-
-                                                    Image {
-                                                        id: delete_image
-                                                        source: "/res/delete.png"
-                                                        anchors.centerIn: parent
-                                                    }
-                                                    ColorOverlay{
-                                                        anchors.fill: delete_image
-                                                        source: delete_image
-                                                        color:"red"
-                                                    }
-                                                    MouseArea{
-                                                        anchors.fill: delete_button
-                                                        onClicked: {
-                                                            if(check_box.checked === true){
-                                                                 //rpadatabase.delete_table_contents("delete from RpaList Limit 1")
-                                                                rpadatabase.delete_table_contents(1)
-                                                                rpadatabase.callSql("select * from RpaList limit 5")
-                                                                deleteDialog.visible = true
-                                                                console.log("row erased")
-                                                                check_box.checked = false
-                                                                check_box1.checked = false
-                                                                check_box2.checked = false
-                                                                check_box3.checked = false
-                                                                check_box4.checked = false
-                                                            }
-                                                        }
-                                                        onPressed: {
-                                                            delete_button.color = "#F25822"
-                                                        }
-                                                        onReleased: {
-                                                            delete_button.color = "#031C28"
-                                                        }
-                                                    }
-                                                }
-                                                /*Rectangle{
-                                                    id: upload_button
-                                                    width: 35
-                                                    height: 35
-                                                    color: "#031C28"
-                                                    radius: 4
-                                                    border.width: 0.5
-                                                    border.color:"#6600FF00"
-
-                                                    Image {
-                                                        id: upload_image
-                                                        source: "/res/upload.png"
-                                                        anchors.centerIn: parent
-                                                    }
-                                                    ColorOverlay{
-                                                        anchors.fill: upload_image
-                                                        source: upload_image
-                                                        color:"#00FF00"
-                                                    }
-                                                    MouseArea{
-                                                        anchors.fill: upload_button
-                                                        onClicked: {
-
-                                                        }
-                                                    }
-                                                }*/
-                                            }
-                                        }
-                                        Rectangle{
-                                            id: actions_rect1
-                                            width: (table_rect.width - 40) / 5
-                                            height: 40
-                                            color: "#031C28"
-                                            border.width: 1
-                                            border.color: "#05324D"
-                                            visible: tableView.rows > 1
-                                            Row{
-                                                spacing: 15
-                                                anchors.centerIn: parent
-
-                                                Rectangle{
-                                                    id: edit_button1
-                                                    width: 35
-                                                    height: 35
-                                                    color: "#031C28"
-                                                    radius: 4
-
-                                                    Image {
-                                                        id: edit_image1
-                                                        source: "/res/edit.png"
-                                                        anchors.centerIn: parent
-                                                    }
-                                                    ColorOverlay{
-                                                        anchors.fill: edit_image1
-                                                        source: edit_image1
-                                                        color:"orange"
-                                                    }
-                                                    MouseArea{
-                                                        anchors.fill: edit_button1
-                                                        onClicked: {
-                                                            updateButton = 0;
-                                                            if(updateButton === 0){
-                                                                console.log("in edit button if"+ updateButton)
-                                                                if(check_box1.checked === true){
-                                                                    rpadatabase.checkboxSqledit("select * from RpaList limit 1 offset 1")
-                                                                    rpa_register_page.visible =  true
-                                                                    manage_rpa_header1.visible = false
-                                                                    console.log(rpadatabase.type)
-                                                                    console.log(rpadatabase.model)
-                                                                    console.log(rpadatabase.droneName)
-                                                                    console.log(rpadatabase.uin)
-                                                                    if(rpadatabase.type === "Nano"){
-                                                                        drone_type_list.currentIndex = 0
-                                                                    }
-                                                                    if(rpadatabase.type === "Micro"){
-                                                                        drone_type_list.currentIndex = 1
-                                                                    }
-                                                                    if(rpadatabase.type === "Small"){
-                                                                        drone_type_list.currentIndex = 2
-                                                                    }
-                                                                    if(rpadatabase.type === "Medium"){
-                                                                        drone_type_list.currentIndex = 3
-                                                                    }
-                                                                    if(rpadatabase.type === "Large"){
-                                                                        drone_type_list.currentIndex = 4
-                                                                    }
-                                                                    if(rpadatabase.model === "Model A"){
-                                                                        drone_model_list.currentIndex = 0
-                                                                    }
-                                                                    if(rpadatabase.model === "Model B"){
-                                                                        drone_model_list.currentIndex = 1
-                                                                    }
-                                                                    drone_name_text.text = rpadatabase.droneName
-                                                                    uin_input_text.text = rpadatabase.uin
-                                                                    uin_input_text.enabled = false
-                                                                    updateButton = 2
-                                                                }
-                                                            }
-
-                                                        }
-                                                        onPressed: {
-                                                            edit_button1.color = "#F25822"
-                                                        }
-                                                        onReleased: {
-                                                            edit_button1.color = "#031C28"
-                                                        }
-                                                    }
-                                                }
-                                                Rectangle{
-                                                    id: delete_button1
-                                                    width: 35
-                                                    height: 35
-                                                    color: "#031C28"
-                                                    radius: 4
-
-                                                    Image {
-                                                        id: delete_image1
-                                                        source: "/res/delete.png"
-                                                        anchors.centerIn: parent
-                                                    }
-                                                    ColorOverlay{
-                                                        anchors.fill: delete_image1
-                                                        source: delete_image
-                                                        color:"red"
-                                                    }
-                                                    MouseArea{
-                                                        anchors.fill: delete_button1
-                                                        onClicked: {
-                                                            if(check_box1.checked === true){
-                                                                //rpadatabase.delete_table_contents("delete from RpaList Limit 1")
-                                                                rpadatabase.delete_table_contents(2)
-                                                                rpadatabase.callSql("select * from RpaList limit 5")
-                                                                deleteDialog.visible = true
-                                                                console.log("row erased")
-                                                                check_box.checked = false
-                                                                check_box1.checked = false
-                                                                check_box2.checked = false
-                                                                check_box3.checked = false
-                                                                check_box4.checked = false
-                                                            }
-                                                        }
-                                                        onPressed: {
-                                                            delete_button1.color = "#F25822"
-                                                        }
-                                                        onReleased: {
-                                                            delete_button1.color = "#031C28"
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        Rectangle{
-                                            id: actions_rect2
-                                            width: (table_rect.width - 40) / 5
-                                            height: 40
-                                            color: "#031C28"
-                                            border.width: 1
-                                            border.color: "#05324D"
-                                            visible: tableView.rows > 2
-                                            Row{
-                                                spacing: 15
-                                                anchors.centerIn: parent
-                                                Rectangle{
-                                                    id: edit_button2
-                                                    width: 35
-                                                    height: 35
-                                                    color: "#031C28"
-                                                    radius: 4
-
-                                                    Image {
-                                                        id: edit_image2
-                                                        source: "/res/edit.png"
-                                                        anchors.centerIn: parent
-                                                    }
-                                                    ColorOverlay{
-                                                        anchors.fill: edit_image2
-                                                        source: edit_image2
-                                                        color:"orange"
-                                                    }
-                                                    MouseArea{
-                                                        anchors.fill: edit_button2
-                                                        onClicked: {
-                                                            updateButton = 0;
-                                                            if(updateButton === 0){
-                                                                console.log("in edit button if"+ updateButton)
-                                                                if(check_box2.checked === true){
-                                                                    rpadatabase.checkboxSqledit("select * from RpaList limit 1 offset 2")
-                                                                    rpa_register_page.visible =  true
-                                                                    manage_rpa_header1.visible = false
-                                                                    console.log(rpadatabase.type)
-                                                                    console.log(rpadatabase.model)
-                                                                    console.log(rpadatabase.droneName)
-                                                                    console.log(rpadatabase.uin)
-                                                                    if(rpadatabase.type === "Nano"){
-                                                                        drone_type_list.currentIndex = 0
-                                                                    }
-                                                                    if(rpadatabase.type === "Micro"){
-                                                                        drone_type_list.currentIndex = 1
-                                                                    }
-                                                                    if(rpadatabase.type === "Small"){
-                                                                        drone_type_list.currentIndex = 2
-                                                                    }
-                                                                    if(rpadatabase.type === "Medium"){
-                                                                        drone_type_list.currentIndex = 3
-                                                                    }
-                                                                    if(rpadatabase.type === "Large"){
-                                                                        drone_type_list.currentIndex = 4
-                                                                    }
-                                                                    if(rpadatabase.model === "Model A"){
-                                                                        drone_model_list.currentIndex = 0
-                                                                    }
-                                                                    if(rpadatabase.model === "Model B"){
-                                                                        drone_model_list.currentIndex = 1
-                                                                    }
-                                                                    drone_name_text.text = rpadatabase.droneName
-                                                                    uin_input_text.text = rpadatabase.uin
-                                                                    uin_input_text.enabled = false
-                                                                    updateButton = 2
-                                                                }
-                                                            }
-
-                                                        }
-                                                        onPressed: {
-                                                            edit_button2.color = "#F25822"
-                                                        }
-                                                        onReleased: {
-                                                            edit_button2.color = "#031C28"
-                                                        }
-                                                    }
-                                                }
-                                                Rectangle{
-                                                    id: delete_button2
-                                                    width: 35
-                                                    height: 35
-                                                    color: "#031C28"
-                                                    radius: 4
-
-                                                    Image {
-                                                        id: delete_image2
-                                                        source: "/res/delete.png"
-                                                        anchors.centerIn: parent
-                                                    }
-                                                    ColorOverlay{
-                                                        anchors.fill: delete_image2
-                                                        source: delete_image2
-                                                        color:"red"
-                                                    }
-                                                    MouseArea{
-                                                        anchors.fill: delete_button2
-                                                        onClicked: {
-                                                            if(check_box2.checked === true){
-                                                                //rpadatabase.delete_table_contents("delete from RpaList where UIN = ' " + rpadatabase.uin + "'")
-                                                                rpadatabase.delete_table_contents(3)
-                                                                rpadatabase.callSql("select * from RpaList limit 5")
-                                                                deleteDialog.visible = true
-                                                                console.log("row erased")
-                                                                check_box.checked = false
-                                                                check_box1.checked = false
-                                                                check_box2.checked = false
-                                                                check_box3.checked = false
-                                                                check_box4.checked = false
-                                                            }
-                                                        }
-                                                        onPressed: {
-                                                            delete_button2.color = "#F25822"
-                                                        }
-                                                        onReleased: {
-                                                            delete_button2.color = "#031C28"
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        Rectangle{
-                                            id: actions_rect3
-                                            width: (table_rect.width - 40) / 5
-                                            height: 40
-                                            color: "#031C28"
-                                            border.width: 1
-                                            border.color: "#05324D"
-                                            visible: tableView.rows > 3
-                                            Row{
-                                                spacing: 15
-                                                anchors.centerIn: parent
-                                                Rectangle{
-                                                    id: edit_button3
-                                                    width: 35
-                                                    height: 35
-                                                    color: "#031C28"
-                                                    radius: 4
-
-                                                    Image {
-                                                        id: edit_image3
-                                                        source: "/res/edit.png"
-                                                        anchors.centerIn: parent
-                                                    }
-                                                    ColorOverlay{
-                                                        anchors.fill: edit_image3
-                                                        source: edit_image3
-                                                        color:"orange"
-                                                    }
-                                                    MouseArea{
-                                                        anchors.fill: edit_button3
-                                                        onClicked: {
-                                                            updateButton = 0;
-                                                            if(updateButton === 0){
-                                                                console.log("in edit button if"+ updateButton)
-                                                                if(check_box3.checked === true){
-                                                                    rpadatabase.checkboxSqledit("select * from RpaList limit 1 offset 3")
-                                                                    rpa_register_page.visible =  true
-                                                                    manage_rpa_header1.visible = false
-                                                                    console.log(rpadatabase.type)
-                                                                    console.log(rpadatabase.model)
-                                                                    console.log(rpadatabase.droneName)
-                                                                    console.log(rpadatabase.uin)
-                                                                    if(rpadatabase.type === "Nano"){
-                                                                        drone_type_list.currentIndex = 0
-                                                                    }
-                                                                    if(rpadatabase.type === "Micro"){
-                                                                        drone_type_list.currentIndex = 1
-                                                                    }
-                                                                    if(rpadatabase.type === "Small"){
-                                                                        drone_type_list.currentIndex = 2
-                                                                    }
-                                                                    if(rpadatabase.type === "Medium"){
-                                                                        drone_type_list.currentIndex = 3
-                                                                    }
-                                                                    if(rpadatabase.type === "Large"){
-                                                                        drone_type_list.currentIndex = 4
-                                                                    }
-                                                                    if(rpadatabase.model === "Model A"){
-                                                                        drone_model_list.currentIndex = 0
-                                                                    }
-                                                                    if(rpadatabase.model === "Model B"){
-                                                                        drone_model_list.currentIndex = 1
-                                                                    }
-                                                                    drone_name_text.text = rpadatabase.droneName
-                                                                    uin_input_text.text = rpadatabase.uin
-                                                                    uin_input_text.enabled = false
-                                                                    updateButton = 2
-                                                                }
-                                                            }
-
-                                                        }
-                                                        onPressed: {
-                                                            edit_button3.color = "#F25822"
-                                                        }
-                                                        onReleased: {
-                                                            edit_button3.color = "#031C28"
-                                                        }
-                                                    }
-                                                }
-                                                Rectangle{
-                                                    id: delete_button3
-                                                    width: 35
-                                                    height: 35
-                                                    color: "#031C28"
-                                                    radius: 4
-
-                                                    Image {
-                                                        id: delete_image3
-                                                        source: "/res/delete.png"
-                                                        anchors.centerIn: parent
-                                                    }
-                                                    ColorOverlay{
-                                                        anchors.fill: delete_image3
-                                                        source: delete_image3
-                                                        color:"red"
-                                                    }
-                                                    MouseArea{
-                                                        anchors.fill: delete_button3
-                                                        onClicked: {
-                                                            if(check_box2.checked === true){
-                                                                //rpadatabase.delete_table_contents("delete from RpaList where UIN = ' " + rpadatabase.uin + "'")
-                                                                rpadatabase.delete_table_contents(4)
-                                                                rpadatabase.callSql("select * from RpaList limit 5")
-                                                                deleteDialog.visible = true
-                                                                console.log("row erased")
-                                                                check_box.checked = false
-                                                                check_box1.checked = false
-                                                                check_box2.checked = false
-                                                                check_box3.checked = false
-                                                                check_box4.checked = false
-                                                            }
-                                                        }
-                                                        onPressed: {
-                                                            delete_button3.color = "#F25822"
-                                                        }
-                                                        onReleased: {
-                                                            delete_button3.color = "#031C28"
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        Rectangle{
-                                            id: actions_rect4
-                                            width: (table_rect.width - 40) / 5
-                                            height: 40
-                                            color: "#031C28"
-                                            border.width: 1
-                                            border.color: "#05324D"
-                                            visible: tableView.rows > 4
-                                            Row{
-                                                spacing: 15
-                                                anchors.centerIn: parent
-                                                Rectangle{
-                                                    id: edit_button4
-                                                    width: 35
-                                                    height: 35
-                                                    color: "#031C28"
-                                                    radius: 4
-
-                                                    Image {
-                                                        id: edit_image4
-                                                        source: "/res/edit.png"
-                                                        anchors.centerIn: parent
-                                                    }
-                                                    ColorOverlay{
-                                                        anchors.fill: edit_image4
-                                                        source: edit_image4
-                                                        color:"orange"
-                                                    }
-                                                    MouseArea{
-                                                        anchors.fill: edit_button4
-                                                        onClicked: {
-                                                            updateButton = 0;
-                                                            if(updateButton === 0){
-                                                                console.log("in edit button if"+ updateButton)
-                                                                if(check_box4.checked === true){
-                                                                    rpadatabase.checkboxSqledit("select * from RpaList limit 1 offset 4")
-                                                                    rpa_register_page.visible =  true
-                                                                    manage_rpa_header1.visible = false
-                                                                    console.log(rpadatabase.type)
-                                                                    console.log(rpadatabase.model)
-                                                                    console.log(rpadatabase.droneName)
-                                                                    console.log(rpadatabase.uin)
-                                                                    if(rpadatabase.type === "Nano"){
-                                                                        drone_type_list.currentIndex = 0
-                                                                    }
-                                                                    if(rpadatabase.type === "Micro"){
-                                                                        drone_type_list.currentIndex = 1
-                                                                    }
-                                                                    if(rpadatabase.type === "Small"){
-                                                                        drone_type_list.currentIndex = 2
-                                                                    }
-                                                                    if(rpadatabase.type === "Medium"){
-                                                                        drone_type_list.currentIndex = 3
-                                                                    }
-                                                                    if(rpadatabase.type === "Large"){
-                                                                        drone_type_list.currentIndex = 4
-                                                                    }
-                                                                    if(rpadatabase.model === "Model A"){
-                                                                        drone_model_list.currentIndex = 0
-                                                                    }
-                                                                    if(rpadatabase.model === "Model B"){
-                                                                        drone_model_list.currentIndex = 1
-                                                                    }
-                                                                    drone_name_text.text = rpadatabase.droneName
-                                                                    uin_input_text.text = rpadatabase.uin
-                                                                    uin_input_text.enabled = false
-                                                                    updateButton = 2
-                                                                }
-                                                            }
-
-                                                        }
-                                                        onPressed: {
-                                                            edit_button4.color = "#F25822"
-                                                        }
-                                                        onReleased: {
-                                                            edit_button4.color = "#031C28"
-                                                        }
-                                                    }
-                                                }
-                                                Rectangle{
-                                                    id: delete_button4
-                                                    width: 35
-                                                    height: 35
-                                                    color: "#031C28"
-                                                    radius: 4
-
-                                                    Image {
-                                                        id: delete_image4
-                                                        source: "/res/delete.png"
-                                                        anchors.centerIn: parent
-                                                    }
-                                                    ColorOverlay{
-                                                        anchors.fill: delete_image4
-                                                        source: delete_image4
-                                                        color:"red"
-                                                    }
-                                                    MouseArea{
-                                                        anchors.fill: delete_button4
-                                                        onClicked: {
-                                                            if(check_box4.checked === true){
-                                                                //console.log(model.index)
-                                                                //rpadatabase.delete_table_contents("delete from RpaList where UIN = ' " + rpadatabase.uin + "'")
-                                                                rpadatabase.delete_table_contents(5)
-                                                                rpadatabase.callSql("select * from RpaList limit 5")
-                                                                deleteDialog.visible = true
-                                                                console.log("row erased")
-                                                                check_box.checked = false
-                                                                check_box1.checked = false
-                                                                check_box2.checked = false
-                                                                check_box3.checked = false
-                                                                check_box4.checked = false
-                                                            }
-                                                        }
-                                                        onPressed: {
-                                                            delete_button4.color = "#F25822"
-                                                        }
-                                                        onReleased: {
-                                                            delete_button4.color = "#031C28"
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    //}
                                 }
                             }
-                            /*Rectangle{
-                                id: page_number_rect
-                                anchors.left: parent.left
-                                anchors.leftMargin: 20
-                                anchors.top: table_rect.bottom
-                                width: table_rect.width
-                                height: 40
-                                radius: 4
-                                color: "#05324D"
 
-                            }*/
+                           Rectangle {
+                            id: table_rect
+                            anchors.left: manage_rpa_header1.left
+                            anchors.leftMargin: 20
+                            anchors.top: list_of_rpa_text.bottom
+                            anchors.topMargin: 30
+                            width: manage_rpa_header1.width - 50
+                            height: parent.height - 50
+                            color: "#031C28"
+//                            border.width: 1
+//                            border.color: "#05324D"
+                            visible: true
 
+                            }
                         }
 
 
@@ -4866,11 +4098,6 @@ ApplicationWindow {
                                         drone_name_text.text = ""
                                         uin_input_text.text = ""
                                         uin_input_text.enabled = true
-                                        check_box.checked = false
-                                        check_box1.checked = false
-                                        check_box2.checked = false
-                                        check_box3.checked = false
-                                        check_box4.checked = false
                                     }
                                 }
                             }
@@ -4929,7 +4156,7 @@ ApplicationWindow {
                                     spacing: 10
                                     Text {
                                         id: drone_image_text
-                                        text: qsTr("Drone Image")
+                                        text: qsTr("Drone Image*")
                                         color: "White"
                                         font.pointSize: 12
                                     }
@@ -5283,7 +4510,7 @@ ApplicationWindow {
                                     text: ""
                                     color: "white"
                                     selectByMouse: true
-                                    maximumLength: 8
+                                    //maximumLength: 8
                                     background: Rectangle {
                                         color: "#031C28"
                                         radius: 4
@@ -5326,32 +4553,24 @@ ApplicationWindow {
                                 }
                                 onClicked: {
                                     if(updateButton === 1){
-                                        if((combo_box1.text === "")||(combo_box2.text === "") ||(drone_name_text.text == "") ||(uin_input_text.text == "")) {
+                                        if((combo_box1.text === "")||(combo_box2.text === "") ||(drone_name_text.text == "") ||(uin_input_text.text == "") /*|| drone_image.source == ""*/) {
                                             fillDialog.visible = true
                                         }
                                         else{
-                                            rpadatabase.existingUIN(uin_input_text.text)
-                                            //uinDialog.visible = true
+                                            rpadatabase.existingUIN(database_access.mail,uin_input_text.text)                                            //uinDialog.visible = true
                                             console.log("in update button if "+ updateButton)
                                         }
                                     }
                                     else if(updateButton == 2){
                                         console.log("in update button else"+ updateButton)
-                                        rpadatabase.update_table_contents(combo_box1.text, combo_box2.text, drone_name_text.text,uin_input_text.text)
                                         rpa_register_page.visible = false
                                         manage_rpa_header1.visible = true
-                                        rpadatabase.callSql("select * from RpaList limit 5")
                                         tableDialog.visible = true
                                         drone_type_list.currentIndex = -1
                                         drone_model_list.currentIndex = -1
                                         drone_name_text.text = ""
                                         uin_input_text.text = ""
                                         uin_input_text.enabled = true
-                                        check_box.checked = false
-                                        check_box1.checked = false
-                                        check_box2.checked = false
-                                        check_box3.checked = false
-                                        check_box4.checked = false
                                         updateButton = 1
                                         console.log("in update button else when ending"+ updateButton)
                                     }
@@ -5389,38 +4608,27 @@ ApplicationWindow {
                                     drone_name_text.text = ""
                                     uin_input_text.text = ""
                                     uin_input_text.enabled = true
-                                    check_box.checked = false
-                                    check_box1.checked = false
-                                    check_box2.checked = false
-                                    check_box3.checked = false
-                                    check_box4.checked = false
                                 }
                             }
                         }
 
                         MessageDialog{
                             id:fillDialog
-                            height: 50
-                            width: 50
                             text:"please fill the details correctly"
                         }
 
-                        MessageDialog{
-                            id:uinDialog
-                            height: 50
-                            width: 50
-                            text:"Registered Successfully."
-                        }
+//                        MessageDialog{
+//                            id:uinDialog
+//                            height: 50
+//                            width: 50
+//                            text:"Registered Successfully."
+//                        }
                         MessageDialog{
                             id:tableDialog
-                            height: 50
-                            width: 50
                             text:"Updated Successfully."
                         }
                         MessageDialog{
                             id:deleteDialog
-                            height: 50
-                            width: 50
                             text:"Row Deleted Successfully."
                         }
                     }
@@ -5757,16 +4965,16 @@ ApplicationWindow {
                             border.color: "#05324D"
                             border.width: 1
                             Timer {
-                                interval: 100; running: true; repeat: true
+                                interval: 50; running: true; repeat: true
                                 onTriggered:{
-                                    folder_list_model.model = aws.name
+//                                    folder_list_model.model = aws.name
                                 }
                             }
 
                             ListView {
                                 id: folder_list_model
                                 anchors.fill: parent
-                                model: aws.name
+                                //model: aws.name
                                 delegate: RowLayout {
                                     id: rowLayout
                                     width: parent.width
@@ -5850,7 +5058,7 @@ ApplicationWindow {
                                                     destFileLoaction = str.slice(str.lastIndexOf("file://")+7)
                                                 }
                                                 pfx_file_location_function(destFile);
-                                                aws.download_file(modelData,destFileLoaction);
+                                                //aws.download_file(modelData,destFileLoaction);
                                             });
                                             fileDialog.rejected.connect(function(){
                                                 log_download_button.color = "#DA2C43";
@@ -5858,6 +5066,101 @@ ApplicationWindow {
                                             });
                                             fileDialog.open();
                                         }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                Rectangle {
+                    id: firmware_log_rectangle
+                    width: second_rectangle.width
+                    height: parent.height
+                    anchors.fill: parent
+                    color: "#031C28"
+                    visible: false
+                    border.color: "#05324D"
+                    border.width: 1
+                    Rectangle {
+                        id:firmware_log_header
+                        color: "#031C28"
+                        height: 50
+                        width: firmware_log_rectangle.width
+                        visible: true
+                        border.color: "#05324D"
+                        border.width: 2
+
+                        Image {
+                            id: hamburger_image_firmware_log
+                            source: "/res/hamburger_menu.png"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: firmware_log_header.left
+                            anchors.leftMargin: 20
+                        }
+
+                        Text {
+                            id: firmware_log_text
+                            text: "FIRMWARE LOG"
+                            color: "white"
+                            font.pointSize: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: hamburger_image_firmware_log.left
+                            anchors.leftMargin: 25
+                        }
+
+                        Image {
+                            id: search_image_firmware_log
+                            source: "/res/search.png"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: firmware_log_header.right
+                            anchors.rightMargin: 180
+                        }
+                        Text{
+                            id: search_firmware_log
+                            text: "Search"
+                            color : "white"
+                            font.pointSize: 10
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.right: firmware_log_header.right
+                            anchors.rightMargin: 100
+                        }
+                    }
+
+                    Column{
+                        anchors.left: parent.left
+                        anchors.top: firmware_log_header.bottom
+
+                        Rectangle {
+                            id:firmware_log_header1
+                            color: "#031C28"
+                            visible:false || true
+                            height: screen.height-50
+                            width: firmware_log_rectangle.width
+                            border.color: "#05324D"
+                            border.width: 1
+                            Timer {
+                                interval: 50; running: true; repeat: true
+                                onTriggered:{
+                                    firmware_list_model.model = rpadatabase.firmwarelog_list
+                                }
+                            }
+
+                            ListView {
+                                id: firmware_list_model
+                                anchors.fill: parent
+                                model: rpadatabase.firmwarelog_list
+                                delegate: RowLayout {
+                                    //id: rowLayout
+                                    width: parent.width
+                                    height: 40
+                                    spacing: 50
+
+                                    Text {
+                                        id: firmware_info_Text
+                                        text: modelData //fileName
+                                        color: "white"
+                                        font.pointSize: 11
+                                        Layout.alignment: Qt.AlignCenter
                                     }
                                 }
                             }
@@ -5958,7 +5261,7 @@ ApplicationWindow {
                         Rectangle {
                             id: image_rect
                             anchors.right: users_profile_header.right
-                            anchors.rightMargin: 120
+                            anchors.rightMargin: 80
                             anchors.verticalCenter: parent.verticalCenter
                             height: 40
                             width: 40
@@ -6011,13 +5314,14 @@ ApplicationWindow {
                             Text {
                                 id: user_name_inprofile
                                 wrapMode: Text.WordWrap
-                                text: qsTr(database.name)
+                                text: database_access.name
                                 color:"white"
                                 font.pointSize: 10
                                 //font.pixelSize: 0.1 * parent.height
                             }
                             Text {
-                                text: "OEM"
+                                id: user_role
+                                text: database_access.role
                                 color: "#F25822"
                             }
 
@@ -6057,12 +5361,11 @@ ApplicationWindow {
                                 onClicked: {
                                     users_profile_header1.visible = false
                                     users_information_header1.visible = true
-                                    userprofile_name.text = database.name
-                                    mail_address.text = database.mail
-                                    mobile_number.text = database.number
-                                    address_field.text = database.address
-                                    locality_field.text = database.locality
-                                    password_field.text = database.password
+                                    userprofile_name.text = database_access.name
+                                    mail_address.text = database_access.mail
+                                    mobile_number.text = database_access.number
+                                    address_field.text = database_access.address
+                                    locality_field.text = database_access.locality
                                 }
                                 onPressed: {
                                     go_to_profile.color = "#F25822"
@@ -6136,7 +5439,7 @@ ApplicationWindow {
                                     height: 35
                                     anchors.margins: 5
                                     placeholderText: qsTr("User Name")
-                                    text: database.name
+                                    text: database_access.name
                                     color:"white"
                                     background: Rectangle{
                                         color: "#05324D"
@@ -6146,11 +5449,6 @@ ApplicationWindow {
                                         implicitHeight: userprofile_name.height
                                         implicitWidth: userprofile_name.width
                                     }
-                                    /*onAccepted: {
-                                        if(userprofile_name.text != ""){
-                                            database.existingUserProfilename(userprofile_name.text)
-                                        }
-                                    }*/
                                 }
                             }
                             Column{
@@ -6166,8 +5464,9 @@ ApplicationWindow {
                                     height: 35
                                     anchors.margins: 5
                                     placeholderText: qsTr("user@gmail.com")
-                                    text: database.mail
+                                    text: database_access.mail
                                     color:"white"
+                                    readOnly: true
                                     background: Rectangle{
                                         color: "#05324D"
                                         radius: 4
@@ -6175,11 +5474,6 @@ ApplicationWindow {
                                         border.color: "#05324D"
                                         implicitHeight: mail_address.height
                                         implicitWidth: mail_address.width
-                                    }
-                                    onAccepted :{
-                                        if(mail_address.text != ""){
-                                            database.existingUserProfilemail(mail_address.text)
-                                        }
                                     }
                                 }
                             }
@@ -6196,7 +5490,7 @@ ApplicationWindow {
                                     width: third_rectangle.width -50
                                     height: 35
                                     anchors.margins: 5
-                                    text: database.number
+                                    text: database_access.number
                                     color:"white"
                                     background: Rectangle{
                                         color: "#05324D"
@@ -6221,7 +5515,7 @@ ApplicationWindow {
                                     height: 35
                                     anchors.margins: 5
                                     placeholderText: qsTr("User Address")
-                                    text: database.address
+                                    text: database_access.address
                                     color:"white"
                                     background: Rectangle{
                                         color: "#05324D"
@@ -6246,7 +5540,7 @@ ApplicationWindow {
                                     height: 35
                                     anchors.margins: 5
                                     placeholderText: qsTr("User Locality")
-                                    text: database.locality
+                                    text: database_access.locality
                                     color:"white"
                                     background: Rectangle{
                                         color: "#05324D"
@@ -6258,32 +5552,6 @@ ApplicationWindow {
                                     }
                                 }
                             }
-                            Column{
-                                spacing:5
-                                Text{
-                                    text: "Password"
-                                    color: "white"
-                                    font.pointSize: 9
-                                }
-                                TextField{
-                                    id: password_field
-                                    width: third_rectangle.width -50
-                                    height: 35
-                                    anchors.margins: 5
-                                    placeholderText: qsTr("password")
-                                    text: database.password
-                                    color:"white"
-                                    background: Rectangle{
-                                        color: "#05324D"
-                                        radius: 4
-                                        border.width: 1
-                                        border.color: "#05324D"
-                                        implicitHeight: password_field.height
-                                        implicitWidth: password_field.width
-                                    }
-                                }
-                            }
-
                         }
                         Rectangle {
                             id: update_profile
@@ -6308,22 +5576,23 @@ ApplicationWindow {
                             MouseArea {
                                 anchors.fill: update_profile
                                 onClicked: {
-                                    //reflect all the updated info to the database
-                                    if(userprofile_name.text == "" || mail_address.text == "" || locality_field.text == "" || address_field.text == "" || password_field.text == ""){
-                                        popupDialog.open()
+                                        if(userprofile_name.text == "" || mail_address.text == "" || locality_field.text == "" || address_field.text == ""){
+                                            popupDialog.open()
+                                        }
+                                        else {
+                                            database_access.update_profile(userprofile_name.text,mail_address.text,mobile_number.text,address_field.text,locality_field.text)
+                                            users_profile_header1.visible = true
+                                            users_information_header1.visible = false
+                                            profileDialog.open()
+                                            userprofile_name = database_access.name
+                                            mail_address.text = database_access.mail
+                                            mobile_number.text = database_access.number
+                                            address_field.text = database_access.address
+                                            locality_field.text = database_access.locality
+                                            address_field.activeFocus = false
+                                            locality_field.activeFocus = false
+                                        }
                                     }
-                                    else {
-                                        database.update_profile_contents(userprofile_name.text, mail_address.text,mobile_number.text,address_field.text,locality_field.text,password_field.text)
-                                        users_profile_header1.visible = true
-                                        users_information_header1.visible = false
-                                        profileDialog.open()
-                                        mail_address.text = database.mail
-                                        mobile_number.text = database.number
-                                        address_field.text = database.address
-                                        locality_field.text = database.locality
-                                        password_field.text = database.password
-                                    }
-                                }
                                 onPressed: {
                                     update_profile.color = "#F25822"
                                 }

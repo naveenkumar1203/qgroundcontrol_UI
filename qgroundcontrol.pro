@@ -446,9 +446,9 @@ contains (DEFINES, QGC_ENABLE_PAIRING) {
 #
 
 HEADERS += \
-    src/QmlControls/AWSOperations.h \
-    src/QmlControls/Database.h \
+    src/QmlControls/FireBaseAccess.h \
     src/QmlControls/FirmwareUpdate.h \
+    src/QmlControls/QNetworkAccessManagerWithPatch.h \
     src/QmlControls/QmlUnitsConversion.h \
     src/QmlControls/RpaDatabase.h \
     src/Vehicle/VehicleEscStatusFactGroup.h \
@@ -464,8 +464,7 @@ contains (DEFINES, QGC_ENABLE_PAIRING) {
 }
 
 SOURCES += \
-    src/QmlControls/AWSOperations.cpp \
-    src/QmlControls/Database.cpp \
+    src/QmlControls/FireBaseAccess.cpp \
     src/QmlControls/FirmwareUpdate.cpp \
     src/QmlControls/RpaDatabase.cpp \
     src/Vehicle/VehicleEscStatusFactGroup.cc \

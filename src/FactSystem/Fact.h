@@ -23,7 +23,7 @@ class FactValueSliderListModel;
 class Fact : public QObject
 {
     Q_OBJECT
-    
+
 public:
     Fact(QObject* parent = nullptr);
     Fact(int componentId, QString name, FactMetaData::ValueType_t type, QObject* parent = nullptr);
@@ -155,17 +155,17 @@ public:
 
     /// Sets and sends new value to vehicle even if value is the same
     void forceSetRawValue(const QVariant& value);
-    
+
     /// Sets the meta data associated with the Fact.
     ///     @param metaData FactMetaData for Fact
     ///     @param setDefaultFromMetaData true: set the fact value to the default specified in the meta data
     void setMetaData(FactMetaData* metaData, bool setDefaultFromMetaData = false);
-    
+
     FactMetaData* metaData() { return _metaData; }
 
     //-- Value coming from Vehicle. This does NOT send a _containerRawValueChanged signal.
     void _containerSetRawValue(const QVariant& value);
-    
+
     /// Generally you should not change the name of a fact. But if you know what you are doing, you can.
     void _setName(const QString& name) { _name = name; }
 
@@ -183,10 +183,10 @@ signals:
     /// This signal is only meant for use by the QT property system. It should not be connected to by client code.
     void valueChanged(QVariant value);
     void rawValueChanged(QVariant value);
-    
+
     /// Signalled when the param write ack comes back from the vehicle
     void vehicleUpdated(QVariant value);
-    
+
     /// Signalled when property has been changed by a call to the property write accessor
     ///
     /// This signal is meant for use by Fact container implementations. Used to send changed values to vehicle.
@@ -197,7 +197,7 @@ private slots:
 
 private:
     void _init(void);
-    
+
 protected:
     QString _variantToString(const QVariant& variant, int decimalPlaces) const;
     void _sendValueChangedSignal(QVariant value);
