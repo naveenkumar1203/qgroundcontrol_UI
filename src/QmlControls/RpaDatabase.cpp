@@ -9,6 +9,7 @@
 QString uin_number;
 //QString uin_number_selected;
 QString user;
+QString uin_number_selected;
 
 class FireBaseAccess;
 
@@ -215,68 +216,70 @@ void TableModel::manageRpaClicked(const QString &userName)
 void TableModel::modelSelected(const QString &number)
 {
     qDebug()<<"in model selected";
+    uin_number_selected = number;
+    modelSelected_list();
 
-        qDebug()<<uinlist.at(number.toInt());
-        m_uin = uinlist.at(number.toInt());
-        qDebug()<<modellist.at(number.toInt());
-        m_model = modellist.at(number.toInt());
+//        qDebug()<<uinlist.at(number.toInt());
+//        m_uin = uinlist.at(number.toInt());
+//        qDebug()<<modellist.at(number.toInt());
+//        m_model = modellist.at(number.toInt());
 }
 
-//void TableModel::modelSelected_list()
-//{
-//    QByteArray response = m_networkreply->readAll();
-//    QJsonDocument doc = QJsonDocument::fromJson(response);
-//    QJsonObject object = doc.object();
-//    //QList<QJsonObject> jsonObjectList;
-//    uinlist.clear();
-//    typelist.clear();
-//    modellist.clear();
-//    dronelist.clear();
-//    qDebug()<<"cleared list";
+void TableModel::modelSelected_list()
+{
+    QByteArray response = m_networkreply->readAll();
+    QJsonDocument doc = QJsonDocument::fromJson(response);
+    QJsonObject object = doc.object();
+    //QList<QJsonObject> jsonObjectList;
+    uinlist.clear();
+    typelist.clear();
+    modellist.clear();
+    dronelist.clear();
+    qDebug()<<"cleared list";
 
-//    foreach(const QString& key, object.keys()) {
-//        QJsonValue value = object.value(key);
-//        QJsonObject jsonObject = value.toObject();
-//        qDebug()<<"The Value for Key is" << jsonObject;
-//        foreach (const QString& key1, jsonObject.keys()) {
-//            if(key1 == "Model"){
-//                QJsonValue value = jsonObject.value("Model");
-//                modellist.append(value.toString());
-//                qDebug()<<"Model appended";
-//            }
-//            if(key1 == "Type"){
-//                QJsonValue value = jsonObject.value("Type");
-//                typelist.append(value.toString());
-//                qDebug()<<"type appended";
-//            }
-//            if(key1 == "UINNO"){
-//                QJsonValue value = jsonObject.value("UINNO");
-//                uinlist.append(value.toString());
-//                qDebug()<<"uin appended";
-//            }
-//            if(key1 == "Name"){
-//                QJsonValue value = jsonObject.value("Name");
-//                dronelist.append(value.toString());
-//                qDebug()<<"drone list appended";
-//            }
-//            //dronelist.append("dji1");
-//        }
-//        //        qDebug()<<uinlist;
-//        //        qDebug()<<typelist;
-//        //        qDebug()<<modellist;
-//    }
-//    qDebug()<<uinlist;
-//    qDebug()<<typelist;
-//    qDebug()<<modellist;
+    foreach(const QString& key, object.keys()) {
+        QJsonValue value = object.value(key);
+        QJsonObject jsonObject = value.toObject();
+        qDebug()<<"The Value for Key is" << jsonObject;
+        foreach (const QString& key1, jsonObject.keys()) {
+            if(key1 == "Model"){
+                QJsonValue value = jsonObject.value("Model");
+                modellist.append(value.toString());
+                qDebug()<<"Model appended";
+            }
+            if(key1 == "Type"){
+                QJsonValue value = jsonObject.value("Type");
+                typelist.append(value.toString());
+                qDebug()<<"type appended";
+            }
+            if(key1 == "UINNO"){
+                QJsonValue value = jsonObject.value("UINNO");
+                uinlist.append(value.toString());
+                qDebug()<<"uin appended";
+            }
+            if(key1 == "Name"){
+                QJsonValue value = jsonObject.value("Name");
+                dronelist.append(value.toString());
+                qDebug()<<"drone list appended";
+            }
+            //dronelist.append("dji1");
+        }
+        //        qDebug()<<uinlist;
+        //        qDebug()<<typelist;
+        //        qDebug()<<modellist;
+    }
+    qDebug()<<uinlist;
+    qDebug()<<typelist;
+    qDebug()<<modellist;
 
 
-//    qDebug()<<uinlist.at(uin_number_selected.toInt());
-//    m_uin = uinlist.at(uin_number_selected.toInt());
-//    qDebug()<<modellist.at(uin_number_selected.toInt());
-//    m_model = modellist.at(uin_number_selected.toInt());
+    qDebug()<<uinlist.at(uin_number_selected.toInt());
+    m_uin = uinlist.at(uin_number_selected.toInt());
+    qDebug()<<modellist.at(uin_number_selected.toInt());
+    m_model = modellist.at(uin_number_selected.toInt());
 
-//    //emit modelSelected();
-//}
+    //emit modelSelected();
+}
 
 QHash<int, QByteArray> TableModel::roleNames() const {
     QHash<int, QByteArray> roles;

@@ -3439,11 +3439,11 @@ ApplicationWindow {
 
                             Row{
                                 anchors.left: parent.left
-                                anchors.leftMargin: 25
+                                anchors.leftMargin: 50
                                 anchors.top: overview.bottom
                                 anchors.topMargin: 25
                                 Row {
-                                    spacing: 40
+                                    spacing: 70
                                     Rectangle {
                                         id:row_rectangle1
                                         color: "#4D05324D"
@@ -3810,7 +3810,7 @@ ApplicationWindow {
                                 anchors.top: list_of_rpa_text.bottom
                                 anchors.topMargin: 30
                                 width: manage_rpa_header1.width - 50
-                                height: 400
+                                height: parent.height - 50
                                 color: "#031C28"
                                 visible: true
 
@@ -4651,7 +4651,6 @@ ApplicationWindow {
                             Timer {
                                 interval: 100; running: true; repeat: true
                                 onTriggered:{
-                                   // firmware_list_model.model = firmware_upgrade.modellist
                                     firmware_list_model.model = rpadatabase.firmwarelog_list
 
                                 }
@@ -4660,12 +4659,13 @@ ApplicationWindow {
                             ListView {
                                 id: firmware_list_model
                                 anchors.fill: parent
-                                //model: rpadatabase.modellist
+                                anchors.top: parent.top
+                                anchors.topMargin: 50
                                 model: rpadatabase.firmwarelog_list
                                 delegate: RowLayout {
                                     width: parent.width
                                     height: 40
-                                    spacing: 10
+                                    spacing: 20
 
                                     Text {
                                         id: firmware_info_Text
@@ -4840,13 +4840,14 @@ ApplicationWindow {
                             color: "#05324D"
                             border.color: "#F25822"
                             border.width: 0.5
-                            width: mainWindow.width/9
-                            height: mainWindow.height/16
+                            width: mainWindow.width/11
+                            height: mainWindow.height/17
                             radius: 3
                             Text {
                                 text: "Your Profile"
                                 color: "#FFFFFF"
                                 font.pointSize:ScreenTools.smallFontPointSize
+                                font.bold: true
                                 anchors.centerIn: parent
                                 anchors.verticalCenter: parent.verticalCenter
                             }
@@ -4873,7 +4874,7 @@ ApplicationWindow {
                         }
 
                         Column{
-                            spacing: 10
+                            spacing: 30
                             anchors.left: parent.left
                             anchors.leftMargin: 20
                             anchors.top: parent.top
@@ -5067,9 +5068,9 @@ ApplicationWindow {
                         Rectangle {
                             id: update_profile
                             height: mainWindow.height/20
-                            width: mainWindow.width/12
+                            width: mainWindow.width/14
                             anchors.right: users_information_header1.right
-                            anchors.rightMargin: 300
+                            anchors.rightMargin: 220
                             anchors.bottom: users_information_header1.bottom
                             anchors.bottomMargin: 80
                             color: "#05324D"
@@ -5120,7 +5121,7 @@ ApplicationWindow {
                         Rectangle {
                             id: back_to_profile
                             height: mainWindow.height/20
-                            width: mainWindow.width/12
+                            width: mainWindow.width/14
                             anchors.left: update_profile.right
                             anchors.leftMargin: 20
                             anchors.bottom: users_information_header1.bottom

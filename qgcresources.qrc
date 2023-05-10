@@ -104,6 +104,8 @@
         <file alias="user_photo.png">resources/user_photo.png</file>
         <file alias="create_mission.png">resources/create_mission.png</file>
         <file alias="firmware.png">resources/firmware.png</file>
+        <file alias="maintoolbar_home.png">resources/maintoolbar_home.png</file>
+        <file alias="role.png">resources/role.png</file>
     </qresource>
     <qresource prefix="/res/firmware">
         <file alias="3drradio.png">resources/firmware/3drradio.png</file>

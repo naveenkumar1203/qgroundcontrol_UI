@@ -98,14 +98,14 @@ Rectangle {
 
         Rectangle{
             id: home_button
-            width: 35
-            height: 35
+            width: 90
+            height: 90
             color: "#F25822"
-            radius: 10
+            radius: 30
 
             Image {
                 id: home_image
-                source: "/res/home.png"
+                source: "/res/maintoolbar_home.png"
                 anchors.centerIn: parent
             }
 
