@@ -154,6 +154,7 @@ void TableModel::delete_query(const QString &name, const QString &number)
     QString deleteUin =  uinlist.at(number.toInt());
     QString user_link = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + user + "/RPA/UIN/" + deleteUin + ".json";
     m_networkreply = m_networkAccessManager->deleteResource(QNetworkRequest(QUrl(user_link)));
+    qDebug()<<"deleted----->";
     emit dataDeleted();
 }
 

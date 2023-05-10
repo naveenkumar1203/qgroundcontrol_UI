@@ -108,6 +108,7 @@
         <file alias="otp.png">resources/otp.png</file>
         <file alias="user_details.png">resources/user_details.png</file>
         <file alias="User_login.png">resources/User_login.png</file>
+        <file alias="role.png">resources/role.png</file>
     </qresource>
     <qresource prefix="/res/firmware">
         <file alias="3drradio.png">resources/firmware/3drradio.png</file>
