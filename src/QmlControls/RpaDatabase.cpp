@@ -144,6 +144,64 @@ QVariant TableModel::data(const QModelIndex & index, int role) const {
     }
 }
 
+void TableModel::edit_rpa(const QString &name,const QString &number)
+{
+    qDebug()<<"in Edit rpa--->";
+    QString user_mail = name;
+    int pos = user_mail.lastIndexOf("@");
+    user_mail = user_mail.left(pos);
+    user = user_mail;
+    QString editUin = uinlist.at(number.toInt());
+    qDebug()<<"editUin--->" + editUin;
+    QString user_link = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + usermail + "/RPA/UIN/" + editUin + "/.json";
+    m_networkreply = m_networkAccessManager->get(QNetworkRequest(QUrl(user_link)));
+    connect(m_networkreply,&QNetworkReply::readyRead,this,&TableModel::network_reply_read_getData);
+}
+
+void TableModel :: network_reply_read_getData()
+{
+    QByteArray response = m_networkreply->readAll();
+    QJsonDocument doc = QJsonDocument::fromJson(response);
+    qDebug()<<"response in edit data---->" + response;
+    //qDebug()<<"doc in edit data----->" + doc;
+    QJsonObject object = doc.object();
+    m_type = object["Type"].toString();
+    m_model = object["Model"].toString();
+    m_droneName = object["Name"].toString();
+    m_uin = object["UINNO"].toString();
+    qDebug()<<m_type+ " "+m_droneName + ' ' +m_model + ' '+ m_uin;
+    emit rpa_data_update();
+
+}
+
+void TableModel::update_rpa(const QString &droneType, const QString &droneModel, const QString &droneName, const QString &uinText)
+{
+    m_networkAccessManagerWithPatch = new QNetworkAccessManagerWithPatch(this);
+    QVariantMap newAddition;
+    newAddition["UINNO"] = uinText;
+    newAddition["Type"] = droneType;
+    newAddition["Model"] = droneModel;
+    newAddition["Name"] = droneName;
+    qDebug()<<"newAddition:"<<newAddition;
+    QJsonDocument jsonDoc = QJsonDocument::fromVariant(newAddition);
+    qDebug()<<"jsonDoc:"<<jsonDoc;
+    QNetworkRequest newAdditionRequest(QUrl("https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + user + "/RPA/UIN/" + uinText + "/.json"));
+    newAdditionRequest.setHeader(QNetworkRequest::ContentTypeHeader,QString("application/json"));
+    m_networkAccessManagerWithPatch->patch(newAdditionRequest,jsonDoc.toJson());
+    m_networkreply =     m_networkAccessManagerWithPatch->patch(newAdditionRequest,jsonDoc.toJson());
+    connect(m_networkreply,&QNetworkReply::readyRead,this,&TableModel::get_updated_rpaData);
+}
+
+void TableModel::get_updated_rpaData()
+{
+    qDebug()<<"In getting rpa data--->";
+    QString link1 = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + user + "/RPA/UIN/.json";
+    m_networkreply = m_networkAccessManager->get(QNetworkRequest(QUrl(link1)));
+    connect(m_networkreply,&QNetworkReply::readyRead,this,&TableModel::network_reply_read_addData);
+
+}
+
+
 void TableModel::delete_query(const QString &name, const QString &number)
 {
     QString user_mail = name;
@@ -154,7 +212,6 @@ void TableModel::delete_query(const QString &name, const QString &number)
     QString deleteUin =  uinlist.at(number.toInt());
     QString user_link = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + user + "/RPA/UIN/" + deleteUin + ".json";
     m_networkreply = m_networkAccessManager->deleteResource(QNetworkRequest(QUrl(user_link)));
-    qDebug()<<"deleted----->";
     emit dataDeleted();
 }
 
@@ -235,6 +292,7 @@ void TableModel:: firmwarelog_contain_data()
 
 void TableModel::firmware_apply_read_addData(const QByteArray &response)
 {
+    m_firmwarelog_list.clear();
     //QByteArray response = m_networkreply->readAll();
     QJsonDocument doc = QJsonDocument::fromJson(response);
     QJsonObject object = doc.object();
@@ -248,7 +306,6 @@ void TableModel::firmware_apply_read_addData(const QByteArray &response)
             if(key1 == "status"){
                 QJsonValue value = jsonObject.value("status");
                 QString adddata = date_time + " " + " " + " " + " " + " " + value.toString();
-                m_firmwarelog_list.clear();
                 m_firmwarelog_list.append(adddata);
                 qDebug()<<m_firmwarelog_list;
                 qDebug()<<"error while updating firmware log";
@@ -260,44 +317,6 @@ void TableModel::firmware_apply_read_addData(const QByteArray &response)
     }
 
 }
-
-/*void TableModel::checkbox_edit(const QString &name,const QString &number,const QString &droneType, const QString &droneModel, const QString &droneName, const QString &uinText)
-{
-    QString user_mail = name;
-    int pos = user_mail.lastIndexOf("@");
-    //qDebug() << user_mail.left(pos);
-    user_mail = user_mail.left(pos);
-    user = user_mail;
-    uinText =  uinlist.at(number.toInt());
-    m_uin = uinText;
-    droneType = typelist.at(number.toInt());
-    m_type = droneType;
-    droneModel = modellist.at(number.toInt());
-    m_model = droneModel;
-    droneName = dronelist.at(number.toInt());
-    m_droneName = droneName;
-//    QString user_link = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + user + "/RPA/UIN/" + editUin + ".json";
-//    m_networkreply = m_networkAccessManager->get(QNetworkRequest(QUrl(user_link)));
-//    connect(m_networkreply,&QNetworkReply::readyRead,this,&TableModel::network_reply_read_editData);
-}
-
-void TableModel::update_rpa(const QString &droneType, const QString &droneModel, const QString &droneName, const QString &uinText)
-{
-    m_networkAccessManagerWithPatch = new QNetworkAccessManagerWithPatch(this);
-    QVariantMap newAddition;
-    newAddition["UINNO"] = uinText;
-    newAddition["Type"] = droneType;
-    newAddition["Model"] = droneModel;
-    newAddition["Name"] = droneName;
-    qDebug()<<"newAddition:"<<newAddition;
-    QJsonDocument jsonDoc = QJsonDocument::fromVariant(newAddition);
-    qDebug()<<"jsonDoc:"<<jsonDoc;
-    QNetworkRequest newAdditionRequest(QUrl("https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + user + "/RPA/UIN/" + uinText + "/.json"));
-    newAdditionRequest.setHeader(QNetworkRequest::ContentTypeHeader,QString("application/json"));
-    m_networkAccessManagerWithPatch->patch(newAdditionRequest,jsonDoc.toJson());
-
-}*/
-
 
 QHash<int, QByteArray> TableModel::roleNames() const {
     QHash<int, QByteArray> roles;

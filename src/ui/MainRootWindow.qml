@@ -139,6 +139,39 @@ ApplicationWindow {
                 rpadatabase.getData()
             }
 
+            onRpa_data_update: {
+
+                manage_rpa_header1.visible = false
+                rpa_register_page.visible = true
+                 console.log("in edit ----->"+rpadatabase.type)
+                 drone_contents.visible = true
+                if(rpadatabase.type === "Nano"){
+                    drone_type_list.currentIndex = 0
+                }
+                if(rpadatabase.type === "Micro"){
+                    drone_type_list.currentIndex = 1
+                }
+                if(rpadatabase.type === "Small"){
+                    drone_type_list.currentIndex = 2
+                }
+                if(rpadatabase.type === "Medium"){
+                    drone_type_list.currentIndex = 3
+                }
+                if(rpadatabase.type === "Large"){
+                    drone_type_list.currentIndex = 4
+                }
+                if(rpadatabase.model === "Model A"){
+                    drone_model_list.currentIndex = 0
+                }
+                if(rpadatabase.model === "Model B"){
+                    drone_model_list.currentIndex = 1
+                }
+                drone_name_text.text = rpadatabase.droneName
+                uin_input_text.text = rpadatabase.uin
+                uin_input_text.enabled = false
+
+            }
+
             onDataAdded: {
                 //rpadatabase.getData()
                 if(i == 1){
@@ -194,6 +227,7 @@ ApplicationWindow {
                                                              color: "#031C28"
                                                              border.width: 1
                                                              border.color: "#05324D"
+                                                             height: 30
                                                              Text {
                                                                  //anchors.horizontalCenter: parent.horizontalCenter
                                                                  anchors.centerIn:parent
@@ -311,11 +345,15 @@ ApplicationWindow {
                                                                         edit_button.color = "#F25822"
                                                                      }
                                                                      onClicked: {
-                                                                        //rpadatabase.edit_query(database_access.mail,model.index)
+                                                                        if(checkBoxState == 1){
+                                                                           rpadatabase.edit_rpa(database_access.mail,model.index)
                                                                            updateButton = 2
-                                                                           manage_rpa_header1.visible = false
-                                                                           rpa_register_page.visible = true
-                                                                           drone_contents.visible = true
+
+
+                                                                         }
+                                                                         else {
+                                                                            selectCheckBoxEditDialog.open()
+                                                                         }
                                                                     }
                                                                 }
                                                                 Button{
@@ -343,8 +381,13 @@ ApplicationWindow {
                                                                         delete_button.color = "#F25822"
                                                                      }
                                                                      onClicked: {
-                                                                         rpadatabase.delete_query(database_access.mail,model.index)
-                                                                         deleteDialog.open()
+                                                                        if(checkBoxState == 1) {
+                                                                            rpadatabase.delete_query(database_access.mail,model.index)
+                                                                            deleteDialog.open()
+                                                                         }
+                                                                         else {
+                                                                            selectCheckBoxDeleteDialog.open()
+                                                                         }
                                                                      }
                                                                 }
                                                              }
@@ -2172,12 +2215,19 @@ ApplicationWindow {
         text: "Please Select the Role."
     }
 
-//    MessageDialog {
-//        id: profileImageDialog
-//        title: "Profile Image"
-//        text: "Please Upload Your Profile Image."
-//        standardButtons: Dialog.Ok
-//    }
+    MessageDialog {
+        id: selectCheckBoxDeleteDialog
+        title: "Row Not Selected"
+        text: "Please select which Row you want to Delete."
+        standardButtons: Dialog.Ok
+    }
+
+    MessageDialog {
+        id: selectCheckBoxEditDialog
+        title: "Row Not Selected"
+        text: "Please select which Row you want to Edit."
+        standardButtons: Dialog.Ok
+    }
 
     MessageDialog {
         id: userRegisteredDialog
@@ -3692,6 +3742,7 @@ ApplicationWindow {
                                 anchors.leftMargin: 20
                                 anchors.top: overview.bottom
                                 anchors.topMargin: 15
+                                width: dashboard_rectangle_header1.width - 50
                                 Row {
                                     spacing: 25
                                     Rectangle {
@@ -4563,6 +4614,7 @@ ApplicationWindow {
                                     }
                                     else if(updateButton == 2){
                                         console.log("in update button else"+ updateButton)
+                                        rpadatabase.update_rpa(combo_box1.text, combo_box2.text, drone_name_text.text, uin_input_text.text)
                                         rpa_register_page.visible = false
                                         manage_rpa_header1.visible = true
                                         tableDialog.visible = true
@@ -4572,6 +4624,7 @@ ApplicationWindow {
                                         uin_input_text.text = ""
                                         uin_input_text.enabled = true
                                         updateButton = 1
+                                        checkBoxState = 0
                                         console.log("in update button else when ending"+ updateButton)
                                     }
 
@@ -5362,6 +5415,8 @@ ApplicationWindow {
                                     users_profile_header1.visible = false
                                     users_information_header1.visible = true
                                     userprofile_name.text = database_access.name
+                                    locality_field.activeFocus = true
+                                    address_field.activeFocus = true
                                     mail_address.text = database_access.mail
                                     mobile_number.text = database_access.number
                                     address_field.text = database_access.address
@@ -5396,7 +5451,7 @@ ApplicationWindow {
                                 border.width: 1
                                 border.color: "cyan"
 
-                                Label {
+                                Text {
                                     anchors.left: parent.left
                                     anchors.leftMargin: 10
                                     anchors.top: parent.top
@@ -5589,8 +5644,6 @@ ApplicationWindow {
                                             mobile_number.text = database_access.number
                                             address_field.text = database_access.address
                                             locality_field.text = database_access.locality
-                                            address_field.activeFocus = false
-                                            locality_field.activeFocus = false
                                         }
                                     }
                                 onPressed: {

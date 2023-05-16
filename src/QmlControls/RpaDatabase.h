@@ -33,6 +33,7 @@ public:
     Q_INVOKABLE QVariant data (const QModelIndex & index, int role) const override;
 
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role) override;
+
     Q_INVOKABLE void delete_query(const QString &name, const QString &number);
 
     Q_INVOKABLE void existingUIN(const QString &userName,const QString &uinText);
@@ -50,9 +51,10 @@ public:
     void modelSelected_list();
 
     void firmware_apply_read_addData(const QByteArray &response);
-    //Q_INVOKABLE void checkbox_edit(const QString &name,const QString &number,const QString &droneType,const QString &droneModel,const QString &droneName,const QString &uinText);
 
-    //Q_INVOKABLE void update_rpa(const QString &droneType,const QString &droneModel,const QString &droneName,const QString &uinText);
+    Q_INVOKABLE void edit_rpa(const QString &name, const QString &number);
+
+    Q_INVOKABLE void update_rpa(const QString &droneType,const QString &droneModel,const QString &droneName,const QString &uinText);
 
     Q_PROPERTY(QString droneName READ droneName WRITE setDroneName NOTIFY droneNameChanged)
     Q_PROPERTY(QString uin READ uin WRITE setUin NOTIFY uinChanged)
@@ -101,7 +103,9 @@ private:
 public slots:
     void network_reply_read();
     void network_reply_read_addData();
+    void network_reply_read_getData();
     void firmwarelog_contain_data();
+    void get_updated_rpaData();
 
 signals:
     void uinFound();
@@ -115,6 +119,7 @@ signals:
     void typeChanged();
     void modelChanged();
     void firmwarelog_listChanged();
+    void rpa_data_update();
 
 };
 
