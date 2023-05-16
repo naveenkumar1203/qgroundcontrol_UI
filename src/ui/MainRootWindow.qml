@@ -1827,6 +1827,11 @@ ApplicationWindow {
                                                     }
                                                 }
                                             }
+                                            Label{
+                                                text: "*Password must be at least 6 characters"
+                                                color: "white"
+                                                font.pointSize:ScreenTools.smallFontPointSize
+                                            }
                                         }
                                     }
                                 }
