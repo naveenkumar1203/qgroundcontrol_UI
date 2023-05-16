@@ -235,6 +235,7 @@ void TableModel:: firmwarelog_contain_data()
 void TableModel::firmware_apply_read_addData(const QByteArray &response)
 {
     //QByteArray response = m_networkreply->readAll();
+    m_firmwarelog_list.clear();
     QJsonDocument doc = QJsonDocument::fromJson(response);
     QJsonObject object = doc.object();
     foreach(const QString& key, object.keys()) {
@@ -247,7 +248,6 @@ void TableModel::firmware_apply_read_addData(const QByteArray &response)
             if(key1 == "status"){
                 QJsonValue value = jsonObject.value("status");
                 QString adddata = date_time + " " + " " + " " + " " + " " + value.toString();
-                m_firmwarelog_list.clear();
                 m_firmwarelog_list.append(adddata);
                 qDebug()<<m_firmwarelog_list;
                 qDebug()<<"error while updating firmware log";
