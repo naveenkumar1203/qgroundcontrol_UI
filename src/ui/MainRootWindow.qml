@@ -5011,7 +5011,7 @@ ApplicationWindow {
                             border.color: "#05324D"
                             border.width: 1
                             Timer {
-                                interval: 50; running: true; repeat: true
+                                interval: 10; running: true; repeat: true
                                 onTriggered:{
                                     folder_list_model.model = rpadatabase.filename
                                 }
