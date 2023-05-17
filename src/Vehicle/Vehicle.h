@@ -47,6 +47,7 @@
 #include "FTPManager.h"
 #include "ImageProtocolManager.h"
 #include "RpaDatabase.h"
+#include "FireBaseAccess.h"
 
 class Actuators;
 class EventHandler;
@@ -89,6 +90,9 @@ Q_DECLARE_LOGGING_CATEGORY(VehicleLog)
 class Vehicle : public FactGroup
 {
     Q_OBJECT
+
+    TableModel obj;
+    FireBaseAccess obj1;
 
     friend class InitialConnectStateMachine;
     friend class VehicleLinkManager;

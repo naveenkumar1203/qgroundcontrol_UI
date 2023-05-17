@@ -135,9 +135,9 @@ ApplicationWindow {
                 rpadatabase.add_rpa(drone_type_list.currentText,drone_model_list.currentText,drone_name_text.text,uin_input_text.text)
                 i = 1
             }
-            onDataDeleted: {
-                rpadatabase.getData()
-            }
+//            onDataDeleted: {
+//                rpadatabase.getData()
+//            }
 
             onDataAdded: {
                 //rpadatabase.getData()
@@ -248,7 +248,7 @@ ApplicationWindow {
                                                              }
                                                          }
                                                          TableViewColumn {
-                                                             width: (parent.width - checkbox.width)/5
+                                                             width: (parent.width - checkbox.width)/4
                                                              id: type_column
                                                              title: "Type"
                                                              movable: false
@@ -256,100 +256,100 @@ ApplicationWindow {
                                                              role: "type"
                                                          }
                                                          TableViewColumn{
-                                                             width: (parent.width - checkbox.width)/5
+                                                             width: (parent.width - checkbox.width)/4
                                                              role: "model_name"
                                                              title: "ModelName"
                                                              movable: false
                                                              resizable: false
                                                          }
                                                          TableViewColumn{
-                                                             width: (parent.width - checkbox.width)/5
+                                                             width: (parent.width - checkbox.width)/4
                                                              role: "drone_name"
                                                              title: "DroneName"
                                                              movable: false
                                                              resizable: false
                                                          }
                                                          TableViewColumn{
-                                                             width: (parent.width - checkbox.width)/5
+                                                             width: (parent.width - checkbox.width)/4
                                                              title: "UIN"
                                                              movable: false
                                                              resizable: false
                                                              role: "uin_number"
                                                          }
-                                                         TableViewColumn{
-                                                             width: (parent.width - checkbox.width)/5
-                                                             title: "Actions"
-                                                             movable: false
-                                                             resizable: false
-                                                             role: "edit_operations"
-                                                             delegate: Rectangle{
-                                                             color:"#031C28"
-                                                             Row{
-                                                                 anchors.fill:parent
-                                                                 Button{
-                                                                     height: parent.height
-                                                                     width : parent.width/2
-                                                                     //text: "edit"
-                                                                     Text{
-                                                                         text: "edit"
-                                                                         font.pointSize: ScreenTools.smallFontPointSize
-                                                                         //font.pixelSize: 15
-                                                                         anchors.centerIn: parent
-                                                                         color: "white"
-                                                                     }
-                                                                     background: Rectangle {
-                                                                         id: edit_button
-                                                                         implicitWidth: parent.width/2
-                                                                         implicitHeight: parent.height
-                                                                         color: "#F25822"
-                                                                         radius: 4
-                                                                     }
-                                                                     onPressed:{
-                                                                        edit_button.color = "#031C28"
-                                                                     }
-                                                                     onReleased:{
-                                                                        edit_button.color = "#F25822"
-                                                                     }
-                                                                     onClicked: {
-                                                                        //rpadatabase.edit_query(database_access.mail,model.index)
-                                                                           updateButton = 2
-                                                                           manage_rpa_header1.visible = false
-                                                                           rpa_register_page.visible = true
-                                                                           drone_contents.visible = true
-                                                                    }
-                                                                }
-                                                                Button{
-                                                                     height: parent.height
-                                                                     width: parent.width/2
-                                                                     //text: "delete"
-                                                                     Text{
-                                                                         text: "Delete"
-                                                                         font.pointSize: ScreenTools.smallFontPointSize
-                                                                         //font.pixelSize: 15
-                                                                         anchors.centerIn: parent
-                                                                         color: "white"
-                                                                     }
-                                                                     background: Rectangle {
-                                                                         id: delete_button
-                                                                         implicitWidth: parent.width/2
-                                                                         implicitHeight: parent.height
-                                                                         color: "#F25822"
-                                                                         radius: 4
-                                                                     }
-                                                                     onPressed:{
-                                                                        delete_button.color = "#031C28"
-                                                                     }
-                                                                     onReleased:{
-                                                                        delete_button.color = "#F25822"
-                                                                     }
-                                                                     onClicked: {
-                                                                         rpadatabase.delete_query(database_access.mail,model.index)
-                                                                         deleteDialog.open()
-                                                                     }
-                                                                }
-                                                             }
-                                                             }
-                                                         }
+//                                                         TableViewColumn{
+//                                                             width: (parent.width - checkbox.width)/4
+//                                                             title: "Actions"
+//                                                             movable: false
+//                                                             resizable: false
+//                                                             role: "edit_operations"
+//                                                             delegate: Rectangle{
+//                                                             color:"#031C28"
+//                                                             Row{
+//                                                                 anchors.fill:parent
+//                                                                 Button{
+//                                                                     height: parent.height
+//                                                                     width : parent.width/2
+//                                                                     //text: "edit"
+//                                                                     Text{
+//                                                                         text: "edit"
+//                                                                         font.pointSize: ScreenTools.smallFontPointSize
+//                                                                         //font.pixelSize: 15
+//                                                                         anchors.centerIn: parent
+//                                                                         color: "white"
+//                                                                     }
+//                                                                     background: Rectangle {
+//                                                                         id: edit_button
+//                                                                         implicitWidth: parent.width/2
+//                                                                         implicitHeight: parent.height
+//                                                                         color: "#F25822"
+//                                                                         radius: 4
+//                                                                     }
+//                                                                     onPressed:{
+//                                                                        edit_button.color = "#031C28"
+//                                                                     }
+//                                                                     onReleased:{
+//                                                                        edit_button.color = "#F25822"
+//                                                                     }
+//                                                                     onClicked: {
+//                                                                        //rpadatabase.edit_query(database_access.mail,model.index)
+//                                                                           updateButton = 2
+//                                                                           manage_rpa_header1.visible = false
+//                                                                           rpa_register_page.visible = true
+//                                                                           drone_contents.visible = true
+//                                                                    }
+//                                                                }
+//                                                                Button{
+//                                                                     height: parent.height
+//                                                                     width: parent.width/2
+//                                                                     //text: "delete"
+//                                                                     Text{
+//                                                                         text: "Delete"
+//                                                                         font.pointSize: ScreenTools.smallFontPointSize
+//                                                                         //font.pixelSize: 15
+//                                                                         anchors.centerIn: parent
+//                                                                         color: "white"
+//                                                                     }
+//                                                                     background: Rectangle {
+//                                                                         id: delete_button
+//                                                                         implicitWidth: parent.width/2
+//                                                                         implicitHeight: parent.height
+//                                                                         color: "#F25822"
+//                                                                         radius: 4
+//                                                                     }
+//                                                                     onPressed:{
+//                                                                        delete_button.color = "#031C28"
+//                                                                     }
+//                                                                     onReleased:{
+//                                                                        delete_button.color = "#F25822"
+//                                                                     }
+//                                                                     onClicked: {
+//                                                                         rpadatabase.delete_query(database_access.mail,model.index)
+//                                                                         deleteDialog.open()
+//                                                                     }
+//                                                                }
+//                                                             }
+//                                                             }
+                                                        // }
                                                      }
                                                      `,
                                                      table_rect,
@@ -1785,9 +1785,16 @@ ApplicationWindow {
                                                 }
                                             }
                                         }
+                                        Label{
+                                            text: "*Password must be at least 6 characters"
+                                            color: "white"
+                                            font.pointSize:ScreenTools.smallFontPointSize
+                                        }
+
                                     }
                                 }
                             }
+
                     }
                     Column{
                         anchors.top: scrollview.bottom
@@ -3363,6 +3370,7 @@ ApplicationWindow {
                             //                            onExited: parent.color = '#031C28'
                             anchors.fill: flight_log_button
                             onClicked: {
+                                rpadatabase.read_text_file(database_access.mail,QGroundControl.settingsManager.appSettings.telemetrySavePath)
                                 flight_log_button.color = "#F25822"
                                 flight_log_rectangle.visible = true
                                 manage_rpa_rectangle.visible = false
@@ -3875,6 +3883,21 @@ ApplicationWindow {
                                     }
                                 }
                             }
+                            //====have to put copyrights=====//
+                            Rectangle {
+                                id: copyrights
+                                anchors.bottom: dashboard_rectangle_header1.bottom
+                                anchors.bottomMargin: 65
+                                height: 40
+                                width: parent.width
+                                color: "#05324D"
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: "@2023 GoDrona | All Rights Reserved"
+                                    font.pointSize: 10
+                                    color: "White"
+                                }
+                            }
                         }
                     }
                 }
@@ -4044,16 +4067,27 @@ ApplicationWindow {
                             anchors.top: list_of_rpa_text.bottom
                             anchors.topMargin: 30
                             width: manage_rpa_header1.width - 50
-                            height: parent.height - 50
+                            height: screen.height - 100
                             color: "#031C28"
 //                            border.width: 1
 //                            border.color: "#05324D"
                             visible: true
 
                             }
+                           Rectangle {
+                               anchors.bottom: manage_rpa_header1.bottom
+                               anchors.bottomMargin: 65
+                               height: 40
+                               width: parent.width
+                               color: "#05324D"
+                               Text {
+                                   anchors.centerIn: parent
+                                   text: "@2023 GoDrona | All Rights Reserved"
+                                   font.pointSize: 10
+                                   color: "White"
+                               }
+                           }
                         }
-
-
                     }
                     Rectangle{
                         id: rpa_register_page
@@ -4610,12 +4644,25 @@ ApplicationWindow {
                                     uin_input_text.enabled = true
                                 }
                             }
+                        }                       
+                        Rectangle {
+                            anchors.bottom: rpa_register_page.bottom
+                            anchors.bottomMargin: 65
+                            height: 40
+                            width: parent.width
+                            color: "#05324D"
+                            Text {
+                                anchors.centerIn: parent
+                                text: "@2023 GoDrona | All Rights Reserved"
+                                font.pointSize: 10
+                                color: "White"
+                            }
                         }
-
-                        MessageDialog{
-                            id:fillDialog
-                            text:"please fill the details correctly"
-                        }
+                    }
+                    MessageDialog{
+                        id:fillDialog
+                        text:"please fill the details correctly"
+                    }
 
 //                        MessageDialog{
 //                            id:uinDialog
@@ -4623,14 +4670,13 @@ ApplicationWindow {
 //                            width: 50
 //                            text:"Registered Successfully."
 //                        }
-                        MessageDialog{
-                            id:tableDialog
-                            text:"Updated Successfully."
-                        }
-                        MessageDialog{
-                            id:deleteDialog
-                            text:"Row Deleted Successfully."
-                        }
+                    MessageDialog{
+                        id:tableDialog
+                        text:"Updated Successfully."
+                    }
+                    MessageDialog{
+                        id:deleteDialog
+                        text:"Row Deleted Successfully."
                     }
 
                 }
@@ -4967,14 +5013,14 @@ ApplicationWindow {
                             Timer {
                                 interval: 50; running: true; repeat: true
                                 onTriggered:{
-//                                    folder_list_model.model = aws.name
+                                    folder_list_model.model = rpadatabase.filename
                                 }
                             }
 
                             ListView {
                                 id: folder_list_model
                                 anchors.fill: parent
-                                //model: aws.name
+                                model: rpadatabase.filename
                                 delegate: RowLayout {
                                     id: rowLayout
                                     width: parent.width
@@ -5059,6 +5105,7 @@ ApplicationWindow {
                                                 }
                                                 pfx_file_location_function(destFile);
                                                 //aws.download_file(modelData,destFileLoaction);
+                                                rpadatabase.download_function(modelData,database_access.mail,destFileLoaction)
                                             });
                                             fileDialog.rejected.connect(function(){
                                                 log_download_button.color = "#DA2C43";
@@ -5067,6 +5114,19 @@ ApplicationWindow {
                                             fileDialog.open();
                                         }
                                     }
+                                }
+                            }
+                            Rectangle {
+                                anchors.bottom: flightlog_header1.bottom
+                                anchors.bottomMargin: 65
+                                height: 40
+                                width: parent.width
+                                color: "#05324D"
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: "@2023 GoDrona | All Rights Reserved"
+                                    font.pointSize: 10
+                                    color: "White"
                                 }
                             }
                         }
@@ -5162,6 +5222,19 @@ ApplicationWindow {
                                         font.pointSize: 11
                                         Layout.alignment: Qt.AlignCenter
                                     }
+                                }
+                            }
+                            Rectangle {
+                                anchors.bottom: firmware_log_header1.bottom
+                                anchors.bottomMargin: 65
+                                height: 40
+                                width: parent.width
+                                color: "#05324D"
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: "@2023 GoDrona | All Rights Reserved"
+                                    font.pointSize: 10
+                                    color: "White"
                                 }
                             }
                         }

@@ -12,6 +12,8 @@ QString g_locality;
 QString g_role;
 QString usermail = " ";
 
+QString firebase_storage_name;
+
 FireBaseAccess::FireBaseAccess(QObject *parent)
     : QObject{parent}
 {
@@ -123,6 +125,7 @@ void FireBaseAccess::registered_user(const QString &mail, const QString &passwor
     user_mail = user_mail.left(pos);
     usermail = user_mail;
     m_firebasejsonname = user_mail;
+    firebase_storage_name = m_firebasejsonname;
     registered_user_signup(mail,password);
 }
 
@@ -394,4 +397,18 @@ void FireBaseAccess::setRole(const QString &newRole)
         return;
     m_role = newRole;
     emit roleChanged();
+}
+
+QString FireBaseAccess::storagename() const
+{
+    //return m_storagename;
+    return firebase_storage_name;
+}
+
+void FireBaseAccess::setStoragename(const QString &newStoragename)
+{
+    if (m_storagename == newStoragename)
+        return;
+    m_storagename = newStoragename;
+    emit storagenameChanged();
 }

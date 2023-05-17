@@ -70,6 +70,8 @@ public:
 
     Q_PROPERTY(QString firebasejsonname READ firebasejsonname WRITE setFirebasejsonname NOTIFY firebasejsonnameChanged)
 
+    Q_PROPERTY(QString storagename READ storagename WRITE setStoragename NOTIFY storagenameChanged)
+
     QString name() const;
     void setName(const QString &newName);
 
@@ -93,6 +95,9 @@ public:
 
     QString role() const;
     void setRole(const QString &newRole);
+
+    QString storagename() const;
+    void setStoragename(const QString &newStoragename);
 
 public slots:
     void new_user_network_reply_read();
@@ -128,6 +133,8 @@ signals:
 
     void roleChanged();
 
+    void storagenameChanged();
+
 private:
     QString m_apikey = "AIzaSyDuhh-doXjdmw7FvYKF81Kqmv5AlotC2ZY";
     QNetworkAccessManager *m_NetworkAccessManager;
@@ -144,6 +151,7 @@ private:
     QString m_address;
     QString m_locality;
     QString m_role;
+    QString m_storagename;
 };
 
 #endif // FIREBASEACCESS_H

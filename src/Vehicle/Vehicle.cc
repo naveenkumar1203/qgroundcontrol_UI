@@ -3798,31 +3798,31 @@ bool Vehicle::isInitialConnectComplete() const
 
 void Vehicle::_initializeCsv()
 {
+    qDebug()<<"Inside initialize csv";
     if(!_toolbox->settingsManager()->appSettings()->saveCsvTelemetry()->rawValue().toBool()){
         return;
     }
     QString now = QDateTime::currentDateTime().toString("yyyy-MM-dd hh-mm-ss");
-    //RpaDatabase obj;
-    //QString model = _toolbox->rpadatabase()->model(); //obj.model();
-    //QString uin = _toolbox->rpadatabase()->uin(); //obj.uin();
-    //QString fileName = QString("%1 vehicle%2.csv").arg(now).arg(_id);
+    QString model = obj.model(); //_toolbox->tableModel()->model();
+    qDebug()<<"model file name is " <<model;
+    QString uin = obj.uin(); //_toolbox->tableModel()->uin();
+    qDebug()<<"uin file name is " <<uin;
 
-    //QString fileName = QString("%1 %2 %3.csv").arg(now).arg(model).arg(uin);
-    //QDir saveDir(_toolbox->settingsManager()->appSettings()->telemetrySavePath());
+    QString fileName = QString("%1%2%3.csv").arg(now).arg(model).arg(uin);
     QString flightlog_filename = _toolbox->settingsManager()->appSettings()->telemetrySavePath();
-    qDebug()<<flightlog_filename;
-    folder_location = flightlog_filename;
-    //file_name = fileName;
+    file_name = fileName;
+    folder_location = flightlog_filename + "/" + file_name;
     QDir saveDir (flightlog_filename);
-    //_csvLogFile.setFileName(saveDir.absoluteFilePath(fileName));
+    _csvLogFile.setFileName(saveDir.absoluteFilePath(fileName));
 
-    //QString userName = _toolbox->ajaydatabase()->awsname();
-    //QString user_text_file = QString("%1.txt").arg(userName);
-    //qDebug()<<"user_text_file.........."<<user_text_file;
+
+    user_name = obj1.storagename();
+
+    QString userName = obj1.storagename(); //_toolbox->ajaydatabase()->awsname();
+    QString user_text_file = QString("%1.txt").arg(userName);
     QDir saveDir1 (flightlog_filename);
-    //_userTextFile.setFileName(saveDir1.absoluteFilePath(user_text_file));
+    _userTextFile.setFileName(saveDir1.absoluteFilePath(user_text_file));
 
-    emit flightlog_filenameChanged();
 
     if (!_csvLogFile.open(QIODevice::Append)) {
         qCWarning(VehicleLog) << "unable to open file for csv logging, Stopping csv logging!";
@@ -3830,7 +3830,7 @@ void Vehicle::_initializeCsv()
     }
 
     if (!_userTextFile.open(QIODevice::Append)) {
-        qCWarning(VehicleLog) << "unable to open file for csv logging, Stopping csv logging!";
+        qCWarning(VehicleLog) << "unable to text file!";
         return;
     }
 
@@ -3846,7 +3846,6 @@ void Vehicle::_initializeCsv()
     stream << "Timestamp," << allFactNames.join(",") << "\n";
     qDebug()<<"inside initialise csv";
 }
-
 QString Vehicle::flightlog_filename() const
 {
     QString flightlog_filename = "file://"+ _toolbox->settingsManager()->appSettings()->telemetrySavePath();
@@ -3872,26 +3871,17 @@ void Vehicle::_writeCsvLine()
         _initializeCsv();
     }
 
-    //user_name = _toolbox->ajaydatabase()->awsname();
 
-    //current_model = _toolbox->rpadatabase()->model(); //obj.model();
-    //current_uin = _toolbox->rpadatabase()->uin(); //obj.uin();
-    //qDebug()<<"current------------"<<current_model;
-    //qDebug()<<"current------------"<<current_uin;
+    current_model = obj.model(); //_toolbox->tableModel()->model();
+    current_uin = obj.uin(); //_toolbox->tableModel()->uin();
 
     if(previous_model == "" && previous_uin == ""){
         previous_model = current_model;
         previous_uin = current_uin;
-        //qDebug()<<"previous------------"<<previous_model;
-        //qDebug()<<"previous------------"<<previous_uin;
     }
 
     if(current_model != previous_model || current_uin != previous_uin){
-        //qDebug()<<"current and previous are not same";
-        //qDebug()<<"not same current------------"<<current_model;
-        //qDebug()<<"not same current------------"<<current_uin;
-        //qDebug()<<"not same previous------------"<<previous_model;
-        //qDebug()<<"not same previous------------"<<previous_uin;
+        qDebug()<<"model changed";
         _csvLogFile.close();
         previous_model = current_model;
         previous_uin = current_uin;
@@ -3931,9 +3921,10 @@ void Vehicle::_writeCsvLine()
     if(!_armed){
             if (vehicle_armed == 1){
                 //qDebug()<<"vehicle is not armed";
-                QTextStream stream(&_userTextFile);
-                stream << file_name;
+                //QTextStream stream(&_userTextFile);
+                //stream << file_name;
                 //_toolbox->awsoperations()->s3_function(user_name,file_name,folder_location);
+                obj.upload_function(file_name,user_name,folder_location);
             }
             vehicle_armed = 0;
         }

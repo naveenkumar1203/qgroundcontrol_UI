@@ -11,6 +11,7 @@
 #include <QJsonDocument>
 #include <QNetworkRequest>
 #include <QJsonObject>
+#include <QFile>
 
 class TableModel : public QAbstractTableModel
 {
@@ -33,7 +34,7 @@ public:
     Q_INVOKABLE QVariant data (const QModelIndex & index, int role) const override;
 
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role) override;
-    Q_INVOKABLE void delete_query(const QString &name, const QString &number);
+    //Q_INVOKABLE void delete_query(const QString &name, const QString &number);
 
     Q_INVOKABLE void existingUIN(const QString &userName,const QString &uinText);
 
@@ -53,6 +54,16 @@ public:
     //Q_INVOKABLE void checkbox_edit(const QString &name,const QString &number,const QString &droneType,const QString &droneModel,const QString &droneName,const QString &uinText);
 
     //Q_INVOKABLE void update_rpa(const QString &droneType,const QString &droneModel,const QString &droneName,const QString &uinText);
+
+    void upload_function(const QString &firebase_file_name, const QString &firebase_folder_name,const QString &folder_location);
+    void list_function(const QString &firebase_folder_name);
+
+    Q_INVOKABLE void download_function(const QString &file_name, const QString &firebase_folder_name, const QString &local_pc_location);
+
+    Q_INVOKABLE void read_text_file(QString user_text_file_name,QString user_text_file_folder);
+
+    Q_PROPERTY(QStringList filename READ filename WRITE setFileName NOTIFY filenameChanged)
+
 
     Q_PROPERTY(QString droneName READ droneName WRITE setDroneName NOTIFY droneNameChanged)
     Q_PROPERTY(QString uin READ uin WRITE setUin NOTIFY uinChanged)
@@ -75,6 +86,9 @@ public:
     QStringList firmwarelog_list() const;
     void setFirmwarelog_list(const QStringList &newFirmwarelog_list);
 
+    QStringList filename() const;
+    void setFileName(const QStringList &newFilename);
+
 protected:
     QHash<int, QByteArray> roleNames() const override;
 private:
@@ -87,6 +101,7 @@ private:
     QNetworkAccessManager *m_networkAccessManager;
     QNetworkAccessManagerWithPatch *m_networkAccessManagerWithPatch;
 
+    QString _projectID = "godrona-gcs";
 
     QString m_droneName;
 
@@ -98,6 +113,8 @@ private:
 
     QStringList m_firmwarelog_list;
 
+    QStringList m_filename;
+
 public slots:
     void network_reply_read();
     void network_reply_read_addData();
@@ -108,13 +125,14 @@ signals:
     void uinNotFound();
     void dataAdded();
     void showTable();
-    void dataDeleted();
+    //void dataDeleted();
 
     void droneNameChanged();
     void uinChanged();
     void typeChanged();
     void modelChanged();
     void firmwarelog_listChanged();
+    void filenameChanged();
 
 };
 

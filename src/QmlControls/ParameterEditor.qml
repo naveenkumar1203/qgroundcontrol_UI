@@ -72,6 +72,7 @@ Item{
             fly_button.color = "#F25822"
         }
         onClicked: {
+            rpadatabase.modelSelected(checkBoxNumber)
             if(checkBoxState === 0){
                             select_the_modelDialog.open()
                             console.log("model not selected")

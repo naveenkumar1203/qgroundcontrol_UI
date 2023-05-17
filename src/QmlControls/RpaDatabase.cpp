@@ -8,6 +8,11 @@
 QString uin_number;
 QString user;
 
+QString file_model;
+QString file_uin;
+
+QString uin_number_selected;
+
 class FireBaseAccess;
 
 TableModel::TableModel(QObject *parent) :
@@ -144,7 +149,7 @@ QVariant TableModel::data(const QModelIndex & index, int role) const {
     }
 }
 
-void TableModel::delete_query(const QString &name, const QString &number)
+/*void TableModel::delete_query(const QString &name, const QString &number)
 {
     QString user_mail = name;
     int pos = user_mail.lastIndexOf("@");
@@ -155,7 +160,7 @@ void TableModel::delete_query(const QString &name, const QString &number)
     QString user_link = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + user + "/RPA/UIN/" + deleteUin + ".json";
     m_networkreply = m_networkAccessManager->deleteResource(QNetworkRequest(QUrl(user_link)));
     emit dataDeleted();
-}
+}*/
 
 void TableModel::existingUIN(const QString &userName,const QString &uinText)
 {
@@ -207,7 +212,7 @@ void TableModel::manageRpaClicked(const QString &userName)
     getData();
 }
 
-void TableModel::modelSelected(const QString &number)
+/*void TableModel::modelSelected(const QString &number)
 {
     qDebug()<<"in model selected";
 
@@ -215,6 +220,196 @@ void TableModel::modelSelected(const QString &number)
     m_uin = uinlist.at(number.toInt());
     qDebug()<<modellist.at(number.toInt());
     m_model = modellist.at(number.toInt());
+}*/
+
+void TableModel::modelSelected(const QString &number)
+{
+    uin_number_selected = number;
+    QString link1 = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + user + "/RPA/UIN/.json";
+    m_networkreply = m_networkAccessManager->get(QNetworkRequest(QUrl(link1)));
+    connect(m_networkreply,&QNetworkReply::readyRead,this,&TableModel::modelSelected_list);
+}
+
+void TableModel::modelSelected_list()
+{
+    QByteArray response = m_networkreply->readAll();
+    QJsonDocument doc = QJsonDocument::fromJson(response);
+    QJsonObject object = doc.object();
+    uinlist.clear();
+    typelist.clear();
+    modellist.clear();
+    dronelist.clear();
+
+    foreach(const QString& key, object.keys()) {
+        QJsonValue value = object.value(key);
+        QJsonObject jsonObject = value.toObject();
+        foreach (const QString& key1, jsonObject.keys()) {
+            if(key1 == "Model"){
+                QJsonValue value = jsonObject.value("Model");
+                modellist.append(value.toString());
+                //qDebug()<<"Model appended";
+            }
+            if(key1 == "Type"){
+                QJsonValue value = jsonObject.value("Type");
+                typelist.append(value.toString());
+                //qDebug()<<"type appended";
+            }
+            if(key1 == "UINNO"){
+                QJsonValue value = jsonObject.value("UINNO");
+                uinlist.append(value.toString());
+                //qDebug()<<"uin appended";
+            }
+            if(key1 == "Name"){
+                QJsonValue value = jsonObject.value("Name");
+                dronelist.append(value.toString());
+            }
+        }
+    }
+
+    qDebug()<<"uin selected is"<<uinlist.at(uin_number_selected.toInt());
+    m_uin = uinlist.at(uin_number_selected.toInt());
+    qDebug()<<"model selected is"<<modellist.at(uin_number_selected.toInt());
+    m_model = modellist.at(uin_number_selected.toInt());
+    file_model = m_model;
+    file_uin = m_uin;
+
+}
+
+void TableModel::upload_function(const QString &firebase_file_name, const QString &firebase_folder_name,const QString &folder_location)
+{
+    QNetworkRequest request;
+
+    QString link = "https://firebasestorage.googleapis.com/v0/b/" + _projectID + ".appspot.com/o/" + firebase_folder_name + "%2F" + firebase_file_name  ;
+    qDebug()<<"link is"<<link;
+    request.setUrl(QUrl(link));
+    request.setHeader(QNetworkRequest::ContentTypeHeader,"text/csv");
+    request.setRawHeader("Authorization","Bearer");
+
+    QFile *file = new QFile(folder_location);
+    file->open(QIODevice::ReadOnly);
+
+    QNetworkReply *reply;
+    reply = m_networkAccessManager->post(request,file);
+    connect(reply,&QNetworkReply::finished,[reply, firebase_folder_name, this](){
+        if(reply->error() != QNetworkReply::NoError){
+            qDebug()<<"if msg" << " " << reply->error();
+            qDebug()<<reply->errorString();
+        }
+        else{
+            qDebug()<<"file uploaded";
+        }
+    });
+}
+
+void TableModel::list_function(const QString &firebase_folder_name)
+{
+    QString link = "https://firebasestorage.googleapis.com/v0/b/" + _projectID + ".appspot.com/o?prefix=" + firebase_folder_name + "/";
+    QNetworkRequest request;
+    request.setUrl(QUrl(link));
+    request.setRawHeader("Authorization","Bearer");
+    QNetworkReply *reply;
+    reply = m_networkAccessManager->get(request);
+    connect(reply,&QNetworkReply::finished,[reply,firebase_folder_name, this](){
+        //qDebug()<<"list is " <<reply->readAll();
+        QByteArray response = reply->readAll();
+        QJsonDocument doc = QJsonDocument::fromJson(response);
+        QJsonObject object = doc.object();
+        QJsonArray items = doc.object()["items"].toArray();
+        for (const QJsonValue& item : items) {
+            QString name = item.toObject()["name"].toString();
+            if (name.endsWith(".csv")) {
+                //qDebug()<<"total file name" << name;
+                QString file_name = firebase_folder_name + "/";
+                QString user_file = name;
+                user_file = user_file.remove(file_name);
+                //qDebug()<<"file name"<<user_file;
+                m_filename << user_file;
+                //qDebug()<<"list contents"<<user_file;
+                QString filepath = "QGroundControl.settingsManager.appSettings.telemetrySavePath" + user + "/.txt";
+                QFile file(filepath);
+                file.open(QIODevice::WriteOnly | QIODevice::ReadOnly | QIODevice::Text |QIODevice::Append);
+                QTextStream in(&file);
+                in << user_file;
+            }
+        }
+    });
+
+}
+
+void TableModel::read_text_file(QString user_text_file_name, QString user_text_file_folder)
+{
+    QString user_file = user_text_file_name;
+    int pos = user_file.lastIndexOf("@");
+    //qDebug() << user_mail.left(pos);
+    user_file = user_file.left(pos);
+
+    QString filepath = user_text_file_folder + "/" + user_file + ".txt";
+
+    //qDebug()<<"file to read" << filepath;
+
+    m_filename.clear();
+    QString link = "https://firebasestorage.googleapis.com/v0/b/" + _projectID + ".appspot.com/o?prefix=" + user_file + "/";
+    QNetworkRequest request;
+    request.setUrl(QUrl(link));
+    request.setRawHeader("Authorization","Bearer");
+    QNetworkReply *reply;
+    reply = m_networkAccessManager->get(request);
+    connect(reply,&QNetworkReply::finished,[reply,user_file, filepath, this](){
+        //qDebug()<<"list is " <<reply->readAll();
+        QByteArray response = reply->readAll();
+        QJsonDocument doc = QJsonDocument::fromJson(response);
+        QJsonObject object = doc.object();
+        QJsonArray items = doc.object()["items"].toArray();
+        for (const QJsonValue& item : items) {
+            QString name = item.toObject()["name"].toString();
+            if (name.endsWith(".csv")) {
+                //qDebug()<<"total files present" << name;
+                QString file_name = user_file + "/";
+                QString user_file = name;
+                user_file = user_file.remove(file_name);
+                qDebug()<<"list contents"<<user_file;
+                QFile file(filepath);
+                file.open(QIODevice::WriteOnly | QIODevice::ReadOnly | QIODevice::Text |QIODevice::Append);
+                QTextStream in(&file);
+                in << user_file;
+                m_filename.append(user_file);
+                qDebug()<< "reading" << m_filename;
+                file.close();
+            }
+        }
+    });
+}
+
+void TableModel::download_function(const QString &file_name, const QString &firebase_folder_name, const QString &local_pc_location)
+{
+    QString user_file = firebase_folder_name;
+    int pos = user_file.lastIndexOf("@");
+    user_file = user_file.left(pos);
+    qDebug() << user_file.left(pos);
+
+    QString user_download_location = local_pc_location + ".csv";
+    qDebug()<<"user download location"<<user_download_location;
+    QNetworkRequest request;
+
+    QString link = "https://firebasestorage.googleapis.com/v0/b/" + _projectID + ".appspot.com/o/" + user_file + "%2F" + file_name + "?alt=media";
+    qDebug()<<"link is"<<link;
+    request.setUrl(QUrl(link));
+    request.setHeader(QNetworkRequest::ContentTypeHeader,"text/csv");
+    request.setRawHeader("Authorization","Bearer");
+
+    QNetworkReply *response1 = m_networkAccessManager->get(QNetworkRequest(QUrl(QString::fromStdString(link.toStdString()))));
+    //qDebug()<<"response1 is--->"+response1;
+    connect(response1,&QNetworkReply::finished,[response1, local_pc_location, user_download_location](){
+        QByteArray data = response1->readAll();
+        QFile file(user_download_location);
+        if (!file.open(QIODevice::WriteOnly)) {
+            // handle error
+        }
+        file.write(data);
+        file.close();
+        qDebug()<<"else msg" << " " << response1->errorString();
+        qDebug()<<"file downloaded";
+    });
 }
 
 void TableModel::firmwareupgrade_data()
@@ -260,42 +455,7 @@ void TableModel::firmware_apply_read_addData(const QByteArray &response)
 
 }
 
-/*void TableModel::checkbox_edit(const QString &name,const QString &number,const QString &droneType, const QString &droneModel, const QString &droneName, const QString &uinText)
-{
-    QString user_mail = name;
-    int pos = user_mail.lastIndexOf("@");
-    //qDebug() << user_mail.left(pos);
-    user_mail = user_mail.left(pos);
-    user = user_mail;
-    uinText =  uinlist.at(number.toInt());
-    m_uin = uinText;
-    droneType = typelist.at(number.toInt());
-    m_type = droneType;
-    droneModel = modellist.at(number.toInt());
-    m_model = droneModel;
-    droneName = dronelist.at(number.toInt());
-    m_droneName = droneName;
-//    QString user_link = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + user + "/RPA/UIN/" + editUin + ".json";
-//    m_networkreply = m_networkAccessManager->get(QNetworkRequest(QUrl(user_link)));
-//    connect(m_networkreply,&QNetworkReply::readyRead,this,&TableModel::network_reply_read_editData);
-}
 
-void TableModel::update_rpa(const QString &droneType, const QString &droneModel, const QString &droneName, const QString &uinText)
-{
-    m_networkAccessManagerWithPatch = new QNetworkAccessManagerWithPatch(this);
-    QVariantMap newAddition;
-    newAddition["UINNO"] = uinText;
-    newAddition["Type"] = droneType;
-    newAddition["Model"] = droneModel;
-    newAddition["Name"] = droneName;
-    qDebug()<<"newAddition:"<<newAddition;
-    QJsonDocument jsonDoc = QJsonDocument::fromVariant(newAddition);
-    qDebug()<<"jsonDoc:"<<jsonDoc;
-    QNetworkRequest newAdditionRequest(QUrl("https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + user + "/RPA/UIN/" + uinText + "/.json"));
-    newAdditionRequest.setHeader(QNetworkRequest::ContentTypeHeader,QString("application/json"));
-    m_networkAccessManagerWithPatch->patch(newAdditionRequest,jsonDoc.toJson());
-
-}*/
 
 
 QHash<int, QByteArray> TableModel::roleNames() const {
@@ -325,7 +485,8 @@ void TableModel::setDroneName(const QString &newDroneName)
 
 QString TableModel::uin() const
 {
-    return m_uin;
+    //return m_uin;
+    return file_uin;
 }
 
 void TableModel::setUin(const QString &newUin)
@@ -351,7 +512,8 @@ void TableModel::setType(const QString &newType)
 
 QString TableModel::model() const
 {
-    return m_model;
+    //return m_model;
+    return file_model;
 }
 
 void TableModel::setModel(const QString &newModel)
@@ -374,5 +536,20 @@ void TableModel::setFirmwarelog_list(const QStringList &newFirmwarelog_list)
     m_firmwarelog_list = newFirmwarelog_list;
     emit firmwarelog_listChanged();
 }
+
+
+QStringList TableModel::filename() const
+{
+    return m_filename;
+}
+
+void TableModel::setFileName(const QStringList &newFilename)
+{
+    if (m_filename == newFilename)
+        return;
+    m_filename = newFilename;
+    emit filenameChanged();
+}
+
 
 
