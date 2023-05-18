@@ -1876,7 +1876,7 @@ ApplicationWindow {
                                         || user_address_text.text == ""
                                         || user_locality_text.text == ""
                                         || user_password_text.text == ""
-                                        || user_image_inprofile.source == ""){
+                                        || user_profile_image.source == ""){
                                     enter_all_fields.open()
                                 }
                                 else{
@@ -2124,7 +2124,7 @@ ApplicationWindow {
                                 user_locality_text.text = ''
                                 user_password_text.text = ''
                                 user_image.color = "white"
-                                user_image_inprofile.source == ""
+                                user_profile_image.source == ""
                             }
                         }
                     }
