@@ -2077,7 +2077,7 @@ ApplicationWindow {
                                 user_locality_text.text = ''
                                 user_password_text.text = ''
                                 user_image.color = "white"
-                                user_profile_image.source == ""
+                                user_image_inprofile.source == ""
                             }
                         }
                     }
