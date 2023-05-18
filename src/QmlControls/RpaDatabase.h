@@ -11,6 +11,8 @@
 #include <QJsonDocument>
 #include <QNetworkRequest>
 #include <QJsonObject>
+#include <QFile>
+#include <QEventLoop>
 
 class TableModel : public QAbstractTableModel
 {
@@ -56,11 +58,29 @@ public:
 
     Q_INVOKABLE void update_rpa(const QString &droneType,const QString &droneModel,const QString &droneName,const QString &uinText);
 
+    Q_INVOKABLE void image_function(const QString &file_name, const QString &firebase_folder_name);
+
+    Q_INVOKABLE void upload_function(const QString &firebase_file_name, const QString &firebase_folder_name,const QString &folder_location);
+
+    void list_function(const QString &firebase_folder_name);
+
+    Q_INVOKABLE void download_function(const QString &file_name, const QString &firebase_folder_name, const QString &local_pc_location);
+
+    Q_INVOKABLE void read_text_file(QString user_text_file_name,QString user_text_file_folder);
+
+    Q_PROPERTY(QStringList filename READ filename WRITE setFileName NOTIFY filenameChanged)
+
     Q_PROPERTY(QString droneName READ droneName WRITE setDroneName NOTIFY droneNameChanged)
     Q_PROPERTY(QString uin READ uin WRITE setUin NOTIFY uinChanged)
     Q_PROPERTY(QString type READ type WRITE setType NOTIFY typeChanged)
     Q_PROPERTY(QString model READ model WRITE setModel NOTIFY modelChanged)
     Q_PROPERTY(QStringList firmwarelog_list READ firmwarelog_list WRITE setFirmwarelog_list NOTIFY firmwarelog_listChanged)
+    Q_PROPERTY(QUrl image READ image WRITE setImage NOTIFY imageChanged)
+
+    Q_PROPERTY(QString editDroneName READ editDroneName WRITE setEditDroneName NOTIFY editDroneNameChanged)
+    Q_PROPERTY(QString editUin READ editUin WRITE setEditUin NOTIFY editUinChanged)
+    Q_PROPERTY(QString editType READ editType WRITE setEditType NOTIFY editTypeChanged)
+    Q_PROPERTY(QString editModel READ editModel WRITE setEditModel NOTIFY editModelChanged)
 
     QString droneName() const;
     void setDroneName(const QString &newDroneName);
@@ -77,6 +97,25 @@ public:
     QStringList firmwarelog_list() const;
     void setFirmwarelog_list(const QStringList &newFirmwarelog_list);
 
+    QStringList filename() const;
+    void setFileName(const QStringList &newFilename);
+
+
+    QUrl image() const;
+    void setImage(const QUrl &newImage);
+
+    QString editDroneName() const;
+    void setEditDroneName(const QString &newEditDroneName);
+
+    QString editUin() const;
+    void setEditUin(const QString &newEditUin);
+
+    QString editType() const;
+    void setEditType(const QString &newEditType);
+
+    QString editModel() const;
+    void setEditModel(const QString &newEditModel);
+
 protected:
     QHash<int, QByteArray> roleNames() const override;
 private:
@@ -89,6 +128,7 @@ private:
     QNetworkAccessManager *m_networkAccessManager;
     QNetworkAccessManagerWithPatch *m_networkAccessManagerWithPatch;
 
+    QString _projectID = "godrona-gcs";
 
     QString m_droneName;
 
@@ -99,6 +139,18 @@ private:
     QString m_model;
 
     QStringList m_firmwarelog_list;
+
+    QStringList m_filename;
+
+    QUrl m_image;
+
+    QString m_editDroneName;
+
+    QString m_editUin;
+
+    QString m_editType;
+
+    QString m_editModel;
 
 public slots:
     void network_reply_read();
@@ -120,7 +172,13 @@ signals:
     void modelChanged();
     void firmwarelog_listChanged();
     void rpa_data_update();
+    void filenameChanged();
 
+    void imageChanged();
+    void editDroneNameChanged();
+    void editUinChanged();
+    void editTypeChanged();
+    void editModelChanged();
 };
 
 #endif // TABLEMODEL_H
