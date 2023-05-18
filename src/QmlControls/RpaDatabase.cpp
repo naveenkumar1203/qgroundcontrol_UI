@@ -8,7 +8,7 @@
 QString uin_number;
 QString user;
 
-QString file_model;
+QString file_model="";
 QString file_uin;
 
 QString uin_number_selected;
@@ -149,18 +149,6 @@ QVariant TableModel::data(const QModelIndex & index, int role) const {
     }
 }
 
-/*void TableModel::delete_query(const QString &name, const QString &number)
-{
-    QString user_mail = name;
-    int pos = user_mail.lastIndexOf("@");
-    //qDebug() << user_mail.left(pos);
-    user_mail = user_mail.left(pos);
-    user = user_mail;
-    QString deleteUin =  uinlist.at(number.toInt());
-    QString user_link = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + user + "/RPA/UIN/" + deleteUin + ".json";
-    m_networkreply = m_networkAccessManager->deleteResource(QNetworkRequest(QUrl(user_link)));
-    emit dataDeleted();
-}*/
 
 void TableModel::existingUIN(const QString &userName,const QString &uinText)
 {
@@ -272,7 +260,16 @@ void TableModel::modelSelected_list()
     m_model = modellist.at(uin_number_selected.toInt());
     file_model = m_model;
     file_uin = m_uin;
+    emit modelChanged();
 
+}
+
+void TableModel::image_function(const QString &file_name, const QString &firebase_folder_name)
+{
+    qDebug()<<"in image_function";
+    QString imagelink = "https://firebasestorage.googleapis.com/v0/b/" + _projectID + ".appspot.com/o/" + firebase_folder_name + "%2F" + file_name + "?alt=media";
+    QUrl imageurl = QUrl(QString::fromStdString(imagelink.toStdString()));
+    m_image = imageurl;
 }
 
 void TableModel::upload_function(const QString &firebase_file_name, const QString &firebase_folder_name,const QString &folder_location)
@@ -469,6 +466,18 @@ QHash<int, QByteArray> TableModel::roleNames() const {
     return roles;
 }
 
+QUrl TableModel::image() const
+{
+    return m_image;
+}
+
+void TableModel::setImage(const QUrl &newImage)
+{
+    if (m_image == newImage)
+        return;
+    m_image = newImage;
+    emit imageChanged();
+}
 
 QString TableModel::droneName() const
 {

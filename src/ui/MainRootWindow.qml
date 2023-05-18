@@ -46,6 +46,7 @@ ApplicationWindow {
     property int checkBoxNumber
     property var newWindowObject
     property var group: buttonGroup
+    property var image_upload;
 
     ButtonGroup {
         id: buttonGroup
@@ -96,6 +97,8 @@ ApplicationWindow {
         }
         onUserRegisteredSuccessfully: {
             console.log("new user registered successfully")
+            console.log("firebase_folder_name = "+database_access.storagename)
+            rpadatabase.upload_function("user_profile.jpg",database_access.storagename, image_upload)
             userRegisteredDialog.open()
             new_user_first_page.visible = false
             third_user_details_page.visible = false
@@ -135,9 +138,6 @@ ApplicationWindow {
                 rpadatabase.add_rpa(drone_type_list.currentText,drone_model_list.currentText,drone_name_text.text,uin_input_text.text)
                 i = 1
             }
-//            onDataDeleted: {
-//                rpadatabase.getData()
-//            }
 
             onDataAdded: {
                 //rpadatabase.getData()
@@ -594,6 +594,7 @@ ApplicationWindow {
                             messagedialog1.visible = true
                             console.log("Please enter a username and password.")
                         }
+                        rpadatabase.image_function("user_profile.jpg",database_access.firebasejsonname)
                     }
                 }
                 Column{
@@ -1828,7 +1829,7 @@ ApplicationWindow {
                                         || user_address_text.text == ""
                                         || user_locality_text.text == ""
                                         || user_password_text.text == ""
-                                        /*|| user_image_inprofile.source == ""*/){
+                                        || user_image_inprofile.source == ""){
                                     enter_all_fields.open()
                                 }
                                 else{
@@ -2075,8 +2076,8 @@ ApplicationWindow {
                                 user_address_text.text = ''
                                 user_locality_text.text = ''
                                 user_password_text.text = ''
-                                //user_image.color = "white"
-                                //user_image.source = ""
+                                user_image.color = "white"
+                                user_profile_image.source == ""
                             }
                         }
                     }
@@ -2133,6 +2134,8 @@ ApplicationWindow {
         nameFilters: [ "(*.png *.jpg)"]
         selectMultiple: false
         onAccepted: {
+            var filePath = fileUrl.toString().replace("file://", "")
+            image_upload = filePath;
             console.log("You chose: " + image_file_dialog.fileUrls)
         }
     }
@@ -3126,6 +3129,7 @@ ApplicationWindow {
                             anchors.fill: dashboard_button
                             onClicked: {
                                 //                                hoverEnabled: false
+                                checkBoxState = 0
                                 dashboard_rectangle.visible = true
                                 logout_button.color = "#031C28"
                                 dashboard_button.color ="#F25822" || "#031C28"
@@ -3176,6 +3180,7 @@ ApplicationWindow {
                         MouseArea{
                             anchors.fill: managerpa_button
                             onClicked: {
+                                checkBoxState = 0
                                 rpadatabase.manageRpaClicked(database_access.mail)
                                 manage_rpa_rectangle.visible = true
                                 dashboard_rectangle.visible = false
@@ -3370,6 +3375,7 @@ ApplicationWindow {
                             //                            onExited: parent.color = '#031C28'
                             anchors.fill: flight_log_button
                             onClicked: {
+                                checkBoxState = 0
                                 rpadatabase.read_text_file(database_access.mail,QGroundControl.settingsManager.appSettings.telemetrySavePath)
                                 flight_log_button.color = "#F25822"
                                 flight_log_rectangle.visible = true
@@ -3420,6 +3426,7 @@ ApplicationWindow {
                             //                            onExited: parent.color = '#031C28'
                             anchors.fill: firmware_button
                             onClicked: {
+                                checkBoxState = 0
                                 firmware_button.color = "#F25822"
                                 firmware_log_rectangle.visible = true
                                 flight_log_rectangle.visible = false
@@ -3669,6 +3676,7 @@ ApplicationWindow {
                                     address_field.text = database_access.address
                                     locality_field.text = database_access.locality
                                     user_name_inprofile.text = database_access.name
+                                    user_image_inprofile.source = rpadatabase.image
                                     profile_timer.stop()
                                 }
                             }
@@ -4067,7 +4075,7 @@ ApplicationWindow {
                             anchors.top: list_of_rpa_text.bottom
                             anchors.topMargin: 30
                             width: manage_rpa_header1.width - 50
-                            height: screen.height - 100
+                            height: mainWindow.height - 180
                             color: "#031C28"
 //                            border.width: 1
 //                            border.color: "#05324D"
@@ -4606,6 +4614,7 @@ ApplicationWindow {
                                         uin_input_text.text = ""
                                         uin_input_text.enabled = true
                                         updateButton = 1
+                                        checkBoxState = 0
                                         console.log("in update button else when ending"+ updateButton)
                                     }
 
@@ -5011,7 +5020,7 @@ ApplicationWindow {
                             border.color: "#05324D"
                             border.width: 1
                             Timer {
-                                interval: 50; running: true; repeat: true
+                                interval: 10; running: true; repeat: true
                                 onTriggered:{
                                     folder_list_model.model = rpadatabase.filename
                                 }
@@ -5346,7 +5355,7 @@ ApplicationWindow {
 
                             Image {
                                 id: user_image_inprofile
-                                source:user_profile_image.source//"qrc:/qmlimages/drone_1.png"
+                                source:rpadatabase.image//"qrc:/qmlimages/drone_1.png"
                                 anchors.fill: image_rect
                                 fillMode: Image.PreserveAspectCrop
                                 layer.enabled: true
@@ -5469,7 +5478,7 @@ ApplicationWindow {
                                 border.width: 1
                                 border.color: "cyan"
 
-                                Label {
+                                Text {
                                     anchors.left: parent.left
                                     anchors.leftMargin: 10
                                     anchors.top: parent.top

@@ -42,6 +42,24 @@ Item{
 
     TableModel{
         id: rpadatabase
+
+        onModelChanged:{
+                                        if(rpadatabase.model == "Model A"){
+                                            console.log("model a is selected")
+                                            firmware_load1.checksum_generation_process_model_A(file_Dialog.shortcuts.documents)
+                                        }
+                                        else if(rpadatabase.model == "Model B"){
+                                            console.log("model b is selected")
+                                            firmware_load1.checksum_generation_process_model_B(file_Dialog.shortcuts.documents)
+                                        }
+
+
+        }
+    }
+
+    FileDialog{
+        id: file_Dialog
+        folder: shortcuts.documents
     }
 
 
@@ -72,12 +90,12 @@ Item{
             fly_button.color = "#F25822"
         }
         onClicked: {
-            rpadatabase.modelSelected(checkBoxNumber)
             if(checkBoxState === 0){
                             select_the_modelDialog.open()
                             console.log("model not selected")
                         }
                         else if(checkBoxState === 1){
+                            rpadatabase.modelSelected(checkBoxNumber)
                             console.log("model is selected")
                             console.log(checkBoxNumber)
                             //rpadatabase.modelSelected(checkBoxNumber)
@@ -157,7 +175,7 @@ Item{
     MessageDialog {
         id: select_the_modelDialog
         title: "Model not Selected"
-        text: "You have to select the model before you fly."
+        text: "You have to select the model before you firmware_load1fly."
     }
 
 
@@ -172,12 +190,19 @@ Item{
             if (controller.buildDiffFromFile(firmware_load1.firmware_load_model_A)) {
                 mainWindow.showPopupDialogFromComponent(parameterDiffDialog)
                 console.log("mainroot" + firmware_load1.firmware_load_model_A)
+                flightView.visible = true
+                toolbar.visible =true
+                landing_page_rectangle.visible = false
             }
         }
         onFirmware_load_model_BChanged:{
             if (controller.buildDiffFromFile(firmware_load1.firmware_load_model_B)) {
                 mainWindow.showPopupDialogFromComponent(parameterDiffDialog)
                 console.log("mainroot" + firmware_load1.firmware_load_model_B)
+                flightView.visible = true
+                toolbar.visible =true
+                landing_page_rectangle.visible = false
+
             }
         }
     }

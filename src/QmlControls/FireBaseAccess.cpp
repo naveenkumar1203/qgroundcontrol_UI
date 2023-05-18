@@ -105,6 +105,7 @@ void FireBaseAccess::newUser_parseResponse(const QByteArray &response)
             int pos = user_mail.lastIndexOf("@");
             user_mail = user_mail.left(pos);
             usermail = user_mail;
+            firebase_storage_name = usermail;
             qDebug() << "user_mail" <<user_mail;
 
             QString link = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + user_mail + "/UserInformation.json";
