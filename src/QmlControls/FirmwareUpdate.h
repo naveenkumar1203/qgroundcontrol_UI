@@ -6,6 +6,8 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QFileDialog>
+#include "QGCToolbox.h"
+#include "SettingsManager.h"
 
 
 class FirmwareUpdate : public QObject
@@ -14,14 +16,16 @@ class FirmwareUpdate : public QObject
 public:
     explicit FirmwareUpdate(QObject *parent = nullptr);
 
+    QGCToolbox*         _toolbox = nullptr;
+
     Q_PROPERTY(QString checksum_generation_model_A READ checksum_generation_model_A WRITE setgenerated_checksum_model_A NOTIFY generation_checksum_model_AChanged)
     Q_PROPERTY(QString checksum_calculation_model_A READ checksum_calculation_model_A WRITE setcalculated_checksum_model_A NOTIFY calculation_checksum_model_AChanged)
     Q_PROPERTY(QString firmware_load_model_A READ firmware_load_model_A WRITE setfirmware_load_model_A NOTIFY firmware_load_model_AChanged)
 
-    Q_INVOKABLE void checksum_generation_process_model_A();
-    Q_INVOKABLE void checksum_calculation_process_model_A();
-    Q_INVOKABLE void compare_file_model_A();
-    Q_INVOKABLE void load_file_model_A();
+    Q_INVOKABLE void checksum_generation_process_model_A(QString folder_location);
+    Q_INVOKABLE void checksum_calculation_process_model_A(QString real_file_location);
+    Q_INVOKABLE void compare_file_model_A(QString real_file_location);
+    Q_INVOKABLE void load_file_model_A(QString real_file_location);
 
     QString checksum_generation_model_A();
     QString checksum_calculation_model_A();
@@ -38,10 +42,10 @@ public:
     Q_PROPERTY(QString firmware_load_model_B READ firmware_load_model_B WRITE setfirmware_load_model_B NOTIFY firmware_load_model_BChanged)
 
 
-    Q_INVOKABLE void checksum_generation_process_model_B();
-    Q_INVOKABLE void checksum_calculation_process_model_B();
-    Q_INVOKABLE void compare_file_model_B();
-    Q_INVOKABLE void load_file_model_B();
+    Q_INVOKABLE void checksum_generation_process_model_B(QString folder_location);
+    Q_INVOKABLE void checksum_calculation_process_model_B(QString real_file_location);
+    Q_INVOKABLE void compare_file_model_B(QString real_file_location);
+    Q_INVOKABLE void load_file_model_B(QString real_file_location);
 
     QString checksum_generation_model_B();
     QString checksum_calculation_model_B();
