@@ -47,7 +47,11 @@
 #include "FTPManager.h"
 #include "ImageProtocolManager.h"
 #include "RpaDatabase.h"
+<<<<<<< HEAD
 #include "FireBaseAccess.h"
+=======
+
+>>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 
 class Actuators;
 class EventHandler;

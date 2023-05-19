@@ -34,7 +34,12 @@ class QGCCorePlugin;
 class SettingsManager;
 class AirspaceManager;
 class ADSBVehicleManager;
+<<<<<<< HEAD
 class TableModel;
+=======
+class RpaDatabase;
+
+>>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 #if defined(QGC_ENABLE_PAIRING)
 class PairingManager;
 #endif
@@ -70,7 +75,11 @@ public:
     SettingsManager*            settingsManager         () { return _settingsManager; }
     AirspaceManager*            airspaceManager         () { return _airspaceManager; }
     ADSBVehicleManager*         adsbVehicleManager      () { return _adsbVehicleManager; }
+<<<<<<< HEAD
     TableModel*                tablemodel             () { return _tableModelObject; }
+=======
+    RpaDatabase*                rpadatabase             () { return _rpaDatabaseObject; }
+>>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 #if defined(QGC_ENABLE_PAIRING)
     PairingManager*             pairingManager          () { return _pairingManager; }
 #endif
@@ -111,7 +120,11 @@ private:
     SettingsManager*            _settingsManager        = nullptr;
     AirspaceManager*            _airspaceManager        = nullptr;
     ADSBVehicleManager*         _adsbVehicleManager     = nullptr;
+<<<<<<< HEAD
     TableModel*                _tableModelObject      = nullptr;
+=======
+    RpaDatabase*                _rpaDatabaseObject      = nullptr;
+>>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 
 #if defined(QGC_ENABLE_PAIRING)
     PairingManager*             _pairingManager         = nullptr;

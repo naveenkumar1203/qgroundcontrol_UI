@@ -19,6 +19,10 @@ class FireBaseAccess : public QObject
     Q_OBJECT
 public:
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> d166f3d7cfed49114b6086402673913745f9db85
     friend class FirmwareUpgradeController;
     friend class RpaDatabase;
 
@@ -65,6 +69,7 @@ public:
     Q_PROPERTY(QString number READ number WRITE setNumber NOTIFY numberChanged)
     Q_PROPERTY(QString address READ address WRITE setAddress NOTIFY addressChanged)
     Q_PROPERTY(QString locality READ locality WRITE setLocality NOTIFY localityChanged)
+<<<<<<< HEAD
 
     Q_PROPERTY(QString role READ role WRITE setRole NOTIFY roleChanged)
 
@@ -72,6 +77,11 @@ public:
 
     Q_PROPERTY(QString storagename READ storagename WRITE setStoragename NOTIFY storagenameChanged)
 
+=======
+    Q_PROPERTY(QString role READ role WRITE setRole NOTIFY roleChanged)
+    Q_PROPERTY(QString firebasejsonname READ firebasejsonname WRITE setFirebasejsonname NOTIFY firebasejsonnameChanged)
+
+>>>>>>> d166f3d7cfed49114b6086402673913745f9db85
     QString name() const;
     void setName(const QString &newName);
 
@@ -96,9 +106,12 @@ public:
     QString role() const;
     void setRole(const QString &newRole);
 
+<<<<<<< HEAD
     QString storagename() const;
     void setStoragename(const QString &newStoragename);
 
+=======
+>>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 public slots:
     void new_user_network_reply_read();
     void registered_user_network_reply_read();
@@ -133,8 +146,11 @@ signals:
 
     void roleChanged();
 
+<<<<<<< HEAD
     void storagenameChanged();
 
+=======
+>>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 private:
     QString m_apikey = "AIzaSyDuhh-doXjdmw7FvYKF81Kqmv5AlotC2ZY";
     QNetworkAccessManager *m_NetworkAccessManager;
@@ -151,7 +167,10 @@ private:
     QString m_address;
     QString m_locality;
     QString m_role;
+<<<<<<< HEAD
     QString m_storagename;
+=======
+>>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 };
 
 #endif // FIREBASEACCESS_H
