@@ -88,6 +88,7 @@ ApplicationWindow {
             managerpa_button.color = "#031C28"
             flight_log_button.color = "#031C28"
             logout_button.color = "#031C28"
+            firmware_button.color = "#031C28"
         }
         onEmailNotFound:{
             no_recordDialog.open()
@@ -140,7 +141,6 @@ ApplicationWindow {
             }
 
             onDataAdded: {
-                //rpadatabase.getData()
                 if(i == 1){
                     rpadatabase.getData()
                 }
@@ -158,17 +158,15 @@ ApplicationWindow {
                                                      import QtQuick.Controls.Styles 1.2
                                                      import QtQuick.Controls.Styles 1.4
                                                      import QtQuick.Controls 2.15
-
                                                      TableView {
-
                                                          id: table
                                                          anchors.fill: parent
+                                                         clip:true
                                                          //width: parent.width
                                                          //height: parent.height
                                                          anchors.top: table_rect.top
                                                          backgroundVisible: false
                                                          model:  rpadatabase
-
                                                          style: TableViewStyle {
                                                             headerDelegate: Rectangle {
                                                                 height: textItem.implicitHeight * 2
@@ -219,8 +217,8 @@ ApplicationWindow {
                                                                     anchors.centerIn: parent
                                                                     checked: false
                                                                     indicator: Rectangle{
-                                                                        implicitWidth: 16
-                                                                        implicitHeight: 16
+                                                                        implicitWidth: 30
+                                                                        implicitHeight: 30
                                                                         radius: 2
                                                                         color: "#031C28"
                                                                         border.width:0.5
@@ -375,69 +373,40 @@ ApplicationWindow {
         z:1
         color: "#031C28"
 
-        RowLayout{
-            anchors.fill:parent
-            spacing: 0
-
-            Rectangle{
-                id: login_image_rectangle
-                color: "#031C28"
-                Layout.preferredWidth: mainWindow.width/2
-                Layout.preferredHeight: mainWindow.height
-                Rectangle {
-                    id: user_login_image_rect
-                    anchors.left: parent.left
-                    anchors.leftMargin: 40
-                    anchors.top: parent.top
-                    anchors.topMargin: 40
-                    width: parent.width - 70
-                    height: parent.height - 70
-                    color: "red"
-                    Image{
-                        anchors.fill: user_login_image_rect
-                        source: "/res/User_login.png"
-                    }
-                }
-            }
-            Rectangle {
-                id: login_credentails
-                color: "#031C28"
-                Layout.fillWidth: true
-                Layout.preferredHeight: mainWindow.height
-                Image {
-                    id: login_page_godrona_image
-                    anchors.top: parent.top
-                    anchors.topMargin: 20
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    width: 90
-                    height: 90
-                    source: "/res/godrona-logo.png"//"qrc:/../../../../Downloads/godrona-logo.png"
-                }
+        Image {
+            id: login_page_godrona_image
+            anchors.top: parent.top
+            anchors.topMargin: 40
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: 200
+            height: 200
+            source: "/res/godrona-logo.png"
+        }
                 Column{
                     id: login_page_label
                     spacing: 10
-                    anchors.left: parent.left
+                    anchors.left: mainWindow.left
                     anchors.leftMargin: 20
                     anchors.top: login_page_godrona_image.bottom
-                    anchors.topMargin: 60
+                    anchors.topMargin: 20
                     Label{
                         text: "LOGIN/SIGN-IN ACCOUNT"
                         color: "white"
                         font.bold: true
-                        font.pixelSize: 20
+                        font.pointSize: ScreenTools.defaultFontPointSize * 1.1
                     }
                     Label{
                         text: "- Hello, Welcome back to GoDrona"
                         color: "#F25822"
                         font.bold: true
-                        font.pixelSize: 20
+                        font.pointSize:ScreenTools.defaultFontPointSize
                     }
                 }
                 Column{
                     id: login_page_label_email_column
                     spacing: 10
                     anchors.top: login_page_label.bottom
-                    anchors.topMargin: 30
+                    anchors.topMargin: 10
                     anchors.horizontalCenter: parent.horizontalCenter
                     Label{
                         text: "Email Address*"
@@ -445,11 +414,11 @@ ApplicationWindow {
                     }
                     TextField{
                         id: login_page_email_textfield
-                        width: 300
-                        height: 35
+                        width: mainWindow.width/3
+                        height: mainWindow.height/10
                         text: ""
                         color: "white"
-                        leftPadding: 50
+                        leftPadding: 70
                         placeholderText: qsTr("example@gmail.com")
                         inputMethodHints: Qt.ImhEmailCharactersOnly
                         validator: RegExpValidator{regExp: /.+/}
@@ -465,8 +434,6 @@ ApplicationWindow {
                             border.width: 1.5
                         }
                         Image {
-                            width: 25
-                            height: 25
                             fillMode: Image.PreserveAspectFit
                             source: "/res/mailLogo.png"//"qrc:/../../../../Downloads/mailLogo.png"
                             anchors.left: parent.left
@@ -487,12 +454,12 @@ ApplicationWindow {
                     }
                     TextField{
                         id: login_page_password_textfield
-                        width: 300
-                        height: 35
+                        width: mainWindow.width/3
+                        height: mainWindow.height/10
                         text: ""
                         color: "white"
                         placeholderText: qsTr("Password")
-                        leftPadding: 50
+                        leftPadding: 70
                         rightPadding: 50
                         validator: RegExpValidator { regExp: /.+/ }
                         echoMode: TextInput.Password
@@ -509,18 +476,14 @@ ApplicationWindow {
                             border.width: 1.5
                         }
                         Image {
-                            width: 23
-                            height: 23
                             fillMode: Image.PreserveAspectFit
                             source: "/res/password.png"//"qrc:/../../../../Downloads/password.png"
                             anchors.left: parent.left
-                            anchors.leftMargin: 8
+                            anchors.leftMargin: 12
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Image {
                             id: password_hide_image
-                            width: 25
-                            height: 25
                             fillMode: Image.PreserveAspectFit
                             source: "/res/password_hide.png"//"qrc:/../../../../Downloads/password_hide.png"
                             anchors.right: parent.right
@@ -538,8 +501,6 @@ ApplicationWindow {
                         Image {
                             id: password_show_image
                             visible: false
-                            width: 25
-                            height: 25
                             fillMode: Image.PreserveAspectFit
                             source: "/res/password_show.png"//"qrc:/../../../../Downloads/password_show.png"
                             anchors.right: parent.right
@@ -558,26 +519,25 @@ ApplicationWindow {
                 }
                 Button {
                     anchors.top: login_page_label_password_column.bottom
-                    anchors.topMargin: 30
+                    anchors.topMargin: 35
                     anchors.horizontalCenter: parent.horizontalCenter
                     Text{
                         text: "Login Now ->"
-                        font.pixelSize: 15
+                        font.pointSize:ScreenTools.defaultFontPointSize
+                        font.bold: true
                         anchors.centerIn: parent
                         color: "white"
                     }
                     background: Rectangle {
                         id: login_button
-                        implicitWidth: 200
-                        implicitHeight: 40
+                        implicitWidth: mainWindow.width/3
+                        implicitHeight: mainWindow.height/10
                         color: "#F25822"
                         radius: 4
                     }
                     MessageDialog{
                         id:messagedialog1
-                        height: 50
-                        width: 50
-                        text:"please enter your details correctly"
+                        text:qsTr("Please enter your details correctly")
                     }
                     onPressed: {
                         login_button.color = "#05324D"
@@ -605,12 +565,11 @@ ApplicationWindow {
                     anchors.leftMargin: 20
                     Label{
                         text: "New to GoDrona ?"
+                        font.pointSize:ScreenTools.defaultFontPointSize
                         color: "white"
                         Image{
                             id: new_user_logo
                             anchors.bottom: parent.top
-                            width: 50
-                            height: 50
                             anchors.horizontalCenter: parent.horizontalCenter
                             source: "/res/new_member.png" //"qrc:/../../../../Downloads/new_member.png"
 
@@ -649,14 +608,13 @@ ApplicationWindow {
                     anchors.rightMargin: 20
                     Label{
                         text: "Forgot Password ?"
+                        font.pointSize:ScreenTools.defaultFontPointSize
                         color: "white"
                         Image{
                             id: forgot_password_logo
                             anchors.bottom: parent.top
-                            width: 50
-                            height: 50
                             anchors.horizontalCenter: parent.horizontalCenter
-                            source: "/res/forgotpassword.png" //"qrc:/../../../../Downloads/forgotpassword.png"
+                            source: "/res/forgotpassword.png"
                         }
                         MouseArea{
                             anchors.fill: forgot_password_logo
@@ -673,8 +631,8 @@ ApplicationWindow {
                     }
                 }
             }
-        }
-    }
+     //   }
+    //}
 
 
     Rectangle{
@@ -685,7 +643,7 @@ ApplicationWindow {
         z: 1
         Label{
             text: "<- Forgot Password"
-            font.pixelSize: 20
+            font.pointSize: ScreenTools.defaultFontPointSize
             color: "white"
             font.bold: true
             anchors.left: parent.left
@@ -706,10 +664,11 @@ ApplicationWindow {
         }
         Column{
             anchors.centerIn: parent
-            spacing: 40
+            spacing: 60
             Label{
-                text: "Enter your registered email address to"
+                text: qsTr("Enter your registered email address to")
                 color: "white"
+                font.pointSize:ScreenTools.defaultFontPointSize
                 Label{
                     anchors.top: parent.bottom
                     text: "Reset your password"
@@ -724,13 +683,13 @@ ApplicationWindow {
                 }
                 TextField{
                     id: forgot_password_mail_text
-                    width: 300
-                    height: 35
+                    width: mainWindow.width/3
+                    height: mainWindow.height/10
                     text: ""
                     color: "white"
-                    placeholderText: qsTr("example@gmail.com")
+                    placeholderText: qsTr("Example@gmail.com")
                     inputMethodHints: Qt.ImhEmailCharactersOnly
-                    leftPadding: 50
+                    leftPadding: 70
                     onTextChanged: {
                         forgot_password_page_email.border.color = "#C0C0C0"
                     }
@@ -743,10 +702,8 @@ ApplicationWindow {
                         border.width: 1.5
                     }
                     Image {
-                        width: 25
-                        height: 25
                         fillMode: Image.PreserveAspectFit
-                        source: "/res/mailLogo.png"//"qrc:/../../../../Downloads/mailLogo.png"
+                        source: "/res/mailLogo.png"
                         anchors.left: parent.left
                         anchors.leftMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
@@ -756,15 +713,15 @@ ApplicationWindow {
             Button {
                 anchors.horizontalCenter: parent.horizontalCenter
                 Text{
-                    text: "Submit ->"
-                    font.pixelSize: 15
+                    text: qsTr("Submit ->")
+                    font.pointSize:ScreenTools.defaultFontPointSize
                     anchors.centerIn: parent
                     color: "white"
                 }
                 background: Rectangle {
                     id: submit_button
-                    implicitWidth: 200
-                    implicitHeight: 40
+                    implicitWidth: mainWindow.width/3
+                    implicitHeight: mainWindow.height/10
                     color: "#F25822"
                     radius: 4
                 }
@@ -780,7 +737,7 @@ ApplicationWindow {
                 }
             }
             Label{
-                text: "Reset Password"
+                text: qsTr("Reset Password")
                 color: "#00FFFF"
                 Label{
                     anchors.left: parent.right
@@ -791,7 +748,7 @@ ApplicationWindow {
                 Label{
                     anchors.top: parent.bottom
                     anchors.left: parent.left
-                    text: "registered email address"
+                    text: qsTr("registered email address")
                     color: "white"
                 }
             }
@@ -799,15 +756,16 @@ ApplicationWindow {
         Image{
             anchors.bottom: parent.bottom
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottomMargin: 40
-            width: 75
-            height: 75
-            source: "/res/backtologin-removebg-preview.png"//"qrc:/../../../../Downloads/backtologin-removebg-preview.png"
+            anchors.bottomMargin: 70
+            width: 90
+            height: 90
+            source: "/res/backtologin-removebg-preview.png"
             Label{
                 anchors.top: parent.bottom
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: "Back to Login"
+                text: qsTr("Back to Login")
                 color: "white"
+                font.pointSize: ScreenTools.defaultFontPointSize
             }
             MouseArea{
                 anchors.fill: parent
@@ -902,20 +860,16 @@ ApplicationWindow {
                         border.width: 1.5
                     }
                     Image {
-                        width: 23
-                        height: 23
                         fillMode: Image.PreserveAspectFit
-                        source: "/res/password.png"//"qrc:/../../../../Downloads/password.png"
+                        source: "/res/password.png"
                         anchors.left: parent.left
                         anchors.leftMargin: 8
                         anchors.verticalCenter: parent.verticalCenter
                     }
                     Image {
                         id: new_password_hide_image
-                        width: 25
-                        height: 25
                         fillMode: Image.PreserveAspectFit
-                        source: "/res/password_hide.png"//"qrc:/../../../../Downloads/password_hide.png"
+                        source: "/res/password_hide.png"
                         anchors.right: parent.right
                         anchors.rightMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
@@ -931,10 +885,8 @@ ApplicationWindow {
                     Image {
                         id: new_password_show_image
                         visible: false
-                        width: 25
-                        height: 25
                         fillMode: Image.PreserveAspectFit
-                        source: "/res/password_show.png"//"qrc:/../../../../Downloads/password_show.png"
+                        source: "/res/password_show.png"
                         anchors.right: parent.right
                         anchors.rightMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
@@ -987,10 +939,8 @@ ApplicationWindow {
                     }
                     Image {
                         id: confirm_password_hide_image
-                        width: 25
-                        height: 25
                         fillMode: Image.PreserveAspectFit
-                        source: "/res/password_hide.png"//"qrc:/../../../../Downloads/password_hide.png"
+                        source: "/res/password_hide.png"
                         anchors.right: parent.right
                         anchors.rightMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
@@ -1005,11 +955,9 @@ ApplicationWindow {
                     }
                     Image {
                         id: confirm_password_show_image
-                        width: 25
-                        height: 25
                         visible: false
                         fillMode: Image.PreserveAspectFit
-                        source: "/res/password_show.png"//"qrc:/../../../../Downloads/password_show.png"
+                        source: "/res/password_show.png"
                         anchors.right: parent.right
                         anchors.rightMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
@@ -1078,40 +1026,11 @@ ApplicationWindow {
         visible: false
         color: "#031C28"
 
-        RowLayout{
-            anchors.fill: parent
-            spacing: 0
-
-            Rectangle{
-                id: new_user_image_rectangle
-                color: "#031C28"
-                Layout.preferredWidth: mainWindow.width/2
-                Layout.preferredHeight: mainWindow.height
-                Rectangle {
-                    anchors.left: parent.left
-                    anchors.leftMargin: 40
-                    anchors.top: parent.top
-                    anchors.topMargin: 40
-                    width: parent.width - 70
-                    height: parent.height - 70
-                    color: "red"
-                    Image{
-                        id: new_user_image_rect
-                        anchors.fill: parent
-                        source: "/res/First Time Signup screen.png"
-                    }
-                }
-            }
-            Rectangle {
-                id: user_credentials
-                color: "#031C28"
-                Layout.fillWidth: true
-                Layout.preferredHeight: mainWindow.height
 
                 Label{
                     id: new_user_first_page_label
-                    text: "<- Registration"
-                    font.pixelSize: 20
+                    text: qsTr("<- Registration")
+                    font.pointSize:ScreenTools.defaultFontPointSize
                     color: "white"
                     font.bold: true
                     anchors.left: parent.left
@@ -1121,10 +1040,11 @@ ApplicationWindow {
                     Label{
                         anchors.top: parent.bottom
                         anchors.topMargin: 20
-                        text: "- Lets get the access for our best service"
                         color: "#F25822"
-                        font.pixelSize: 15
+                        font.pointSize:ScreenTools.defaultFontPointSize
                     }
+
+
                     MouseArea{
                         anchors.fill: parent
                         onClicked: {
@@ -1153,8 +1073,8 @@ ApplicationWindow {
                     anchors.horizontalCenter: parent.horizontalCenter
                     Rectangle{
                         id: first_circle
-                        width: 50
-                        height: 50
+                        width: 60
+                        height: 60
                         radius: width / 2
                         border.color: "#C0C0C0"
                         border.width: 1.5
@@ -1162,6 +1082,7 @@ ApplicationWindow {
                         Text{
                             id: first_circle_text
                             text: "1"
+                            font.pointSize:ScreenTools.defaultFontPointSize
                             color: "white"
                             anchors.centerIn: parent
                         }
@@ -1176,8 +1097,8 @@ ApplicationWindow {
                     }
                     Rectangle{
                         id: second_circle
-                        width: 50
-                        height: 50
+                        width: 60
+                        height: 60
                         radius: width / 2
                         border.color: "#C0C0C0"
                         border.width: 1.5
@@ -1185,6 +1106,7 @@ ApplicationWindow {
                         Text{
                             id: second_circle_text
                             text: "2"
+                            font.pointSize:ScreenTools.defaultFontPointSize
                             color: "white"
                             anchors.centerIn: parent
                         }
@@ -1199,8 +1121,8 @@ ApplicationWindow {
                     }
                     Rectangle{
                         id: third_circle
-                        width: 50
-                        height: 50
+                        width: 60
+                        height: 60
                         radius: width / 2
                         border.color: "#C0C0C0"
                         border.width: 1.5
@@ -1209,6 +1131,7 @@ ApplicationWindow {
                             id: third_circle_text
                             text: "3"
                             color: "white"
+                            font.pointSize:ScreenTools.defaultFontPointSize
                             anchors.centerIn: parent
                         }
                     }
@@ -1217,7 +1140,7 @@ ApplicationWindow {
                     id: first_user_details_page
                     width: parent.width
                     anchors.top: circle_row.bottom
-                    anchors.topMargin: 20
+                    anchors.topMargin: 50
                     height: parent.height
                     color: "#031C28"
                     Column{
@@ -1228,11 +1151,13 @@ ApplicationWindow {
                         Label{
                             text: "Select Your Industry Type*"
                             color: "white"
+                            font.pointSize:ScreenTools.defaultFontPointSize
                         }
                         ComboBox {
                             id: control
                             model: ["Drone Education & Training","Asset Inspection","Security & Surveillance","Public Survey","Oil & Gas Inspection","Industrial Inspection","Agricultural Usage","Goods Delivery"]
-                            width: 200
+                            width: mainWindow.width/3
+                            height: mainWindow.height/10
                             currentIndex: -1
                             displayText: currentIndex === -1 ? "Select Industry Type" : currentText
                             delegate: ItemDelegate {
@@ -1252,8 +1177,8 @@ ApplicationWindow {
                                 id: canvas
                                 x: control.width - width - control.rightPadding
                                 y: control.topPadding + (control.availableHeight - height) / 2
-                                width: 12
-                                height: 8
+                                width: 20
+                                height: 20
                                 contextType: "2d"
                                 Connections {
                                     target: control
@@ -1271,7 +1196,7 @@ ApplicationWindow {
                             }
                             contentItem: Text {
                                 id: combobox_text
-                                leftPadding: 30
+                                leftPadding: 80
                                 rightPadding: control.indicator.width + control.spacing
                                 text: control.displayText
                                 font: control.font
@@ -1280,15 +1205,15 @@ ApplicationWindow {
                                 elide: Text.ElideRight
                                 Image{
                                     id: organization_image
-                                    width: 25
-                                    height: 25
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 20
                                     anchors.verticalCenter: parent.verticalCenter
                                     source: "/res/organization.png"//"qrc:/../../../../Downloads/organization.png"
                                 }
                             }
                             background: Rectangle {
-                                implicitWidth: 120
-                                implicitHeight: 40
+                                implicitWidth: mainWindow.width/3
+                                implicitHeight: mainWindow.height/10
                                 color: "#031C28"
                                 border.color: "#00FFFF"
                                 border.width: control.visualFocus ? 2 : 1
@@ -1317,11 +1242,13 @@ ApplicationWindow {
                         Label{
                             text: "Select Your Role*"
                             color: "white"
+                            font.pointSize:ScreenTools.defaultFontPointSize
                         }
                         ComboBox {
                             id: control_role
                             model: ["OEM","PILOT","OPERTAOR"]
-                            width: 200
+                            width: mainWindow.width/3
+                            height: mainWindow.height/10
                             currentIndex: -1
                             displayText: currentIndex === -1 ? "Select Role" : currentText
                             delegate: ItemDelegate {
@@ -1341,8 +1268,8 @@ ApplicationWindow {
                                 id: canvas_role
                                 x: control_role.width - width - control_role.rightPadding
                                 y: control_role.topPadding + (control_role.availableHeight - height) / 2
-                                width: 12
-                                height: 8
+                                width: 20
+                                height: 20
                                 contextType: "2d"
                                 Connections {
                                     target: control_role
@@ -1360,7 +1287,7 @@ ApplicationWindow {
                             }
                             contentItem: Text {
                                 id: combobox_role_text
-                                leftPadding: 30
+                                leftPadding: 80
                                 rightPadding: control_role.indicator.width + control_role.spacing
                                 text: control_role.displayText
                                 font: control_role.font
@@ -1369,15 +1296,15 @@ ApplicationWindow {
                                 elide: Text.ElideRight
                                 Image{
                                     id: role_image
-                                    width: 25
-                                    height: 25
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 20
                                     anchors.verticalCenter: parent.verticalCenter
                                     source: "/res/role.png"//"qrc:/../../../../Downloads/organization.png"
                                 }
                             }
                             background: Rectangle {
-                                implicitWidth: 120
-                                implicitHeight: 40
+                                implicitWidth: mainWindow.width/3
+                                implicitHeight: mainWindow.height/10
                                 color: "#031C28"
                                 border.color: "#00FFFF"
                                 border.width: control_role.visualFocus ? 2 : 1
@@ -1403,17 +1330,20 @@ ApplicationWindow {
                             }
                         }
                         Button {
+                            anchors.top: first_user_details_page.bottom
+                            anchors.topMargin: 100
                             anchors.horizontalCenter: parent.horizontalCenter
                             Text{
                                 text: "Next Step ->"
-                                font.pixelSize: 15
+                                font.pointSize:ScreenTools.defaultFontPointSize
+                                font.bold: true
                                 anchors.centerIn: parent
                                 color: "white"
                             }
                             background: Rectangle {
                                 id: next_step_submit_button
-                                implicitWidth: 200
-                                implicitHeight: 40
+                                implicitWidth:  mainWindow.width/3
+                                implicitHeight: mainWindow.height/10
                                 color: "#F25822"
                                 radius: 4
                             }
@@ -1455,7 +1385,6 @@ ApplicationWindow {
                     color: "#031C28"
                     Label {
                         text: "Upload Your Image*"
-                        //anchors.horizontalCenter: parent.horizontalCenter
                         anchors.left: user_image.right
                         anchors.leftMargin: 10
                         anchors.top: parent.top
@@ -1464,19 +1393,17 @@ ApplicationWindow {
                     }
                     Rectangle{
                         id: user_image
-                        width: 75
-                        height: 75
+                        height: mainWindow.height/10
+                        width: height
                         radius: width / 2
                         color: "white"
                         clip: true
                         anchors.horizontalCenter: parent.horizontalCenter
                         Image{
-                            width: 25
-                            height: 25
                             anchors.left: user_image.left
-                            anchors.leftMargin: user_image.radius + 20
+                            anchors.leftMargin: 30
                             anchors.verticalCenter: parent.verticalCenter
-                            source: "/res/user_photo.png"//"qrc:/../../../../Downloads/user_photo.png"
+                            source: "/res/user_photo.png"
                         }
                         Image{
                             id:user_profile_image
@@ -1516,7 +1443,7 @@ ApplicationWindow {
                                     id: column
                                     spacing: 30
                                     anchors.left: parent.left
-                                    anchors.leftMargin: 50
+                                    anchors.leftMargin: 750
                                     anchors.horizontalCenter: parent.horizontalCenter
                                     Column{
                                         spacing: 10
@@ -1526,12 +1453,12 @@ ApplicationWindow {
                                         }
                                         TextField{
                                             id: user_name_text
-                                            width: 300
-                                            height: 35
+                                            width: mainWindow.width/3
+                                            height: mainWindow.height/10
                                             text: ""
                                             color: "white"
                                             placeholderText: qsTr("Your Name")
-                                            leftPadding: 50
+                                            leftPadding: 70
                                             onTextChanged: {
                                                 user_name.border.color = "#C0C0C0"
                                             }
@@ -1544,10 +1471,8 @@ ApplicationWindow {
                                                 border.width: 1.5
                                             }
                                             Image {
-                                                width: 23
-                                                height: 23
                                                 fillMode: Image.PreserveAspectFit
-                                                source: "/res/user_image.png"//"qrc:/../../../../Downloads/user_image.png"
+                                                source: "/res/user_image.png"
                                                 anchors.left: parent.left
                                                 anchors.leftMargin: 12
                                                 anchors.verticalCenter: parent.verticalCenter
@@ -1562,14 +1487,14 @@ ApplicationWindow {
                                         }
                                         TextField{
                                             id: user_mail_text
-                                            width: 300
-                                            height: 35
+                                            width: mainWindow.width/3
+                                            height: mainWindow.height/10
                                             text: ""
                                             color: "white"
                                             placeholderText: qsTr("example@gmail.com")
                                             inputMethodHints: Qt.ImhEmailCharactersOnly
                                             //validator: RegExpValidator{regExp:/[A-Z0-9a-z._-]{1,}@(\\w+)(\\.(\\w+))(\\.(\\w+))?(\\.(\\w+))?$"*/}
-                                            leftPadding: 50
+                                            leftPadding: 70
                                             onTextChanged: {
                                                 user_mail.border.color = "#C0C0C0"
                                             }
@@ -1582,10 +1507,8 @@ ApplicationWindow {
                                                 border.width: 1.5
                                             }
                                             Image {
-                                                width: 25
-                                                height: 25
                                                 fillMode: Image.PreserveAspectFit
-                                                source: "/res/mailLogo.png"//"qrc:/../../../../Downloads/mailLogo.png"
+                                                source: "/res/mailLogo.png"
                                                 anchors.left: parent.left
                                                 anchors.leftMargin: 12
                                                 anchors.verticalCenter: parent.verticalCenter
@@ -1600,13 +1523,13 @@ ApplicationWindow {
                                         }
                                         TextField{
                                             id: user_number_text
-                                            width: 300
-                                            height: 35
+                                            width: mainWindow.width/3
+                                            height: mainWindow.height/10
                                             text: ""
                                             color: "white"
                                             maximumLength: 10
                                             placeholderText: qsTr("Your Mobile Number")
-                                            leftPadding: 70
+                                            leftPadding: 160
                                             validator: RegExpValidator{regExp: /[0-9,/]*/}
                                             onTextChanged: {
                                                 user_number.border.color = "#C0C0C0"
@@ -1621,12 +1544,10 @@ ApplicationWindow {
                                             }
                                             Image {
                                                 id:image
-                                                width: 25
-                                                height: 25
                                                 fillMode: Image.PreserveAspectFit
-                                                source: "/res/user_phone.png"//"qrc:/../../../../Downloads/user_phone.png"
+                                                source: "/res/user_phone.png"
                                                 anchors.left: parent.left
-                                                anchors.leftMargin: 12
+                                                anchors.leftMargin: 15
                                                 anchors.verticalCenter: parent.verticalCenter
                                             }
                                             Label {
@@ -1648,12 +1569,12 @@ ApplicationWindow {
                                         }
                                         TextField{
                                             id: user_address_text
-                                            width: 300
-                                            height: 35
+                                            width: mainWindow.width/3
+                                            height: mainWindow.height/10
                                             text: ""
                                             color: "white"
                                             placeholderText: qsTr("Your Address")
-                                            leftPadding: 50
+                                            leftPadding: 70
                                             onTextChanged: {
                                                 user_address.border.color = "#C0C0C0"
                                             }
@@ -1666,10 +1587,8 @@ ApplicationWindow {
                                                 border.width: 1.5
                                             }
                                             Image {
-                                                width: 30
-                                                height: 30
                                                 fillMode: Image.PreserveAspectFit
-                                                source: "/res/user_location.png"//"qrc:/../../../../Downloads/user_location.png"
+                                                source: "/res/user_location.png"
                                                 anchors.left: parent.left
                                                 anchors.leftMargin: 12
                                                 anchors.verticalCenter: parent.verticalCenter
@@ -1684,12 +1603,12 @@ ApplicationWindow {
                                         }
                                         TextField{
                                             id: user_locality_text
-                                            width: 300
-                                            height: 35
+                                            width: mainWindow.width/3
+                                            height: mainWindow.height/10
                                             text: ""
                                             color: "white"
                                             placeholderText: qsTr("Your Locality")
-                                            leftPadding: 50
+                                            leftPadding: 70
                                             onTextChanged: {
                                                 user_locality.border.color = "#C0C0C0"
                                             }
@@ -1702,10 +1621,8 @@ ApplicationWindow {
                                                 border.width: 1.5
                                             }
                                             Image {
-                                                width: 25
-                                                height: 25
                                                 fillMode: Image.PreserveAspectFit
-                                                source: "/res/user_locality.png"//"qrc:/../../../../Downloads/user_locality.png"
+                                                source: "/res/user_locality.png"
                                                 anchors.left: parent.left
                                                 anchors.leftMargin: 12
                                                 anchors.verticalCenter: parent.verticalCenter
@@ -1720,12 +1637,12 @@ ApplicationWindow {
                                         }
                                         TextField{
                                             id: user_password_text
-                                            width: 300
-                                            height: 35
+                                            width: mainWindow.width/3
+                                            height: mainWindow.height/10
                                             text: ""
                                             color: "white"
                                             placeholderText: qsTr("password")
-                                            leftPadding: 50
+                                            leftPadding: 70
                                             rightPadding: 50
                                             echoMode: TextInput.Password
                                             onTextChanged: {
@@ -1740,20 +1657,16 @@ ApplicationWindow {
                                                 border.width: 1.5
                                             }
                                             Image {
-                                                width: 23
-                                                height: 23
                                                 fillMode: Image.PreserveAspectFit
-                                                source: "/res/password.png"//"qrc:/../../../../Downloads/password.png"
+                                                source: "/res/password.png"
                                                 anchors.left: parent.left
                                                 anchors.leftMargin: 8
                                                 anchors.verticalCenter: parent.verticalCenter
                                             }
                                             Image {
                                                 id: password_hide_image1
-                                                width: 25
-                                                height: 25
                                                 fillMode: Image.PreserveAspectFit
-                                                source: "/res/password_hide.png"//"qrc:/../../../../Downloads/password_hide.png"
+                                                source: "/res/password_hide.png"
                                                 anchors.right: parent.right
                                                 anchors.rightMargin: 12
                                                 anchors.verticalCenter: parent.verticalCenter
@@ -1769,10 +1682,8 @@ ApplicationWindow {
                                             Image {
                                                 id: password_show_image1
                                                 visible: false
-                                                width: 25
-                                                height: 25
                                                 fillMode: Image.PreserveAspectFit
-                                                source: "/res/password_show.png"//"qrc:/../../../../Downloads/password_show.png"
+                                                source: "/res/password_show.png"
                                                 anchors.right: parent.right
                                                 anchors.rightMargin: 12
                                                 anchors.verticalCenter: parent.verticalCenter
@@ -1799,20 +1710,21 @@ ApplicationWindow {
                     }
                     Column{
                         anchors.top: scrollview.bottom
-                        anchors.topMargin: 20
+                        anchors.topMargin: 30
                         anchors.horizontalCenter: parent.horizontalCenter
                         spacing: 10
                         Button {
                             Text{
                                 text: "Verify Account ->"
-                                font.pixelSize: 15
+                                font.pointSize: ScreenTools.defaultFontPointSize
+                                font.bold: true
                                 anchors.centerIn: parent
                                 color: "white"
                             }
                             background: Rectangle {
                                 id: verify_account_button
-                                implicitWidth: 200
-                                implicitHeight: 40
+                                implicitWidth: mainWindow.width/4
+                                implicitHeight:  mainWindow.height/10
                                 color: "#F25822"
                                 radius: 4
                             }
@@ -1829,7 +1741,7 @@ ApplicationWindow {
                                         || user_address_text.text == ""
                                         || user_locality_text.text == ""
                                         || user_password_text.text == ""
-                                        || user_image_inprofile.source == ""){
+                                        || user_profile_image.source == ""){
                                     enter_all_fields.open()
                                 }
                                 else{
@@ -1852,6 +1764,7 @@ ApplicationWindow {
                         Label{
                             anchors.horizontalCenter: parent.horizontalCenter
                             text: "PREVIOUS STEP"
+                            font.pointSize:ScreenTools.defaultFontPointSize
                             font.bold: true
                             color: "white"
                             MouseArea{
@@ -1890,27 +1803,29 @@ ApplicationWindow {
                     Label{
                         id: otp_label
                         anchors.top: parent.top
-                        anchors.topMargin: 20
+                        anchors.topMargin: 40
                         anchors.left: parent.left
                         anchors.leftMargin: 20
                         text: "Please enter the"
                         color: "white"
+                        font.pointSize:ScreenTools.defaultFontPointSize
                         Label{
                             anchors.left: parent.right
                             anchors.leftMargin: 3
                             text: "One Time Password"
                             color: "#00FFFF"
+                            font.pointSize:ScreenTools.defaultFontPointSize
                         }
                     }
                     Row{
                         id: otp_row
-                        spacing: 20
+                        spacing: 30
                         anchors.top: otp_label.bottom
-                        anchors.topMargin: 10
+                        anchors.topMargin: 30
                         anchors.horizontalCenter: parent.horizontalCenter
                         TextField{
-                            width: 30
-                            height: 30
+                            height: mainWindow.height/12
+                            width: height
                             text: ""
                             color: "white"
                             maximumLength: 1
@@ -1923,12 +1838,12 @@ ApplicationWindow {
                                 anchors.fill: parent
                                 color: "#031C28"
                                 border.color: "#05324D"
-                                border.width: 1.5
+                                border.width: 2
                             }
                         }
                         TextField{
-                            width: 30
-                            height: 30
+                            height: mainWindow.height/12
+                            width: height
                             text: ""
                             color: "white"
                             maximumLength: 1
@@ -1941,12 +1856,12 @@ ApplicationWindow {
                                 anchors.fill: parent
                                 color: "#031C28"
                                 border.color: "#05324D"
-                                border.width: 1.5
+                                border.width: 2
                             }
                         }
                         TextField{
-                            width: 30
-                            height: 30
+                            height: mainWindow.height/12
+                            width: height
                             text: ""
                             color: "white"
                             maximumLength: 1
@@ -1959,12 +1874,12 @@ ApplicationWindow {
                                 anchors.fill: parent
                                 color: "#031C28"
                                 border.color: "#05324D"
-                                border.width: 1.5
+                                border.width: 2
                             }
                         }
                         TextField{
-                            width: 30
-                            height: 30
+                            height: mainWindow.height/12
+                            width: height
                             text: ""
                             color: "white"
                             maximumLength: 1
@@ -1977,12 +1892,12 @@ ApplicationWindow {
                                 anchors.fill: parent
                                 color: "#031C28"
                                 border.color: "#05324D"
-                                border.width: 1.5
+                                border.width: 2
                             }
                         }
                         TextField{
-                            width: 30
-                            height: 30
+                            height: mainWindow.height/12
+                            width: height
                             text: ""
                             color: "white"
                             maximumLength: 1
@@ -1995,12 +1910,12 @@ ApplicationWindow {
                                 anchors.fill: parent
                                 color: "#031C28"
                                 border.color: "#05324D"
-                                border.width: 1.5
+                                border.width: 2
                             }
                         }
                         TextField{
-                            width: 30
-                            height: 30
+                            height: mainWindow.height/12
+                            width: height
                             text: ""
                             color: "white"
                             maximumLength: 1
@@ -2013,15 +1928,15 @@ ApplicationWindow {
                                 anchors.fill: parent
                                 color: "#031C28"
                                 border.color: "#05324D"
-                                border.width: 1.5
+                                border.width: 2
                             }
                         }
                     }
                     Row{
                         id: otp_error
-                        spacing: 20
+                        spacing: 110
                         anchors.top: otp_row.bottom
-                        anchors.topMargin: 20
+                        anchors.topMargin: 40
                         anchors.horizontalCenter: parent.horizontalCenter
                         Label{
                             text: "Didn't get the OTP"
@@ -2036,7 +1951,7 @@ ApplicationWindow {
                         id: otp_column
                         spacing: 100
                         anchors.top: otp_error.bottom
-                        anchors.topMargin: 40
+                        anchors.topMargin: 90
                         anchors.horizontalCenter: parent.horizontalCenter
                         Label{
                             text: "OTP has been sent to your Mobile"
@@ -2051,14 +1966,15 @@ ApplicationWindow {
                         Button {
                             Text{
                                 text: "Verify Now ->"
-                                font.pixelSize: 15
+                                font.pointSize:ScreenTools.defaultFontPointSize
+                                font.bold: true
                                 anchors.centerIn: parent
                                 color: "white"
                             }
                             background: Rectangle {
                                 id: verify_now_button
-                                implicitWidth: 200
-                                implicitHeight: 40
+                                implicitWidth: mainWindow.width/3
+                                implicitHeight:  mainWindow.height/10
                                 color: "#F25822"
                                 radius: 4
                             }
@@ -2083,11 +1999,12 @@ ApplicationWindow {
                     }
                     Label{
                         anchors.top: otp_column.bottom
-                        anchors.topMargin: 30
+                        anchors.topMargin: 60
                         anchors.horizontalCenter: parent.horizontalCenter
                         text: "PREVIOUS STEP"
                         font.bold: true
                         color: "white"
+                        font.pointSize:ScreenTools.defaultFontPointSize
                         MouseArea{
                             anchors.fill: parent
                             onClicked: {
@@ -2105,10 +2022,10 @@ ApplicationWindow {
                     id: back_to_login_logo
                     anchors.bottom: parent.bottom
                     anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.bottomMargin: 40
-                    width: 75
-                    height: 75
-                    source: "/res/backtologin-removebg-preview.png"//"qrc:/../../../../Downloads/backtologin-removebg-preview.png"
+                    anchors.bottomMargin: 90
+                    width: 90
+                    height: 90
+                    source: "/res/backtologin-removebg-preview.png"
                     Label{
                         anchors.top: parent.bottom
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -2124,8 +2041,6 @@ ApplicationWindow {
                     }
                 }
             }
-        }
-    }
 
     FileDialog {
         id: image_file_dialog
@@ -2154,7 +2069,7 @@ ApplicationWindow {
     MessageDialog {
         id: no_recordDialog
         title: "New User"
-        text: "We think your are a new user"
+        text: qsTr("We think your are a new user")
         informativeText: "Please Sign up/ Create a New Account."
         icon: StandardIcon.Warning
         standardButtons: Dialog.Ok
@@ -2166,7 +2081,7 @@ ApplicationWindow {
     MessageDialog {
         id: incorrect_password_Dialog
         title: "Password is wrong"
-            text: "Entered password is incorrect"
+        text: qsTr("Entered password is incorrect")
         standardButtons: Dialog.Ok
     }
 
@@ -2182,13 +2097,6 @@ ApplicationWindow {
         text: "Please Select the Role."
     }
 
-//    MessageDialog {
-//        id: profileImageDialog
-//        title: "Profile Image"
-//        text: "Please Upload Your Profile Image."
-//        standardButtons: Dialog.Ok
-//    }
-
     MessageDialog {
         id: userRegisteredDialog
         title:"Registration Successfull"
@@ -2199,10 +2107,9 @@ ApplicationWindow {
     MessageDialog {
         id: signout_Dialog
         title: "Sign Out"
-            text: "Are You Sure you want to Sign Out?."
+        text: "Are You Sure you want to Sign Out?."
         standardButtons: Dialog.Yes | Dialog.No
         onYes: {
-            //rpadatabase.logout()
             landing_page_rectangle.visible = false
             login_page_rectangle.visible = true
             login_page_email_textfield.text = ""
@@ -2217,22 +2124,14 @@ ApplicationWindow {
     MessageDialog {
         id: mailrecord_Dialog
         title: "Already Registered Mail"
-            text: "Entered Mail is Already Registered."
+        text: "Entered Mail is Already Registered."
         standardButtons: Dialog.Ok
         onAccepted: {
             //login_page_rectangle.visible = true
             user_mail_text.text = ""
         }
     }
-//    MessageDialog {
-//        id: number_record_Dialog
-//        title: "Already Registered Number"
-//            text: "Entered Number is Already Registered."
-//        standardButtons: Dialog.Ok
-//        onAccepted: {
-//            user_number_text.text = ""
-//        }
-//    }
+
     MessageDialog {
         id: uinrecord_Dialog
         title: "Already used UIN"
@@ -2264,7 +2163,7 @@ ApplicationWindow {
     MessageDialog {
         id: password_mismatch
         title: "Mismatch"
-            text: "Both passwords do not match"
+        text: "Both passwords do not match"
     }
     MessageDialog {
             id: password_length_error_dialog
@@ -2274,7 +2173,7 @@ ApplicationWindow {
     MessageDialog {
         id: password_updated
         title: "Updated"
-            text: "Password Reset Link sent to the respective Mail."
+        text: "Password Reset Link sent to the respective Mail."
     }
 
     Component.onCompleted: {
@@ -2679,42 +2578,6 @@ ApplicationWindow {
                             Layout.alignment:       Qt.AlignHCenter
                         }
 
-                        //                        QGCLabel {
-                        //                            text:                   QGroundControl.qgcVersion
-                        //                            font.pointSize:         ScreenTools.smallFontPointSize
-                        //                            wrapMode:               QGCLabel.WrapAnywhere
-                        //                            Layout.maximumWidth:    parent.width
-                        //                            Layout.alignment:       Qt.AlignHCenter
-
-                        //                            QGCMouseArea {
-                        //                                id:                 easterEggMouseArea
-                        //                                anchors.topMargin:  -versionLabel.height
-                        //                                anchors.fill:       parent
-
-                        //                                onClicked: {
-                        //                                    if (mouse.modifiers & Qt.ControlModifier) {
-                        //                                        QGroundControl.corePlugin.showTouchAreas = !QGroundControl.corePlugin.showTouchAreas
-                        //                                    } else if (mouse.modifiers & Qt.ShiftModifier) {
-                        //                                        if(!QGroundControl.corePlugin.showAdvancedUI) {
-                        //                                            advancedModeConfirmation.open()
-                        //                                        } else {
-                        //                                            QGroundControl.corePlugin.showAdvancedUI = false
-                        //                                        }
-                        //                                    }
-                        //                                }
-
-                        //                                MessageDialog {
-                        //                                    id:                 advancedModeConfirmation
-                        //                                    title:              qsTr("Advanced Mode")
-                        //                                    text:               QGroundControl.corePlugin.showAdvancedUIMessage
-                        //                                    standardButtons:    StandardButton.Yes | StandardButton.No
-                        //                                    onYes: {
-                        //                                        QGroundControl.corePlugin.showAdvancedUI = true
-                        //                                        advancedModeConfirmation.close()
-                        //                                    }
-                        //                                }
-                        //                            }
-                        //                        }
                     }
                 }
             }
@@ -3031,14 +2894,14 @@ ApplicationWindow {
                             anchors.right: brand_rect.right
                             anchors.rightMargin: 40
                             text: qsTr("Go Drona")
-                            font.pointSize: 13
+                            font.pointSize:ScreenTools.defaultFontPointSize * 1.3
                             font.bold: true
                             color: "white"
                         }
                         Rectangle{
                             id: brand_logo
-                            width: 90
-                            height: 90
+                            width: 120
+                            height: 120
                             anchors.left: brand_rect.left
                             anchors.leftMargin:40
                             anchors.verticalCenter: parent.verticalCenter
@@ -3052,11 +2915,10 @@ ApplicationWindow {
                     Rectangle {
                         id: menu_rect_1
                         color: "#05324D"
-                        height: 25
+                        height: 50
                         width: first_rectangle.width
                         Layout.alignment: Qt.AlignLeft
                         Layout.fillWidth: true
-                        //Layout.top: brand_row.bottom
 
 
                         Image {
@@ -3071,11 +2933,11 @@ ApplicationWindow {
                             id:landing_page_text
                             text: "HOME"
                             color: "white"
-                            font.pointSize: 13
+                            font.pointSize: ScreenTools.smallFontPointSize
                             font.bold: true
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: home_image.left
-                            anchors.leftMargin: 30
+                            anchors.leftMargin: 35
                         }
                     }
 
@@ -3083,7 +2945,8 @@ ApplicationWindow {
                         id: management
                         text: "Management"
                         color : "white"
-                        font.pointSize: 10
+                        font.pointSize: ScreenTools.smallFontPointSize * 1.2
+                        font.bold: true
                         Layout.alignment: Qt.AlignLeft
                         Layout.leftMargin: 17
                         Layout.topMargin: 12
@@ -3092,7 +2955,7 @@ ApplicationWindow {
                     Rectangle{
                         id: dashboard_button
                         width: menu_rect_1.width -15
-                        height: 25
+                        height: 50
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3114,21 +2977,18 @@ ApplicationWindow {
                         Text{
                             text: "DASHBOARD";
                             color: "#FFFFFF"
-                            font.pointSize: 9
+                            font.pointSize: ScreenTools.smallFontPointSize
+                            font.bold: true
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: dashboard_image.left
-                            anchors.leftMargin: 30
+                            anchors.leftMargin: 35
                         }
 
 
                         MouseArea{
                             id:mouseArea
-                            //                            hoverEnabled: true
-                            //                            onEntered: parent.color = '#F25822'
-                            //                            onExited: parent.color = '#031C28'
                             anchors.fill: dashboard_button
                             onClicked: {
-                                //                                hoverEnabled: false
                                 checkBoxState = 0
                                 dashboard_rectangle.visible = true
                                 logout_button.color = "#031C28"
@@ -3142,20 +3002,13 @@ ApplicationWindow {
                                 firmware_log_rectangle.visible = false
                             }
                         }
-                        /*states: State {
-                            name: "pressed"; when: mouseArea.pressed
-                            PropertyChanges { target: dashboard_button; scale: 1 }
-                        }
 
-                        transitions: Transition {
-                            NumberAnimation { properties: "scale"; duration: 150; easing.type: Easing.InOutQuad }
-                        }*/
                     }
 
                     Rectangle{
                         id: managerpa_button
                         width: menu_rect_1.width -15
-                        height: 25
+                        height: 50
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3171,10 +3024,11 @@ ApplicationWindow {
                         Text{
                             text: "MANAGE RPA";
                             color: "#FFFFFF"
-                            font.pointSize: 9
+                            font.pointSize: ScreenTools.smallFontPointSize
+                            font.bold: true
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: landingrpa_image.left
-                            anchors.leftMargin: 30
+                            anchors.leftMargin: 35
                         }
 
                         MouseArea{
@@ -3193,7 +3047,7 @@ ApplicationWindow {
                                 managerpa_button.color = "#F25822"
                                 manage_rpa_header1.visible = true
                                 showPanel(this,"SetupParameterEditor.qml")
-                                console.log("table_rect width : "+table_rect.width)
+                                console.log(" width : "+table_rect.width)
                                 console.log("checkbox width : "+table_rect.width/8)
                                 console.log("rest of width : "+table_rect.width/4)
                             }
@@ -3205,7 +3059,7 @@ ApplicationWindow {
                     Rectangle{
                         id: customers_button
                         width: menu_rect_1.width -15
-                        height: 25
+                        height: 50
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3221,16 +3075,14 @@ ApplicationWindow {
                         Text{
                             text: "MANAGE CUSTOMERS";
                             color: "#FFFFFF"
-                            font.pointSize: 9
+                            font.pointSize: ScreenTools.smallFontPointSize
+                            font.bold: true
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: customers_image.left
-                            anchors.leftMargin: 30
+                            anchors.leftMargin: 35
                         }
 
                         MouseArea{
-                            //                            hoverEnabled: true
-                            //                            onEntered: parent.color = '#F25822'
-                            //                            onExited: parent.color = '#031C28'
                             anchors.fill: customers_button
                             onClicked: {
 
@@ -3241,7 +3093,7 @@ ApplicationWindow {
                     Rectangle{
                         id: remote_button
                         width: menu_rect_1.width -15
-                        height: 25
+                        height: 50
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3257,16 +3109,14 @@ ApplicationWindow {
                         Text{
                             text: "REMOTE PILOTS"
                             color: "#FFFFFF"
-                            font.pointSize: 9
+                            font.pointSize: ScreenTools.smallFontPointSize
+                            font.bold: true
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: remote_image.left
-                            anchors.leftMargin: 30
+                            anchors.leftMargin: 35
                         }
 
                         MouseArea{
-                            //                            hoverEnabled: true
-                            //                            onEntered: parent.color = '#F25822'
-                            //                            onExited: parent.color = '#031C28'
                             anchors.fill: remote_button
                             onClicked: {
 
@@ -3276,7 +3126,7 @@ ApplicationWindow {
                     Rectangle{
                         id: missions_button
                         width: menu_rect_1.width -15
-                        height: 25
+                        height: 50
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3292,16 +3142,14 @@ ApplicationWindow {
                         Text{
                             text: "MISSIONS"
                             color: "#FFFFFF"
-                            font.pointSize: 9
+                            font.pointSize: ScreenTools.smallFontPointSize
+                            font.bold: true
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: mission_image.left
-                            anchors.leftMargin: 30
+                            anchors.leftMargin: 35
                         }
 
                         MouseArea{
-                            //                            hoverEnabled: true
-                            //                            onEntered: parent.color = '#F25822'
-                            //                            onExited: parent.color = '#031C28'
                             anchors.fill: missions_button
                             onClicked: {
 
@@ -3311,7 +3159,7 @@ ApplicationWindow {
                     Rectangle{
                         id: create_button
                         width: menu_rect_1.width -15
-                        height: 25
+                        height: 50
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3327,16 +3175,14 @@ ApplicationWindow {
                         Text{
                             text: "CREATE MISSIONS"
                             color: "#FFFFFF"
-                            font.pointSize: 9
+                            font.pointSize: ScreenTools.smallFontPointSize
+                            font.bold: true
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: create_mission_image.left
-                            anchors.leftMargin: 30
+                            anchors.leftMargin: 35
                         }
 
                         MouseArea{
-                            //                            hoverEnabled: true
-                            //                            onEntered: parent.color = '#F25822'
-                            //                            onExited: parent.color = '#031C28'
                             anchors.fill: create_button
                             onClicked: {
 
@@ -3347,7 +3193,7 @@ ApplicationWindow {
                     Rectangle{
                         id: flight_log_button
                         width: menu_rect_1.width -15
-                        height: 25
+                        height: 50
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3363,16 +3209,14 @@ ApplicationWindow {
                         Text{
                             text: "FLIGHT LOG"
                             color: "#FFFFFF"
-                            font.pointSize: 9
+                            font.pointSize: ScreenTools.smallFontPointSize
+                            font.bold: true
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: log_image.left
-                            anchors.leftMargin: 30
+                            anchors.leftMargin: 35
                         }
 
                         MouseArea{
-                            //                            hoverEnabled: true
-                            //                            onEntered: parent.color = '#F25822'
-                            //                            onExited: parent.color = '#031C28'
                             anchors.fill: flight_log_button
                             onClicked: {
                                 checkBoxState = 0
@@ -3398,7 +3242,7 @@ ApplicationWindow {
                     Rectangle{
                         id: firmware_button
                         width: menu_rect_1.width -15
-                        height: 25
+                        height: 50
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3414,16 +3258,14 @@ ApplicationWindow {
                         Text{
                             text: "FIRMWARE LOG"
                             color: "#FFFFFF"
-                            font.pointSize: 9
+                            font.pointSize: ScreenTools.smallFontPointSize
+                            font.bold: true
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: firmware_log_image.left
-                            anchors.leftMargin: 30
+                            anchors.leftMargin: 35
                         }
 
                         MouseArea{
-                            //                            hoverEnabled: true
-                            //                            onEntered: parent.color = '#F25822'
-                            //                            onExited: parent.color = '#031C28'
                             anchors.fill: firmware_button
                             onClicked: {
                                 checkBoxState = 0
@@ -3447,7 +3289,8 @@ ApplicationWindow {
                         id: insights
                         text: "Insights"
                         color : "white"
-                        font.pointSize: 10
+                        font.pointSize: ScreenTools.smallFontPointSize *1.2
+                        font.bold: true
                         Layout.alignment: Qt.AlignLeft
                         Layout.leftMargin: 17
                         Layout.topMargin: 12
@@ -3456,7 +3299,7 @@ ApplicationWindow {
                     Rectangle{
                         id: profile_button
                         width: menu_rect_1.width -15
-                        height: 25
+                        height: 50
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3472,16 +3315,14 @@ ApplicationWindow {
                         Text{
                             text: "PROFILE SETTINGS"
                             color: "#FFFFFF"
-                            font.pointSize: 9
+                            font.pointSize: ScreenTools.smallFontPointSize
+                            font.bold: true
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: settings_image.left
-                            anchors.leftMargin: 30
+                            anchors.leftMargin: 35
                         }
 
                         MouseArea{
-                            //                            hoverEnabled: true
-                            //                            onEntered: parent.color = '#F25822'
-                            //                            onExited: parent.color = '#031C28'
                             anchors.fill: profile_button
                             onClicked: {
 
@@ -3491,7 +3332,7 @@ ApplicationWindow {
                     Rectangle{
                         id: notification_button
                         width: menu_rect_1.width -15
-                        height: 25
+                        height: 50
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3507,16 +3348,14 @@ ApplicationWindow {
                         Text{
                             text: "NOTIFICATIONS"
                             color: "#FFFFFF"
-                            font.pointSize: 9
+                            font.pointSize: ScreenTools.smallFontPointSize
+                            font.bold: true
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: notification_image.left
-                            anchors.leftMargin: 30
+                            anchors.leftMargin: 35
                         }
 
                         MouseArea{
-                            //                            hoverEnabled: true
-                            //                            onEntered: parent.color = '#F25822'
-                            //                            onExited: parent.color = '#031C28'
                             anchors.fill: notification_button
                             onClicked: {
 
@@ -3526,7 +3365,7 @@ ApplicationWindow {
                     Rectangle{
                         id: logout_button
                         width: menu_rect_1.width -15
-                        height: 25
+                        height: 50
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3542,16 +3381,14 @@ ApplicationWindow {
                         Text{
                             text: "LOGOUT"
                             color: "#FFFFFF"
-                            font.pointSize: 9
+                            font.pointSize: ScreenTools.smallFontPointSize
+                            font.bold: true
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: logout_image.left
-                            anchors.leftMargin: 30
+                            anchors.leftMargin: 35
                         }
 
                         MouseArea{
-                            //                            hoverEnabled: true
-                            //                            onEntered: parent.color = '#F25822'
-                            //                            onExited: parent.color = '#031C28'
                             anchors.fill: logout_button
                             onClicked: {
                                 signout_Dialog.open()
@@ -3560,6 +3397,8 @@ ApplicationWindow {
                                 managerpa_button.color = "#031C28"
                                 flight_log_button.color = "#031C28"
                                 firmware_button.color = "#031C28"
+                                mainWindow.newWindowObject.destroy()
+
                             }
                         }
                     }
@@ -3590,7 +3429,7 @@ ApplicationWindow {
                     Rectangle {
                         id: dashboard_rectangle_header
                         color: "#031C28"
-                        height: 50
+                        height:  mainWindow.height/10
                         width: dashboard_rectangle.width
                         border.color: "#05324D"
                         border.width: 2
@@ -3607,10 +3446,11 @@ ApplicationWindow {
                             id: dashboard_text
                             text: "DASHBOARD"
                             color: "white"
-                            font.pointSize: 10
+                            font.bold: true
+                            font.pointSize: ScreenTools.smallFontPointSize
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: hamburger_image.left
-                            anchors.leftMargin: 25
+                            anchors.leftMargin: 35
                         }
 
                         Image {
@@ -3618,13 +3458,14 @@ ApplicationWindow {
                             source: "/res/search.png"
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.right: dashboard_rectangle_header.right
-                            anchors.rightMargin: 180
+                            anchors.rightMargin: 220
                         }
                         Text{
                             id: dashboard_text_search
                             text: "Search"
                             color : "white"
-                            font.pointSize: 10
+                            font.bold: true
+                            font.pointSize:ScreenTools.smallFontPointSize
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.right: dashboard_rectangle_header.right
                             anchors.rightMargin: 100
@@ -3651,14 +3492,13 @@ ApplicationWindow {
                                 anchors.topMargin: 20
                                 text: "Hi "
                                 color : "white"
-                                font.pointSize: 10
-                                //anchors.verticalCenter: parent.verticalCenter
+                                font.pointSize:ScreenTools.defaultFontPointSize
                             }
                             Text{
                                 id: username
                                 text: database_access.name//"Chris Hemsworth"
                                 color : "#F25822"
-                                font.pointSize: 10
+                                font.pointSize: ScreenTools.defaultFontPointSize * 1.1
                                 font.bold: true
                                 anchors.left: greet.right
                                 anchors.top: parent.top
@@ -3695,7 +3535,8 @@ ApplicationWindow {
                                 id: overview
                                 text: "OVERVIEW"
                                 color : "white"
-                                font.pointSize: 10
+                                font.pointSize:ScreenTools.smallFontPointSize * 1.2
+                                font.bold: true
                                 anchors.left: parent.left
                                 anchors.leftMargin: 20
                                 anchors.top: greeting_text.bottom
@@ -3705,14 +3546,16 @@ ApplicationWindow {
 
                             Row{
                                 anchors.left: parent.left
-                                anchors.leftMargin: 20
+                                anchors.leftMargin: 50
                                 anchors.top: overview.bottom
-                                anchors.topMargin: 15
+                                anchors.topMargin: 25
                                 Row {
-                                    spacing: 25
+                                    spacing: 75
                                     Rectangle {
+                                        id:row_rectangle1
                                         color: "#4D05324D"
-                                        width: 155; height: 150
+                                        width: mainWindow.height /4
+                                        height: width
                                         radius: 2
 
                                         Rectangle {
@@ -3720,14 +3563,20 @@ ApplicationWindow {
                                             anchors.left: parent.left
                                             anchors.leftMargin: 38
                                             anchors.top: parent.top
-                                            anchors.topMargin: 15
-                                            width: parent.width/2
-                                            height: 70
+                                            anchors.topMargin: 18
+                                            width: parent.width/1.4
+                                            height: parent.height /1.6
                                             color: "Green"
                                             radius: 3
+                                            Rectangle{
+                                                id: inner_rect_11
+                                                width: 120
+                                                height: 120
+                                                anchors.centerIn: parent
+                                                color: "transparent"
                                             Image {
                                                 id: flight_log_image
-                                                anchors.centerIn: parent
+                                                anchors.fill: parent
                                                 source: "qrc:/res/Flight_log.png"
 
                                             }
@@ -3737,12 +3586,14 @@ ApplicationWindow {
                                                 color: "white"
                                             }
 
+                                            }
+
                                         }
 
                                         Text {
                                             id: flightlog
                                             text: qsTr("Drone Log")
-                                            font.pointSize: 9
+                                            font.pointSize:ScreenTools.smallFontPointSize
                                             anchors.bottom: parent.bottom
                                             anchors.bottomMargin: 20
                                             anchors.horizontalCenter: parent.horizontalCenter
@@ -3752,7 +3603,8 @@ ApplicationWindow {
                                     }
                                     Rectangle {
                                         color: "#4D05324D"
-                                        width: 155; height: 150
+                                        width: mainWindow.height /4
+                                        height: width
                                         radius: 2
 
                                         Rectangle {
@@ -3760,14 +3612,20 @@ ApplicationWindow {
                                             anchors.left: parent.left
                                             anchors.leftMargin: 38
                                             anchors.top: parent.top
-                                            anchors.topMargin: 15
-                                            width: parent.width/2
-                                            height: 70
+                                            anchors.topMargin: 18
+                                            width: parent.width/1.4
+                                            height: parent.height /1.6
                                             color: "black"
                                             radius: 4
+                                            Rectangle{
+                                                id: inner_rect_2
+                                                width: 120
+                                                height: 120
+                                                anchors.centerIn: parent
+                                                color: "transparent"
                                             Image {
                                                 id: customersimage
-                                                anchors.centerIn: parent
+                                                anchors.fill: parent
                                                 source: "qrc:/qmlimages/customers_black.png"
 
                                             }
@@ -3778,11 +3636,12 @@ ApplicationWindow {
                                             }
 
                                         }
+                                        }
 
                                         Text {
                                             id: customers
                                             text: qsTr("Customers")
-                                            font.pointSize: 9
+                                            font.pointSize: ScreenTools.smallFontPointSize
                                             anchors.bottom: parent.bottom
                                             anchors.bottomMargin: 20
                                             anchors.horizontalCenter: parent.horizontalCenter
@@ -3793,7 +3652,8 @@ ApplicationWindow {
 
                                     Rectangle {
                                         color: "#4D05324D"
-                                        width: 155; height: 150
+                                        width: mainWindow.height /4
+                                        height: width
                                         radius: 2
 
                                         Rectangle {
@@ -3801,14 +3661,20 @@ ApplicationWindow {
                                             anchors.left: parent.left
                                             anchors.leftMargin: 38
                                             anchors.top: parent.top
-                                            anchors.topMargin: 15
-                                            width: parent.width/2
-                                            height: 70
+                                            anchors.topMargin: 18
+                                            width: parent.width/1.4
+                                            height: parent.height /1.6
                                             color: "red"
                                             radius: 4
+                                            Rectangle{
+                                                id: inner_rect_3
+                                                width: 120
+                                                height: 120
+                                                anchors.centerIn: parent
+                                                color: "transparent"
                                             Image {
                                                 id: remote_pilots_image
-                                                anchors.centerIn: parent
+                                                anchors.fill: parent
                                                 source: "qrc:/qmlimages/Remote_pilot.png"
 
                                             }
@@ -3819,11 +3685,12 @@ ApplicationWindow {
                                             }
 
                                         }
+                                        }
 
                                         Text {
                                             id: remote_pilot_text
                                             text: qsTr("Remote Pilots")
-                                            font.pointSize: 9
+                                            font.pointSize:ScreenTools.smallFontPointSize
                                             anchors.bottom: parent.bottom
                                             anchors.bottomMargin: 20
                                             anchors.horizontalCenter: parent.horizontalCenter
@@ -3838,7 +3705,8 @@ ApplicationWindow {
                                     }
                                     Rectangle {
                                         id: back_to_fly_rect
-                                        width: 155; height: 150
+                                        width: mainWindow.height /4
+                                        height: width
                                         radius: 2
                                         color: "#4D05324D"
 
@@ -3847,14 +3715,20 @@ ApplicationWindow {
                                             anchors.left: parent.left
                                             anchors.leftMargin: 38
                                             anchors.top: parent.top
-                                            anchors.topMargin: 15
-                                            width: parent.width/2
-                                            height: 70
+                                            anchors.topMargin: 18
+                                            width: parent.width/1.4
+                                            height: parent.height /1.6
                                             color: "Blue"
                                             radius: 4
+                                            Rectangle{
+                                                id: inner_rect_4
+                                                width: 120
+                                                height: 120
+                                                anchors.centerIn: parent
+                                                color: "transparent"
                                             Image {
                                                 id: back_to_fly_image
-                                                anchors.centerIn: parent
+                                                anchors.fill: parent
                                                 source: "qrc:/qmlimages/Back_to_fly.png"
 
                                             }
@@ -3864,10 +3738,11 @@ ApplicationWindow {
                                                 color: "white"
                                             }
                                         }
+                                        }
                                         Text {
                                             id: back_to_fly_text
                                             text: qsTr("Fly View")
-                                            font.pointSize: 9
+                                            font.pointSize: ScreenTools.smallFontPointSize
                                             anchors.bottom: parent.bottom
                                             anchors.bottomMargin: 20
                                             anchors.horizontalCenter: parent.horizontalCenter
@@ -3879,7 +3754,6 @@ ApplicationWindow {
                                             onEntered: back_to_fly_rect.color = '#05324D'
                                             onExited: back_to_fly_rect.color = '#4D05324D'
                                             anchors.fill: back_to_fly_rect
-
                                             onClicked:{
                                                 flightView.visible = true
                                                 console.log("flightview clicked")
@@ -3896,13 +3770,13 @@ ApplicationWindow {
                                 id: copyrights
                                 anchors.bottom: dashboard_rectangle_header1.bottom
                                 anchors.bottomMargin: 65
-                                height: 40
+                                height: mainWindow.height/20
                                 width: parent.width
-                                color: "#05324D"
+                                color: "transparent"
                                 Text {
                                     anchors.centerIn: parent
                                     text: "@2023 GoDrona | All Rights Reserved"
-                                    font.pointSize: 10
+                                    font.pointSize: ScreenTools.smallFontPointSize
                                     color: "White"
                                 }
                             }
@@ -3921,7 +3795,7 @@ ApplicationWindow {
                     Rectangle {
                         id:manage_rpa_header
                         color: "#031C28"
-                        height: 50
+                        height: mainWindow.height/10
                         width: manage_rpa_rectangle.width
                         visible: true
                         border.color: "#05324D"
@@ -3939,10 +3813,11 @@ ApplicationWindow {
                             id: managerpat_text
                             text: "MANAGE RPA"
                             color: "white"
-                            font.pointSize: 10
+                            font.pointSize: ScreenTools.smallFontPointSize
+                            font.bold: true
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: hamburger_image_rpa.left
-                            anchors.leftMargin: 25
+                            anchors.leftMargin: 35
                         }
 
                         Image {
@@ -3950,13 +3825,14 @@ ApplicationWindow {
                             source: "/res/search.png"
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.right: manage_rpa_header.right
-                            anchors.rightMargin: 180
+                            anchors.rightMargin: 220
                         }
                         Text{
                             id: search_rpa
                             text: "Search"
                             color : "white"
-                            font.pointSize: 10
+                            font.pointSize: ScreenTools.smallFontPointSize
+                            font.bold: true
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.right: manage_rpa_header.right
                             anchors.rightMargin: 100
@@ -3981,7 +3857,7 @@ ApplicationWindow {
                                 id: list_of_rpa_text
                                 text: "LIST OF RPA"
                                 color : "white"
-                                font.pointSize: 10
+                                font.pointSize: ScreenTools.smallFontPointSize
                                 font.bold: true
                                 anchors.left: parent.left
                                 anchors.leftMargin: 20
@@ -3992,11 +3868,11 @@ ApplicationWindow {
                             Rectangle {
                                 id:back_to_button
                                 anchors.right: manage_rpa_header1.right
-                                anchors.rightMargin: 180
+                                anchors.rightMargin: 370
                                 anchors.top: parent.top
                                 anchors.topMargin: 20
-                                width: 130
-                                height: 35
+                                height: mainWindow.height/20
+                                width:  mainWindow.width/8
                                 radius: 4
                                 color: "red"//"#60031C28"
 
@@ -4030,12 +3906,14 @@ ApplicationWindow {
                                 Text {
                                     anchors.centerIn: parent
                                     text: "Register RPA"
+                                    font.pointSize: ScreenTools.smallFontPointSize
                                     color:"white"
+                                    font.bold: true
                                 }
                                 background: Rectangle {
                                     id:register_rpa_button_rect
-                                    implicitHeight: 35
-                                    implicitWidth: 130
+                                    implicitHeight: mainWindow.height/20
+                                    implicitWidth:  mainWindow.width/8
                                     border.width: 1
                                     border.color: "#F25822"
                                     radius: 4
@@ -4048,6 +3926,7 @@ ApplicationWindow {
                                     register_rpa_button_rect.color = "#F25822"
                                 }
                                 onClicked: {
+
                                     updateButton = 1
                                     console.log("register button clicked"+updateButton)
                                     manage_rpa_header1.visible = false
@@ -4058,6 +3937,7 @@ ApplicationWindow {
                                     drone_name_text.text = ""
                                     uin_input_text.text = ""
                                     uin_input_text.enabled = true
+
                                 }
 
                             }
@@ -4077,21 +3957,19 @@ ApplicationWindow {
                             width: manage_rpa_header1.width - 50
                             height: mainWindow.height - 180
                             color: "#031C28"
-//                            border.width: 1
-//                            border.color: "#05324D"
                             visible: true
 
                             }
                            Rectangle {
                                anchors.bottom: manage_rpa_header1.bottom
                                anchors.bottomMargin: 65
-                               height: 40
+                               height: mainWindow.height/20
                                width: parent.width
-                               color: "#05324D"
+                               color: "transparent"
                                Text {
                                    anchors.centerIn: parent
                                    text: "@2023 GoDrona | All Rights Reserved"
-                                   font.pointSize: 10
+                                   font.pointSize: ScreenTools.smallFontPointSize
                                    color: "White"
                                }
                            }
@@ -4101,8 +3979,6 @@ ApplicationWindow {
                         id: rpa_register_page
                         color: "#031C28"
                         visible: false
-                        //height: parent.height
-                        //width: parent.width
                         height: screen.height - 50
                         width: manage_rpa_header1.width
                         border.color: "#05324D"
@@ -4116,12 +3992,11 @@ ApplicationWindow {
                             anchors.leftMargin: 20
                             anchors.top: rpa_register_page.top
                             anchors.topMargin: 20
-                            width: 25
-                            height: 25
+                            width: 40
+                            height: 40
                             color: "#031C28"
 
                             Image {
-                                //id: back_arrow
                                 source: "/res/back_arrow.png"
                                 anchors.centerIn: parent
                                 MouseArea {
@@ -4149,10 +4024,10 @@ ApplicationWindow {
                             id: add_edit_rpa_text
                             text: "ADD / EDIT RPA"
                             color : "white"
-                            font.pointSize: 10
+                            font.pointSize: ScreenTools.smallFontPointSize
                             font.bold: true
                             anchors.left: back_arrow_button.left
-                            anchors.leftMargin: 30
+                            anchors.leftMargin: 40
                             anchors.top: parent.top
                             anchors.topMargin: 25
                         }
@@ -4162,9 +4037,9 @@ ApplicationWindow {
                             anchors.left: parent.left
                             anchors.leftMargin: 20
                             anchors.top: parent.top
-                            anchors.topMargin: 60
+                            anchors.topMargin: 80
                             width: parent.width - 50
-                            height: 450
+                            height: parent.height /1.5
                             color: "#05324D"
                             radius: 4
 
@@ -4177,13 +4052,13 @@ ApplicationWindow {
 
                                 Rectangle{
                                     id:drone_image_container
-                                    width: 75
-                                    height: 75
+                                    height: mainWindow.height/9
+                                    width: mainWindow.width/15
                                     radius: width/2
                                     color: "#031C28"
                                     Image {
                                         id:drone_image
-                                        source: "qrc:/qmlimages/drone_1.png" //""
+                                        source: "qrc:/qmlimages/drone_1.png"
                                         anchors.fill: drone_image_container
                                         fillMode: Image.PreserveAspectCrop
                                         anchors.centerIn: parent
@@ -4195,28 +4070,33 @@ ApplicationWindow {
                                 }
 
                                 Column{
-                                    spacing: 10
+                                    spacing: 15
                                     Text {
                                         id: drone_image_text
                                         text: qsTr("Drone Image*")
                                         color: "White"
-                                        font.pointSize: 12
+                                        font.pointSize: ScreenTools.smallFontPointSize
+                                        anchors.left: drone_image_container.left
+                                        anchors.leftMargin: 25
                                     }
 
                                     Button {
                                         id: browse_image_button
-                                        width: 135
-                                        height: 30
+                                        height: mainWindow.height/18
+                                        width: mainWindow.width/9
+                                        anchors.left: drone_image_container.left
+                                        anchors.leftMargin: 100
 
                                         contentItem :Text {
                                             anchors.centerIn: parent
                                             text: "Browse & Upload"
                                             color: "white"
+                                            font.pointSize: ScreenTools.smallFontPointSize
                                         }
                                         background: Rectangle {
                                             anchors.centerIn: parent
-                                            height: 30
-                                            width:135
+                                            height: mainWindow.height/18
+                                            width: mainWindow.width/9
                                             color: "#031C28"
                                             border.color: "orange"
                                             radius: 4
@@ -4249,20 +4129,20 @@ ApplicationWindow {
                                 anchors.left: drone_contents.left
                                 anchors.leftMargin: 25
                                 anchors.top: drone_contents.top
-                                anchors.topMargin: 120
+                                anchors.topMargin: 160
                                 text: qsTr("Drone Type*")
                                 color: "White"
-                                font.pointSize: 10
+                                font.pointSize: ScreenTools.smallFontPointSize
                             }
 
                             Rectangle {
                                 id: drone_type_combo
-                                width: 200
-                                height: 35
+                                height: mainWindow.height/18
+                                width: mainWindow.width/7
                                 anchors.left: drone_contents.left
                                 anchors.leftMargin: 25
                                 anchors.top: drone_type_text.top
-                                anchors.topMargin: 25
+                                anchors.topMargin: 40
                                 color: "#031C28"
                                 border.color: "cyan"
                                 border.width: 1
@@ -4298,6 +4178,7 @@ ApplicationWindow {
                                         contentItem: Text {
                                             text: modelData
                                             verticalAlignment: Text.AlignVCenter
+                                            font.pointSize: ScreenTools.smallFontPointSize
                                         }
                                         highlighted: drone_type_list.highlightedIndex === index
                                     }
@@ -4325,13 +4206,15 @@ ApplicationWindow {
                                         id: combo_box1
                                         text: drone_type_list.displayText
                                         color: "white"
+                                        font.pointSize: ScreenTools.smallFontPointSize
                                         verticalAlignment: Text.AlignVCenter
                                     }
 
                                     background: Rectangle {
-                                        implicitWidth: 120
-                                        implicitHeight: 40
+                                        height: mainWindow.height/18
+                                        width: mainWindow.width/11
                                         color: "#031C28"
+                                        visible:false
                                     }
 
                                     popup: Popup {
@@ -4354,22 +4237,22 @@ ApplicationWindow {
                             Text {
                                 id: drone_model_text
                                 anchors.right: drone_contents.right
-                                anchors.rightMargin: 95
+                                anchors.rightMargin: 45
                                 anchors.top: drone_contents.top
-                                anchors.topMargin: 120
+                                anchors.topMargin: 160
                                 text: qsTr("Name/Drone's Model Name*")
                                 color: "White"
-                                font.pointSize: 10
+                                font.pointSize: ScreenTools.smallFontPointSize
                             }
 
                             Rectangle {
                                 id: drone_model_combo
-                                width: 200
-                                height: 35
+                                height: mainWindow.height/18
+                                width: mainWindow.width/7
                                 anchors.right: drone_contents.right
-                                anchors.rightMargin: 80
+                                anchors.rightMargin: 125
                                 anchors.top: drone_model_text.top
-                                anchors.topMargin: 25
+                                anchors.topMargin: 40
                                 color: "#031C28"
                                 border.color: "cyan"
                                 border.width: 1
@@ -4382,6 +4265,7 @@ ApplicationWindow {
                                     anchors.margins: 4
                                     currentIndex: -1
                                     displayText: currentIndex === -1 ? "Select Drone Model" : currentText
+                                    font.pointSize: ScreenTools.smallFontPointSize
                                     model: //["Model A", "Model B"]
                                            ListModel {
                                         ListElement{
@@ -4396,6 +4280,7 @@ ApplicationWindow {
                                         width: drone_model_list.width
                                         contentItem: Text {
                                             text: modelData
+                                            font.pointSize: ScreenTools.smallFontPointSize
                                             verticalAlignment: Text.AlignVCenter
                                         }
                                         highlighted: drone_model_list.highlightedIndex === index
@@ -4424,13 +4309,15 @@ ApplicationWindow {
                                         id: combo_box2
                                         text: drone_model_list.displayText
                                         color: "white"
+                                        font.pointSize: ScreenTools.smallFontPointSize
                                         verticalAlignment: Text.AlignVCenter
                                     }
 
                                     background: Rectangle {
-                                        implicitWidth: 120
-                                        implicitHeight: 40
+                                        height: mainWindow.height/18
+                                        width: mainWindow.width/11
                                         color: "#031C28"
+                                        visible: false
                                     }
 
                                     popup: Popup {
@@ -4456,8 +4343,8 @@ ApplicationWindow {
                                 anchors.left: drone_contents.left
                                 anchors.leftMargin: 20
                                 anchors.top: drone_type_combo.top
-                                anchors.topMargin: 55
-                                height: 30
+                                anchors.topMargin: 90
+                                height: 40
                                 width: drone_contents.width - 35
                                 color: "#031C28"
                                 radius: 4
@@ -4468,7 +4355,7 @@ ApplicationWindow {
                                     anchors.leftMargin: 5
                                     text: qsTr ("RPA INFORMATIONS")
                                     color: "white"
-                                    font.pointSize: 10
+                                    font.pointSize:ScreenTools.smallFontPointSize
                                 }
                             }
 
@@ -4477,10 +4364,10 @@ ApplicationWindow {
                                 anchors.left: drone_contents.left
                                 anchors.leftMargin: 25
                                 anchors.top: drone_type_combo.top
-                                anchors.topMargin: 100
+                                anchors.topMargin: 160
                                 text: qsTr("Basic Details")
                                 font.bold: true
-                                font.pointSize: 11
+                                font.pointSize:ScreenTools.smallFontPointSize
                                 color: "white"
                             }
 
@@ -4489,9 +4376,9 @@ ApplicationWindow {
                                 anchors.left: drone_contents.left
                                 anchors.leftMargin: 25
                                 anchors.top: basic_details_text.top
-                                anchors.topMargin: 25
+                                anchors.topMargin: 60
                                 text: qsTr("Drone Name*")
-                                font.pointSize: 10
+                                font.pointSize:ScreenTools.smallFontPointSize
                                 color: "white"
                             }
 
@@ -4500,9 +4387,9 @@ ApplicationWindow {
                                 anchors.left: drone_contents.left
                                 anchors.leftMargin: 25
                                 anchors.top: drone_name_input.top
-                                anchors.topMargin: 25
-                                width: 200
-                                height: 35
+                                anchors.topMargin:40
+                                height: mainWindow.height/18
+                                width: mainWindow.width/7
                                 radius: 4
 
                                 TextField{
@@ -4510,6 +4397,7 @@ ApplicationWindow {
                                     anchors.verticalCenter: parent.verticalCenter
                                     anchors.margins: 5
                                     text: ''
+                                    font.pointSize:     ScreenTools.smallFontPointSize
                                     color: "white"
                                     selectByMouse: true
                                     background: Rectangle {
@@ -4526,22 +4414,22 @@ ApplicationWindow {
                             Text {
                                 id: uin_input
                                 anchors.right: drone_contents.right
-                                anchors.rightMargin: 250
+                                anchors.rightMargin: 380
                                 anchors.top: rpa_text.top
-                                anchors.topMargin: 70
+                                anchors.topMargin: 120
                                 text: qsTr("UIN*")
-                                font.pointSize: 10
+                                font.pointSize:ScreenTools.smallFontPointSize
                                 color: "white"
                             }
 
                             Rectangle {
                                 id:uin_input_rect
                                 anchors.right: drone_contents.right
-                                anchors.rightMargin: 80
+                                anchors.rightMargin: 120
                                 anchors.top: uin_input.top
-                                anchors.topMargin: 25
-                                width: 200
-                                height: 35
+                                anchors.topMargin: 40
+                                height: mainWindow.height/18
+                                width: mainWindow.width/7
                                 color: "#031C28"
 
                                 TextField {
@@ -4550,9 +4438,9 @@ ApplicationWindow {
                                     anchors.verticalCenter: parent.verticalCenter
                                     anchors.margins: 5
                                     text: ""
+                                    font.pointSize:ScreenTools.smallFontPointSize
                                     color: "white"
                                     selectByMouse: true
-                                    //maximumLength: 8
                                     background: Rectangle {
                                         color: "#031C28"
                                         radius: 4
@@ -4569,19 +4457,20 @@ ApplicationWindow {
                         Row {
                             spacing: 25
                             anchors.left: drone_contents.left
-                            anchors.leftMargin: parent.width/3
+                            anchors.leftMargin: parent.width/3.5
                             anchors.bottom: drone_contents.bottom
-                            anchors.bottomMargin: 20
+                            anchors.bottomMargin: 30
                             Button {
                                 Text {
                                     anchors.centerIn: parent
                                     text: "Update"
                                     color:"white"
+                                    font.pointSize:ScreenTools.smallFontPointSize
                                 }
                                 background: Rectangle {
                                     id:update_Button
-                                    implicitHeight: 35
-                                    implicitWidth: 100
+                                    implicitWidth: mainWindow.width/9
+                                    implicitHeight: mainWindow.height/18
                                     radius: 4
                                     color: "Green"
                                     border.width: 1
@@ -4594,6 +4483,7 @@ ApplicationWindow {
                                     update_Button.color = "Green"
                                 }
                                 onClicked: {
+
                                     if(updateButton === 1){
                                         if((combo_box1.text === "")||(combo_box2.text === "") ||(drone_name_text.text == "") ||(uin_input_text.text == "") /*|| drone_image.source == ""*/) {
                                             fillDialog.visible = true
@@ -4626,12 +4516,13 @@ ApplicationWindow {
                                     anchors.centerIn: parent
                                     text: "Cancel"
                                     color:"white"
+                                    font.pointSize:ScreenTools.smallFontPointSize
                                 }
 
                                 background: Rectangle {
                                     id: cancel_Button
-                                    implicitHeight: 35
-                                    implicitWidth: 100
+                                    implicitWidth: mainWindow.width/9
+                                    implicitHeight: mainWindow.height/18
                                     radius: 4
                                     color: "red"
                                     border.width: 1
@@ -4653,17 +4544,17 @@ ApplicationWindow {
                                     uin_input_text.enabled = true
                                 }
                             }
-                        }                       
+                        }
                         Rectangle {
                             anchors.bottom: rpa_register_page.bottom
                             anchors.bottomMargin: 65
-                            height: 40
+                            height: mainWindow.height/20
                             width: parent.width
-                            color: "#05324D"
+                            color: "transparent"
                             Text {
                                 anchors.centerIn: parent
                                 text: "@2023 GoDrona | All Rights Reserved"
-                                font.pointSize: 10
+                                font.pointSize:ScreenTools.smallFontPointSize
                                 color: "White"
                             }
                         }
@@ -4672,13 +4563,6 @@ ApplicationWindow {
                         id:fillDialog
                         text:"please fill the details correctly"
                     }
-
-//                        MessageDialog{
-//                            id:uinDialog
-//                            height: 50
-//                            width: 50
-//                            text:"Registered Successfully."
-//                        }
                     MessageDialog{
                         id:tableDialog
                         text:"Updated Successfully."
@@ -4690,270 +4574,7 @@ ApplicationWindow {
 
                 }
 
-                /*Rectangle {
-                    id: manage_customers_rectangle
-                    width: second_rectangle.width
-                    visible: false
-                    color: "#031C28"
-                    border.color: "#05324D"
-                    border.width: 1
-                    Rectangle {
-                        id: manage_customers_header
-                        color: "#031C28"
-                        height: 50
-                        width: manage_customers_rectangle.width
-                        border.color: "#05324D"
-                        border.width: 1
 
-                        Image {
-                            id: hamburger_image_mc
-                            source: "/res/hamburger_menu.png"
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: manage_customers_header.left
-                            anchors.leftMargin: 20
-                        }
-
-                        Text {
-                            id: dashboard_text_mc
-                            text: "MANAGE CUSTOMERS"
-                            color: "white"
-                            font.pointSize: 10
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: hamburger_image_mc.left
-                            anchors.leftMargin: 25
-                        }
-
-                        Image {
-                            id: search_image_mc
-                            source: "/res/search.png"
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.right: manage_customers_header.right
-                            anchors.rightMargin: 180
-                        }
-                        Text{
-                            id: search_mc
-                            text: "Search"
-                            color : "white"
-                            font.pointSize: 10
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.right: manage_customers_header.right
-                            anchors.rightMargin: 100
-                        }
-                    }
-
-                    Column {
-                        id: mc_rectangle_column
-                        anchors.left: parent.left
-                        anchors.top: manage_customers_header.bottom
-
-                        Rectangle{
-                            id: manage_customers_header1
-                            height: screen.height - 50//350
-                            width: manage_customers_rectangle.width
-                            color: "#031C28"
-                            border.color: "#05324D"
-                            border.width: 1
-                        }
-                    }
-                }
-                Rectangle {
-                    id: remote_pilots_rectangle
-                    width: second_rectangle.width
-                    visible: false
-                    color: "#031C28"
-                    border.color: "#05324D"
-                    border.width: 1
-                    Rectangle {
-                        id: remote_pilots_header
-                        color: "#031C28"
-                        height: 50
-                        width: remote_pilots_rectangle.width
-                        border.color: "#05324D"
-                        border.width: 1
-
-                        Image {
-                            id: hamburger_image_rp
-                            source: "/res/hamburger_menu.png"
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: remote_pilots_header.left
-                            anchors.leftMargin: 20
-                        }
-
-                        Text {
-                            id: dashboard_text_rp
-                            text: "REMOTE PILOTS"
-                            color: "white"
-                            font.pointSize: 10
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: hamburger_image_rp.left
-                            anchors.leftMargin: 25
-                        }
-
-                        Image {
-                            id: search_image_rp
-                            source: "/res/search.png"
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.right: remote_pilots_header.right
-                            anchors.rightMargin: 180
-                        }
-                        Text{
-                            id: search_rp
-                            text: "Search"
-                            color : "white"
-                            font.pointSize: 10
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.right: remote_pilots_header.right
-                            anchors.rightMargin: 100
-                        }
-                    }
-
-                    Column {
-                        id: rp_rectangle_column
-                        anchors.left: parent.left
-                        anchors.top: remote_pilots_header.bottom
-
-                        Rectangle{
-                            id: remote_pilots_header1
-                            height: screen.height - 50//350
-                            width: remote_pilots_rectangle.width
-                            color: "#031C28"
-                            border.color: "#05324D"
-                            border.width: 1
-                        }
-                    }
-                }
-                Rectangle {
-                    id: missions_rectangle
-                    width: second_rectangle.width
-                    visible: false
-                    color: "#031C28"
-                    border.color: "#05324D"
-                    border.width: 1
-                    Rectangle {
-                        id: missions_header
-                        color: "#031C28"
-                        height: 50
-                        width: missions_rectangle.width
-                        border.color: "#05324D"
-                        border.width: 1
-
-                        Image {
-                            id: hamburger_image_m
-                            source: "/res/hamburger_menu.png"
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: missions_header.left
-                            anchors.leftMargin: 20
-                        }
-
-                        Text {
-                            id: dashboard_text_m
-                            text: "MANAGE CUSTOMERS"
-                            color: "white"
-                            font.pointSize: 10
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: hamburger_image_m.left
-                            anchors.leftMargin: 25
-                        }
-
-                        Image {
-                            id: search_image_m
-                            source: "/res/search.png"
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.right: missions_header.right
-                            anchors.rightMargin: 180
-                        }
-                        Text{
-                            id: search_m
-                            text: "Search"
-                            color : "white"
-                            font.pointSize: 10
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.right: missions_header.right
-                            anchors.rightMargin: 100
-                        }
-                    }
-
-                    Column {
-                        id: m_rectangle_column
-                        anchors.left: parent.left
-                        anchors.top: missions_header.bottom
-
-                        Rectangle{
-                            id: missions_header1
-                            height: screen.height - 50//350
-                            width: missions_rectangle.width
-                            color: "#031C28"
-                            border.color: "#05324D"
-                            border.width: 1
-                        }
-                    }
-                }
-                Rectangle {
-                    id: manual_missions_rectangle
-                    width: second_rectangle.width
-                    visible: false
-                    color: "#031C28"
-                    border.color: "#05324D"
-                    border.width: 1
-                    Rectangle {
-                        id: manual_missions_header
-                        color: "#031C28"
-                        height: 50
-                        width: dashboard_rectangle.width
-                        border.color: "#05324D"
-                        border.width: 1
-
-                        Image {
-                            id: hamburger_image_mm
-                            source: "/res/hamburger_menu.png"
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: manual_missions_header.left
-                            anchors.leftMargin: 20
-                        }
-
-                        Text {
-                            id: dashboard_text_mm
-                            text: "MANAGE CUSTOMERS"
-                            color: "white"
-                            font.pointSize: 10
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: hamburger_image_mm.left
-                            anchors.leftMargin: 25
-                        }
-
-                        Image {
-                            id: search_image_mm
-                            source: "/res/search.png"
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.right: manual_missions_header.right
-                            anchors.rightMargin: 180
-                        }
-                        Text{
-                            id: search_mm
-                            text: "Search"
-                            color : "white"
-                            font.pointSize: 10
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.right: manual_missions_header.right
-                            anchors.rightMargin: 100
-                        }
-                    }
-
-                    Column {
-                        id: mm_rectangle_column
-                        anchors.left: parent.left
-                        anchors.top: manual_missions_header.bottom
-
-                        Rectangle{
-                            id: manual_missions_header1
-                            height: screen.height - 50//350
-                            width: dashboard_rectangle.width
-                            color: "#031C28"
-                            border.color: "#05324D"
-                            border.width: 1
-                        }
-                    }
-                }*/
                 Rectangle {
                     id: flight_log_rectangle
                     width: second_rectangle.width
@@ -4965,7 +4586,7 @@ ApplicationWindow {
                     Rectangle {
                         id:flight_log_header
                         color: "#031C28"
-                        height: 50
+                        height: mainWindow.height/10
                         width: flight_log_rectangle.width
                         visible: true
                         border.color: "#05324D"
@@ -4983,10 +4604,11 @@ ApplicationWindow {
                             id: flight_log_text
                             text: "FLIGHT LOG"
                             color: "white"
-                            font.pointSize: 10
+                            font.pointSize: ScreenTools.smallFontPointSize
+                            font.bold: true
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: hamburger_image_flight_log.left
-                            anchors.leftMargin: 25
+                            anchors.leftMargin: 35
                         }
 
                         Image {
@@ -4994,13 +4616,14 @@ ApplicationWindow {
                             source: "/res/search.png"
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.right: flight_log_header.right
-                            anchors.rightMargin: 180
+                            anchors.rightMargin: 220
                         }
                         Text{
                             id: search_flight_log
                             text: "Search"
                             color : "white"
-                            font.pointSize: 10
+                            font.pointSize: ScreenTools.smallFontPointSize
+                            font.bold: true
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.right: flight_log_header.right
                             anchors.rightMargin: 100
@@ -5029,19 +4652,20 @@ ApplicationWindow {
                             ListView {
                                 id: folder_list_model
                                 anchors.fill: parent
+                                anchors.top: parent.top
+                                anchors.topMargin: 50
                                 model: rpadatabase.filename
                                 delegate: RowLayout {
                                     id: rowLayout
                                     width: parent.width
-                                    height: 40
-                                    spacing: 50
+                                    height: 80
 
                                     CheckBox {
                                         id: log_checkBox
                                         Layout.alignment: Qt.AlignVCenter
                                         indicator: Rectangle{
-                                            implicitWidth: 16
-                                            implicitHeight: 16
+                                            implicitWidth: 30
+                                            implicitHeight: 30
                                             radius: 2
                                             color: "#031C28"
                                             border.width:0.5
@@ -5062,7 +4686,7 @@ ApplicationWindow {
                                         id: fileNameText
                                         text: modelData //fileName
                                         color: "white"
-                                        font.pointSize: 11
+                                        font.pointSize: ScreenTools.smallFontPointSize
                                         Layout.alignment: Qt.AlignVCenter
                                     }
 
@@ -5073,11 +4697,12 @@ ApplicationWindow {
                                             anchors.centerIn: parent
                                             text: "Download"
                                             color:"white"
+                                            font.pointSize: ScreenTools.smallFontPointSize
                                         }
                                         background: Rectangle {
                                             id:log_download_button
-                                            implicitHeight: 30
-                                            implicitWidth: 120
+                                            implicitHeight: mainWindow.height/20
+                                            implicitWidth:  mainWindow.width/10
                                             border.width: 1
                                             border.color: "#F25822"
                                             radius: 4
@@ -5113,7 +4738,6 @@ ApplicationWindow {
                                                     destFileLoaction = str.slice(str.lastIndexOf("file://")+7)
                                                 }
                                                 pfx_file_location_function(destFile);
-                                                //aws.download_file(modelData,destFileLoaction);
                                                 rpadatabase.download_function(modelData,database_access.mail,destFileLoaction)
                                             });
                                             fileDialog.rejected.connect(function(){
@@ -5128,13 +4752,13 @@ ApplicationWindow {
                             Rectangle {
                                 anchors.bottom: flightlog_header1.bottom
                                 anchors.bottomMargin: 65
-                                height: 40
+                                height: mainWindow.height/20
                                 width: parent.width
-                                color: "#05324D"
+                                color: "transparent"
                                 Text {
                                     anchors.centerIn: parent
                                     text: "@2023 GoDrona | All Rights Reserved"
-                                    font.pointSize: 10
+                                    font.pointSize: ScreenTools.smallFontPointSize
                                     color: "White"
                                 }
                             }
@@ -5153,7 +4777,7 @@ ApplicationWindow {
                     Rectangle {
                         id:firmware_log_header
                         color: "#031C28"
-                        height: 50
+                        height: mainWindow.height/10
                         width: firmware_log_rectangle.width
                         visible: true
                         border.color: "#05324D"
@@ -5171,10 +4795,11 @@ ApplicationWindow {
                             id: firmware_log_text
                             text: "FIRMWARE LOG"
                             color: "white"
-                            font.pointSize: 10
+                            font.pointSize: ScreenTools.smallFontPointSize
+                            font.bold: true
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: hamburger_image_firmware_log.left
-                            anchors.leftMargin: 25
+                            anchors.leftMargin: 35
                         }
 
                         Image {
@@ -5182,13 +4807,14 @@ ApplicationWindow {
                             source: "/res/search.png"
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.right: firmware_log_header.right
-                            anchors.rightMargin: 180
+                            anchors.rightMargin: 220
                         }
                         Text{
                             id: search_firmware_log
                             text: "Search"
                             color : "white"
-                            font.pointSize: 10
+                            font.bold: true
+                            font.pointSize:ScreenTools.smallFontPointSize
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.right: firmware_log_header.right
                             anchors.rightMargin: 100
@@ -5217,18 +4843,18 @@ ApplicationWindow {
                             ListView {
                                 id: firmware_list_model
                                 anchors.fill: parent
+                                anchors.top: parent.top
+                                anchors.topMargin: 50
                                 model: rpadatabase.firmwarelog_list
                                 delegate: RowLayout {
-                                    //id: rowLayout
                                     width: parent.width
-                                    height: 40
-                                    spacing: 50
+                                    height: 70
 
                                     Text {
                                         id: firmware_info_Text
                                         text: modelData //fileName
                                         color: "white"
-                                        font.pointSize: 11
+                                        font.pointSize: ScreenTools.smallFontPointSize
                                         Layout.alignment: Qt.AlignCenter
                                     }
                                 }
@@ -5236,13 +4862,13 @@ ApplicationWindow {
                             Rectangle {
                                 anchors.bottom: firmware_log_header1.bottom
                                 anchors.bottomMargin: 65
-                                height: 40
+                                height: mainWindow.height/20
                                 width: parent.width
-                                color: "#05324D"
+                                color: "transparent"
                                 Text {
                                     anchors.centerIn: parent
                                     text: "@2023 GoDrona | All Rights Reserved"
-                                    font.pointSize: 10
+                                    font.pointSize: ScreenTools.smallFontPointSize
                                     color: "White"
                                 }
                             }
@@ -5268,7 +4894,7 @@ ApplicationWindow {
                     Rectangle{
                         id: users_profile_header
                         color: "#031C28"
-                        height: 50
+                        height: mainWindow.height/10
                         width: users_profile_rectangle.width
                         border.color: "#05324D"
                         border.width: 2
@@ -5343,10 +4969,10 @@ ApplicationWindow {
                         Rectangle {
                             id: image_rect
                             anchors.right: users_profile_header.right
-                            anchors.rightMargin: 80
+                            anchors.rightMargin: 160
                             anchors.verticalCenter: parent.verticalCenter
-                            height: 40
-                            width: 40
+                            height: 60
+                            width: 60
                             clip:true
                             radius: width/2
                             color: "#05324D"
@@ -5355,7 +4981,7 @@ ApplicationWindow {
 
                             Image {
                                 id: user_image_inprofile
-                                source:rpadatabase.image//"qrc:/qmlimages/drone_1.png"
+                                source:rpadatabase.image
                                 anchors.fill: image_rect
                                 fillMode: Image.PreserveAspectCrop
                                 layer.enabled: true
@@ -5364,47 +4990,28 @@ ApplicationWindow {
                                 }
                             }
 
-                            /*MouseArea{
-                                anchors.fill: image_rect
-                                onClicked:{
-                                    //database.profile_contents("select industry,address,locality,password from UsersLoginInfo where number="+database.number)
-                                    //database.username_
-                                    users_profile_header1.visible = false
-                                    users_information_header1.visible = true
-                                    userprofile_name.text = database.name
-                                    mail_address.text = database.mail
-                                    mobile_number.text = database.number
-                                    address_field.text = database.address
-                                    locality_field.text = database.locality
-                                    password_field.text = database.password
-                                }
-                                onPressed: {
-                                    image_rect.color = "#F25822"
-                                }
-                                onReleased: {
-                                    image_rect.color = "#05324D"
-                                }
-                            }*/
                         }
                         Column {
                             spacing: 5
                             anchors.left: image_rect.right
                             anchors.leftMargin: 10
                             anchors.top: users_profile_header.top
-                            anchors.topMargin: 5
+                            anchors.topMargin: 9
 
                             Text {
                                 id: user_name_inprofile
                                 wrapMode: Text.WordWrap
-                                text: database_access.name
+                                text: qsTr(database_access.name)
                                 color:"white"
-                                font.pointSize: 10
-                                //font.pixelSize: 0.1 * parent.height
+                                font.pointSize: ScreenTools.smallFontPointSize
+
                             }
                             Text {
                                 id: user_role
                                 text: database_access.role
                                 color: "#F25822"
+                                font.pointSize: ScreenTools.smallFontPointSize
+
                             }
 
                         }
@@ -5422,19 +5029,20 @@ ApplicationWindow {
                         Rectangle {
                             id: go_to_profile
                             anchors.right: parent.right
-                            anchors.rightMargin: 15
+                            anchors.rightMargin: 25
                             anchors.top: parent.top
                             anchors.topMargin: 10
                             color: "#05324D"
                             border.color: "#F25822"
                             border.width: 0.5
-                            width: 100
-                            height: 30
+                            width: mainWindow.width/11
+                            height: mainWindow.height/17
                             radius: 3
                             Text {
                                 text: "Your Profile"
                                 color: "#FFFFFF"
-                                font.pointSize: 10
+                                font.pointSize:ScreenTools.smallFontPointSize
+                                font.bold: true
                                 anchors.centerIn: parent
                                 anchors.verticalCenter: parent.verticalCenter
                             }
@@ -5444,6 +5052,8 @@ ApplicationWindow {
                                     users_profile_header1.visible = false
                                     users_information_header1.visible = true
                                     userprofile_name.text = database_access.name
+                                    address_field.activeFocus = true
+                                    locality_field.activeFocus = true
                                     mail_address.text = database_access.mail
                                     mobile_number.text = database_access.number
                                     address_field.text = database_access.address
@@ -5459,16 +5069,16 @@ ApplicationWindow {
                         }
 
                         Column{
-                            spacing: 10
+                            spacing: 30
                             anchors.left: parent.left
                             anchors.leftMargin: 20
                             anchors.top: parent.top
-                            anchors.topMargin: 45
+                            anchors.topMargin: 25
                             Text {
                                 text : "Subscription"
                                 color: "white"
                                 font.bold: true
-                                font.pointSize: 10
+                                font.pointSize: ScreenTools.smallFontPointSize
                             }
 
                             Rectangle {
@@ -5486,7 +5096,7 @@ ApplicationWindow {
                                     text: "Your Current Active Plan is"
                                     wrapMode: Text.WordWrap
                                     color: "#ffffff"
-                                    font.pointSize: 9
+                                    font.pointSize: ScreenTools.smallFontPointSize
                                 }
                             }
                         }
@@ -5512,17 +5122,19 @@ ApplicationWindow {
                                 Text{
                                     text: "Name"
                                     color: "white"
-                                    font.pointSize: 9
+                                    font.pointSize: ScreenTools.smallFontPointSize
+                                    font.bold: true
                                 }
                                 TextField{
                                     id: userprofile_name
                                     readOnly: true
                                     width: third_rectangle.width -50
-                                    height: 35
+                                    height:  mainWindow.height/18
                                     anchors.margins: 5
                                     placeholderText: qsTr("User Name")
                                     text: database_access.name
                                     color:"white"
+                                    font.pointSize:     ScreenTools.smallFontPointSize
                                     background: Rectangle{
                                         color: "#05324D"
                                         radius: 4
@@ -5538,17 +5150,19 @@ ApplicationWindow {
                                 Text{
                                     text: "Mail Address"
                                     color: "white"
-                                    font.pointSize: 9
+                                    font.pointSize: ScreenTools.smallFontPointSize
+                                    font.bold: true
                                 }
                                 TextField{
                                     id: mail_address
                                     width: third_rectangle.width -50
-                                    height: 35
+                                    height: mainWindow.height/18
                                     anchors.margins: 5
                                     placeholderText: qsTr("user@gmail.com")
                                     text: database_access.mail
                                     color:"white"
                                     readOnly: true
+                                    font.pointSize:     ScreenTools.smallFontPointSize
                                     background: Rectangle{
                                         color: "#05324D"
                                         radius: 4
@@ -5560,20 +5174,22 @@ ApplicationWindow {
                                 }
                             }
                             Column{
-                                spacing:5
+                                spacing:8
                                 Text{
                                     text: "Mobile number"
                                     color: "white"
-                                    font.pointSize: 9
+                                    font.pointSize:     ScreenTools.smallFontPointSize
+                                    font.bold: true
                                 }
                                 TextField{
                                     id: mobile_number
                                     readOnly: true
                                     width: third_rectangle.width -50
-                                    height: 35
+                                    height: mainWindow.height/18
                                     anchors.margins: 5
                                     text: database_access.number
                                     color:"white"
+                                    font.pointSize:     ScreenTools.smallFontPointSize
                                     background: Rectangle{
                                         color: "#05324D"
                                         radius: 4
@@ -5589,16 +5205,18 @@ ApplicationWindow {
                                 Text{
                                     text: "Address"
                                     color: "white"
-                                    font.pointSize: 9
+                                    font.pointSize: ScreenTools.smallFontPointSize
+                                    font.bold: true
                                 }
                                 TextField{
                                     id: address_field
                                     width: third_rectangle.width -50
-                                    height: 35
+                                    height: mainWindow.height/18
                                     anchors.margins: 5
                                     placeholderText: qsTr("User Address")
                                     text: database_access.address
                                     color:"white"
+                                    font.pointSize: ScreenTools.smallFontPointSize
                                     background: Rectangle{
                                         color: "#05324D"
                                         radius: 4
@@ -5614,16 +5232,18 @@ ApplicationWindow {
                                 Text{
                                     text: "Locality"
                                     color: "white"
-                                    font.pointSize: 9
+                                    font.pointSize: ScreenTools.smallFontPointSize
+                                    font.bold: true
                                 }
                                 TextField{
                                     id: locality_field
                                     width: third_rectangle.width -50
-                                    height: 35
+                                    height: mainWindow.height/18
                                     anchors.margins: 5
                                     placeholderText: qsTr("User Locality")
                                     text: database_access.locality
                                     color:"white"
+                                    font.pointSize:     ScreenTools.smallFontPointSize
                                     background: Rectangle{
                                         color: "#05324D"
                                         radius: 4
@@ -5637,10 +5257,10 @@ ApplicationWindow {
                         }
                         Rectangle {
                             id: update_profile
-                            width: 60
-                            height: 30
+                            height: mainWindow.height/20
+                            width: mainWindow.width/14
                             anchors.right: users_information_header1.right
-                            anchors.rightMargin: 100
+                            anchors.rightMargin: 220
                             anchors.bottom: users_information_header1.bottom
                             anchors.bottomMargin: 80
                             color: "#05324D"
@@ -5651,7 +5271,7 @@ ApplicationWindow {
                             Text {
                                 text:"Update"
                                 color: "white"
-                                font.pointSize: 10
+                                font.pointSize:ScreenTools.smallFontPointSize
                                 anchors.centerIn: parent
                             }
 
@@ -5685,15 +5305,13 @@ ApplicationWindow {
                         }
                         MessageDialog{
                             id: popupDialog
-                            height: 50
-                            width: 50
                             text:"Please Fill all the Details"
                         }
 
                         Rectangle {
                             id: back_to_profile
-                            width: 60
-                            height: 30
+                            height: mainWindow.height/20
+                            width: mainWindow.width/14
                             anchors.left: update_profile.right
                             anchors.leftMargin: 20
                             anchors.bottom: users_information_header1.bottom
@@ -5706,7 +5324,7 @@ ApplicationWindow {
                             Text {
                                 text:"Back"
                                 color: "white"
-                                font.pointSize: 10
+                                font.pointSize:ScreenTools.smallFontPointSize
                                 anchors.centerIn: parent
                             }
 
@@ -5726,8 +5344,6 @@ ApplicationWindow {
                         }
                         MessageDialog{
                             id:profileDialog
-                            height: 50
-                            width: 50
                             text:"Profile Updated Successfully."
                         }
                     }
@@ -5736,5 +5352,7 @@ ApplicationWindow {
         }
     }
 }
+
+
 
 

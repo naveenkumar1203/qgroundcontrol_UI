@@ -287,7 +287,8 @@ void TableModel::upload_function(const QString &firebase_file_name, const QStrin
 
     QNetworkReply *reply;
     reply = m_networkAccessManager->post(request,file);
-    connect(reply,&QNetworkReply::finished,[reply, firebase_folder_name, this](){
+//    connect(reply,&QNetworkReply::finished,[reply, firebase_folder_name, this](){
+    connect(reply,&QNetworkReply::finished,[reply, firebase_folder_name](){
         if(reply->error() != QNetworkReply::NoError){
             qDebug()<<"if msg" << " " << reply->error();
             qDebug()<<reply->errorString();
@@ -377,7 +378,7 @@ void TableModel::read_text_file(QString user_text_file_name, QString user_text_f
     });
 }
 
-void TableModel::download_function(const QString &file_name, const QString &firebase_folder_name, const QString &local_pc_location)
+void TableModel::download_function(const QString &file_name, const QString &firebase_folder_name, QString local_pc_location)
 {
     QString user_file = firebase_folder_name;
     int pos = user_file.lastIndexOf("@");

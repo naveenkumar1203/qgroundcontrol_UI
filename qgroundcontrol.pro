@@ -33,12 +33,7 @@ TEMPLATE = app
 QGCROOT  = $$PWD
 
 QML_IMPORT_PATH += $$PWD/src/QmlControls
-#INCLUDEPATH = /usr/include/python3.8
-#LIBS += -lpython3.8
-INCLUDEPATH += /usr/local-DBUILD_ONLY=s3/include/
-LIBS +=-L/usr/local-DBUILD_ONLY=s3/lib -laws-cpp-sdk-core -laws-cpp-sdk-s3 \
--laws-cpp-sdk-cognito-sync -laws-cpp-sdk-cognito-idp -laws-cpp-sdk-cognito-identity \
--laws-cpp-sdk-s3
+
 
 #
 # OS Specific settings
@@ -271,7 +266,13 @@ QT += \
     widgets \
     xml \
     texttospeech \
-    core-private
+    core-private \
+    serialport
+
+#QT += androidextras
+
+#LIBS += $$ANDROID_SDK_ROOT/android_openssl/latest/arm/libssl_1_1.so
+#LIBS += $$ANDROID_SDK_ROOT/android_openssl/latest/arm/libcrypto_1_1.so
 
 # Multimedia only used if QVC is enabled
 !contains (DEFINES, QGC_DISABLE_UVC) {
@@ -1570,3 +1571,4 @@ LinuxBuild {
 
 DISTFILES += \
 
+android: include(/home/vinoth/Android/Sdk/android_openssl/openssl.pri)

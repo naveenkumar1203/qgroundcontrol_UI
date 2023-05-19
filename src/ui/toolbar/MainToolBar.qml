@@ -74,14 +74,6 @@ Rectangle {
             onClicked:              mainWindow.showToolSelectDialog()
         }
 
-//        Text{
-//            id: godrona
-//            text: "Go Drona  "
-//            font.bold: true
-//            color: "White"
-//            //font.family: "Mistral"
-//            font.pointSize: ScreenTools.defaultFontPointSize * 3  //: ScreenTools.largeFontPointSize
-//        }
 
         Text{
             id: godrona
@@ -106,35 +98,16 @@ Rectangle {
             visible:            _activeVehicle && _communicationLost && currentToolbar === flyViewToolbar
         }
 
-        /*QGCButton {
-            id:                 backButton
-            Layout.alignment: Qt.AlignRight
-            Layout.rightMargin: 50
-            //text:               qsTr("Back")
-            font.bold:          true
-            font.pointSize: ScreenTools.defaultFontPointSize * 3//1.5  //: ScreenTools.largeFontPointSize
-            onClicked:          {
-                flightView.visible = false
-                landing_page_rectangle.visible =true
-                toolbar.visible = false
-            }
-            visible:              true
-            //visible:            _activeVehicle && _communicationLost && currentToolbar === flyViewToolbar && currentToolbar === planViewToolbar
-        }*/
         Rectangle{
             id: home_button
-            //anchors.top: parent.top
-            //anchors.verticalCenter: parent.verticalCenter
-            //anchors.right: parent.right
-            //anchors.rightMargin: 30
-            width: 35
-            height: 35
+            width: 90
+            height: 90
             color: "#F25822"
-            radius: 10
+            radius: 30
 
             Image {
                 id: home_image
-                source: "/res/main_home.png"
+                source: "/res/maintoolbar_home.png"
                 anchors.centerIn: parent
             }
 

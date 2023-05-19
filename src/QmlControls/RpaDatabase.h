@@ -58,7 +58,7 @@ public:
 
     void list_function(const QString &firebase_folder_name);
 
-    Q_INVOKABLE void download_function(const QString &file_name, const QString &firebase_folder_name, const QString &local_pc_location);
+    Q_INVOKABLE void download_function(const QString &file_name, const QString &firebase_folder_name, QString local_pc_location);
 
     Q_INVOKABLE void read_text_file(QString user_text_file_name,QString user_text_file_folder);
 

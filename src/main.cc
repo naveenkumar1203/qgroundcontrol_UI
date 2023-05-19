@@ -185,7 +185,7 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved)
 #endif
 
 #if !defined(NO_SERIAL_LINK)
-    QSerialPort::setNativeMethods();
+    //QSerialPort::setNativeMethods();
 #endif
 
     JoystickAndroid::setNativeMethods();
