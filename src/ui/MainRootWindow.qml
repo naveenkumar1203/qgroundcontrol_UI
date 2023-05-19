@@ -5729,6 +5729,8 @@ ApplicationWindow {
                                             mobile_number.text = database_access.number
                                             address_field.text = database_access.address
                                             locality_field.text = database_access.locality
+                                            address_field.activeFocus = false
+                                            locality_field.activeFocus = false
                                         }
                                     }
                                 onPressed: {
