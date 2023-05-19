@@ -5444,12 +5444,12 @@ ApplicationWindow {
                                     users_profile_header1.visible = false
                                     users_information_header1.visible = true
                                     userprofile_name.text = database_access.name
+                                    address_field.activeFocus = true
+                                    locality_field.activeFocus = true
                                     mail_address.text = database_access.mail
                                     mobile_number.text = database_access.number
                                     address_field.text = database_access.address
-                                    locality_field.text = database_access.locality
-                                    address_field.activeFocus = true
-                                    locality_field.activeFocus = true
+                                    locality_field.text = database_access.locality                                    
                                 }
                                 onPressed: {
                                     go_to_profile.color = "#F25822"
