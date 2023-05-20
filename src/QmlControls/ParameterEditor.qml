@@ -175,7 +175,7 @@ Item{
     MessageDialog {
         id: select_the_modelDialog
         title: "Model not Selected"
-        text: "You have to select the model before you firmware_load1fly."
+        text: "You have to select the model before you fly."
     }
 
 
