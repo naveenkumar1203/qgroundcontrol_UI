@@ -1829,7 +1829,7 @@ ApplicationWindow {
                                         || user_address_text.text == ""
                                         || user_locality_text.text == ""
                                         || user_password_text.text == ""
-                                        || user_image_inprofile.source == ""){
+                                        || user_profile_image.source == ""){
                                     enter_all_fields.open()
                                 }
                                 else{
@@ -2131,10 +2131,10 @@ ApplicationWindow {
         id: image_file_dialog
         title: "Please choose an image file"
         folder: shortcuts.documents
-        nameFilters: [ "(*.png *.jpg)"]
+        nameFilters: [ "(*.jpg)"]
         selectMultiple: false
         onAccepted: {
-            var filePath = fileUrl.toString().replace("file://", "")
+            var filePath = fileUrl.toString().replace("file:///", "")
             image_upload = filePath;
             console.log("You chose: " + image_file_dialog.fileUrls)
         }
@@ -3895,7 +3895,7 @@ ApplicationWindow {
                             Rectangle {
                                 id: copyrights
                                 anchors.bottom: dashboard_rectangle_header1.bottom
-                                anchors.bottomMargin: 65
+                                anchors.bottomMargin: 20
                                 height: 40
                                 width: parent.width
                                 color: "#05324D"
@@ -4084,7 +4084,7 @@ ApplicationWindow {
                             }
                            Rectangle {
                                anchors.bottom: manage_rpa_header1.bottom
-                               anchors.bottomMargin: 65
+                               anchors.bottomMargin: 20
                                height: 40
                                width: parent.width
                                color: "#05324D"
@@ -4656,7 +4656,7 @@ ApplicationWindow {
                         }                       
                         Rectangle {
                             anchors.bottom: rpa_register_page.bottom
-                            anchors.bottomMargin: 65
+                            anchors.bottomMargin: 20
                             height: 40
                             width: parent.width
                             color: "#05324D"
@@ -5114,7 +5114,7 @@ ApplicationWindow {
                                                 }
                                                 pfx_file_location_function(destFile);
                                                 //aws.download_file(modelData,destFileLoaction);
-                                                rpadatabase.download_function(modelData,database_access.mail,destFileLoaction)
+                                                rpadatabase.download_function(modelData,database_access.mail,destFile)
                                             });
                                             fileDialog.rejected.connect(function(){
                                                 log_download_button.color = "#DA2C43";
@@ -5127,7 +5127,7 @@ ApplicationWindow {
                             }
                             Rectangle {
                                 anchors.bottom: flightlog_header1.bottom
-                                anchors.bottomMargin: 65
+                                anchors.bottomMargin: 20
                                 height: 40
                                 width: parent.width
                                 color: "#05324D"
@@ -5235,7 +5235,7 @@ ApplicationWindow {
                             }
                             Rectangle {
                                 anchors.bottom: firmware_log_header1.bottom
-                                anchors.bottomMargin: 65
+                                anchors.bottomMargin: 20
                                 height: 40
                                 width: parent.width
                                 color: "#05324D"
@@ -5444,10 +5444,13 @@ ApplicationWindow {
                                     users_profile_header1.visible = false
                                     users_information_header1.visible = true
                                     userprofile_name.text = database_access.name
+                                    address_field.activeFocus = true
+                                    locality_field.activeFocus = true
                                     mail_address.text = database_access.mail
                                     mobile_number.text = database_access.number
                                     address_field.text = database_access.address
                                     locality_field.text = database_access.locality
+
                                 }
                                 onPressed: {
                                     go_to_profile.color = "#F25822"
@@ -5671,8 +5674,8 @@ ApplicationWindow {
                                             mobile_number.text = database_access.number
                                             address_field.text = database_access.address
                                             locality_field.text = database_access.locality
-                                            address_field.activeFocus = false
-                                            locality_field.activeFocus = false
+//                                            address_field.activeFocus = false
+//                                            locality_field.activeFocus = false
                                         }
                                     }
                                 onPressed: {
