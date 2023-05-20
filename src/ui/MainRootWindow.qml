@@ -4230,13 +4230,13 @@ ApplicationWindow {
 
                             FileDialog {
                                 id: choose_image_fileDialog
-                                title: "Please Choose the Image file *png"
+                                title: "Please Choose the Image file *jpg"
                                 folder: shortcuts.documents
-                                nameFilters: [ "png files (*.png)"]
+                                nameFilters: [ "jpg files (*.jpg)"]
                                 selectMultiple: false
                                 visible: false
                                 onAccepted: {
-                                    console.log("png file accepted")
+                                    console.log("jpg file accepted")
                                     drone_image.source = fileUrl.toString()
                                 }
                                 onRejected: {
