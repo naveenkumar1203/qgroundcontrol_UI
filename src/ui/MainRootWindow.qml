@@ -1842,7 +1842,7 @@ ApplicationWindow {
                                         || user_address_text.text == ""
                                         || user_locality_text.text == ""
                                         || user_password_text.text == ""
-                                        || user_image_inprofile.source == ""){
+                                        || user_profile_image.source == ""){
                                     enter_all_fields.open()
                                 }
                                 else{
@@ -4250,7 +4250,7 @@ ApplicationWindow {
                                 selectMultiple: false
                                 visible: false
                                 onAccepted: {
-                                    console.log("png file accepted")
+                                    console.log("jpg file accepted")
                                     drone_image.source = fileUrl.toString()
                                 }
                                 onRejected: {
@@ -5458,10 +5458,12 @@ ApplicationWindow {
                                     users_profile_header1.visible = false
                                     users_information_header1.visible = true
                                     userprofile_name.text = database_access.name
+                                    address_field.activeFocus = true
+                                    locality_field.activeFocus = true
                                     mail_address.text = database_access.mail
                                     mobile_number.text = database_access.number
                                     address_field.text = database_access.address
-                                    locality_field.text = database_access.locality
+                                    locality_field.text = database_access.locality                                    
                                 }
                                 onPressed: {
                                     go_to_profile.color = "#F25822"
