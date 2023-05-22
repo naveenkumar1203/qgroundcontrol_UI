@@ -11,11 +11,8 @@
 #include <QJsonDocument>
 #include <QNetworkRequest>
 #include <QJsonObject>
-<<<<<<< HEAD
 #include <QFile>
 #include <QEventLoop>
-=======
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 
 class TableModel : public QAbstractTableModel
 {
@@ -29,46 +26,31 @@ public:
         UinRole,
         SqlEditRole
     };
-<<<<<<< HEAD
 
     explicit TableModel(QObject *parent = 0);
     ~TableModel();
 
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex & parent = QModelIndex()) const override;
-    Q_INVOKABLE QVariant data (const QModelIndex & index, int role) const override;
 
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role) override;
-
-    Q_INVOKABLE void existingUIN(const QString &userName,const QString &uinText);
-
-    Q_INVOKABLE void add_rpa(const QString &droneType,const QString &droneModel,const QString &droneName,const QString &uinText);
-
-    Q_INVOKABLE void getData();
-
-    Q_INVOKABLE void manageRpaClicked(const QString &userName);
-
-    Q_INVOKABLE void modelSelected(const QString &number);
-
-    Q_INVOKABLE void firmwareupgrade_data();
-
+    void list_function(const QString &firebase_folder_name);
+    void firmware_apply_read_addData(const QByteArray &response);
     void modelSelected_list();
 
-    void firmware_apply_read_addData(const QByteArray &response);
-
+    Q_INVOKABLE QVariant data (const QModelIndex & index, int role) const override;
+    Q_INVOKABLE void existingUIN(const QString &userName,const QString &uinText);
+    Q_INVOKABLE void add_rpa(const QString &droneType,const QString &droneModel,const QString &droneName,const QString &uinText);
+    Q_INVOKABLE void getData();
+    Q_INVOKABLE void manageRpaClicked(const QString &userName);
+    Q_INVOKABLE void modelSelected(const QString &number);
+    Q_INVOKABLE void firmwareupgrade_data();
     Q_INVOKABLE void image_function(const QString &file_name, const QString &firebase_folder_name);
-
     Q_INVOKABLE void upload_function(const QString &firebase_file_name, const QString &firebase_folder_name,const QString &folder_location);
-
-    void list_function(const QString &firebase_folder_name);
-
     Q_INVOKABLE void download_function(const QString &file_name, const QString &firebase_folder_name, QString local_pc_location);
-
     Q_INVOKABLE void read_text_file(QString user_text_file_name,QString user_text_file_folder);
 
     Q_PROPERTY(QStringList filename READ filename WRITE setFileName NOTIFY filenameChanged)
-
-
     Q_PROPERTY(QString droneName READ droneName WRITE setDroneName NOTIFY droneNameChanged)
     Q_PROPERTY(QString uin READ uin WRITE setUin NOTIFY uinChanged)
     Q_PROPERTY(QString type READ type WRITE setType NOTIFY typeChanged)
@@ -76,38 +58,6 @@ public:
     Q_PROPERTY(QStringList firmwarelog_list READ firmwarelog_list WRITE setFirmwarelog_list NOTIFY firmwarelog_listChanged)
     Q_PROPERTY(QUrl image READ image WRITE setImage NOTIFY imageChanged)
 
-=======
-
-    explicit TableModel(QObject *parent = 0);
-    ~TableModel();
-
-    virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-    int columnCount(const QModelIndex & parent = QModelIndex()) const override;
-    Q_INVOKABLE QVariant data (const QModelIndex & index, int role) const override;
-
-    virtual bool setData(const QModelIndex &index, const QVariant &value, int role) override;
-    Q_INVOKABLE void delete_query(const QString &name, const QString &number);
-
-    Q_INVOKABLE void existingUIN(const QString &userName,const QString &uinText);
-
-    Q_INVOKABLE void add_rpa(const QString &droneType,const QString &droneModel,const QString &droneName,const QString &uinText);
-
-    Q_INVOKABLE void getData();
-
-    Q_INVOKABLE void firmwareupgrade_data();
-
-    Q_INVOKABLE void manageRpaClicked(const QString &userName);
-
-    Q_INVOKABLE void modelSelected(const QString &number);
-    void modelSelected_list();
-
-    Q_PROPERTY(QString droneName READ droneName WRITE setDroneName NOTIFY droneNameChanged)
-    Q_PROPERTY(QString uin READ uin WRITE setUin NOTIFY uinChanged)
-    Q_PROPERTY(QString type READ type WRITE setType NOTIFY typeChanged)
-    Q_PROPERTY(QString model READ model WRITE setModel NOTIFY modelChanged)
-    Q_PROPERTY(QStringList firmwarelog_list READ firmwarelog_list WRITE setfirmwarelog_list NOTIFY firmwarelog_listChanged)
-
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
     QString droneName() const;
     void setDroneName(const QString &newDroneName);
 
@@ -120,7 +70,6 @@ public:
     QString model() const;
     void setModel(const QString &newModel);
 
-<<<<<<< HEAD
     QStringList firmwarelog_list() const;
     void setFirmwarelog_list(const QStringList &newFirmwarelog_list);
 
@@ -129,13 +78,7 @@ public:
 
     QUrl image() const;
     void setImage(const QUrl &newImage);
-=======
 
-    void firmware_apply_read_addData(const QByteArray &response);
-
-    QStringList firmwarelog_list() const;
-    void setfirmwarelog_list(const QStringList &newfirmwarelog_list);
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 
 protected:
     QHash<int, QByteArray> roleNames() const override;
@@ -148,63 +91,37 @@ private:
     QNetworkReply *m_networkreply;
     QNetworkAccessManager *m_networkAccessManager;
     QNetworkAccessManagerWithPatch *m_networkAccessManagerWithPatch;
-<<<<<<< HEAD
 
     QString _projectID = "godrona-gcs";
 
     QString m_droneName;
-
     QString m_uin;
-=======
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
-
-    QString m_uin;
-    QString m_droneName;
     QString m_type;
     QString m_model;
     QStringList m_firmwarelog_list;
-
-<<<<<<< HEAD
-    QStringList m_firmwarelog_list;
-
     QStringList m_filename;
-
     QUrl m_image;
 
 public slots:
     void network_reply_read();
     void network_reply_read_addData();
     void firmwarelog_contain_data();
-=======
-public slots:
-    void network_reply_read();
-    void network_reply_read_addData();
-    void firmwarelog_contain_data();
-
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 
 signals:
     void uinFound();
     void uinNotFound();
     void dataAdded();
     void showTable();
-<<<<<<< HEAD
-    //void dataDeleted();
-=======
     void dataDeleted();
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 
     void droneNameChanged();
     void uinChanged();
     void typeChanged();
     void modelChanged();
     void firmwarelog_listChanged();
-<<<<<<< HEAD
     void filenameChanged();
     void imageChanged();
 
-=======
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 };
 
 #endif // TABLEMODEL_H

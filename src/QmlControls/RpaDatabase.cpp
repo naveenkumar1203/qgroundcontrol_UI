@@ -4,6 +4,8 @@
 #include <QDebug>
 #include <QJsonArray>
 #include <QTimer>
+#include <QStandardPaths>
+#include <QTextCodec>
 
 QString uin_number;
 QString user;
@@ -378,6 +380,34 @@ void TableModel::read_text_file(QString user_text_file_name, QString user_text_f
     });
 }
 
+//void TableModel::download_function(const QString &file_name, const QString &firebase_folder_name, QString local_pc_location)
+//{
+//    QString user_file = firebase_folder_name;
+//    int pos = user_file.lastIndexOf("@");
+//    user_file = user_file.left(pos);
+//    qDebug() << user_file.left(pos);
+
+//    QString user_download_location = local_pc_location + ".csv";
+//    QNetworkRequest request;
+
+//    QString link = "https://firebasestorage.googleapis.com/v0/b/" + _projectID + ".appspot.com/o/" + user_file + "%2F" + file_name + "?alt=media";
+//    request.setUrl(QUrl(link));
+//    request.setHeader(QNetworkRequest::ContentTypeHeader,"text/csv");
+//    request.setRawHeader("Authorization","Bearer");
+
+//    QNetworkReply *response1 = m_networkAccessManager->get(QNetworkRequest(QUrl(QString::fromStdString(link.toStdString()))));
+//    connect(response1,&QNetworkReply::finished,[response1, local_pc_location, user_download_location](){
+//    QByteArray data = response1->readAll();
+//        QFile file(user_download_location);
+//        if (!file.open(QIODevice::WriteOnly)) {
+//            // handle error
+//        }
+//        file.write(data);
+//        file.close();
+//    });
+//}
+
+
 void TableModel::download_function(const QString &file_name, const QString &firebase_folder_name, QString local_pc_location)
 {
     QString user_file = firebase_folder_name;
@@ -385,30 +415,45 @@ void TableModel::download_function(const QString &file_name, const QString &fire
     user_file = user_file.left(pos);
     qDebug() << user_file.left(pos);
 
-    QString user_download_location = local_pc_location + ".csv";
-    qDebug()<<"user download location"<<user_download_location;
-    QNetworkRequest request;
+    QString additional_location = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/output.csv";
+
+    QString user_download_location = additional_location + ".csv";
 
     QString link = "https://firebasestorage.googleapis.com/v0/b/" + _projectID + ".appspot.com/o/" + user_file + "%2F" + file_name + "?alt=media";
-    qDebug()<<"link is"<<link;
-    request.setUrl(QUrl(link));
-    request.setHeader(QNetworkRequest::ContentTypeHeader,"text/csv");
-    request.setRawHeader("Authorization","Bearer");
+    qDebug() << "link is" << link;
 
-    QNetworkReply *response1 = m_networkAccessManager->get(QNetworkRequest(QUrl(QString::fromStdString(link.toStdString()))));
-    //qDebug()<<"response1 is--->"+response1;
-    connect(response1,&QNetworkReply::finished,[response1, local_pc_location, user_download_location](){
-        QByteArray data = response1->readAll();
+    QNetworkRequest request;
+    request.setUrl(QUrl(link));
+
+    QNetworkReply *reply = m_networkAccessManager->get(request);
+    QEventLoop eventLoop;
+    QObject::connect(reply, &QNetworkReply::finished, &eventLoop, &QEventLoop::quit);
+    eventLoop.exec();
+
+    if (reply->error() == QNetworkReply::NoError) {
+        QByteArray data = reply->readAll();
+
         QFile file(user_download_location);
-        if (!file.open(QIODevice::WriteOnly)) {
-            // handle error
+        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            QTextCodec *codec = QTextCodec::codecForName("UTF-8");
+            QTextStream stream(&file);
+            stream.setCodec(codec);
+            stream << data;
+            file.close();
+            qDebug() << "File saved successfully.";
+        } else {
+            qDebug() << "File save error:" << file.errorString();
         }
-        file.write(data);
-        file.close();
-        qDebug()<<"else msg" << " " << response1->errorString();
-        qDebug()<<"file downloaded";
-    });
+    } else {
+        qDebug() << "Download error:" << reply->errorString();
+    }
+
+    reply->deleteLater();
 }
+
+
+
+
 
 void TableModel::firmwareupgrade_data()
 {

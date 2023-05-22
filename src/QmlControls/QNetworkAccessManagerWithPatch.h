@@ -24,8 +24,5 @@ public:
 #endif
 };
 
-<<<<<<< HEAD
-=======
 
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 #endif // QNETWORKACCESSMANAGERWITHPATCH_H

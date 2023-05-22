@@ -105,11 +105,6 @@
 #include "FirmwareUpdate.h"
 #include "RpaDatabase.h"
 #include "FireBaseAccess.h"
-<<<<<<< HEAD
-=======
-
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
-
 
 #if defined(QGC_ENABLE_PAIRING)
 #include "PairingManager.h"
@@ -524,16 +519,12 @@ void QGCApplication::_initCommon()
     qmlRegisterType<TerrainProfile>                 ("QGroundControl.Controls",             1, 0, "TerrainProfile");
     qmlRegisterType<ToolStripAction>                ("QGroundControl.Controls",             1, 0, "ToolStripAction");
     qmlRegisterType<ToolStripActionList>            ("QGroundControl.Controls",             1, 0, "ToolStripActionList");
-<<<<<<< HEAD
     qmlRegisterType<FirmwareUpdate>                 ("FirmwareUpdate",             1, 0, "FirmwareUpdate");
     qmlRegisterType<FireBaseAccess>                ("FireBaseAccess",               1, 0, "FireBaseAccess");
     qmlRegisterType<TableModel>                     ("TableModel",                  1, 0, "TableModel");
-
-=======
     qmlRegisterType<FirmwareUpdate>                 ("FirmwareUpdate",           1, 0, "FirmwareUpdate");
     qmlRegisterType<TableModel>                     ("TableModel",              1, 0, "TableModel");
     qmlRegisterType<FireBaseAccess>                 ("FireBaseAccess",           1, 0, "FireBaseAccess");
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 
 #ifndef __mobile__
 #ifndef NO_SERIAL_LINK

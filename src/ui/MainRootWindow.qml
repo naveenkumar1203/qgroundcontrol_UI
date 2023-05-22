@@ -129,6 +129,7 @@ ApplicationWindow {
 
     TableModel{
             property int i : 0
+            property var oldTableObject: null
             id: rpadatabase
             onUinFound:{
                 console.log("uin found")
@@ -152,6 +153,12 @@ ApplicationWindow {
                 drone_model_list.currentIndex = -1
                 drone_name_text.text = ""
                 uin_input_text.text = ""
+
+                if (oldTableObject !== null) {
+                    oldTableObject.destroy()
+                    oldTableObject = null
+                }
+
                 const newObject = Qt.createQmlObject(`
                                                      import QtQuick 2.0
                                                      import QtQuick.Controls 1.5
@@ -355,6 +362,8 @@ ApplicationWindow {
                                                      );
                 i = 0
                 mainWindow.newWindowObject = newObject
+                oldTableObject = newObject
+
             }
         }
 
@@ -1369,6 +1378,7 @@ ApplicationWindow {
                                     first_circle_text.text = "/"
                                     first_circle.color = "green"
                                     second_circle.color = "#F25822"
+                                    user_profile_image.source = "/res/user_photo.png"
                                     //control.currentIndex = -1
                                 }
                             }
@@ -1400,27 +1410,33 @@ ApplicationWindow {
                         clip: true
                         anchors.horizontalCenter: parent.horizontalCenter
                         Image{
-                            anchors.left: user_image.left
-                            anchors.leftMargin: 30
+                            id: user_profile_image
+                            anchors.fill: user_image
                             anchors.verticalCenter: parent.verticalCenter
                             source: "/res/user_photo.png"
-                        }
-                        Image{
-                            id:user_profile_image
-                            anchors.fill: user_image
-                            width: 75
-                            height: 75
-                            source: image_file_dialog.fileUrl
                             fillMode: Image.PreserveAspectCrop
                             layer.enabled: true
                             layer.effect: OpacityMask {
                                 maskSource: user_image
                             }
                         }
+//                        Image{
+//                            id:user_profile_image
+//                            anchors.fill: user_image
+//                            width: 75
+//                            height: 75
+//                            source: image_file_dialog.fileUrl
+//                            fillMode: Image.PreserveAspectCrop
+//                            layer.enabled: true
+//                            layer.effect: OpacityMask {
+//                                maskSource: user_image
+//                            }
+//                        }
                         MouseArea{
                             anchors.fill: parent
                             onClicked: {
                                 image_file_dialog.open()
+                                user_profile_image.source = image_file_dialog.fileUrl
                             }
                         }
                     }
@@ -1784,6 +1800,7 @@ ApplicationWindow {
                                     user_password_text.text == ""
                                     control.currentIndex = -1
                                     control_role.currentIndex = -1
+                                    user_image.color = "white"
                                     password_hide_image1.visible = true
                                     password_show_image1.visible = false
                                     new_user_image_rect.source = "/res/First Time Signup screen.png"
@@ -1986,6 +2003,8 @@ ApplicationWindow {
                             }
                             onClicked: {
                                 database_access.new_user_registration(combobox_text.text,combobox_role_text.text,user_name_text.text,user_mail_text.text,user_number_text.text,user_address_text.text,user_locality_text.text,user_password_text.text)
+                                control.currentIndex = -1
+                                control_role.currentIndex = -1
                                 user_name_text.text = ''
                                 user_mail_text.text = ''
                                 user_number_text.text = ''
@@ -1993,7 +2012,6 @@ ApplicationWindow {
                                 user_locality_text.text = ''
                                 user_password_text.text = ''
                                 user_image.color = "white"
-                                user_profile_image.source == ""
                             }
                         }
                     }
@@ -2046,7 +2064,7 @@ ApplicationWindow {
         id: image_file_dialog
         title: "Please choose an image file"
         folder: shortcuts.documents
-        nameFilters: [ "(*.png *.jpg)"]
+        nameFilters: [ "(*.jpg)"]
         selectMultiple: false
         onAccepted: {
             var filePath = fileUrl.toString().replace("file://", "")
@@ -2119,8 +2137,10 @@ ApplicationWindow {
         }
         onNo: {
             landing_page_rectangle.visible = true
+
         }
-    }
+
+     }
     MessageDialog {
         id: mailrecord_Dialog
         title: "Already Registered Mail"
@@ -2300,9 +2320,9 @@ ApplicationWindow {
         toolDrawer.visible      = true
     }
 
-    function showAnalyzeTool() {
-        showTool(qsTr("Analyze Tools"), "AnalyzeView.qml", "/qmlimages/Analyze.svg")
-    }
+//    function showAnalyzeTool() {
+//        showTool(qsTr("Analyze Tools"), "AnalyzeView.qml", "/qmlimages/Analyze.svg")
+//    }
 
     function showSetupTool() {
         showTool(qsTr("Vehicle Setup"), "SetupView.qml", "/qmlimages/Gears.svg")
@@ -2532,21 +2552,21 @@ ApplicationWindow {
                         }
                     }
 
-                    SubMenuButton {
-                        id:                 analyzeButton
-                        height:             _toolButtonHeight
-                        Layout.fillWidth:   true
-                        text:               qsTr("Analyze Tools")
-                        imageResource:      "/qmlimages/Analyze.svg"
-                        imageColor:         qgcPal.text
-                        visible:            QGroundControl.corePlugin.showAdvancedUI
-                        onClicked: {
-                            if (!mainWindow.preventViewSwitch()) {
-                                toolSelectDialog.hideDialog()
-                                mainWindow.showAnalyzeTool()
-                            }
-                        }
-                    }
+//                    SubMenuButton {
+//                        id:                 analyzeButton
+//                        height:             _toolButtonHeight
+//                        Layout.fillWidth:   true
+//                        text:               qsTr("Analyze Tools")
+//                        imageResource:      "/qmlimages/Analyze.svg"
+//                        imageColor:         qgcPal.text
+//                        visible:            QGroundControl.corePlugin.showAdvancedUI
+//                        onClicked: {
+//                            if (!mainWindow.preventViewSwitch()) {
+//                                toolSelectDialog.hideDialog()
+//                                mainWindow.showAnalyzeTool()
+//                            }
+//                        }
+//                    }
 
                     SubMenuButton {
                         id:                 settingsButton
@@ -3397,7 +3417,7 @@ ApplicationWindow {
                                 managerpa_button.color = "#031C28"
                                 flight_log_button.color = "#031C28"
                                 firmware_button.color = "#031C28"
-                                mainWindow.newWindowObject.destroy()
+
 
                             }
                         }
@@ -4483,7 +4503,6 @@ ApplicationWindow {
                                     update_Button.color = "Green"
                                 }
                                 onClicked: {
-
                                     if(updateButton === 1){
                                         if((combo_box1.text === "")||(combo_box2.text === "") ||(drone_name_text.text == "") ||(uin_input_text.text == "") /*|| drone_image.source == ""*/) {
                                             fillDialog.visible = true
@@ -4507,6 +4526,7 @@ ApplicationWindow {
                                         checkBoxState = 0
                                         console.log("in update button else when ending"+ updateButton)
                                     }
+
 
                                 }
                             }

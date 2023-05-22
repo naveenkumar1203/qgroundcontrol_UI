@@ -104,17 +104,12 @@
         <file alias="user_photo.png">resources/user_photo.png</file>
         <file alias="create_mission.png">resources/create_mission.png</file>
         <file alias="firmware.png">resources/firmware.png</file>
-<<<<<<< HEAD
         <file alias="First Time Signup screen.png">resources/First Time Signup screen.png</file>
         <file alias="otp.png">resources/otp.png</file>
         <file alias="user_details.png">resources/user_details.png</file>
         <file alias="User_login.png">resources/User_login.png</file>
         <file alias="role.png">resources/role.png</file>
         <file alias="maintoolbar_home.png">resources/maintoolbar_home.png</file>
-=======
-        <file alias="maintoolbar_home.png">resources/maintoolbar_home.png</file>
-        <file alias="role.png">resources/role.png</file>
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
     </qresource>
     <qresource prefix="/res/firmware">
         <file alias="3drradio.png">resources/firmware/3drradio.png</file>

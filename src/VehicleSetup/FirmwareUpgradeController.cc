@@ -141,10 +141,6 @@ FirmwareUpgradeController::FirmwareUpgradeController(void)
 
     connect(&_eraseTimer, &QTimer::timeout, this, &FirmwareUpgradeController::_eraseProgressTick);
     m_networkAccessManager = new QNetworkAccessManager(this);
-<<<<<<< HEAD
-=======
-
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 
 #if !defined(NO_ARDUPILOT_DIALECT)
     connect(_apmChibiOSSetting,     &Fact::rawValueChanged, this, &FirmwareUpgradeController::_buildAPMFirmwareNames);
@@ -469,10 +465,8 @@ void FirmwareUpgradeController::_flashComplete(void)
         delete _image;
         _image = nullptr;
 
-<<<<<<< HEAD
         _appendStatusLog(tr("Checksum Matches,OK"), true);
-=======
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
+
         _appendStatusLog(tr("Upgrade complete"), true);
         _appendStatusLog("------------------------------------------", false);
 
@@ -500,22 +494,6 @@ void FirmwareUpgradeController::_flashComplete(void)
         emit flashComplete();
         qgcApp()->toolbox()->linkManager()->setConnectionsAllowed();
     }
-<<<<<<< HEAD
-}
-
-QStringList FirmwareUpgradeController::modellist() const
-{
-    return m_modellist;
-}
-
-void FirmwareUpgradeController::setModellist(const QStringList &newModellist)
-{
-if (m_modellist == newModellist)
-            return;
-m_modellist = newModellist;
-emit modellistChanged();
-=======
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 }
 
 QStringList FirmwareUpgradeController::modellist() const
@@ -530,7 +508,6 @@ if (m_modellist == newModellist)
 m_modellist = newModellist;
 emit modellistChanged();
 }
-
 
 void FirmwareUpgradeController::_error(const QString& errorString)
 {
@@ -590,11 +567,6 @@ void FirmwareUpgradeController::_errorCancel(const QString& msg)
     emit error();
     cancel();
     qgcApp()->toolbox()->linkManager()->setConnectionsAllowed();
-<<<<<<< HEAD
-=======
-
-
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
     qDebug()<<"USER NAME FROM SIGNAL>>"<<usermail;
 
     QString cd = QDate::currentDate().toString();
@@ -613,10 +585,7 @@ void FirmwareUpgradeController::_errorCancel(const QString& msg)
     QNetworkRequest newAdditionRequest((QUrl(userUrl)));
     newAdditionRequest.setHeader(QNetworkRequest::ContentTypeHeader,QString("application/json"));
     m_networkreply = m_networkAccessManager->put(newAdditionRequest,jsonDoc.toJson());
-<<<<<<< HEAD
-=======
 
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 }
 
 

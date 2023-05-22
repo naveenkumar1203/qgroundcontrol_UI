@@ -28,10 +28,6 @@ import QGroundControl.FactSystem    1.0
 import QGroundControl.FactControls  1.0
 import FirmwareUpdate 1.0
 import TableModel 1.0
-<<<<<<< HEAD
-=======
-
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 
 Item{
     id:         _root
@@ -47,7 +43,6 @@ Item{
 
     TableModel{
         id: rpadatabase
-<<<<<<< HEAD
 
         onModelChanged:{
                                         if(rpadatabase.model == "Model A"){
@@ -66,8 +61,6 @@ Item{
     FileDialog{
         id: file_Dialog
         folder: shortcuts.documents
-=======
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
     }
 
 
@@ -100,7 +93,6 @@ Item{
             fly_button.color = "#F25822"
         }
         onClicked: {
-<<<<<<< HEAD
             if(checkBoxState === 0){
                             select_the_modelDialog.open()
                             console.log("model not selected")
@@ -118,36 +110,34 @@ Item{
 
         }
     }
-    MessageDialog {
-        id: select_the_modelDialog
-        title: "Model not Selected"
-        text: "You have to select the model before you firmware_load1fly."
-=======
-                    if(checkBoxState === 0){
-                                    select_the_modelDialog.open()
-                                    console.log("model not selected")
-                                }
-                                else if(checkBoxState === 1){
-                                    console.log("model is selected")
-                                    console.log(checkBoxNumber)
-                                    //rpadatabase.modelSelected(checkBoxNumber)
-                                    flightView.visible = true
-                                    toolbar.visible =true
-                                    landing_page_rectangle.visible = false
-                                    checkBoxState = 0
+//    MessageDialog {
+//        id: select_the_modelDialog
+//        title: "Model not Selected"
+//        text: "You have to select the model before you firmware_load1fly."
+//                    if(checkBoxState === 0){
+//                                    select_the_modelDialog.open()
+//                                    console.log("model not selected")
+//                                }
+//                                else if(checkBoxState === 1){
+//                                    console.log("model is selected")
+//                                    console.log(checkBoxNumber)
+//                                    //rpadatabase.modelSelected(checkBoxNumber)
+//                                    flightView.visible = true
+//                                    toolbar.visible =true
+//                                    landing_page_rectangle.visible = false
+//                                    checkBoxState = 0
 
-                                }
-                                else{
-                                    console.log("no checkboxstate")
-                                }
-                }
-    }
+//                                }
+//                                else{
+//                                    console.log("no checkboxstate")
+//                                }
+//                }
+//    }
 
     MessageDialog {
         id: select_the_modelDialog
         title: "Model not Selected"
         text: "You have to select the model before you fly."
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
     }
 
 

@@ -13,10 +13,7 @@
 #include "FirmwareImage.h"
 #include "Fact.h"
 #include "FireBaseAccess.h"
-<<<<<<< HEAD
-=======
 #include "RpaDatabase.h"
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 #include "QGCToolbox.h"
 
 #include <QObject>
@@ -160,10 +157,7 @@ public:
      * @return availableBoardNames
      */
     Q_INVOKABLE QStringList availableBoardsName(void);
-<<<<<<< HEAD
-=======
    // Q_INVOKABLE void getuserData();
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
     void network_reply_read_addData();
     QStringList modellist() const;
     void setModellist(const QStringList &newModellist);
@@ -314,17 +308,9 @@ private:
     FirmwareBuildType_t     _manifestMavFirmwareVersionTypeToFirmwareBuildType  (const QString& manifestMavFirmwareVersionType);
     FirmwareVehicleType_t   _manifestMavTypeToFirmwareVehicleType               (const QString& manifestMavType);
 
-<<<<<<< HEAD
     QNetworkReply *m_networkreply;
     QNetworkAccessManager *m_networkAccessManager;
     QStringList m_modellist;
-=======
-
-    QNetworkReply *m_networkreply;
-    QNetworkAccessManager *m_networkAccessManager;
-    QStringList m_modellist;
-
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
     QGCToolbox*         _toolbox = nullptr;
 };
 

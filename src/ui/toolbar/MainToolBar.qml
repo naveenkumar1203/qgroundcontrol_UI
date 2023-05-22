@@ -73,10 +73,6 @@ Rectangle {
             onClicked:              mainWindow.showToolSelectDialog()
         }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
         Text{
             id: godrona
             text: "Go Drona  "

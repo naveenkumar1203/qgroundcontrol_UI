@@ -6,20 +6,13 @@
 QString g_industry;
 QString g_name;
 QString g_mail;
-<<<<<<< HEAD
-=======
 QString usermail= " ";
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 QString g_number;
 QString g_address;
 QString g_locality;
 QString g_role;
-<<<<<<< HEAD
-QString usermail = " ";
 
 QString firebase_storage_name;
-=======
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 
 FireBaseAccess::FireBaseAccess(QObject *parent)
     : QObject{parent}
@@ -34,10 +27,6 @@ FireBaseAccess::~FireBaseAccess()
 
 void FireBaseAccess::new_user_registration(const QString &industry,const QString &role,const QString &name, const QString &mail, const QString &number, const QString &address, const QString &locality, const QString &password)
 {
-<<<<<<< HEAD
-
-=======
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
     g_name = name;
     g_mail = mail;
     g_number = number;
@@ -46,10 +35,6 @@ void FireBaseAccess::new_user_registration(const QString &industry,const QString
     g_industry = industry;
     g_role = role;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
     m_NetworkReply = m_NetworkAccessManager->get(QNetworkRequest(QUrl("https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/.json")));
     connect(m_NetworkReply,&QNetworkReply::readyRead,this,&FireBaseAccess::rds_data_network_reply_read);
 
@@ -84,10 +69,6 @@ void FireBaseAccess::new_user_POST(const QString &url, const QJsonDocument &payl
 
 void FireBaseAccess::new_user_network_reply_read()
 {
-<<<<<<< HEAD
-    //qDebug()<<m_NetworkReply->readAll();
-=======
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
     QByteArray response = m_NetworkReply->readAll();
     m_NetworkReply->deleteLater();
     newUser_parseResponse(response);
@@ -101,7 +82,6 @@ void FireBaseAccess::newUser_parseResponse(const QByteArray &response)
         emit mailAlreadyExists();
     }
     else if(jsonDocument.object().contains("kind")){
-<<<<<<< HEAD
             QVariantMap newUser;
             newUser["Mail"] = g_mail;
 
@@ -132,52 +112,17 @@ void FireBaseAccess::newUser_parseResponse(const QByteArray &response)
             m_NetworkAccessManager->put(newAdditionRequest,jsonDoc1.toJson());
 
             emit userRegisteredSuccessfully();
-=======
-        QVariantMap newUser;
-        newUser["Mail"] = g_mail;
-        QVariantMap newUserDetails;
-        newUserDetails["Name"] = g_name;
-        newUserDetails["Mail"] = g_mail;
-        newUserDetails["Number"] = g_number;
-        newUserDetails["Address"] = g_address;
-        newUserDetails["Locality"] = g_locality;
-        newUserDetails["Industry"] = g_industry;
-        newUserDetails["Role"] = g_role;
-        QJsonDocument jsonDoc = QJsonDocument::fromVariant(newUser);
-        QJsonDocument jsonDoc1 = QJsonDocument::fromVariant(newUserDetails);
-        QString user_mail = g_mail;
-        int pos = user_mail.lastIndexOf("@");
-        user_mail = user_mail.left(pos);
-        usermail = user_mail;
-        qDebug() << "user_mail" << usermail;
-        QString link = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + user_mail + "/UserInformation.json";
-        QUrl userUrl = link;
-        QNetworkRequest newAdditionRequest((QUrl(userUrl)));
-        newAdditionRequest.setHeader(QNetworkRequest::ContentTypeHeader,QString("application/json"));
-        m_NetworkAccessManager->put(newAdditionRequest,jsonDoc1.toJson());
-
-        emit userRegisteredSuccessfully();
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
     }
 }
 
 void FireBaseAccess::registered_user(const QString &mail, const QString &password)
 {
     QString user_mail = mail;
-<<<<<<< HEAD
-    //int pos = user_mail.lastIndexOf("@gmail.com");
     int pos = user_mail.lastIndexOf("@");
     user_mail = user_mail.left(pos);
     usermail = user_mail;
     m_firebasejsonname = user_mail;
     firebase_storage_name = m_firebasejsonname;
-=======
-    int pos = user_mail.lastIndexOf("@");
-    user_mail = user_mail.left(pos);
-    usermail = user_mail;
-    qDebug() << "user_mail in register user" << usermail;
-    m_firebasejsonname = user_mail;
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
     registered_user_signup(mail,password);
 }
 
@@ -204,10 +149,6 @@ void FireBaseAccess::registered_user_POST(const QString &url, const QJsonDocumen
 
 void FireBaseAccess::registered_user_network_reply_read()
 {
-<<<<<<< HEAD
-    //qDebug()<<m_NetworkReply->readAll();
-=======
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
     QByteArray response = m_NetworkReply->readAll();
     m_NetworkReply->deleteLater();
     registeredUser_parseResponse(response);
@@ -234,10 +175,6 @@ void FireBaseAccess::registeredUser_parseResponse(const QByteArray &response)
 
 void FireBaseAccess::user_details_network_reply_read()
 {
-<<<<<<< HEAD
-    //qDebug()<<"user data:" <<m_NetworkReply1->readAll();
-=======
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
     QByteArray response = m_NetworkReply->readAll();
     m_NetworkReply->deleteLater();
     userDetails_parseResponse(response);
@@ -250,10 +187,6 @@ void FireBaseAccess::userDetails_parseResponse(const QByteArray &response)
         qDebug()<<"THIS DOC DOES NOT CONTAIN ANY OBJECT"<<doc;
 
     }
-<<<<<<< HEAD
-    //qDebug()<<"doc:"<<doc;
-=======
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
     QJsonObject obj = doc.object();
     m_name = obj["Name"].toString();
     m_address = obj["Address"].toString();
@@ -287,10 +220,6 @@ void FireBaseAccess::password_reset_POST(const QString &url, const QJsonDocument
 
 void FireBaseAccess::reset_password_network_reply_read()
 {
-<<<<<<< HEAD
-    //qDebug()<<m_NetworkReply->readAll();
-=======
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
     QByteArray response = m_NetworkReply->readAll();
     m_NetworkReply->deleteLater();
     password_reset_parseResponse(response);
@@ -300,11 +229,8 @@ void FireBaseAccess::password_reset_parseResponse(const QByteArray &response)
 {
     QJsonDocument jsonDocument = QJsonDocument::fromJson(response);
     if(jsonDocument.object().contains("error")){
-<<<<<<< HEAD
             emit resetMailNotFound();
-=======
         emit resetMailNotFound();
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
     }
     else if(jsonDocument.object().contains("kind")){
         emit resetMailFound();
@@ -348,10 +274,7 @@ void FireBaseAccess:: profile_data_network_reply_read()
 void FireBaseAccess::profile_update_parse(const QByteArray &response)
 {
     QJsonDocument doc = QJsonDocument::fromJson(response);
-<<<<<<< HEAD
-    //qDebug()<<"doc:"<<doc;
-=======
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
+
     QJsonObject obj = doc.object();
     m_name = obj["Name"].toString();
     m_address = obj["Address"].toString();
@@ -456,18 +379,12 @@ void FireBaseAccess::setLocality(const QString &newLocality)
     m_locality = newLocality;
     emit localityChanged();
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 QString FireBaseAccess::role() const
 {
     return m_role;
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 void FireBaseAccess::setRole(const QString &newRole)
 {
     if (m_role == newRole)
@@ -475,11 +392,9 @@ void FireBaseAccess::setRole(const QString &newRole)
     m_role = newRole;
     emit roleChanged();
 }
-<<<<<<< HEAD
 
 QString FireBaseAccess::storagename() const
 {
-    //return m_storagename;
     return firebase_storage_name;
 }
 
@@ -490,5 +405,4 @@ void FireBaseAccess::setStoragename(const QString &newStoragename)
     m_storagename = newStoragename;
     emit storagenameChanged();
 }
-=======
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
+

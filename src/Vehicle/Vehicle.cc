@@ -3803,7 +3803,6 @@ void Vehicle::_initializeCsv()
         return;
     }
     QString now = QDateTime::currentDateTime().toString("yyyy-MM-dd hh-mm-ss");
-<<<<<<< HEAD
     QString model = obj.model(); //_toolbox->tableModel()->model();
     qDebug()<<"model file name is " <<model;
     QString uin = obj.uin(); //_toolbox->tableModel()->uin();
@@ -3813,35 +3812,15 @@ void Vehicle::_initializeCsv()
     QString flightlog_filename = _toolbox->settingsManager()->appSettings()->telemetrySavePath();
     file_name = fileName;
     folder_location = flightlog_filename + "/" + file_name;
-=======
-    //RpaDatabase obj;
-    //QString model = _toolbox->rpadatabase()->model(); //obj.model();
-    //QString uin = _toolbox->rpadatabase()->uin(); //obj.uin();
-    //QString fileName = QString("%1 vehicle%2.csv").arg(now).arg(_id);
-
-    //QString fileName = QString("%1 %2 %3.csv").arg(now).arg(model).arg(uin);
-    //QDir saveDir(_toolbox->settingsManager()->appSettings()->telemetrySavePath());
-    QString flightlog_filename = _toolbox->settingsManager()->appSettings()->telemetrySavePath();
-    qDebug()<<flightlog_filename;
-    folder_location = flightlog_filename;
-    //file_name = fileName;
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
     QDir saveDir (flightlog_filename);
-    //_csvLogFile.setFileName(saveDir.absoluteFilePath(fileName));
-
-<<<<<<< HEAD
+    _csvLogFile.setFileName(saveDir.absoluteFilePath(fileName));
 
     user_name = obj1.storagename();
 
     QString userName = obj1.storagename(); //_toolbox->ajaydatabase()->awsname();
     QString user_text_file = QString("%1.txt").arg(userName);
-=======
-    //QString userName = _toolbox->ajaydatabase()->awsname();
-    //QString user_text_file = QString("%1.txt").arg(userName);
-    //qDebug()<<"user_text_file.........."<<user_text_file;
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
     QDir saveDir1 (flightlog_filename);
-    //_userTextFile.setFileName(saveDir1.absoluteFilePath(user_text_file));
+    _userTextFile.setFileName(saveDir1.absoluteFilePath(user_text_file));
 
 
     if (!_csvLogFile.open(QIODevice::Append)) {
@@ -3891,18 +3870,10 @@ void Vehicle::_writeCsvLine()
         _initializeCsv();
     }
 
-<<<<<<< HEAD
 
     current_model = obj.model(); //_toolbox->tableModel()->model();
     current_uin = obj.uin(); //_toolbox->tableModel()->uin();
-=======
-    //user_name = _toolbox->ajaydatabase()->awsname();
 
-    //current_model = _toolbox->rpadatabase()->model(); //obj.model();
-    //current_uin = _toolbox->rpadatabase()->uin(); //obj.uin();
-    //qDebug()<<"current------------"<<current_model;
-    //qDebug()<<"current------------"<<current_uin;
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 
     if(previous_model == "" && previous_uin == ""){
         previous_model = current_model;
@@ -3939,31 +3910,21 @@ void Vehicle::_writeCsvLine()
     for (const QString& groupName: factGroupNames()) {
         for (const QString& factName : getFactGroup(groupName)->factNames()) {
             allFactValues << getFactGroup(groupName)->getFact(factName)->cookedValueString();
-            //RpaDatabase obj;
-            //obj.vehicle_logFile();
-            //obj.logFile_writeValues(allFactValues);
+
         }
     }
 
     stream << allFactValues.join(",") << "\n";
 
     if(!_armed){
-<<<<<<< HEAD
             if (vehicle_armed == 1){
-                //qDebug()<<"vehicle is not armed";
-                //QTextStream stream(&_userTextFile);
-                //stream << file_name;
-                //_toolbox->awsoperations()->s3_function(user_name,file_name,folder_location);
+
                 obj.upload_function(file_name,user_name,folder_location);
             }
             vehicle_armed = 0;
-=======
         if (vehicle_armed == 1){
-            //qDebug()<<"vehicle is not armed";
             QTextStream stream(&_userTextFile);
             stream << file_name;
-            //_toolbox->awsoperations()->s3_function(user_name,file_name,folder_location);
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
         }
         vehicle_armed = 0;
     }

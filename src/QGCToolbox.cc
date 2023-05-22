@@ -32,10 +32,6 @@
 #include "QGCApplication.h"
 #include "ADSBVehicleManager.h"
 #include "RpaDatabase.h"
-<<<<<<< HEAD
-=======
-
->>>>>>> d166f3d7cfed49114b6086402673913745f9db85
 
 #if defined(QGC_ENABLE_PAIRING)
 #include "PairingManager.h"
