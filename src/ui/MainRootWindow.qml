@@ -2070,6 +2070,8 @@ ApplicationWindow {
                             }
                             onClicked: {
                                 database_access.new_user_registration(combobox_text.text,combobox_role_text.text,user_name_text.text,user_mail_text.text,user_number_text.text,user_address_text.text,user_locality_text.text,user_password_text.text)
+                                control.currentIndex = -1
+                                control_role.currentIndex = -1
                                 user_name_text.text = ''
                                 user_mail_text.text = ''
                                 user_number_text.text = ''
