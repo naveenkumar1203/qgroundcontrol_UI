@@ -388,7 +388,7 @@ void TableModel::download_function(const QString &file_name, const QString &fire
     qDebug()<<"user download location"<<user_download_location;
     QNetworkRequest request;
 
-    QString link = "https://firebasestorage.googleapis.com/v0/b/" + _projectID + ".appspot.com/o/" + user_file + "%2F" + file_name + "?alt=media";
+    QString link = "https://firebasestorage.googitgleapis.com/v0/b/" + _projectID + ".appspot.com/o/" + user_file + "%2F" + file_name + "?alt=media";
     qDebug()<<"link is"<<link;
     request.setUrl(QUrl(link));
     request.setHeader(QNetworkRequest::ContentTypeHeader,"text/csv");
