@@ -128,6 +128,8 @@ ApplicationWindow {
 
     TableModel{
             property int i : 0
+            property var oldTableObject: null
+
             id: rpadatabase
             onUinFound:{
                 console.log("uin found")
@@ -152,6 +154,11 @@ ApplicationWindow {
                 drone_model_list.currentIndex = -1
                 drone_name_text.text = ""
                 uin_input_text.text = ""
+
+                if (oldTableObject !== null) {
+                   oldTableObject.destroy()
+                   oldTableObject = null
+               }
                 const newObject = Qt.createQmlObject(`
                                                      import QtQuick 2.0
                                                      import QtQuick.Controls 1.5
@@ -357,6 +364,7 @@ ApplicationWindow {
                                                      );
                 i = 0
                 mainWindow.newWindowObject = newObject
+                oldTableObject = newObject
             }
         }
 
@@ -1473,10 +1481,12 @@ ApplicationWindow {
                         Image{
                             width: 25
                             height: 25
-                            anchors.left: user_image.left
-                            anchors.leftMargin: user_image.radius + 20
+//                            anchors.left: user_image.left
+//                            anchors.leftMargin: user_image.radius + 20
+                            anchors.fill: parent
                             anchors.verticalCenter: parent.verticalCenter
                             source: "/res/user_photo.png"//"qrc:/../../../../Downloads/user_photo.png"
+
                         }
                         Image{
                             id:user_profile_image
@@ -2070,6 +2080,8 @@ ApplicationWindow {
                             }
                             onClicked: {
                                 database_access.new_user_registration(combobox_text.text,combobox_role_text.text,user_name_text.text,user_mail_text.text,user_number_text.text,user_address_text.text,user_locality_text.text,user_password_text.text)
+                                control.currentIndex = -1
+                                control_role.currentIndex = -1
                                 user_name_text.text = ''
                                 user_mail_text.text = ''
                                 user_number_text.text = ''
@@ -2401,9 +2413,9 @@ ApplicationWindow {
         toolDrawer.visible      = true
     }
 
-    function showAnalyzeTool() {
-        showTool(qsTr("Analyze Tools"), "AnalyzeView.qml", "/qmlimages/Analyze.svg")
-    }
+//    function showAnalyzeTool() {
+//        showTool(qsTr("Analyze Tools"), "AnalyzeView.qml", "/qmlimages/Analyze.svg")
+//    }
 
     function showSetupTool() {
         showTool(qsTr("Vehicle Setup"), "SetupView.qml", "/qmlimages/Gears.svg")
@@ -2633,21 +2645,21 @@ ApplicationWindow {
                         }
                     }
 
-                    SubMenuButton {
-                        id:                 analyzeButton
-                        height:             _toolButtonHeight
-                        Layout.fillWidth:   true
-                        text:               qsTr("Analyze Tools")
-                        imageResource:      "/qmlimages/Analyze.svg"
-                        imageColor:         qgcPal.text
-                        visible:            QGroundControl.corePlugin.showAdvancedUI
-                        onClicked: {
-                            if (!mainWindow.preventViewSwitch()) {
-                                toolSelectDialog.hideDialog()
-                                mainWindow.showAnalyzeTool()
-                            }
-                        }
-                    }
+//                    SubMenuButton {
+//                        id:                 analyzeButton
+//                        height:             _toolButtonHeight
+//                        Layout.fillWidth:   true
+//                        text:               qsTr("Analyze Tools")
+//                        imageResource:      "/qmlimages/Analyze.svg"
+//                        imageColor:         qgcPal.text
+//                        visible:            QGroundControl.corePlugin.showAdvancedUI
+//                        onClicked: {
+//                            if (!mainWindow.preventViewSwitch()) {
+//                                toolSelectDialog.hideDialog()
+//                                mainWindow.showAnalyzeTool()
+//                            }
+//                        }
+//                    }
 
                     SubMenuButton {
                         id:                 settingsButton
@@ -3898,7 +3910,7 @@ ApplicationWindow {
                                 anchors.bottomMargin: 20
                                 height: 40
                                 width: parent.width
-                                color: "#05324D"
+                                color: "transparent"//"#05324D"
                                 Text {
                                     anchors.centerIn: parent
                                     text: "@2023 GoDrona | All Rights Reserved"
@@ -4087,7 +4099,7 @@ ApplicationWindow {
                                anchors.bottomMargin: 20
                                height: 40
                                width: parent.width
-                               color: "#05324D"
+                               color: "transparent"//"#05324D"
                                Text {
                                    anchors.centerIn: parent
                                    text: "@2023 GoDrona | All Rights Reserved"
@@ -4659,7 +4671,7 @@ ApplicationWindow {
                             anchors.bottomMargin: 20
                             height: 40
                             width: parent.width
-                            color: "#05324D"
+                            color: "transparent"//"#05324D"
                             Text {
                                 anchors.centerIn: parent
                                 text: "@2023 GoDrona | All Rights Reserved"
@@ -5110,11 +5122,12 @@ ApplicationWindow {
                                                 var destFileLoaction;
                                                 function pfx_file_location_function(str)
                                                 {
-                                                    destFileLoaction = str.slice(str.lastIndexOf("file://")+7)
+                                                    destFileLoaction = str.slice(str.lastIndexOf("file:///")+8)
                                                 }
                                                 pfx_file_location_function(destFile);
                                                 //aws.download_file(modelData,destFileLoaction);
-                                                rpadatabase.download_function(modelData,database_access.mail,destFile)
+                                                console.log("destfile"+destFileLoaction)
+                                                rpadatabase.download_function(modelData,database_access.mail,destFileLoaction)
                                             });
                                             fileDialog.rejected.connect(function(){
                                                 log_download_button.color = "#DA2C43";
@@ -5130,7 +5143,7 @@ ApplicationWindow {
                                 anchors.bottomMargin: 20
                                 height: 40
                                 width: parent.width
-                                color: "#05324D"
+                                color: "transparent"//"#05324D"
                                 Text {
                                     anchors.centerIn: parent
                                     text: "@2023 GoDrona | All Rights Reserved"
@@ -5238,7 +5251,7 @@ ApplicationWindow {
                                 anchors.bottomMargin: 20
                                 height: 40
                                 width: parent.width
-                                color: "#05324D"
+                                color: "transparent"//"#05324D"
                                 Text {
                                     anchors.centerIn: parent
                                     text: "@2023 GoDrona | All Rights Reserved"

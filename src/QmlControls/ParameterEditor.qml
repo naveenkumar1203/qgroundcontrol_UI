@@ -99,9 +99,6 @@ Item{
                             console.log("model is selected")
                             console.log(checkBoxNumber)
                             //rpadatabase.modelSelected(checkBoxNumber)
-                            flightView.visible = true
-                            toolbar.visible =true
-                            landing_page_rectangle.visible = false
                             checkBoxState = 0
 //                            if(rpadatabase.model == "Model A"){
 //                                console.log("model a is selected")
@@ -175,7 +172,7 @@ Item{
     MessageDialog {
         id: select_the_modelDialog
         title: "Model not Selected"
-        text: "You have to select the model before you firmware_load1fly."
+        text: "You have to select the model before you fly."
     }
 
 

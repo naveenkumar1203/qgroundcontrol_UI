@@ -22,7 +22,7 @@ void FirmwareUpdate::checksum_generation_process_model_A(QString folder_location
     //QString a_params_location = _toolbox->settingsManager()->appSettings()->telemetrySavePath() + "/model_A.params";
     //QString a_checksum_location = _toolbox->settingsManager()->appSettings()->telemetrySavePath() + "/new_model_A.txt";
 
-    QString real_file_location = folder_location.remove("file://");
+    QString real_file_location = folder_location.remove("file:///");
     QString a_params_location = real_file_location + "/GoDrona GCS/Telemetry/model_A.params";
     QString a_checksum_location = real_file_location + "/GoDrona GCS/Telemetry/new_model_A.txt";
 
@@ -174,7 +174,7 @@ void FirmwareUpdate::checksum_generation_process_model_B(QString real_file_locat
     //QString b_params_location = _toolbox->settingsManager()->appSettings()->telemetrySavePath(); //_toolbox->settingsManager()->appSettings()->telemetrySavePath() + "/model_B.params";
     //QString b_checksum_location = _toolbox->settingsManager()->appSettings()->telemetrySavePath(); // + "/new_model_B.txt";
 
-    real_file_location = real_file_location.remove("file://");
+    real_file_location = real_file_location.remove("file:///");
     QString b_params_location = real_file_location + "/GoDrona GCS/Telemetry/model_B.params";
     QString b_checksum_location =  real_file_location + "/GoDrona GCS/Telemetry/new_model_B.txt";
 

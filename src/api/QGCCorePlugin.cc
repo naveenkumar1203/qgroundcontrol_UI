@@ -155,7 +155,7 @@ QVariantList &QGCCorePlugin::settingsPages()
                                               QUrl::fromUserInput(""));
         _p->settingsList.append(QVariant::fromValue(reinterpret_cast<QmlComponentInfo*>(_p->pMicrohard)));
 #endif
-#if defined(QGC_AIRMAP_ENABLED)
+/*#if defined(QGC_AIRMAP_ENABLED)
         _p->pAirmap = new QmlComponentInfo(tr("AirMap"),
                                            QUrl::fromUserInput("qrc:/qml/AirmapSettings.qml"),
                                            QUrl::fromUserInput(""));
@@ -182,7 +182,7 @@ QVariantList &QGCCorePlugin::settingsPages()
         _p->pQmlTest = new QmlComponentInfo(tr("Palette Test"),
                                             QUrl::fromUserInput("qrc:/qml/QmlTest.qml"));
         _p->settingsList.append(QVariant::fromValue(reinterpret_cast<QmlComponentInfo*>(_p->pQmlTest)));
-#endif
+#endif*/
     }
     return _p->settingsList;
 }
