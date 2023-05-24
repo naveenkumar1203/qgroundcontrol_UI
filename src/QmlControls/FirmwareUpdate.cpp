@@ -17,39 +17,45 @@ FirmwareUpdate::FirmwareUpdate(QObject *parent)
 }
 void FirmwareUpdate::checksum_generation_process_model_A(QString folder_location)
 {
-    QProcess code_checksum_process_model_A;
-
+    //QProcess code_checksum_process_model_A;
+    qDebug()<<"in checksum generation model A";
     //QString a_params_location = _toolbox->settingsManager()->appSettings()->telemetrySavePath() + "/model_A.params";
     //QString a_checksum_location = _toolbox->settingsManager()->appSettings()->telemetrySavePath() + "/new_model_A.txt";
 
     QString real_file_location = folder_location.remove("file:///");
-    QString a_params_location = real_file_location + "/GoDrona GCS/Telemetry/model_A.params";
-    QString a_checksum_location = real_file_location + "/GoDrona GCS/Telemetry/new_model_A.txt";
+    QString a_params_location = real_file_location + "/GoDronaGCS/Telemetry/model_A.params";
+    QString a_checksum_location = real_file_location + "/GoDronaGCS/Telemetry/new_model_A.txt";
 
-    //qDebug()<<a_params_location;
-    //qDebug()<<a_checksum_location;
+    qDebug()<<a_params_location;
+    qDebug()<<a_checksum_location;
 
     //code_checksum_process_model_A.execute("openssl",QStringList()<< "dgst" << "-sha256" << "-out" << "/home/vasanth/firmware_load/new_model_A.txt" << "/home/vasanth/firmware_load/arducopter_param_A.params");
-    code_checksum_process_model_A.execute("openssl",QStringList()<< "dgst" << "-sha256" << "-out" << a_checksum_location << a_params_location);
+    //code_checksum_process_model_A.execute("openssl",QStringList()<< "dgst" << "-sha256" << "-out" << a_checksum_location << a_params_location);
 
     //qDebug() << "code checksum file generated with exit code";
 
     QString generated_checksum_cmd_model_A = a_checksum_location;
 
-
-    QFile file(generated_checksum_cmd_model_A);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
-
+    QFile file(a_params_location);
+    if (file.open(QIODevice::ReadOnly)) {
+        QByteArray fileData = file.readAll();
+        QByteArray hashData = QCryptographicHash::hash(fileData, QCryptographicHash::Sha256);
+        qDebug() << "hashData---->"<<hashData.toHex();
+        model_A_value1 = hashData.toHex();
     }
+//    QFile file(generated_checksum_cmd_model_A);
+//    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
 
-    QTextStream in(&file);
-    while (!file.atEnd()) {
-        QString line = in.readAll();
-        QStringList split_text = line.split( "=" );
-        QString checksum_generated_model_A = split_text.value( split_text.length()-1);
-        model_A_value1 = checksum_generated_model_A;
-        //qDebug()<< "generated checksum" << checksum_generated_model_A;
-    }
+//    }
+
+//    QTextStream in(&file);
+//    while (!file.atEnd()) {
+//        QString line = in.readAll();
+//        QStringList split_text = line.split( "=" );
+//        QString checksum_generated_model_A = split_text.value( split_text.length()-1);
+//        model_A_value1 = checksum_generated_model_A;
+//        //qDebug()<< "generated checksum" << checksum_generated_model_A;
+//    }
     checksum_calculation_process_model_A(real_file_location);
 }
 
@@ -71,21 +77,22 @@ void FirmwareUpdate::checksum_calculation_process_model_A(QString real_file_loca
 {
 
     //QString calculated_checksum_cmd_model_A = "/home/vasanth/firmware_load/model_A_checksum.txt";
-    QString calculated_checksum_cmd_model_A =  real_file_location + "/GoDrona GCS/Telemetry/model_A_checksum.txt";
-    //qDebug()<<"sdadasdf"<<calculated_checksum_cmd_model_A;
+    QString calculated_checksum_cmd_model_A =  real_file_location + "/GoDronaGCS/Telemetry/model_A_checksum.txt";
+    qDebug()<<"sdadasdf"<<calculated_checksum_cmd_model_A;
     QFile file(calculated_checksum_cmd_model_A);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
 
     }
     QTextStream in(&file);
     if(file.exists()){
-        while (!file.atEnd()) {
-            QString line1 = in.readAll();
-            QStringList split_text = line1.split( "=" );
-            QString checksum_calculated_model_A = split_text.value( split_text.length()-1);
-            model_A_value2 = checksum_calculated_model_A;
-            //qDebug()<<"existing checksum"<<checksum_calculated_model_A;
-        }
+    while (!file.atEnd()) {
+        QString line1 = in.readAll();
+        QStringList split_text = line1.split( "=" );
+        QString checksum_calculated_model_A = split_text.value( split_text.length()-1);
+        checksum_calculated_model_A = checksum_calculated_model_A.trimmed();
+        model_A_value2 = checksum_calculated_model_A;
+        qDebug()<<"existing checksum"<<checksum_calculated_model_A;
+    }
     compare_file_model_A(real_file_location);
     }
 }
@@ -136,7 +143,7 @@ void FirmwareUpdate::compare_file_model_A(QString real_file_location)
 void FirmwareUpdate::load_file_model_A(QString real_file_location)
 {
     //QString filename = "/home/vasanth/firmware_load/model_A_change.params";
-    QString filename = real_file_location + "/GoDrona GCS/Telemetry/model_A.params";;
+    QString filename = real_file_location + "/GoDronaGCS/Telemetry/model_A.params";
 
     QFile file(filename);
     if(file.exists()){
@@ -165,18 +172,9 @@ void FirmwareUpdate::checksum_generation_process_model_B(QString real_file_locat
 {
     QProcess code_checksum_process_model_B;
 
-    //QString b_params_location = "/home/vinoth1/Documents/GoDrona GCS/Telemetry/model_A.params";
-    //QString b_checksum_location = "/home/vinoth1/Documents/GoDrona GCS/Telemetry/new_model_B.txt";
-
-    //qDebug()<<b_params_location;
-    //qDebug()<<b_checksum_location;
-
-    //QString b_params_location = _toolbox->settingsManager()->appSettings()->telemetrySavePath(); //_toolbox->settingsManager()->appSettings()->telemetrySavePath() + "/model_B.params";
-    //QString b_checksum_location = _toolbox->settingsManager()->appSettings()->telemetrySavePath(); // + "/new_model_B.txt";
-
     real_file_location = real_file_location.remove("file:///");
-    QString b_params_location = real_file_location + "/GoDrona GCS/Telemetry/model_B.params";
-    QString b_checksum_location =  real_file_location + "/GoDrona GCS/Telemetry/new_model_B.txt";
+    QString b_params_location = real_file_location + "/GoDronaGCS/Telemetry/model_B.params";
+    QString b_checksum_location =  real_file_location + "/GoDronaGCS/Telemetry/new_model_B.txt";
 
     qDebug()<<b_params_location;
     qDebug()<<b_checksum_location;
@@ -186,24 +184,32 @@ void FirmwareUpdate::checksum_generation_process_model_B(QString real_file_locat
 
     //qDebug() << "code checksum file generated with exit code";
 
-    QString generated_checksum_cmd_model_B = b_checksum_location;
+    QString generated_checksum_cmd_model_B = b_checksum_location;//b_params_location + "/GoDronaGCS/Telemetry/new_model_B.txt"; //"/home/vasanth/firmware_load/new_model_B.txt";
 
-    QFile file(generated_checksum_cmd_model_B);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
-
-    }
-    QTextStream in(&file);
+    QFile file(b_params_location);
     if(file.exists()){
-        while (!file.atEnd()) {
-            QString line = in.readAll();
-            QStringList split_text = line.split( "=" );
-            QString checksum_generated_model_B = split_text.value( split_text.length()-1);
-            model_B_value1 = checksum_generated_model_B;
-            qDebug()<<checksum_generated_model_B;
-
+        if (file.open(QIODevice::ReadOnly)) {
+            QByteArray fileData = file.readAll();
+            QByteArray hashData = QCryptographicHash::hash(fileData, QCryptographicHash::Sha256);
+            qDebug() << hashData.toHex();
+            model_B_value1 = hashData.toHex();
         }
-        checksum_calculation_process_model_B(real_file_location);
+    checksum_calculation_process_model_B(real_file_location);
     }
+//    QFile file(generated_checksum_cmd_model_B);
+//    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+
+//    }
+//    QTextStream in(&file);
+//    while (!file.atEnd()) {
+//        QString line = in.readAll();
+//        QStringList split_text = line.split( "=" );
+//        QString checksum_generated_model_B = split_text.value( split_text.length()-1);
+//        model_B_value1 = checksum_generated_model_B;
+//        qDebug()<<checksum_generated_model_B;
+
+//    }
+//    checksum_calculation_process_model_B(real_file_location);
 }
 QString FirmwareUpdate::checksum_generation_model_B()
 {
@@ -221,7 +227,7 @@ void FirmwareUpdate::checksum_calculation_process_model_B(QString real_file_loca
 
     //QString calculated_checksum_cmd_model_B = "/home/vasanth/firmware_load/model_B_checksum.txt";
     //QString calculated_checksum_cmd_model_B =  _toolbox->settingsManager()->appSettings()->telemetrySavePath() + "/model_B_checksum.txt";
-    QString calculated_checksum_cmd_model_B =  real_file_location + "/GoDrona GCS/Telemetry/model_B_checksum.txt";
+    QString calculated_checksum_cmd_model_B =  real_file_location + "/GoDronaGCS/Telemetry/model_B_checksum.txt";
 
     QFile file(calculated_checksum_cmd_model_B);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
@@ -232,6 +238,7 @@ void FirmwareUpdate::checksum_calculation_process_model_B(QString real_file_loca
         QString line1 = in.readAll();
         QStringList split_text = line1.split( "=" );
         QString checksum_calculated_model_B = split_text.value( split_text.length()-1);
+        checksum_calculated_model_B = checksum_calculated_model_B.trimmed();
         model_B_value2 = checksum_calculated_model_B;
         //qDebug()<<checksum_calculated_model_B;
     }
@@ -286,7 +293,7 @@ void FirmwareUpdate::load_file_model_B(QString real_file_location)
 {
     //QString filename = "/home/vasanth/firmware_load/model_B_change.params";
     //QString filename = _toolbox->settingsManager()->appSettings()->telemetrySavePath() + "/model_B.params";;
-    QString filename = real_file_location + "/GoDrona GCS/Telemetry/model_B.params";;
+    QString filename = real_file_location + "/GoDronaGCS/Telemetry/model_B.params";
 
     QFile file(filename);
     model_B_firmware_load =filename;

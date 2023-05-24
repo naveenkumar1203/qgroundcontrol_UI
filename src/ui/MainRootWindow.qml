@@ -178,7 +178,7 @@ ApplicationWindow {
 
                                                          style: TableViewStyle {
                                                             headerDelegate: Rectangle {
-                                                                height: textItem.implicitHeight * 2
+                                                                height: textItem.implicitHeight * 2.5
                                                                 width: textItem.implicitWidth
                                                                  color: "#031C28"
                                                                  border.width: 1
@@ -187,8 +187,8 @@ ApplicationWindow {
                                                                     id: textItem
                                                                     anchors.centerIn: parent
                                                                     text: styleData.value
-                                                                    //font.pixelSize: 15
-                                                                    font.pointSize: ScreenTools.smallFontPointSize
+                                                                    font.pointSize: 15
+                                                                    //font.pointSize: ScreenTools.smallFontPointSize
                                                                     font.bold:true
                                                                     elide: Text.ElideRight
                                                                     color: '#F25822'
@@ -196,18 +196,21 @@ ApplicationWindow {
                                                                 }
                                                             }
                                                         }
-                                                         itemDelegate: Rectangle {
+                                                         Delegate: Rectangle {
+                                                             height: text_body_item.implicitHeight * 4
+                                                             width: text_body_item.implicitWdith
                                                              anchors.fill:parent
                                                              color: "#031C28"
                                                              border.width: 1
                                                              border.color: "#05324D"
                                                              Text {
+                                                                id: text_body_item
                                                                  //anchors.horizontalCenter: parent.horizontalCenter
                                                                  anchors.centerIn:parent
                                                                  color: "white"
                                                                  text: styleData.value
-                                                                 //font.pixelSize: 15
-                                                                 font.pointSize: ScreenTools.smallFontPointSize
+                                                                 font.pointSize : 12
+                                                                 //font.pointSize: ScreenTools.smallFontPointSize
                                                              }
                                                          }
                                                          TableViewColumn {

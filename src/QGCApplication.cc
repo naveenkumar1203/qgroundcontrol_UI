@@ -259,19 +259,19 @@ QGCApplication::QGCApplication(int &argc, char* argv[], bool unitTesting)
     connect(&_missingParamsDelayedDisplayTimer, &QTimer::timeout, this, &QGCApplication::_missingParamsDisplay);
 
     // Set application information
-    QString applicationName = "GoDrona GCS";
+    QString applicationName = "GoDronaGCS";
     if (_runningUnitTests) {
         // We don't want unit tests to use the same QSettings space as the normal app. So we tweak the app
         // name. Also we want to run unit tests with clean settings every time.
-        applicationName = QStringLiteral("GoDrona GCS"); //QStringLiteral("%1_unittest").arg(QGC_APPLICATION_NAME);
+        applicationName = QStringLiteral("GoDronaGCS"); //QStringLiteral("%1_unittest").arg(QGC_APPLICATION_NAME);
     } else {
 #ifdef DAILY_BUILD
         // This gives daily builds their own separate settings space. Allowing you to use daily and stable builds
         // side by side without daily screwing up your stable settings.
         //applicationName = QStringLiteral("%1 Daily").arg(QGC_APPLICATION_NAME);
-        applicationName = QStringLiteral("GoDrona GCS");
+        applicationName = QStringLiteral("GoDronaGCS");
 #else
-        applicationName = QStringLiteral("GoDrona GCS"); //QGC_APPLICATION_NAME;
+        applicationName = QStringLiteral("GoDronaGCS"); //QGC_APPLICATION_NAME;
 #endif
     }
     setApplicationName(applicationName);
