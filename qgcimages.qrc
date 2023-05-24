@@ -221,6 +221,6 @@
         <file alias="drone.png">resources/drone.png</file>
         <file alias="drone_1.png">resources/drone_1.png</file>
         <file alias="upgrade.png">resources/upgrade.png</file>
-        <file alias="roi.svg">src/FlightMap/Images/roi.svg</file>
+        <file alias="roi_1.svg">src/FlightMap/Images/roi_1.svg</file>
     </qresource>
 </RCC>
