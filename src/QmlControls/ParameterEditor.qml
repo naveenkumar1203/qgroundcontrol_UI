@@ -101,12 +101,15 @@ Item{
                             rpadatabase.modelSelected(checkBoxNumber)
                             console.log("model is selected")
                             console.log(checkBoxNumber)
-                            checkBoxState = 0
+                            //checkBoxState = 0
 
                         }
                         else{
                             console.log("no checkboxstate")
                         }
+            flightView.visible = true
+            toolbar.visible =true
+            landing_page_rectangle.visible = false
 
         }
     }
@@ -150,20 +153,20 @@ Item{
         }
         onFirmware_load_model_AChanged:{
             if (controller.buildDiffFromFile(firmware_load1.firmware_load_model_A)) {
-                mainWindow.showPopupDialogFromComponent(parameterDiffDialog)
+//                mainWindow.showPopupDialogFromComponent(parameterDiffDialog)
                 console.log("mainroot" + firmware_load1.firmware_load_model_A)
-                flightView.visible = true
-                toolbar.visible =true
-                landing_page_rectangle.visible = false
+//                flightView.visible = true
+//                toolbar.visible =true
+//                landing_page_rectangle.visible = false
             }
         }
         onFirmware_load_model_BChanged:{
             if (controller.buildDiffFromFile(firmware_load1.firmware_load_model_B)) {
-                mainWindow.showPopupDialogFromComponent(parameterDiffDialog)
+//                mainWindow.showPopupDialogFromComponent(parameterDiffDialog)
                 console.log("mainroot" + firmware_load1.firmware_load_model_B)
-                flightView.visible = true
-                toolbar.visible =true
-                landing_page_rectangle.visible = false
+//                flightView.visible = true
+//                toolbar.visible =true
+//                landing_page_rectangle.visible = false
 
             }
         }

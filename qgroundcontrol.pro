@@ -270,7 +270,7 @@ QT += \
     serialport
 
 
-QT += androidextras
+#QT += androidextras
 
 #LIBS += $$ANDROID_SDK_ROOT/android_openssl/latest/arm/libssl_1_1.so
 #LIBS += $$ANDROID_SDK_ROOT/android_openssl/latest/arm/libcrypto_1_1.so

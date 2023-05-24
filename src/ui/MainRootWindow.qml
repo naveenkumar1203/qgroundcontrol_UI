@@ -89,6 +89,7 @@ ApplicationWindow {
             flight_log_button.color = "#031C28"
             logout_button.color = "#031C28"
             firmware_button.color = "#031C28"
+            profile_button.color = "#031C28"
         }
         onEmailNotFound:{
             no_recordDialog.open()
@@ -2128,11 +2129,14 @@ ApplicationWindow {
         standardButtons: Dialog.Yes | Dialog.No
         onYes: {
             landing_page_rectangle.visible = false
+            flightView.visible = false
+            planView.visible = false
             login_page_rectangle.visible = true
             login_page_email_textfield.text = ""
             login_page_password_textfield.text = ""
             password_hide_image.visible = true
             password_show_image.visible = false
+
         }
         onNo: {
             landing_page_rectangle.visible = true
@@ -2893,8 +2897,6 @@ ApplicationWindow {
                 Layout.maximumWidth: mainWindow.width/5 + 100
                 Layout.minimumWidth: mainWindow.width/5 - 100
                 Layout.preferredHeight: mainWindow.height
-//                border.width: 1
-//                border.color: "#05324D"
 
                 ColumnLayout {
                     id: menu_column
@@ -2911,9 +2913,9 @@ ApplicationWindow {
                             id: brand_text
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.right: brand_rect.right
-                            anchors.rightMargin: 40
-                            text: qsTr("Go Drona")
-                            font.pointSize:ScreenTools.defaultFontPointSize * 1.3
+                            anchors.rightMargin: 20
+                            text: qsTr("GoDrona GCS")
+                            font.pointSize:ScreenTools.defaultFontPointSize * 1.1
                             font.bold: true
                             color: "white"
                         }
@@ -2922,7 +2924,7 @@ ApplicationWindow {
                             width: 120
                             height: 120
                             anchors.left: brand_rect.left
-                            anchors.leftMargin:40
+                            anchors.leftMargin:30
                             anchors.verticalCenter: parent.verticalCenter
                             color: "#031C28"
                             Image {
@@ -3010,15 +3012,18 @@ ApplicationWindow {
                             onClicked: {
                                 checkBoxState = 0
                                 dashboard_rectangle.visible = true
+                                users_profile_header1.visible = true
                                 logout_button.color = "#031C28"
                                 dashboard_button.color ="#F25822" || "#031C28"
                                 managerpa_button.color = "#031C28"
                                 flight_log_button.color = "#031C28"
                                 firmware_button.color = "#031C28"
+                                profile_button.color = "#031C28"
                                 manage_rpa_rectangle.visible = false
                                 flight_log_rectangle.visible = false
                                 rpa_register_page.visible = false
                                 firmware_log_rectangle.visible = false
+                                users_information_header1.visible = false
                             }
                         }
 
@@ -3056,13 +3061,16 @@ ApplicationWindow {
                                 checkBoxState = 0
                                 rpadatabase.manageRpaClicked(database_access.mail)
                                 manage_rpa_rectangle.visible = true
+                                users_profile_header1.visible = true
                                 dashboard_rectangle.visible = false
                                 flight_log_rectangle.visible = false
                                 firmware_log_rectangle.visible = false
+                                users_information_header1.visible = false
                                 logout_button.color = "#031C28"
                                 dashboard_button.color = "#031C28"
                                 flight_log_button.color = "#031C28"
                                 firmware_button.color = "#031C28"
+                                profile_button.color = "#031C28"
                                 managerpa_button.color = "#F25822"
                                 manage_rpa_header1.visible = true
                                 showPanel(this,"SetupParameterEditor.qml")
@@ -3242,18 +3250,17 @@ ApplicationWindow {
                                 rpadatabase.read_text_file(database_access.mail,QGroundControl.settingsManager.appSettings.telemetrySavePath)
                                 flight_log_button.color = "#F25822"
                                 flight_log_rectangle.visible = true
+                                users_profile_header1.visible = true
                                 manage_rpa_rectangle.visible = false
                                 dashboard_rectangle.visible = false
                                 rpa_register_page.visible = false
                                 firmware_log_rectangle.visible = false
+                                users_information_header1.visible = false
                                 logout_button.color = "#031C28"
                                 managerpa_button.color = "#031C28"
                                 dashboard_button.color = "#031C28"
                                 firmware_button.color = "#031C28"
-                                console.log(screen.width)
-                                console.log(screen.width/5)
-                                console.log(screen.width/1.8)
-                                console.log((screen.width/1.8 - screen.width/5))
+                                profile_button.color = "#031C28"
                             }
                         }
                     }
@@ -3290,15 +3297,18 @@ ApplicationWindow {
                                 checkBoxState = 0
                                 firmware_button.color = "#F25822"
                                 firmware_log_rectangle.visible = true
+                                users_profile_header1.visible = true
                                 flight_log_rectangle.visible = false
                                 manage_rpa_rectangle.visible = false
                                 dashboard_rectangle.visible = false
                                 rpa_register_page.visible = false
+                                users_information_header1.visible = false
+                                flight_log_rectangle.visible = false
                                 logout_button.color = "#031C28"
                                 managerpa_button.color = "#031C28"
                                 dashboard_button.color = "#031C28"
                                 flight_log_button.color = "#031C28"
-                                flight_log_rectangle.visible = false
+                                profile_button.color = "#031C28"
                                 rpadatabase.firmwareupgrade_data()
                             }
                         }
@@ -3344,7 +3354,22 @@ ApplicationWindow {
                         MouseArea{
                             anchors.fill: profile_button
                             onClicked: {
-
+                                checkBoxState = 0
+                                profile_button.color = "#F25822"
+                                logout_button.color = "#031C28"
+                                managerpa_button.color = "#031C28"
+                                dashboard_button.color = "#031C28"
+                                firmware_button.color = "#031C28"
+                                flight_log_button.color = "#031C28"
+                                users_profile_header1.visible = false
+                                users_information_header1.visible = true
+                                userprofile_name.text = database_access.name
+                                address_field.activeFocus = true
+                                locality_field.activeFocus = true
+                                mail_address.text = database_access.mail
+                                mobile_number.text = database_access.number
+                                address_field.text = database_access.address
+                                locality_field.text = database_access.locality
                             }
                         }
                     }
@@ -3416,6 +3441,7 @@ ApplicationWindow {
                                 managerpa_button.color = "#031C28"
                                 flight_log_button.color = "#031C28"
                                 firmware_button.color = "#031C28"
+                                profile_button.color = "#031C28"
 
 
                             }
@@ -3794,7 +3820,7 @@ ApplicationWindow {
                                 color: "transparent"
                                 Text {
                                     anchors.centerIn: parent
-                                    text: "@2023 GoDrona | All Rights Reserved"
+                                    text: "@2023 Go Drona | All Rights Reserved"
                                     font.pointSize: ScreenTools.smallFontPointSize
                                     color: "White"
                                 }
@@ -3987,7 +4013,7 @@ ApplicationWindow {
                                color: "transparent"
                                Text {
                                    anchors.centerIn: parent
-                                   text: "@2023 GoDrona | All Rights Reserved"
+                                   text: "@2023 Go Drona | All Rights Reserved"
                                    font.pointSize: ScreenTools.smallFontPointSize
                                    color: "White"
                                }
@@ -4572,7 +4598,7 @@ ApplicationWindow {
                             color: "transparent"
                             Text {
                                 anchors.centerIn: parent
-                                text: "@2023 GoDrona | All Rights Reserved"
+                                text: "@2023 Go Drona | All Rights Reserved"
                                 font.pointSize:ScreenTools.smallFontPointSize
                                 color: "White"
                             }
@@ -4776,7 +4802,7 @@ ApplicationWindow {
                                 color: "transparent"
                                 Text {
                                     anchors.centerIn: parent
-                                    text: "@2023 GoDrona | All Rights Reserved"
+                                    text: "@2023 Go Drona | All Rights Reserved"
                                     font.pointSize: ScreenTools.smallFontPointSize
                                     color: "White"
                                 }
@@ -4886,7 +4912,7 @@ ApplicationWindow {
                                 color: "transparent"
                                 Text {
                                     anchors.centerIn: parent
-                                    text: "@2023 GoDrona | All Rights Reserved"
+                                    text: "@2023 Go Drona | All Rights Reserved"
                                     font.pointSize: ScreenTools.smallFontPointSize
                                     color: "White"
                                 }
@@ -5045,47 +5071,47 @@ ApplicationWindow {
                         border.width: 1
                         border.color: "#05324D"
 
-                        Rectangle {
-                            id: go_to_profile
-                            anchors.right: parent.right
-                            anchors.rightMargin: 25
-                            anchors.top: parent.top
-                            anchors.topMargin: 10
-                            color: "#05324D"
-                            border.color: "#F25822"
-                            border.width: 0.5
-                            width: mainWindow.width/11
-                            height: mainWindow.height/17
-                            radius: 3
-                            Text {
-                                text: "Your Profile"
-                                color: "#FFFFFF"
-                                font.pointSize:ScreenTools.smallFontPointSize
-                                font.bold: true
-                                anchors.centerIn: parent
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                            MouseArea{
-                                anchors.fill: go_to_profile
-                                onClicked: {
-                                    users_profile_header1.visible = false
-                                    users_information_header1.visible = true
-                                    userprofile_name.text = database_access.name
-                                    address_field.activeFocus = true
-                                    locality_field.activeFocus = true
-                                    mail_address.text = database_access.mail
-                                    mobile_number.text = database_access.number
-                                    address_field.text = database_access.address
-                                    locality_field.text = database_access.locality
-                                }
-                                onPressed: {
-                                    go_to_profile.color = "#F25822"
-                                }
-                                onReleased: {
-                                    go_to_profile.color = "#05324D"
-                                }
-                            }
-                        }
+//                        Rectangle {
+//                            id: go_to_profile
+//                            anchors.right: parent.right
+//                            anchors.rightMargin: 25
+//                            anchors.top: parent.top
+//                            anchors.topMargin: 10
+//                            color: "#05324D"
+//                            border.color: "#F25822"
+//                            border.width: 0.5
+//                            width: mainWindow.width/11
+//                            height: mainWindow.height/17
+//                            radius: 3
+//                            Text {
+//                                text: "Your Profile"
+//                                color: "#FFFFFF"
+//                                font.pointSize:ScreenTools.smallFontPointSize
+//                                font.bold: true
+//                                anchors.centerIn: parent
+//                                anchors.verticalCenter: parent.verticalCenter
+//                            }
+//                            MouseArea{
+//                                anchors.fill: go_to_profile
+//                                onClicked: {
+//                                    users_profile_header1.visible = false
+//                                    users_information_header1.visible = true
+//                                    userprofile_name.text = database_access.name
+//                                    address_field.activeFocus = true
+//                                    locality_field.activeFocus = true
+//                                    mail_address.text = database_access.mail
+//                                    mobile_number.text = database_access.number
+//                                    address_field.text = database_access.address
+//                                    locality_field.text = database_access.locality
+//                                }
+//                                onPressed: {
+//                                    go_to_profile.color = "#F25822"
+//                                }
+//                                onReleased: {
+//                                    go_to_profile.color = "#05324D"
+//                                }
+//                            }
+//                        }
 
                         Column{
                             spacing: 30
@@ -5281,7 +5307,7 @@ ApplicationWindow {
                             anchors.right: users_information_header1.right
                             anchors.rightMargin: 220
                             anchors.bottom: users_information_header1.bottom
-                            anchors.bottomMargin: 80
+                            anchors.bottomMargin: 220
                             color: "#05324D"
                             radius: 4
                             border.width: 1
@@ -5334,7 +5360,7 @@ ApplicationWindow {
                             anchors.left: update_profile.right
                             anchors.leftMargin: 20
                             anchors.bottom: users_information_header1.bottom
-                            anchors.bottomMargin: 80
+                            anchors.bottomMargin: 220
                             color: "#05324D"
                             radius: 4
                             border.width: 1
