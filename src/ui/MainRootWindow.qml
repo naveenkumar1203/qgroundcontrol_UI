@@ -196,7 +196,7 @@ ApplicationWindow {
                                                                 }
                                                             }
                                                         }
-                                                         Delegate: Rectangle {
+                                                         itemDelegate: Rectangle {
                                                              height: text_body_item.implicitHeight * 4
                                                              width: text_body_item.implicitWdith
                                                              anchors.fill:parent
@@ -1496,6 +1496,7 @@ ApplicationWindow {
                             anchors.fill: user_image
                             width: 75
                             height: 75
+                            visible: true
                             source: image_file_dialog.fileUrl
                             fillMode: Image.PreserveAspectCrop
                             layer.enabled: true
@@ -2093,6 +2094,7 @@ ApplicationWindow {
                                 user_password_text.text = ''
                                 user_image.color = "white"
                                 user_profile_image.source == ""
+                                user_profile_image.visible = false
                             }
                         }
                     }
@@ -2149,6 +2151,7 @@ ApplicationWindow {
         nameFilters: [ "(*.jpg)"]
         selectMultiple: false
         onAccepted: {
+            user_profile_image.visible = true
             var filePath = fileUrl.toString().replace("file:///", "")
             image_upload = filePath;
             console.log("You chose: " + image_file_dialog.fileUrls)

@@ -43,18 +43,18 @@ Item{
     TableModel{
         id: rpadatabase
 
-//        onModelChanged:{
-//                if(rpadatabase.model == "Model A"){
-//                    console.log("model a is selected")
-//                    firmware_load1.checksum_generation_process_model_A(file_Dialog.shortcuts.documents)
-//                }
-//                else if(rpadatabase.model == "Model B"){
-//                    console.log("model b is selected")
-//                    firmware_load1.checksum_generation_process_model_B(file_Dialog.shortcuts.documents)
-//                }
+        onModelChanged:{
+                if(rpadatabase.model == "Model A"){
+                    console.log("model a is selected")
+                    firmware_load1.checksum_generation_process_model_A(file_Dialog.shortcuts.documents)
+                }
+                else if(rpadatabase.model == "Model B"){
+                    console.log("model b is selected")
+                    firmware_load1.checksum_generation_process_model_B(file_Dialog.shortcuts.documents)
+                }
 
 
-//        }
+        }
     }
 
     FileDialog{
@@ -96,24 +96,24 @@ Item{
                         }
                         else if(checkBoxState === 1){
                             rpadatabase.modelSelected(checkBoxNumber)
-                            if(rpadatabase.model == "Model A"){
-                                console.log("selected model A")
-                                model_a_dialog.open()
-                                flightView.visible = true
-                                toolbar.visible =true
-                                landing_page_rectangle.visible = false
-                            }
-                            if(rpadatabase.model == "Model B"){
-                                console.log("selected model B")
-                                model_b_dialog.open()
-                                flightView.visible = true
-                                toolbar.visible =true
-                                landing_page_rectangle.visible = false
-                            }
+//                            if(rpadatabase.model == "Model A"){
+//                                console.log("selected model A")
+//                                model_a_dialog.open()
+//                                flightView.visible = true
+//                                toolbar.visible =true
+//                                landing_page_rectangle.visible = false
+//                            }
+//                            if(rpadatabase.model == "Model B"){
+//                                console.log("selected model B")
+//                                model_b_dialog.open()
+//                                flightView.visible = true
+//                                toolbar.visible =true
+//                                landing_page_rectangle.visible = false
+//                            }
 
                             console.log("model is selected")
                             console.log(checkBoxNumber)
-                           // checkBoxState = 0
+                            //checkBoxState = 0
 //                            if(rpadatabase.model == "Model A"){
 //                                console.log("model a is selected")
 //                                firmware_load1.checksum_generation_process_model_A()
@@ -183,23 +183,23 @@ Item{
 
         }
     }
+    MessageDialog {
+        id: select_the_modelDialog
+        title: "Model not Selected"
+        text: "You have to select the model before you fly."
+    }
+
 //    MessageDialog {
-//        id: select_the_modelDialog
-//        title: "Model not Selected"
-//        text: "You have to select the model before you fly."
+//        id: model_a_dialog
+//        title: "Model Selected"
+//        text: "The checksum matches. Please continue"
 //    }
 
-    MessageDialog {
-        id: model_a_dialog
-        title: "Model Selected"
-        text: "The checksum matches. Please continue"
-    }
-
-    MessageDialog {
-        id: model_b_dialog
-        title: "Model Selected"
-        text: "The checksum matches. Please continue"
-    }
+//    MessageDialog {
+//        id: model_b_dialog
+//        title: "Model Selected"
+//        text: "The checksum matches. Please continue"
+//    }
 
 
     FirmwareUpdate{
