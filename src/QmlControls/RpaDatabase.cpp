@@ -318,13 +318,10 @@ void TableModel::list_function(const QString &firebase_folder_name)
         for (const QJsonValue& item : items) {
             QString name = item.toObject()["name"].toString();
             if (name.endsWith(".csv")) {
-                //qDebug()<<"total file name" << name;
                 QString file_name = firebase_folder_name + "/";
                 QString user_file = name;
                 user_file = user_file.remove(file_name);
-                //qDebug()<<"file name"<<user_file;
                 m_filename << user_file;
-                //qDebug()<<"list contents"<<user_file;
                 QString filepath = "QGroundControl.settingsManager.appSettings.telemetrySavePath" + user + "/.txt";
                 QFile file(filepath);
                 file.open(QIODevice::WriteOnly | QIODevice::ReadOnly | QIODevice::Text |QIODevice::Append);
@@ -340,12 +337,9 @@ void TableModel::read_text_file(QString user_text_file_name, QString user_text_f
 {
     QString user_file = user_text_file_name;
     int pos = user_file.lastIndexOf("@");
-    //qDebug() << user_mail.left(pos);
     user_file = user_file.left(pos);
 
     QString filepath = user_text_file_folder + "/" + user_file + ".txt";
-
-    //qDebug()<<"file to read" << filepath;
 
     m_filename.clear();
     QString link = "https://firebasestorage.googleapis.com/v0/b/" + _projectID + ".appspot.com/o?prefix=" + user_file + "/";
@@ -355,7 +349,6 @@ void TableModel::read_text_file(QString user_text_file_name, QString user_text_f
     QNetworkReply *reply;
     reply = m_networkAccessManager->get(request);
     connect(reply,&QNetworkReply::finished,[reply,user_file, filepath, this](){
-        //qDebug()<<"list is " <<reply->readAll();
         QByteArray response = reply->readAll();
         QJsonDocument doc = QJsonDocument::fromJson(response);
         QJsonObject object = doc.object();
@@ -363,7 +356,6 @@ void TableModel::read_text_file(QString user_text_file_name, QString user_text_f
         for (const QJsonValue& item : items) {
             QString name = item.toObject()["name"].toString();
             if (name.endsWith(".csv")) {
-                //qDebug()<<"total files present" << name;
                 QString file_name = user_file + "/";
                 QString user_file = name;
                 user_file = user_file.remove(file_name);
@@ -380,34 +372,6 @@ void TableModel::read_text_file(QString user_text_file_name, QString user_text_f
     });
 }
 
-//void TableModel::download_function(const QString &file_name, const QString &firebase_folder_name, QString local_pc_location)
-//{
-//    QString user_file = firebase_folder_name;
-//    int pos = user_file.lastIndexOf("@");
-//    user_file = user_file.left(pos);
-//    qDebug() << user_file.left(pos);
-
-//    QString user_download_location = local_pc_location + ".csv";
-//    QNetworkRequest request;
-
-//    QString link = "https://firebasestorage.googleapis.com/v0/b/" + _projectID + ".appspot.com/o/" + user_file + "%2F" + file_name + "?alt=media";
-//    request.setUrl(QUrl(link));
-//    request.setHeader(QNetworkRequest::ContentTypeHeader,"text/csv");
-//    request.setRawHeader("Authorization","Bearer");
-
-//    QNetworkReply *response1 = m_networkAccessManager->get(QNetworkRequest(QUrl(QString::fromStdString(link.toStdString()))));
-//    connect(response1,&QNetworkReply::finished,[response1, local_pc_location, user_download_location](){
-//    QByteArray data = response1->readAll();
-//        QFile file(user_download_location);
-//        if (!file.open(QIODevice::WriteOnly)) {
-//            // handle error
-//        }
-//        file.write(data);
-//        file.close();
-//    });
-//}
-
-
 void TableModel::download_function(const QString &file_name, const QString &firebase_folder_name, QString local_pc_location)
 {
     QString user_file = firebase_folder_name;
@@ -415,42 +379,25 @@ void TableModel::download_function(const QString &file_name, const QString &fire
     user_file = user_file.left(pos);
     qDebug() << user_file.left(pos);
 
-    QString additional_location = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/output.csv";
-
-    QString user_download_location = additional_location + ".csv";
+    QString user_download_location = local_pc_location + ".csv";
+    QNetworkRequest request;
 
     QString link = "https://firebasestorage.googleapis.com/v0/b/" + _projectID + ".appspot.com/o/" + user_file + "%2F" + file_name + "?alt=media";
-    qDebug() << "link is" << link;
-
-    QNetworkRequest request;
     request.setUrl(QUrl(link));
+    request.setHeader(QNetworkRequest::ContentTypeHeader,"text/csv");
+    request.setRawHeader("Authorization","Bearer");
 
-    QNetworkReply *reply = m_networkAccessManager->get(request);
-    QEventLoop eventLoop;
-    QObject::connect(reply, &QNetworkReply::finished, &eventLoop, &QEventLoop::quit);
-    eventLoop.exec();
-
-    if (reply->error() == QNetworkReply::NoError) {
-        QByteArray data = reply->readAll();
-
+    QNetworkReply *response1 = m_networkAccessManager->get(QNetworkRequest(QUrl(QString::fromStdString(link.toStdString()))));
+    connect(response1,&QNetworkReply::finished,[response1, local_pc_location, user_download_location](){
+    QByteArray data = response1->readAll();
         QFile file(user_download_location);
-        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            QTextCodec *codec = QTextCodec::codecForName("UTF-8");
-            QTextStream stream(&file);
-            stream.setCodec(codec);
-            stream << data;
-            file.close();
-            qDebug() << "File saved successfully.";
-        } else {
-            qDebug() << "File save error:" << file.errorString();
+        if (!file.open(QIODevice::WriteOnly)) {
+            // handle error
         }
-    } else {
-        qDebug() << "Download error:" << reply->errorString();
-    }
-
-    reply->deleteLater();
+        file.write(data);
+        file.close();
+    });
 }
-
 
 
 

@@ -684,7 +684,6 @@ Item {
                     ToolStripAction {
                         id:                 addWaypointRallyPointAction
                         text:               _editingLayer == _layerRallyPoints ? qsTr("RALLY POINT") : qsTr("WAYPOINT")
-                        //iconSource:         "/qmlimages/MapAddMission.svg"
                         iconSource:         "/qmlimages/MapAddMission_1.svg"
                         enabled:            toolStrip._isRallyLayer ? true : _missionController.flyThroughCommandsAllowed
                         visible:            toolStrip._isRallyLayer || toolStrip._isMissionLayer
@@ -692,8 +691,7 @@ Item {
                     },
                     ToolStripAction {
                         text:               _missionController.isROIActive ? qsTr("CANCEL ROI") : qsTr("ROI")
-                        //iconSource:         "/qmlimages/MapAddMission.svg"
-                        iconSource:         "/qmlimages/MapAddMission_1.svg"
+                        iconSource:         "/qmlimages/roi.svg"
                         enabled:            !_missionController.onlyInsertTakeoffValid
                         visible:            toolStrip._isMissionLayer && _planMasterController.controllerVehicle.roiModeSupported
                         checkable:          !_missionController.isROIActive
@@ -709,7 +707,6 @@ Item {
                     },
                     ToolStripAction {
                         text:               _singleComplexItem ? _missionController.complexMissionItemNames[0] : qsTr("PATTERN")
-                        //iconSource:         "/qmlimages/MapDrawShape.svg"
                         iconSource:         "/qmlimages/MapDrawShape_1.svg"
                         enabled:            _missionController.flyThroughCommandsAllowed
                         visible:            toolStrip._isMissionLayer

@@ -1410,33 +1410,29 @@ ApplicationWindow {
                         clip: true
                         anchors.horizontalCenter: parent.horizontalCenter
                         Image{
-                            id: user_profile_image
                             anchors.fill: user_image
                             anchors.verticalCenter: parent.verticalCenter
                             source: "/res/user_photo.png"
+
+                        }
+                        Image{
+                            id:user_profile_image
+                            anchors.fill: user_image
+                            width: 75
+                            height: 75
+                            visible: true
+                            source: image_file_dialog.fileUrl
                             fillMode: Image.PreserveAspectCrop
                             layer.enabled: true
                             layer.effect: OpacityMask {
                                 maskSource: user_image
                             }
                         }
-//                        Image{
-//                            id:user_profile_image
-//                            anchors.fill: user_image
-//                            width: 75
-//                            height: 75
-//                            source: image_file_dialog.fileUrl
-//                            fillMode: Image.PreserveAspectCrop
-//                            layer.enabled: true
-//                            layer.effect: OpacityMask {
-//                                maskSource: user_image
-//                            }
-//                        }
                         MouseArea{
                             anchors.fill: parent
                             onClicked: {
                                 image_file_dialog.open()
-                                user_profile_image.source = image_file_dialog.fileUrl
+                                //user_profile_image.source = image_file_dialog.fileUrl
                             }
                         }
                     }
@@ -2012,6 +2008,8 @@ ApplicationWindow {
                                 user_locality_text.text = ''
                                 user_password_text.text = ''
                                 user_image.color = "white"
+                                user_profile_image.source == ""
+                                user_profile_image.visible = false
                             }
                         }
                     }
@@ -2067,6 +2065,7 @@ ApplicationWindow {
         nameFilters: [ "(*.jpg)"]
         selectMultiple: false
         onAccepted: {
+            user_profile_image.visible = true
             var filePath = fileUrl.toString().replace("file://", "")
             image_upload = filePath;
             console.log("You chose: " + image_file_dialog.fileUrls)

@@ -47,7 +47,8 @@ public:
     Q_INVOKABLE void firmwareupgrade_data();
     Q_INVOKABLE void image_function(const QString &file_name, const QString &firebase_folder_name);
     Q_INVOKABLE void upload_function(const QString &firebase_file_name, const QString &firebase_folder_name,const QString &folder_location);
-    Q_INVOKABLE void download_function(const QString &file_name, const QString &firebase_folder_name, QString local_pc_location);
+   // Q_INVOKABLE void download_function(const QString &file_name, const QString &firebase_folder_name, QString local_pc_location);
+    Q_INVOKABLE void download_function(const QString &file_name, const QString &firebase_folder_name, const QString &local_pc_location);
     Q_INVOKABLE void read_text_file(QString user_text_file_name,QString user_text_file_folder);
 
     Q_PROPERTY(QStringList filename READ filename WRITE setFileName NOTIFY filenameChanged)
