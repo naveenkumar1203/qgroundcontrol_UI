@@ -129,244 +129,244 @@ ApplicationWindow {
     }
 
     TableModel{
-            property int i : 0
-            property var oldTableObject: null
-            id: rpadatabase
-            onUinFound:{
-                console.log("uin found")
-                uinrecord_Dialog.open()
-            }
-            onUinNotFound:{
-                console.log("uin not found")
-                rpadatabase.add_rpa(drone_type_list.currentText,drone_model_list.currentText,drone_name_text.text,uin_input_text.text)
-                i = 1
-            }
-
-            onDataAdded: {
-                if(i == 1){
-                    rpadatabase.getData()
-                }
-
-                console.log("table is shown")
-                rpa_register_page.visible =  false
-                manage_rpa_header1.visible = true
-                drone_type_list.currentIndex = -1
-                drone_model_list.currentIndex = -1
-                drone_name_text.text = ""
-                uin_input_text.text = ""
-
-                if (oldTableObject !== null) {
-                    oldTableObject.destroy()
-                    oldTableObject = null
-                }
-
-                const newObject = Qt.createQmlObject(`
-                                                     import QtQuick 2.0
-                                                     import QtQuick.Controls 1.5
-                                                     import QtQuick.Controls.Styles 1.2
-                                                     import QtQuick.Controls.Styles 1.4
-                                                     import QtQuick.Controls 2.15
-                                                     TableView {
-                                                         id: table
-                                                         anchors.fill: parent
-                                                         clip:true
-                                                         //width: parent.width
-                                                         //height: parent.height
-                                                         anchors.top: table_rect.top
-                                                         backgroundVisible: false
-                                                         model:  rpadatabase
-                                                         style: TableViewStyle {
-                                                            headerDelegate: Rectangle {
-                                                                height: textItem.implicitHeight * 2
-                                                                width: textItem.implicitWidth
-                                                                 color: "#031C28"
-                                                                 border.width: 1
-                                                                 border.color: "#05324D"
-                                                                Text {
-                                                                    id: textItem
-                                                                    anchors.centerIn: parent
-                                                                    text: styleData.value
-                                                                    //font.pixelSize: 15
-                                                                    font.pointSize: ScreenTools.smallFontPointSize
-                                                                    font.bold:true
-                                                                    elide: Text.ElideRight
-                                                                    color: '#F25822'
-                                                                    renderType: Text.NativeRendering
-                                                                }
-                                                            }
-                                                        }
-                                                         itemDelegate: Rectangle {
-                                                             anchors.fill:parent
-                                                             color: "#031C28"
-                                                             border.width: 1
-                                                             border.color: "#05324D"
-                                                             Text {
-                                                                 //anchors.horizontalCenter: parent.horizontalCenter
-                                                                 anchors.centerIn:parent
-                                                                 color: "white"
-                                                                 text: styleData.value
-                                                                 //font.pixelSize: 15
-                                                                 font.pointSize: ScreenTools.smallFontPointSize
-                                                             }
-                                                         }
-                                                         TableViewColumn {
-                                                             id: checkbox
-                                                             width: parent.width / 8
-                                                             title: "Select"
-                                                             movable: false
-                                                             resizable: false
-                                                             role: "checkbox"
-                                                             delegate: Rectangle{
-                                                                 color: "#031C28"
-                                                                 border.width: 1
-                                                                 border.color:"#05324D"
-                                                                 CheckBox {
-                                                                    id: delegate_checkbox
-                                                                    anchors.centerIn: parent
-                                                                    checked: false
-                                                                    indicator: Rectangle{
-                                                                        implicitWidth: 30
-                                                                        implicitHeight: 30
-                                                                        radius: 2
-                                                                        color: "#031C28"
-                                                                        border.width:0.5
-                                                                        border.color: "#F25822"
-                                                                        anchors.centerIn: parent
-                                                                        Rectangle {
-                                                                            //visible: check_box.checked
-                                                                            color: delegate_checkbox.checked ? "#F25822" : "#031C28"
-                                                                            radius: 1
-                                                                            anchors.margins: 2
-                                                                            anchors.fill: parent
-                                                                        }
-                                                                    }
-                                                                     onCheckedChanged: {
-                                                                        if(delegate_checkbox.checked == true){
-                                                                            checkBoxState = 1
-                                                                            checkBoxNumber = model.index
-                                                                            ButtonGroup.group = mainWindow.group
-                                                                         }
-//                                                                         else{
-//                                                                            checkBoxState = 0
-//                                                                         }
-                                                                    }
-                                                                 }
-                                                             }
-                                                         }
-                                                         TableViewColumn {
-                                                             width: (parent.width - checkbox.width)/4
-                                                             id: type_column
-                                                             title: "Type"
-                                                             movable: false
-                                                             resizable: false
-                                                             role: "type"
-                                                         }
-                                                         TableViewColumn{
-                                                             width: (parent.width - checkbox.width)/4
-                                                             role: "model_name"
-                                                             title: "ModelName"
-                                                             movable: false
-                                                             resizable: false
-                                                         }
-                                                         TableViewColumn{
-                                                             width: (parent.width - checkbox.width)/4
-                                                             role: "drone_name"
-                                                             title: "DroneName"
-                                                             movable: false
-                                                             resizable: false
-                                                         }
-                                                         TableViewColumn{
-                                                             width: (parent.width - checkbox.width)/4
-                                                             title: "UIN"
-                                                             movable: false
-                                                             resizable: false
-                                                             role: "uin_number"
-                                                         }
-//                                                         TableViewColumn{
-//                                                             width: (parent.width - checkbox.width)/4
-//                                                             title: "Actions"
-//                                                             movable: false
-//                                                             resizable: false
-//                                                             role: "edit_operations"
-//                                                             delegate: Rectangle{
-//                                                             color:"#031C28"
-//                                                             Row{
-//                                                                 anchors.fill:parent
-//                                                                 Button{
-//                                                                     height: parent.height
-//                                                                     width : parent.width/2
-//                                                                     //text: "edit"
-//                                                                     Text{
-//                                                                         text: "edit"
-//                                                                         font.pointSize: ScreenTools.smallFontPointSize
-//                                                                         //font.pixelSize: 15
-//                                                                         anchors.centerIn: parent
-//                                                                         color: "white"
-//                                                                     }
-//                                                                     background: Rectangle {
-//                                                                         id: edit_button
-//                                                                         implicitWidth: parent.width/2
-//                                                                         implicitHeight: parent.height
-//                                                                         color: "#F25822"
-//                                                                         radius: 4
-//                                                                     }
-//                                                                     onPressed:{
-//                                                                        edit_button.color = "#031C28"
-//                                                                     }
-//                                                                     onReleased:{
-//                                                                        edit_button.color = "#F25822"
-//                                                                     }
-//                                                                     onClicked: {
-//                                                                        //rpadatabase.edit_query(database_access.mail,model.index)
-//                                                                           updateButton = 2
-//                                                                           manage_rpa_header1.visible = false
-//                                                                           rpa_register_page.visible = true
-//                                                                           drone_contents.visible = true
-//                                                                    }
-//                                                                }
-//                                                                Button{
-//                                                                     height: parent.height
-//                                                                     width: parent.width/2
-//                                                                     //text: "delete"
-//                                                                     Text{
-//                                                                         text: "Delete"
-//                                                                         font.pointSize: ScreenTools.smallFontPointSize
-//                                                                         //font.pixelSize: 15
-//                                                                         anchors.centerIn: parent
-//                                                                         color: "white"
-//                                                                     }
-//                                                                     background: Rectangle {
-//                                                                         id: delete_button
-//                                                                         implicitWidth: parent.width/2
-//                                                                         implicitHeight: parent.height
-//                                                                         color: "#F25822"
-//                                                                         radius: 4
-//                                                                     }
-//                                                                     onPressed:{
-//                                                                        delete_button.color = "#031C28"
-//                                                                     }
-//                                                                     onReleased:{
-//                                                                        delete_button.color = "#F25822"
-//                                                                     }
-//                                                                     onClicked: {
-//                                                                         rpadatabase.delete_query(database_access.mail,model.index)
-//                                                                         deleteDialog.open()
-//                                                                     }
-//                                                                }
-//                                                             }
-//                                                             }
-                                                        // }
-                                                     }
-                                                     `,
-                                                     table_rect,
-                                                     "myDynamicSnippet"
-                                                     );
-                i = 0
-                mainWindow.newWindowObject = newObject
-                oldTableObject = newObject
-
-            }
+        property int i : 0
+        property var oldTableObject: null
+        id: rpadatabase
+        onUinFound:{
+            console.log("uin found")
+            uinrecord_Dialog.open()
         }
+        onUinNotFound:{
+            console.log("uin not found")
+            rpadatabase.add_rpa(drone_type_list.currentText,drone_model_list.currentText,drone_name_text.text,uin_input_text.text)
+            i = 1
+        }
+
+        onDataAdded: {
+            if(i == 1){
+                rpadatabase.getData()
+            }
+
+            console.log("table is shown")
+            rpa_register_page.visible =  false
+            manage_rpa_header1.visible = true
+            drone_type_list.currentIndex = -1
+            drone_model_list.currentIndex = -1
+            drone_name_text.text = ""
+            uin_input_text.text = ""
+
+            if (oldTableObject !== null) {
+                oldTableObject.destroy()
+                oldTableObject = null
+            }
+
+            const newObject = Qt.createQmlObject(`
+                                                 import QtQuick 2.0
+                                                 import QtQuick.Controls 1.5
+                                                 import QtQuick.Controls.Styles 1.2
+                                                 import QtQuick.Controls.Styles 1.4
+                                                 import QtQuick.Controls 2.15
+                                                 TableView {
+                                                 id: table
+                                                 anchors.fill: parent
+                                                 clip:true
+                                                 //width: parent.width
+                                                 //height: parent.height
+                                                 anchors.top: table_rect.top
+                                                 backgroundVisible: false
+                                                 model:  rpadatabase
+                                                 style: TableViewStyle {
+                                                 headerDelegate: Rectangle {
+                                                 height: textItem.implicitHeight * 2
+                                                 width: textItem.implicitWidth
+                                                 color: "#031C28"
+                                                 border.width: 1
+                                                 border.color: "#05324D"
+                                                 Text {
+                                                 id: textItem
+                                                 anchors.centerIn: parent
+                                                 text: styleData.value
+                                                 //font.pixelSize: 15
+                                                 font.pointSize: ScreenTools.smallFontPointSize
+                                                 font.bold:true
+                                                 elide: Text.ElideRight
+                                                 color: '#F25822'
+                                                 renderType: Text.NativeRendering
+                                                 }
+                                                 }
+                                                 }
+                                                 itemDelegate: Rectangle {
+                                                 anchors.fill:parent
+                                                 color: "#031C28"
+                                                 border.width: 1
+                                                 border.color: "#05324D"
+                                                 Text {
+                                                 //anchors.horizontalCenter: parent.horizontalCenter
+                                                 anchors.centerIn:parent
+                                                 color: "white"
+                                                 text: styleData.value
+                                                 //font.pixelSize: 15
+                                                 font.pointSize: ScreenTools.smallFontPointSize
+                                                 }
+                                                 }
+                                                 TableViewColumn {
+                                                 id: checkbox
+                                                 width: parent.width / 8
+                                                 title: "Select"
+                                                 movable: false
+                                                 resizable: false
+                                                 role: "checkbox"
+                                                 delegate: Rectangle{
+                                                 color: "#031C28"
+                                                 border.width: 1
+                                                 border.color:"#05324D"
+                                                 CheckBox {
+                                                 id: delegate_checkbox
+                                                 anchors.centerIn: parent
+                                                 checked: false
+                                                 indicator: Rectangle{
+                                                 implicitWidth: 30
+                                                 implicitHeight: 30
+                                                 radius: 2
+                                                 color: "#031C28"
+                                                 border.width:0.5
+                                                 border.color: "#F25822"
+                                                 anchors.centerIn: parent
+                                                 Rectangle {
+                                                 //visible: check_box.checked
+                                                 color: delegate_checkbox.checked ? "#F25822" : "#031C28"
+                                                 radius: 1
+                                                 anchors.margins: 2
+                                                 anchors.fill: parent
+                                                 }
+                                                 }
+                                                 onCheckedChanged: {
+                                                 if(delegate_checkbox.checked == true){
+                                                 checkBoxState = 1
+                                                 checkBoxNumber = model.index
+                                                 ButtonGroup.group = mainWindow.group
+                                                 }
+                                                 //                                                                         else{
+                                                 //                                                                            checkBoxState = 0
+                                                 //                                                                         }
+                                                 }
+                                                 }
+                                                 }
+                                                 }
+                                                 TableViewColumn {
+                                                 width: (parent.width - checkbox.width)/4
+                                                 id: type_column
+                                                 title: "Type"
+                                                 movable: false
+                                                 resizable: false
+                                                 role: "type"
+                                                 }
+                                                 TableViewColumn{
+                                                 width: (parent.width - checkbox.width)/4
+                                                 role: "model_name"
+                                                 title: "ModelName"
+                                                 movable: false
+                                                 resizable: false
+                                                 }
+                                                 TableViewColumn{
+                                                 width: (parent.width - checkbox.width)/4
+                                                 role: "drone_name"
+                                                 title: "DroneName"
+                                                 movable: false
+                                                 resizable: false
+                                                 }
+                                                 TableViewColumn{
+                                                 width: (parent.width - checkbox.width)/4
+                                                 title: "UIN"
+                                                 movable: false
+                                                 resizable: false
+                                                 role: "uin_number"
+                                                 }
+                                                 //                                                         TableViewColumn{
+                                                 //                                                             width: (parent.width - checkbox.width)/4
+                                                 //                                                             title: "Actions"
+                                                 //                                                             movable: false
+                                                 //                                                             resizable: false
+                                                 //                                                             role: "edit_operations"
+                                                 //                                                             delegate: Rectangle{
+                                                 //                                                             color:"#031C28"
+                                                 //                                                             Row{
+                                                 //                                                                 anchors.fill:parent
+                                                 //                                                                 Button{
+                                                 //                                                                     height: parent.height
+                                                 //                                                                     width : parent.width/2
+                                                 //                                                                     //text: "edit"
+                                                 //                                                                     Text{
+                                                 //                                                                         text: "edit"
+                                                 //                                                                         font.pointSize: ScreenTools.smallFontPointSize
+                                                 //                                                                         //font.pixelSize: 15
+                                                 //                                                                         anchors.centerIn: parent
+                                                 //                                                                         color: "white"
+                                                 //                                                                     }
+                                                 //                                                                     background: Rectangle {
+                                                 //                                                                         id: edit_button
+                                                 //                                                                         implicitWidth: parent.width/2
+                                                 //                                                                         implicitHeight: parent.height
+                                                 //                                                                         color: "#F25822"
+                                                 //                                                                         radius: 4
+                                                 //                                                                     }
+                                                 //                                                                     onPressed:{
+                                                 //                                                                        edit_button.color = "#031C28"
+                                                 //                                                                     }
+                                                 //                                                                     onReleased:{
+                                                 //                                                                        edit_button.color = "#F25822"
+                                                 //                                                                     }
+                                                 //                                                                     onClicked: {
+                                                 //                                                                        //rpadatabase.edit_query(database_access.mail,model.index)
+                                                 //                                                                           updateButton = 2
+                                                 //                                                                           manage_rpa_header1.visible = false
+                                                 //                                                                           rpa_register_page.visible = true
+                                                 //                                                                           drone_contents.visible = true
+                                                 //                                                                    }
+                                                 //                                                                }
+                                                 //                                                                Button{
+                                                 //                                                                     height: parent.height
+                                                 //                                                                     width: parent.width/2
+                                                 //                                                                     //text: "delete"
+                                                 //                                                                     Text{
+                                                 //                                                                         text: "Delete"
+                                                 //                                                                         font.pointSize: ScreenTools.smallFontPointSize
+                                                 //                                                                         //font.pixelSize: 15
+                                                 //                                                                         anchors.centerIn: parent
+                                                 //                                                                         color: "white"
+                                                 //                                                                     }
+                                                 //                                                                     background: Rectangle {
+                                                 //                                                                         id: delete_button
+                                                 //                                                                         implicitWidth: parent.width/2
+                                                 //                                                                         implicitHeight: parent.height
+                                                 //                                                                         color: "#F25822"
+                                                 //                                                                         radius: 4
+                                                 //                                                                     }
+                                                 //                                                                     onPressed:{
+                                                 //                                                                        delete_button.color = "#031C28"
+                                                 //                                                                     }
+                                                 //                                                                     onReleased:{
+                                                 //                                                                        delete_button.color = "#F25822"
+                                                 //                                                                     }
+                                                 //                                                                     onClicked: {
+                                                 //                                                                         rpadatabase.delete_query(database_access.mail,model.index)
+                                                 //                                                                         deleteDialog.open()
+                                                 //                                                                     }
+                                                 //                                                                }
+                                                 //                                                             }
+                                                 //                                                             }
+                                                 // }
+                                                 }
+                                                 `,
+                                                 table_rect,
+                                                 "myDynamicSnippet"
+                                                 );
+            i = 0
+            mainWindow.newWindowObject = newObject
+            oldTableObject = newObject
+
+        }
+    }
 
 
 
@@ -392,256 +392,258 @@ ApplicationWindow {
             height: 200
             source: "/res/godrona-logo.png"
         }
-                Column{
-                    id: login_page_label
-                    spacing: 10
-                    anchors.left: mainWindow.left
-                    anchors.leftMargin: 20
-                    anchors.top: login_page_godrona_image.bottom
-                    anchors.topMargin: 20
-                    Label{
-                        text: "LOGIN/SIGN-IN ACCOUNT"
-                        color: "white"
-                        font.bold: true
-                        font.pointSize: ScreenTools.defaultFontPointSize * 1.1
-                    }
-                    Label{
-                        text: "- Hello, Welcome back to GoDrona"
-                        color: "#F25822"
-                        font.bold: true
-                        font.pointSize:ScreenTools.defaultFontPointSize
-                    }
+        Column{
+            id: login_page_label
+            spacing: 10
+            anchors.left: mainWindow.left
+            anchors.leftMargin: 20
+            anchors.top: login_page_godrona_image.bottom
+            anchors.topMargin: 20
+            Label{
+                text: "LOGIN/SIGN-IN ACCOUNT"
+                color: "white"
+                font.bold: true
+                font.pointSize: ScreenTools.defaultFontPointSize * 1.1
+            }
+            Label{
+                text: "- Hello, Welcome back to GoDrona"
+                color: "#F25822"
+                font.bold: true
+                font.pointSize:ScreenTools.defaultFontPointSize
+            }
+        }
+        Column{
+            id: login_page_label_email_column
+            spacing: 10
+            anchors.top: login_page_label.bottom
+            anchors.topMargin: 10
+            anchors.horizontalCenter: parent.horizontalCenter
+            Label{
+                text: "Email Address*"
+                color: "white"
+            }
+            TextField{
+                id: login_page_email_textfield
+                width: mainWindow.width/3
+                height: mainWindow.height/10
+                text: ""
+                color: "white"
+                leftPadding: 70
+                focus: true
+                placeholderText: qsTr("example@gmail.com")
+                inputMethodHints: Qt.ImhEmailCharactersOnly
+                validator: RegExpValidator{regExp: /.+/}
+                onTextChanged: {
+                    login_page_email.border.color = "#C0C0C0"
                 }
-                Column{
-                    id: login_page_label_email_column
-                    spacing: 10
-                    anchors.top: login_page_label.bottom
-                    anchors.topMargin: 10
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    Label{
-                        text: "Email Address*"
-                        color: "white"
-                    }
-                    TextField{
-                        id: login_page_email_textfield
-                        width: mainWindow.width/3
-                        height: mainWindow.height/10
-                        text: ""
-                        color: "white"
-                        leftPadding: 70
-                        placeholderText: qsTr("example@gmail.com")
-                        inputMethodHints: Qt.ImhEmailCharactersOnly
-                        validator: RegExpValidator{regExp: /.+/}
-                        onTextChanged: {
-                            login_page_email.border.color = "#C0C0C0"
-                        }
-                        background: Rectangle
-                        {
-                            id: login_page_email
-                            anchors.fill: parent
-                            color: "#031C28"
-                            border.color: "#05324D"
-                            border.width: 1.5
-                        }
-                        Image {
-                            fillMode: Image.PreserveAspectFit
-                            source: "/res/mailLogo.png"//"qrc:/../../../../Downloads/mailLogo.png"
-                            anchors.left: parent.left
-                            anchors.leftMargin: 12
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
-                    }
+                background: Rectangle
+                {
+                    id: login_page_email
+                    anchors.fill: parent
+                    color: "#031C28"
+                    border.color: "#05324D"
+                    border.width: 1.5
                 }
-                Column{
-                    id: login_page_label_password_column
-                    spacing: 10
-                    anchors.top: login_page_label_email_column.bottom
-                    anchors.topMargin: 20
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    Label{
-                        text: "Password*"
-                        color: "white"
-                    }
-                    TextField{
-                        id: login_page_password_textfield
-                        width: mainWindow.width/3
-                        height: mainWindow.height/10
-                        text: ""
-                        color: "white"
-                        placeholderText: qsTr("Password")
-                        leftPadding: 70
-                        rightPadding: 50
-                        validator: RegExpValidator { regExp: /.+/ }
-                        echoMode: TextInput.Password
-                        inputMethodHints: Qt.ImhNoPredictiveText
-                        onTextChanged: {
-                            login_page_password.border.color = "#C0C0C0"
-                        }
-                        background: Rectangle
-                        {
-                            id: login_page_password
-                            anchors.fill: parent
-                            color: "#031C28"
-                            border.color: "#05324D"
-                            border.width: 1.5
-                        }
-                        Image {
-                            fillMode: Image.PreserveAspectFit
-                            source: "/res/password.png"//"qrc:/../../../../Downloads/password.png"
-                            anchors.left: parent.left
-                            anchors.leftMargin: 12
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
-                        Image {
-                            id: password_hide_image
-                            fillMode: Image.PreserveAspectFit
-                            source: "/res/password_hide.png"//"qrc:/../../../../Downloads/password_hide.png"
-                            anchors.right: parent.right
-                            anchors.rightMargin: 12
-                            anchors.verticalCenter: parent.verticalCenter
-                            MouseArea{
-                                anchors.fill: parent
-                                onClicked: {
-                                    password_hide_image.visible = false
-                                    password_show_image.visible = true
-                                    login_page_password_textfield.echoMode = TextInput.Normal
-                                }
-                            }
-                        }
-                        Image {
-                            id: password_show_image
-                            visible: false
-                            fillMode: Image.PreserveAspectFit
-                            source: "/res/password_show.png"//"qrc:/../../../../Downloads/password_show.png"
-                            anchors.right: parent.right
-                            anchors.rightMargin: 12
-                            anchors.verticalCenter: parent.verticalCenter
-                            MouseArea{
-                                anchors.fill: parent
-                                onClicked: {
-                                    password_show_image.visible = false
-                                    password_hide_image.visible = true
-                                    login_page_password_textfield.echoMode = TextInput.Password
-                                }
-                            }
-                        }
-                    }
-                }
-                Button {
-                    anchors.top: login_page_label_password_column.bottom
-                    anchors.topMargin: 35
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    Text{
-                        text: "Login Now ->"
-                        font.pointSize:ScreenTools.defaultFontPointSize
-                        font.bold: true
-                        anchors.centerIn: parent
-                        color: "white"
-                    }
-                    background: Rectangle {
-                        id: login_button
-                        implicitWidth: mainWindow.width/3
-                        implicitHeight: mainWindow.height/10
-                        color: "#F25822"
-                        radius: 4
-                    }
-                    MessageDialog{
-                        id:messagedialog1
-                        text:qsTr("Please enter your details correctly")
-                    }
-                    onPressed: {
-                        login_button.color = "#05324D"
-                    }
-                    onReleased: {
-                        login_button.color = "#F25822"
-                    }
-                    onClicked: {
-                        if (login_page_email_textfield.text !== "" && login_page_password_textfield.text !== "") {
-                            console.log("Username: " + login_page_email_textfield.text)
-                            console.log("Password: " + login_page_password_textfield.text)
-                            database_access.registered_user(login_page_email_textfield.text,login_page_password_textfield.text)
-                        } else {
-                            messagedialog1.visible = true
-                            console.log("Please enter a username and password.")
-                        }
-                        rpadatabase.image_function("user_profile.jpg",database_access.firebasejsonname)
-                    }
-                }
-                Column{
-                    spacing: 10
-                    anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 50
+                Image {
+                    fillMode: Image.PreserveAspectFit
+                    source: "/res/mailLogo.png"//"qrc:/../../../../Downloads/mailLogo.png"
                     anchors.left: parent.left
-                    anchors.leftMargin: 20
-                    Label{
-                        text: "New to GoDrona ?"
-                        font.pointSize:ScreenTools.defaultFontPointSize
-                        color: "white"
-                        Image{
-                            id: new_user_logo
-                            anchors.bottom: parent.top
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            source: "/res/new_member.png" //"qrc:/../../../../Downloads/new_member.png"
-
-                        }
-                        MouseArea{
-                            anchors.fill: new_user_logo
-                            onClicked: {
-                                password_hide_image.visible = true
-                                password_show_image.visible = false
-                                new_user_first_page.visible = true
-                                first_user_details_page.visible = true
-                                login_page_email_textfield.text = ""
-                                login_page_password_textfield.text = ""
-                                login_page_password_textfield.echoMode = TextInput.Password
-                                if(first_user_details_page.visible == true){
-                                    console.log("in first user details page")
-                                    new_user_image_rect.source = "/res/First Time Signup screen.png"
-                                }
-                                if (second_user_details_page.visible == true){
-                                    console.log("in second user details page")
-                                    new_user_image_rect.source = "/res/user_details.png"
-                                }
-                                if(third_user_details_page.visible == true){
-                                    console.log("in third user details page")
-                                    new_user_image_rect.source = "/res/otp.png"
-                                }
-                            }
+                    anchors.leftMargin: 12
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+            }
+        }
+        Column{
+            id: login_page_label_password_column
+            spacing: 10
+            anchors.top: login_page_label_email_column.bottom
+            anchors.topMargin: 20
+            anchors.horizontalCenter: parent.horizontalCenter
+            Label{
+                text: "Password*"
+                color: "white"
+            }
+            TextField{
+                id: login_page_password_textfield
+                width: mainWindow.width/3
+                height: mainWindow.height/10
+                text: ""
+                color: "white"
+                focus: true
+                placeholderText: qsTr("Password")
+                leftPadding: 70
+                rightPadding: 50
+                validator: RegExpValidator { regExp: /.+/ }
+                echoMode: TextInput.Password
+                inputMethodHints: Qt.ImhNoPredictiveText
+                onTextChanged: {
+                    login_page_password.border.color = "#C0C0C0"
+                }
+                background: Rectangle
+                {
+                    id: login_page_password
+                    anchors.fill: parent
+                    color: "#031C28"
+                    border.color: "#05324D"
+                    border.width: 1.5
+                }
+                Image {
+                    fillMode: Image.PreserveAspectFit
+                    source: "/res/password.png"//"qrc:/../../../../Downloads/password.png"
+                    anchors.left: parent.left
+                    anchors.leftMargin: 12
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                Image {
+                    id: password_hide_image
+                    fillMode: Image.PreserveAspectFit
+                    source: "/res/password_hide.png"//"qrc:/../../../../Downloads/password_hide.png"
+                    anchors.right: parent.right
+                    anchors.rightMargin: 12
+                    anchors.verticalCenter: parent.verticalCenter
+                    MouseArea{
+                        anchors.fill: parent
+                        onClicked: {
+                            password_hide_image.visible = false
+                            password_show_image.visible = true
+                            login_page_password_textfield.echoMode = TextInput.Normal
                         }
                     }
                 }
-                Column{
-                    spacing: 10
-                    anchors.bottom: parent.bottom
-                    anchors.bottomMargin: 50
+                Image {
+                    id: password_show_image
+                    visible: false
+                    fillMode: Image.PreserveAspectFit
+                    source: "/res/password_show.png"//"qrc:/../../../../Downloads/password_show.png"
                     anchors.right: parent.right
-                    anchors.rightMargin: 20
-                    Label{
-                        text: "Forgot Password ?"
-                        font.pointSize:ScreenTools.defaultFontPointSize
-                        color: "white"
-                        Image{
-                            id: forgot_password_logo
-                            anchors.bottom: parent.top
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            source: "/res/forgotpassword.png"
-                        }
-                        MouseArea{
-                            anchors.fill: forgot_password_logo
-                            onClicked: {
-                                password_hide_image.visible = true
-                                password_show_image.visible = false
-                                login_page_rectangle.visible = false
-                                forgot_password_page_rectangle.visible = true
-                                login_page_email_textfield.text = ""
-                                login_page_password_textfield.text = ""
-                                login_page_password_textfield.echoMode = TextInput.Password
-                            }
+                    anchors.rightMargin: 12
+                    anchors.verticalCenter: parent.verticalCenter
+                    MouseArea{
+                        anchors.fill: parent
+                        onClicked: {
+                            password_show_image.visible = false
+                            password_hide_image.visible = true
+                            login_page_password_textfield.echoMode = TextInput.Password
                         }
                     }
                 }
             }
-     //   }
+        }
+        Button {
+            anchors.top: login_page_label_password_column.bottom
+            anchors.topMargin: 35
+            anchors.horizontalCenter: parent.horizontalCenter
+            Text{
+                text: "Login Now ->"
+                font.pointSize:ScreenTools.defaultFontPointSize
+                font.bold: true
+                anchors.centerIn: parent
+                color: "white"
+            }
+            background: Rectangle {
+                id: login_button
+                implicitWidth: mainWindow.width/3
+                implicitHeight: mainWindow.height/10
+                color: "#F25822"
+                radius: 4
+            }
+            MessageDialog{
+                id:messagedialog1
+                text:qsTr("Please enter your details correctly")
+            }
+            onPressed: {
+                login_button.color = "#05324D"
+            }
+            onReleased: {
+                login_button.color = "#F25822"
+            }
+            onClicked: {
+                if (login_page_email_textfield.text !== "" && login_page_password_textfield.text !== "") {
+                    console.log("Username: " + login_page_email_textfield.text)
+                    console.log("Password: " + login_page_password_textfield.text)
+                    database_access.registered_user(login_page_email_textfield.text,login_page_password_textfield.text)
+                } else {
+                    messagedialog1.visible = true
+                    console.log("Please enter a username and password.")
+                }
+                rpadatabase.image_function("user_profile.jpg",database_access.firebasejsonname)
+            }
+        }
+        Column{
+            spacing: 10
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 50
+            anchors.left: parent.left
+            anchors.leftMargin: 20
+            Label{
+                text: "New to GoDrona ?"
+                font.pointSize:ScreenTools.defaultFontPointSize
+                color: "white"
+                Image{
+                    id: new_user_logo
+                    anchors.bottom: parent.top
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    source: "/res/new_member.png" //"qrc:/../../../../Downloads/new_member.png"
+
+                }
+                MouseArea{
+                    anchors.fill: new_user_logo
+                    onClicked: {
+                        password_hide_image.visible = true
+                        password_show_image.visible = false
+                        new_user_first_page.visible = true
+                        first_user_details_page.visible = true
+                        login_page_email_textfield.text = ""
+                        login_page_password_textfield.text = ""
+                        login_page_password_textfield.echoMode = TextInput.Password
+                        if(first_user_details_page.visible == true){
+                            console.log("in first user details page")
+                            new_user_image_rect.source = "/res/First Time Signup screen.png"
+                        }
+                        if (second_user_details_page.visible == true){
+                            console.log("in second user details page")
+                            new_user_image_rect.source = "/res/user_details.png"
+                        }
+                        if(third_user_details_page.visible == true){
+                            console.log("in third user details page")
+                            new_user_image_rect.source = "/res/otp.png"
+                        }
+                    }
+                }
+            }
+        }
+        Column{
+            spacing: 10
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 50
+            anchors.right: parent.right
+            anchors.rightMargin: 20
+            Label{
+                text: "Forgot Password ?"
+                font.pointSize:ScreenTools.defaultFontPointSize
+                color: "white"
+                Image{
+                    id: forgot_password_logo
+                    anchors.bottom: parent.top
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    source: "/res/forgotpassword.png"
+                }
+                MouseArea{
+                    anchors.fill: forgot_password_logo
+                    onClicked: {
+                        password_hide_image.visible = true
+                        password_show_image.visible = false
+                        login_page_rectangle.visible = false
+                        forgot_password_page_rectangle.visible = true
+                        login_page_email_textfield.text = ""
+                        login_page_password_textfield.text = ""
+                        login_page_password_textfield.echoMode = TextInput.Password
+                    }
+                }
+            }
+        }
+    }
+    //   }
     //}
 
 
@@ -697,7 +699,7 @@ ApplicationWindow {
                     height: mainWindow.height/10
                     text: ""
                     color: "white"
-                    placeholderText: qsTr("Example@gmail.com")
+                    placeholderText: qsTr("example@gmail.com")
                     inputMethodHints: Qt.ImhEmailCharactersOnly
                     leftPadding: 70
                     onTextChanged: {
@@ -1006,7 +1008,7 @@ ApplicationWindow {
                 onClicked: {
 
                     if(new_password_textfield.text != confirm_password_textfield.text){
-                       console.log("mismatch")
+                        console.log("mismatch")
                         password_mismatch.open()
                         new_password_textfield.text = ""
                         confirm_password_textfield.text = ""
@@ -1037,1027 +1039,1036 @@ ApplicationWindow {
         color: "#031C28"
 
 
-                Label{
-                    id: new_user_first_page_label
-                    text: qsTr("<- Registration")
+        Label{
+            id: new_user_first_page_label
+            text: qsTr("<- Registration")
+            font.pointSize:ScreenTools.defaultFontPointSize
+            color: "white"
+            font.bold: true
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            anchors.top: parent.top
+            anchors.topMargin: 30
+            Label{
+                anchors.top: parent.bottom
+                anchors.topMargin: 20
+                color: "#F25822"
+                font.pointSize:ScreenTools.defaultFontPointSize
+            }
+
+
+            MouseArea{
+                anchors.fill: parent
+                onClicked: {
+                    new_user_first_page.visible = false
+                    login_page_rectangle.visible = true
+                    user_name_text.text = ""
+                    user_mail_text.text = ""
+                    user_number_text.text = ""
+                    user_address_text.text = ""
+                    user_locality_text.text = ""
+                    user_password_text.text = ""
+                    control.currentIndex = -1
+                    control_role.currentIndex = -1
+                    password_hide_image.visible = true
+                    password_show_image.visible = false
+                    password_show_image1.visible = false
+                    password_hide_image1.visible = true
+                    new_user_image_rect.source = "/res/First Time Signup screen.png"
+                }
+            }
+        }
+        Row{
+            id: circle_row
+            anchors.top: new_user_first_page_label.bottom
+            anchors.topMargin: 50
+            anchors.horizontalCenter: parent.horizontalCenter
+            Rectangle{
+                id: first_circle
+                width: 60
+                height: 60
+                radius: width / 2
+                border.color: "#C0C0C0"
+                border.width: 1.5
+                color: "#F25822"
+                Text{
+                    id: first_circle_text
+                    text: "1"
                     font.pointSize:ScreenTools.defaultFontPointSize
                     color: "white"
-                    font.bold: true
-                    anchors.left: parent.left
-                    anchors.leftMargin: 10
-                    anchors.top: parent.top
-                    anchors.topMargin: 30
-                    Label{
-                        anchors.top: parent.bottom
-                        anchors.topMargin: 20
-                        color: "#F25822"
-                        font.pointSize:ScreenTools.defaultFontPointSize
-                    }
-
-
-                    MouseArea{
-                        anchors.fill: parent
-                        onClicked: {
-                            new_user_first_page.visible = false
-                            login_page_rectangle.visible = true
-                            user_name_text.text = ""
-                            user_mail_text.text = ""
-                            user_number_text.text = ""
-                            user_address_text.text = ""
-                            user_locality_text.text = ""
-                            user_password_text.text = ""
-                            control.currentIndex = -1
-                            control_role.currentIndex = -1
-                            password_hide_image.visible = true
-                            password_show_image.visible = false
-                            password_show_image1.visible = false
-                            password_hide_image1.visible = true
-                            new_user_image_rect.source = "/res/First Time Signup screen.png"
-                        }
-                    }
+                    anchors.centerIn: parent
                 }
-                Row{
-                    id: circle_row
-                    anchors.top: new_user_first_page_label.bottom
-                    anchors.topMargin: 50
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    Rectangle{
-                        id: first_circle
-                        width: 60
-                        height: 60
-                        radius: width / 2
-                        border.color: "#C0C0C0"
-                        border.width: 1.5
-                        color: "#F25822"
-                        Text{
-                            id: first_circle_text
-                            text: "1"
-                            font.pointSize:ScreenTools.defaultFontPointSize
-                            color: "white"
-                            anchors.centerIn: parent
-                        }
-                    }
-                    Repeater{
-                        model: 5
-                        Text{
-                            text: "-"
-                            color: "white"
-                            anchors.verticalCenter: circle_row.verticalCenter
-                        }
-                    }
-                    Rectangle{
-                        id: second_circle
-                        width: 60
-                        height: 60
-                        radius: width / 2
-                        border.color: "#C0C0C0"
-                        border.width: 1.5
-                        color: "#031C28"
-                        Text{
-                            id: second_circle_text
-                            text: "2"
-                            font.pointSize:ScreenTools.defaultFontPointSize
-                            color: "white"
-                            anchors.centerIn: parent
-                        }
-                    }
-                    Repeater{
-                        model: 5
-                        Text{
-                            text: "-"
-                            color: "white"
-                            anchors.verticalCenter: circle_row.verticalCenter
-                        }
-                    }
-                    Rectangle{
-                        id: third_circle
-                        width: 60
-                        height: 60
-                        radius: width / 2
-                        border.color: "#C0C0C0"
-                        border.width: 1.5
-                        color: "#031C28"
-                        Text{
-                            id: third_circle_text
-                            text: "3"
-                            color: "white"
-                            font.pointSize:ScreenTools.defaultFontPointSize
-                            anchors.centerIn: parent
-                        }
-                    }
+            }
+            Repeater{
+                model: 5
+                Text{
+                    text: "-"
+                    color: "white"
+                    anchors.verticalCenter: circle_row.verticalCenter
                 }
-                Rectangle{
-                    id: first_user_details_page
-                    width: parent.width
-                    anchors.top: circle_row.bottom
-                    anchors.topMargin: 50
-                    height: parent.height
-                    color: "#031C28"
-                    Column{
-                        spacing: 20
-                        anchors.top: parent.top
-                        anchors.topMargin: 20
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        Label{
-                            text: "Select Your Industry Type*"
-                            color: "white"
-                            font.pointSize:ScreenTools.defaultFontPointSize
+            }
+            Rectangle{
+                id: second_circle
+                width: 60
+                height: 60
+                radius: width / 2
+                border.color: "#C0C0C0"
+                border.width: 1.5
+                color: "#031C28"
+                Text{
+                    id: second_circle_text
+                    text: "2"
+                    font.pointSize:ScreenTools.defaultFontPointSize
+                    color: "white"
+                    anchors.centerIn: parent
+                }
+            }
+            Repeater{
+                model: 5
+                Text{
+                    text: "-"
+                    color: "white"
+                    anchors.verticalCenter: circle_row.verticalCenter
+                }
+            }
+            Rectangle{
+                id: third_circle
+                width: 60
+                height: 60
+                radius: width / 2
+                border.color: "#C0C0C0"
+                border.width: 1.5
+                color: "#031C28"
+                Text{
+                    id: third_circle_text
+                    text: "3"
+                    color: "white"
+                    font.pointSize:ScreenTools.defaultFontPointSize
+                    anchors.centerIn: parent
+                }
+            }
+        }
+        Rectangle{
+            id: first_user_details_page
+            width: parent.width
+            anchors.top: circle_row.bottom
+            anchors.topMargin: 50
+            height: parent.height
+            color: "#031C28"
+            Column{
+                spacing: 20
+                anchors.top: parent.top
+                anchors.topMargin: 20
+                anchors.horizontalCenter: parent.horizontalCenter
+                Label{
+                    text: "Select Your Industry Type*"
+                    color: "white"
+                    font.pointSize:ScreenTools.defaultFontPointSize
+                }
+                ComboBox {
+                    id: control
+                    model: ["Drone Education & Training","Asset Inspection","Security & Surveillance","Public Survey","Oil & Gas Inspection","Industrial Inspection","Agricultural Usage","Goods Delivery"]
+                    width: mainWindow.width/3
+                    height: mainWindow.height/10
+                    currentIndex: -1
+                    displayText: currentIndex === -1 ? "Select Industry Type" : currentText
+                    delegate: ItemDelegate {
+                        width: control.width
+                        contentItem: Text {
+                            text: control.textRole
+                                  ? (Array.isArray(control.model) ? modelData[control.textRole] : model[control.textRole])
+                                  : modelData
+                            color: "black"
+                            font: control.font
+                            elide: Text.ElideRight
+                            verticalAlignment: Text.AlignVCenter
                         }
-                        ComboBox {
-                            id: control
-                            model: ["Drone Education & Training","Asset Inspection","Security & Surveillance","Public Survey","Oil & Gas Inspection","Industrial Inspection","Agricultural Usage","Goods Delivery"]
-                            width: mainWindow.width/3
-                            height: mainWindow.height/10
-                            currentIndex: -1
-                            displayText: currentIndex === -1 ? "Select Industry Type" : currentText
-                            delegate: ItemDelegate {
-                                width: control.width
-                                contentItem: Text {
-                                    text: control.textRole
-                                          ? (Array.isArray(control.model) ? modelData[control.textRole] : model[control.textRole])
-                                          : modelData
-                                    color: "black"
-                                    font: control.font
-                                    elide: Text.ElideRight
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-                                highlighted: control.highlightedIndex === index
-                            }
-                            indicator: Canvas {
-                                id: canvas
-                                x: control.width - width - control.rightPadding
-                                y: control.topPadding + (control.availableHeight - height) / 2
-                                width: 20
-                                height: 20
-                                contextType: "2d"
-                                Connections {
-                                    target: control
-                                    function onPressedChanged() { canvas.requestPaint(); }
-                                }
-                                onPaint: {
-                                    context.reset();
-                                    context.moveTo(0, 0);
-                                    context.lineTo(width, 0);
-                                    context.lineTo(width / 2, height);
-                                    context.closePath();
-                                    context.fillStyle = "white"
-                                    context.fill();
-                                }
-                            }
-                            contentItem: Text {
-                                id: combobox_text
-                                leftPadding: 80
-                                rightPadding: control.indicator.width + control.spacing
-                                text: control.displayText
-                                font: control.font
-                                color: "white"
-                                verticalAlignment: Text.AlignVCenter
-                                elide: Text.ElideRight
-                                Image{
-                                    id: organization_image
-                                    anchors.left: parent.left
-                                    anchors.leftMargin: 20
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    source: "/res/organization.png"//"qrc:/../../../../Downloads/organization.png"
-                                }
-                            }
-                            background: Rectangle {
-                                implicitWidth: mainWindow.width/3
-                                implicitHeight: mainWindow.height/10
-                                color: "#031C28"
-                                border.color: "#00FFFF"
-                                border.width: control.visualFocus ? 2 : 1
-                                radius: 2
-                            }
-                            popup: Popup {
-                                y: control.height - 1
-                                width: control.width
-                                implicitHeight: contentItem.implicitHeight
-                                padding: 1
-                                contentItem: ListView {
-                                    clip: true
-                                    implicitHeight: contentHeight
-                                    model: control.popup.visible ? control.delegateModel : null
-                                    currentIndex: control.highlightedIndex
-
-                                    ScrollIndicator.vertical: ScrollIndicator { }
-                                }
-                                background: Rectangle {
-                                    border.color: "#00FFFF"
-                                    radius: 2
-                                }
-                            }
-
+                        highlighted: control.highlightedIndex === index
+                    }
+                    indicator: Canvas {
+                        id: canvas
+                        x: control.width - width - control.rightPadding
+                        y: control.topPadding + (control.availableHeight - height) / 2
+                        width: 20
+                        height: 20
+                        contextType: "2d"
+                        Connections {
+                            target: control
+                            function onPressedChanged() { canvas.requestPaint(); }
                         }
-                        Label{
-                            text: "Select Your Role*"
-                            color: "white"
-                            font.pointSize:ScreenTools.defaultFontPointSize
-                        }
-                        ComboBox {
-                            id: control_role
-                            model: ["OEM","PILOT","OPERTAOR"]
-                            width: mainWindow.width/3
-                            height: mainWindow.height/10
-                            currentIndex: -1
-                            displayText: currentIndex === -1 ? "Select Role" : currentText
-                            delegate: ItemDelegate {
-                                width: control_role.width
-                                contentItem: Text {
-                                    text: control_role.textRole
-                                          ? (Array.isArray(control_role.model) ? modelData[control_role.textRole] : model[control_role.textRole])
-                                          : modelData
-                                    color: "black"
-                                    font: control_role.font
-                                    elide: Text.ElideRight
-                                    verticalAlignment: Text.AlignVCenter
-                                }
-                                highlighted: control_role.highlightedIndex === index
-                            }
-                            indicator: Canvas {
-                                id: canvas_role
-                                x: control_role.width - width - control_role.rightPadding
-                                y: control_role.topPadding + (control_role.availableHeight - height) / 2
-                                width: 20
-                                height: 20
-                                contextType: "2d"
-                                Connections {
-                                    target: control_role
-                                    function onPressedChanged() { canvas_role.requestPaint(); }
-                                }
-                                onPaint: {
-                                    context.reset();
-                                    context.moveTo(0, 0);
-                                    context.lineTo(width, 0);
-                                    context.lineTo(width / 2, height);
-                                    context.closePath();
-                                    context.fillStyle = "white"
-                                    context.fill();
-                                }
-                            }
-                            contentItem: Text {
-                                id: combobox_role_text
-                                leftPadding: 80
-                                rightPadding: control_role.indicator.width + control_role.spacing
-                                text: control_role.displayText
-                                font: control_role.font
-                                color: "white"
-                                verticalAlignment: Text.AlignVCenter
-                                elide: Text.ElideRight
-                                Image{
-                                    id: role_image
-                                    anchors.left: parent.left
-                                    anchors.leftMargin: 20
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    source: "/res/role.png"//"qrc:/../../../../Downloads/organization.png"
-                                }
-                            }
-                            background: Rectangle {
-                                implicitWidth: mainWindow.width/3
-                                implicitHeight: mainWindow.height/10
-                                color: "#031C28"
-                                border.color: "#00FFFF"
-                                border.width: control_role.visualFocus ? 2 : 1
-                                radius: 2
-                            }
-                            popup: Popup {
-                                y: control_role.height - 1
-                                width: control_role.width
-                                implicitHeight: contentItem.implicitHeight
-                                padding: 1
-                                contentItem: ListView {
-                                    clip: true
-                                    implicitHeight: contentHeight
-                                    model: control_role.popup.visible ? control_role.delegateModel : null
-                                    currentIndex: control_role.highlightedIndex
-
-                                    ScrollIndicator.vertical: ScrollIndicator { }
-                                }
-                                background: Rectangle {
-                                    border.color: "#00FFFF"
-                                    radius: 2
-                                }
-                            }
-                        }
-                        Button {
-                            anchors.top: first_user_details_page.bottom
-                            anchors.topMargin: 100
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            Text{
-                                text: "Next Step ->"
-                                font.pointSize:ScreenTools.defaultFontPointSize
-                                font.bold: true
-                                anchors.centerIn: parent
-                                color: "white"
-                            }
-                            background: Rectangle {
-                                id: next_step_submit_button
-                                implicitWidth:  mainWindow.width/3
-                                implicitHeight: mainWindow.height/10
-                                color: "#F25822"
-                                radius: 4
-                            }
-                            onPressed: {
-                                next_step_submit_button.color = "#05324D"
-                            }
-                            onReleased: {
-                                next_step_submit_button.color = "#F25822"
-                            }
-                            onClicked: {
-                                if(combobox_text.text === "Select Industry Type" || control.currentIndex === -1){
-                                    selectIndustryDialog.open()
-                                }
-                                else if(combobox_role_text.text == "Select Role" || control_role.currentIndex == -1){
-                                    selectRoleDialog.open()
-                                }
-
-                                else{
-                                    back_to_login_logo.visible = false
-                                    first_user_details_page.visible = false
-                                    second_user_details_page.visible = true
-                                    new_user_image_rect.source = "/res/user_details.png"
-                                    first_circle_text.text = "/"
-                                    first_circle.color = "green"
-                                    second_circle.color = "#F25822"
-                                    user_profile_image.source = "/res/user_photo.png"
-                                    //control.currentIndex = -1
-                                }
-                            }
+                        onPaint: {
+                            context.reset();
+                            context.moveTo(0, 0);
+                            context.lineTo(width, 0);
+                            context.lineTo(width / 2, height);
+                            context.closePath();
+                            context.fillStyle = "white"
+                            context.fill();
                         }
                     }
-                }
-                Rectangle{
-                    id: second_user_details_page
-                    visible: false
-                    width: parent.width
-                    anchors.top: circle_row.bottom
-                    anchors.topMargin: 20
-                    height: parent.height
-                    color: "#031C28"
-                    Label {
-                        text: "Upload Your Image*"
-                        anchors.left: user_image.right
-                        anchors.leftMargin: 10
-                        anchors.top: parent.top
-                        anchors.topMargin: 25
+                    contentItem: Text {
+                        id: combobox_text
+                        leftPadding: 80
+                        rightPadding: control.indicator.width + control.spacing
+                        text: control.displayText
+                        font: control.font
                         color: "white"
-                    }
-                    Rectangle{
-                        id: user_image
-                        height: mainWindow.height/10
-                        width: height
-                        radius: width / 2
-                        color: "white"
-                        clip: true
-                        anchors.horizontalCenter: parent.horizontalCenter
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
                         Image{
-                            anchors.fill: user_image
+                            id: organization_image
+                            anchors.left: parent.left
+                            anchors.leftMargin: 20
                             anchors.verticalCenter: parent.verticalCenter
-                            source: "/res/user_photo.png"
-
-                        }
-                        Image{
-                            id:user_profile_image
-                            anchors.fill: user_image
-                            width: 75
-                            height: 75
-                            visible: true
-                            source: image_file_dialog.fileUrl
-                            fillMode: Image.PreserveAspectCrop
-                            layer.enabled: true
-                            layer.effect: OpacityMask {
-                                maskSource: user_image
-                            }
-                        }
-                        MouseArea{
-                            anchors.fill: parent
-                            onClicked: {
-                                image_file_dialog.open()
-                                //user_profile_image.source = image_file_dialog.fileUrl
-                            }
+                            source: "/res/organization.png"//"qrc:/../../../../Downloads/organization.png"
                         }
                     }
-
-                    Rectangle{
-                        id: scrollview
-                        width: parent.width
-                        height: parent.height / 2
-                        anchors.top: user_image.bottom
-                        anchors.topMargin: 2
-                        border.width: 1
-                        border.color: "#05324D"
+                    background: Rectangle {
+                        implicitWidth: mainWindow.width/3
+                        implicitHeight: mainWindow.height/10
                         color: "#031C28"
-                        ScrollView {
-                            anchors.fill: parent
+                        border.color: "#00FFFF"
+                        border.width: control.visualFocus ? 2 : 1
+                        radius: 2
+                    }
+                    popup: Popup {
+                        y: control.height - 1
+                        width: control.width
+                        implicitHeight: contentItem.implicitHeight
+                        padding: 1
+                        contentItem: ListView {
                             clip: true
-                            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-                            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-                                Column{
-                                    id: column
-                                    spacing: 30
-                                    anchors.left: parent.left
-                                    anchors.leftMargin: 750
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                    Column{
-                                        spacing: 10
-                                        Label{
-                                            text: "Full Name*"
-                                            color: "white"
-                                        }
-                                        TextField{
-                                            id: user_name_text
-                                            width: mainWindow.width/3
-                                            height: mainWindow.height/10
-                                            text: ""
-                                            color: "white"
-                                            placeholderText: qsTr("Your Name")
-                                            leftPadding: 70
-                                            onTextChanged: {
-                                                user_name.border.color = "#C0C0C0"
-                                            }
-                                            background: Rectangle
-                                            {
-                                                id: user_name
-                                                anchors.fill: parent
-                                                color: "#031C28"
-                                                border.color: "#05324D"
-                                                border.width: 1.5
-                                            }
-                                            Image {
-                                                fillMode: Image.PreserveAspectFit
-                                                source: "/res/user_image.png"
-                                                anchors.left: parent.left
-                                                anchors.leftMargin: 12
-                                                anchors.verticalCenter: parent.verticalCenter
-                                            }
-                                        }
-                                    }
-                                    Column{
-                                        spacing: 10
-                                        Label{
-                                            text: "Email Address*"
-                                            color: "white"
-                                        }
-                                        TextField{
-                                            id: user_mail_text
-                                            width: mainWindow.width/3
-                                            height: mainWindow.height/10
-                                            text: ""
-                                            color: "white"
-                                            placeholderText: qsTr("example@gmail.com")
-                                            inputMethodHints: Qt.ImhEmailCharactersOnly
-                                            //validator: RegExpValidator{regExp:/[A-Z0-9a-z._-]{1,}@(\\w+)(\\.(\\w+))(\\.(\\w+))?(\\.(\\w+))?$"*/}
-                                            leftPadding: 70
-                                            onTextChanged: {
-                                                user_mail.border.color = "#C0C0C0"
-                                            }
-                                            background: Rectangle
-                                            {
-                                                id: user_mail
-                                                anchors.fill: parent
-                                                color: "#031C28"
-                                                border.color: "#05324D"
-                                                border.width: 1.5
-                                            }
-                                            Image {
-                                                fillMode: Image.PreserveAspectFit
-                                                source: "/res/mailLogo.png"
-                                                anchors.left: parent.left
-                                                anchors.leftMargin: 12
-                                                anchors.verticalCenter: parent.verticalCenter
-                                            }
-                                        }
-                                    }
-                                    Column{
-                                        spacing: 10
-                                        Label{
-                                            text: "Mobile Number*"
-                                            color: "white"
-                                        }
-                                        TextField{
-                                            id: user_number_text
-                                            width: mainWindow.width/3
-                                            height: mainWindow.height/10
-                                            text: ""
-                                            color: "white"
-                                            maximumLength: 10
-                                            placeholderText: qsTr("Your Mobile Number")
-                                            leftPadding: 160
-                                            validator: RegExpValidator{regExp: /[0-9,/]*/}
-                                            onTextChanged: {
-                                                user_number.border.color = "#C0C0C0"
-                                            }
-                                            background: Rectangle
-                                            {
-                                                id: user_number
-                                                anchors.fill: parent
-                                                color: "#031C28"
-                                                border.color: "#05324D"
-                                                border.width: 1.5
-                                            }
-                                            Image {
-                                                id:image
-                                                fillMode: Image.PreserveAspectFit
-                                                source: "/res/user_phone.png"
-                                                anchors.left: parent.left
-                                                anchors.leftMargin: 15
-                                                anchors.verticalCenter: parent.verticalCenter
-                                            }
-                                            Label {
-                                                anchors.left: image.right
-                                                anchors.leftMargin:3
-                                                anchors.verticalCenter: parent.verticalCenter
-                                                text: "+91"
-                                                color: "white"
-                                            }
-                                        }
-                                    }
+                            implicitHeight: contentHeight
+                            model: control.popup.visible ? control.delegateModel : null
+                            currentIndex: control.highlightedIndex
 
-
-                                    Column{
-                                        spacing: 10
-                                        Label{
-                                            text: "Address Line*"
-                                            color: "white"
-                                        }
-                                        TextField{
-                                            id: user_address_text
-                                            width: mainWindow.width/3
-                                            height: mainWindow.height/10
-                                            text: ""
-                                            color: "white"
-                                            placeholderText: qsTr("Your Address")
-                                            leftPadding: 70
-                                            onTextChanged: {
-                                                user_address.border.color = "#C0C0C0"
-                                            }
-                                            background: Rectangle
-                                            {
-                                                id: user_address
-                                                anchors.fill: parent
-                                                color: "#031C28"
-                                                border.color: "#05324D"
-                                                border.width: 1.5
-                                            }
-                                            Image {
-                                                fillMode: Image.PreserveAspectFit
-                                                source: "/res/user_location.png"
-                                                anchors.left: parent.left
-                                                anchors.leftMargin: 12
-                                                anchors.verticalCenter: parent.verticalCenter
-                                            }
-                                        }
-                                    }
-                                    Column{
-                                        spacing: 10
-                                        Label{
-                                            text: "Locality*"
-                                            color: "white"
-                                        }
-                                        TextField{
-                                            id: user_locality_text
-                                            width: mainWindow.width/3
-                                            height: mainWindow.height/10
-                                            text: ""
-                                            color: "white"
-                                            placeholderText: qsTr("Your Locality")
-                                            leftPadding: 70
-                                            onTextChanged: {
-                                                user_locality.border.color = "#C0C0C0"
-                                            }
-                                            background: Rectangle
-                                            {
-                                                id: user_locality
-                                                anchors.fill: parent
-                                                color: "#031C28"
-                                                border.color: "#05324D"
-                                                border.width: 1.5
-                                            }
-                                            Image {
-                                                fillMode: Image.PreserveAspectFit
-                                                source: "/res/user_locality.png"
-                                                anchors.left: parent.left
-                                                anchors.leftMargin: 12
-                                                anchors.verticalCenter: parent.verticalCenter
-                                            }
-                                        }
-                                    }
-                                    Column{
-                                        spacing: 10
-                                        Label{
-                                            text: "Password*"
-                                            color: "white"
-                                        }
-                                        TextField{
-                                            id: user_password_text
-                                            width: mainWindow.width/3
-                                            height: mainWindow.height/10
-                                            text: ""
-                                            color: "white"
-                                            placeholderText: qsTr("password")
-                                            leftPadding: 70
-                                            rightPadding: 50
-                                            echoMode: TextInput.Password
-                                            onTextChanged: {
-                                                user_password.border.color = "#C0C0C0"
-                                            }
-                                            background: Rectangle
-                                            {
-                                                id: user_password
-                                                anchors.fill: parent
-                                                color: "#031C28"
-                                                border.color: "#05324D"
-                                                border.width: 1.5
-                                            }
-                                            Image {
-                                                fillMode: Image.PreserveAspectFit
-                                                source: "/res/password.png"
-                                                anchors.left: parent.left
-                                                anchors.leftMargin: 8
-                                                anchors.verticalCenter: parent.verticalCenter
-                                            }
-                                            Image {
-                                                id: password_hide_image1
-                                                fillMode: Image.PreserveAspectFit
-                                                source: "/res/password_hide.png"
-                                                anchors.right: parent.right
-                                                anchors.rightMargin: 12
-                                                anchors.verticalCenter: parent.verticalCenter
-                                                MouseArea{
-                                                    anchors.fill: parent
-                                                    onClicked: {
-                                                        password_hide_image1.visible = false
-                                                        password_show_image1.visible = true
-                                                        user_password_text.echoMode = TextInput.Normal
-                                                    }
-                                                }
-                                            }
-                                            Image {
-                                                id: password_show_image1
-                                                visible: false
-                                                fillMode: Image.PreserveAspectFit
-                                                source: "/res/password_show.png"
-                                                anchors.right: parent.right
-                                                anchors.rightMargin: 12
-                                                anchors.verticalCenter: parent.verticalCenter
-                                                MouseArea{
-                                                    anchors.fill: parent
-                                                    onClicked: {
-                                                        password_show_image1.visible = false
-                                                        password_hide_image1.visible = true
-                                                        user_password_text.echoMode = TextInput.Password
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        Label{
-                                            text: "*Password must be at least 6 characters"
-                                            color: "white"
-                                            font.pointSize:ScreenTools.smallFontPointSize
-                                        }
-
-                                    }
-                                }
-                            }
-
-                    }
-                    Column{
-                        anchors.top: scrollview.bottom
-                        anchors.topMargin: 30
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        spacing: 10
-                        Button {
-                            Text{
-                                text: "Verify Account ->"
-                                font.pointSize: ScreenTools.defaultFontPointSize
-                                font.bold: true
-                                anchors.centerIn: parent
-                                color: "white"
-                            }
-                            background: Rectangle {
-                                id: verify_account_button
-                                implicitWidth: mainWindow.width/4
-                                implicitHeight:  mainWindow.height/10
-                                color: "#F25822"
-                                radius: 4
-                            }
-                            onPressed: {
-                                verify_account_button.color = "#05324D"
-                            }
-                            onReleased: {
-                                verify_account_button.color = "#F25822"
-                            }
-                            onClicked: {
-                                if(user_name_text.text == ""
-                                        || user_mail_text.text == ""
-                                        || user_number_text.text == ""
-                                        || user_address_text.text == ""
-                                        || user_locality_text.text == ""
-                                        || user_password_text.text == ""
-                                        || user_profile_image.source == ""){
-                                    enter_all_fields.open()
-                                }
-                                else{
-                                    if(user_password_text.text.length < 6){
-                                        password_length_error_dialog.open()
-                                    }
-                                    else{
-                                        second_user_details_page.visible = false
-                                        third_user_details_page.visible = true
-                                        new_user_image_rect.source = "/res/otp.png"
-                                        second_circle_text.text = "/"
-                                        second_circle.color = "green"
-                                        third_circle.color = "#F25822"
-                                        password_hide_image1.visible = true
-                                        password_show_image1.visible = false
-                                    }
-                                }
-                            }
+                            ScrollIndicator.vertical: ScrollIndicator { }
                         }
-                        Label{
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            text: "PREVIOUS STEP"
-                            font.pointSize:ScreenTools.defaultFontPointSize
-                            font.bold: true
-                            color: "white"
-                            MouseArea{
-                                anchors.fill: parent
-                                onClicked: {
-                                    first_circle_text.text = "1"
-                                    second_circle_text.text = "2"
-                                    first_circle.color = "#F25822"
-                                    second_circle.color = "#031C28"
-                                    second_user_details_page.visible = false
-                                    first_user_details_page.visible = true
-                                    user_name_text.text == ""
-                                    user_mail_text.text == ""
-                                    user_number_text.text == ""
-                                    user_address_text.text == ""
-                                    user_locality_text.text == ""
-                                    user_password_text.text == ""
-                                    control.currentIndex = -1
-                                    control_role.currentIndex = -1
-                                    user_image.color = "white"
-                                    password_hide_image1.visible = true
-                                    password_show_image1.visible = false
-                                    new_user_image_rect.source = "/res/First Time Signup screen.png"
-                                }
-                            }
+                        background: Rectangle {
+                            border.color: "#00FFFF"
+                            radius: 2
+                        }
+                    }
+
+                }
+                Label{
+                    text: "Select Your Role*"
+                    color: "white"
+                    font.pointSize:ScreenTools.defaultFontPointSize
+                }
+                ComboBox {
+                    id: control_role
+                    model: ["OEM","PILOT","OPERTAOR"]
+                    width: mainWindow.width/3
+                    height: mainWindow.height/10
+                    currentIndex: -1
+                    displayText: currentIndex === -1 ? "Select Role" : currentText
+                    delegate: ItemDelegate {
+                        width: control_role.width
+                        contentItem: Text {
+                            text: control_role.textRole
+                                  ? (Array.isArray(control_role.model) ? modelData[control_role.textRole] : model[control_role.textRole])
+                                  : modelData
+                            color: "black"
+                            font: control_role.font
+                            elide: Text.ElideRight
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        highlighted: control_role.highlightedIndex === index
+                    }
+                    indicator: Canvas {
+                        id: canvas_role
+                        x: control_role.width - width - control_role.rightPadding
+                        y: control_role.topPadding + (control_role.availableHeight - height) / 2
+                        width: 20
+                        height: 20
+                        contextType: "2d"
+                        Connections {
+                            target: control_role
+                            function onPressedChanged() { canvas_role.requestPaint(); }
+                        }
+                        onPaint: {
+                            context.reset();
+                            context.moveTo(0, 0);
+                            context.lineTo(width, 0);
+                            context.lineTo(width / 2, height);
+                            context.closePath();
+                            context.fillStyle = "white"
+                            context.fill();
+                        }
+                    }
+                    contentItem: Text {
+                        id: combobox_role_text
+                        leftPadding: 80
+                        rightPadding: control_role.indicator.width + control_role.spacing
+                        text: control_role.displayText
+                        font: control_role.font
+                        color: "white"
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                        Image{
+                            id: role_image
+                            anchors.left: parent.left
+                            anchors.leftMargin: 20
+                            anchors.verticalCenter: parent.verticalCenter
+                            source: "/res/role.png"//"qrc:/../../../../Downloads/organization.png"
+                        }
+                    }
+                    background: Rectangle {
+                        implicitWidth: mainWindow.width/3
+                        implicitHeight: mainWindow.height/10
+                        color: "#031C28"
+                        border.color: "#00FFFF"
+                        border.width: control_role.visualFocus ? 2 : 1
+                        radius: 2
+                    }
+                    popup: Popup {
+                        y: control_role.height - 1
+                        width: control_role.width
+                        implicitHeight: contentItem.implicitHeight
+                        padding: 1
+                        contentItem: ListView {
+                            clip: true
+                            implicitHeight: contentHeight
+                            model: control_role.popup.visible ? control_role.delegateModel : null
+                            currentIndex: control_role.highlightedIndex
+
+                            ScrollIndicator.vertical: ScrollIndicator { }
+                        }
+                        background: Rectangle {
+                            border.color: "#00FFFF"
+                            radius: 2
                         }
                     }
                 }
-                Rectangle{
-                    id: third_user_details_page
-                    visible: false
-                    width: parent.width
-                    anchors.top: circle_row.bottom
-                    anchors.topMargin: 20
-                    height: parent.height
-                    color: "#031C28"
-                    Label{
-                        id: otp_label
-                        anchors.top: parent.top
-                        anchors.topMargin: 40
-                        anchors.left: parent.left
-                        anchors.leftMargin: 20
-                        text: "Please enter the"
-                        color: "white"
-                        font.pointSize:ScreenTools.defaultFontPointSize
-                        Label{
-                            anchors.left: parent.right
-                            anchors.leftMargin: 3
-                            text: "One Time Password"
-                            color: "#00FFFF"
-                            font.pointSize:ScreenTools.defaultFontPointSize
-                        }
-                    }
-                    Row{
-                        id: otp_row
-                        spacing: 30
-                        anchors.top: otp_label.bottom
-                        anchors.topMargin: 30
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        TextField{
-                            height: mainWindow.height/12
-                            width: height
-                            text: ""
-                            color: "white"
-                            maximumLength: 1
-                            onTextChanged: {
-                                otp.border.color = "green"
-                            }
-                            background: Rectangle
-                            {
-                                id: otp
-                                anchors.fill: parent
-                                color: "#031C28"
-                                border.color: "#05324D"
-                                border.width: 2
-                            }
-                        }
-                        TextField{
-                            height: mainWindow.height/12
-                            width: height
-                            text: ""
-                            color: "white"
-                            maximumLength: 1
-                            onTextChanged: {
-                                otp1.border.color = "green"
-                            }
-                            background: Rectangle
-                            {
-                                id: otp1
-                                anchors.fill: parent
-                                color: "#031C28"
-                                border.color: "#05324D"
-                                border.width: 2
-                            }
-                        }
-                        TextField{
-                            height: mainWindow.height/12
-                            width: height
-                            text: ""
-                            color: "white"
-                            maximumLength: 1
-                            onTextChanged: {
-                                otp2.border.color = "green"
-                            }
-                            background: Rectangle
-                            {
-                                id: otp2
-                                anchors.fill: parent
-                                color: "#031C28"
-                                border.color: "#05324D"
-                                border.width: 2
-                            }
-                        }
-                        TextField{
-                            height: mainWindow.height/12
-                            width: height
-                            text: ""
-                            color: "white"
-                            maximumLength: 1
-                            onTextChanged: {
-                                otp3.border.color = "green"
-                            }
-                            background: Rectangle
-                            {
-                                id: otp3
-                                anchors.fill: parent
-                                color: "#031C28"
-                                border.color: "#05324D"
-                                border.width: 2
-                            }
-                        }
-                        TextField{
-                            height: mainWindow.height/12
-                            width: height
-                            text: ""
-                            color: "white"
-                            maximumLength: 1
-                            onTextChanged: {
-                                otp4.border.color = "green"
-                            }
-                            background: Rectangle
-                            {
-                                id: otp4
-                                anchors.fill: parent
-                                color: "#031C28"
-                                border.color: "#05324D"
-                                border.width: 2
-                            }
-                        }
-                        TextField{
-                            height: mainWindow.height/12
-                            width: height
-                            text: ""
-                            color: "white"
-                            maximumLength: 1
-                            onTextChanged: {
-                                otp5.border.color = "green"
-                            }
-                            background: Rectangle
-                            {
-                                id: otp5
-                                anchors.fill: parent
-                                color: "#031C28"
-                                border.color: "#05324D"
-                                border.width: 2
-                            }
-                        }
-                    }
-                    Row{
-                        id: otp_error
-                        spacing: 110
-                        anchors.top: otp_row.bottom
-                        anchors.topMargin: 40
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        Label{
-                            text: "Didn't get the OTP"
-                            color: "white"
-                        }
-                        Label{
-                            text: "Reset Code"
-                            color: "#F25822"
-                        }
-                    }
-                    Column{
-                        id: otp_column
-                        spacing: 100
-                        anchors.top: otp_error.bottom
-                        anchors.topMargin: 90
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        Label{
-                            text: "OTP has been sent to your Mobile"
-                            color: "white"
-                            Label{
-                                anchors.top: parent.bottom
-                                anchors.topMargin: 10
-                                text: "Registered with Go Drona"
-                                color: "white"
-                            }
-                        }
-                        Button {
-                            Text{
-                                text: "Verify Now ->"
-                                font.pointSize:ScreenTools.defaultFontPointSize
-                                font.bold: true
-                                anchors.centerIn: parent
-                                color: "white"
-                            }
-                            background: Rectangle {
-                                id: verify_now_button
-                                implicitWidth: mainWindow.width/3
-                                implicitHeight:  mainWindow.height/10
-                                color: "#F25822"
-                                radius: 4
-                            }
-                            onPressed: {
-                                verify_now_button.color = "#05324D"
-                            }
-                            onReleased: {
-                                verify_now_button.color = "#F25822"
-                            }
-                            onClicked: {
-                                database_access.new_user_registration(combobox_text.text,combobox_role_text.text,user_name_text.text,user_mail_text.text,user_number_text.text,user_address_text.text,user_locality_text.text,user_password_text.text)
-                                control.currentIndex = -1
-                                control_role.currentIndex = -1
-                                user_name_text.text = ''
-                                user_mail_text.text = ''
-                                user_number_text.text = ''
-                                user_address_text.text = ''
-                                user_locality_text.text = ''
-                                user_password_text.text = ''
-                                user_image.color = "white"
-                                user_profile_image.source == ""
-                                user_profile_image.visible = false
-                            }
-                        }
-                    }
-                    Label{
-                        anchors.top: otp_column.bottom
-                        anchors.topMargin: 60
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        text: "PREVIOUS STEP"
-                        font.bold: true
-                        color: "white"
-                        font.pointSize:ScreenTools.defaultFontPointSize
-                        MouseArea{
-                            anchors.fill: parent
-                            onClicked: {
-                                second_circle_text.text = "2"
-                                second_circle.color = "#031C28"
-                                third_circle.color = "#031C28"
-                                third_user_details_page.visible = false
-                                second_user_details_page.visible = true
-                                new_user_image_rect.source = "/res/user_details.png"
-                            }
-                        }
-                    }
-                }
-                Image{
-                    id: back_to_login_logo
-                    anchors.bottom: parent.bottom
+                Button {
+                    anchors.top: first_user_details_page.bottom
+                    anchors.topMargin: 100
                     anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.bottomMargin: 90
-                    width: 90
-                    height: 90
-                    source: "/res/backtologin-removebg-preview.png"
-                    Label{
-                        anchors.top: parent.bottom
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        text: "Already have an account ?"
+                    Text{
+                        text: "Next Step ->"
+                        font.pointSize:ScreenTools.defaultFontPointSize
+                        font.bold: true
+                        anchors.centerIn: parent
                         color: "white"
                     }
-                    MouseArea{
-                        anchors.fill: parent
-                        onClicked: {
-                            new_user_first_page.visible = false
-                            login_page_rectangle.visible = true
+                    background: Rectangle {
+                        id: next_step_submit_button
+                        implicitWidth:  mainWindow.width/3
+                        implicitHeight: mainWindow.height/10
+                        color: "#F25822"
+                        radius: 4
+                    }
+                    onPressed: {
+                        next_step_submit_button.color = "#05324D"
+                    }
+                    onReleased: {
+                        next_step_submit_button.color = "#F25822"
+                    }
+                    onClicked: {
+                        if(combobox_text.text === "Select Industry Type" || control.currentIndex === -1){
+                            selectIndustryDialog.open()
+                        }
+                        else if(combobox_role_text.text == "Select Role" || control_role.currentIndex == -1){
+                            selectRoleDialog.open()
+                        }
+
+                        else{
+                            back_to_login_logo.visible = false
+                            first_user_details_page.visible = false
+                            second_user_details_page.visible = true
+                            new_user_image_rect.source = "/res/user_details.png"
+                            first_circle_text.text = "/"
+                            first_circle.color = "green"
+                            second_circle.color = "#F25822"
+                            user_profile_image.source = "/res/user_photo.png"
+                            //control.currentIndex = -1
                         }
                     }
                 }
             }
+        }
+        Rectangle{
+            id: second_user_details_page
+            visible: false
+            width: parent.width
+            anchors.top: circle_row.bottom
+            anchors.topMargin: 20
+            height: parent.height
+            color: "#031C28"
+            Label {
+                text: "Upload Your Image*"
+                anchors.left: user_image.right
+                anchors.leftMargin: 10
+                anchors.top: parent.top
+                anchors.topMargin: 25
+                color: "white"
+            }
+            Rectangle{
+                id: user_image
+                height: mainWindow.height/10
+                width: height
+                radius: width / 2
+                color: "white"
+                clip: true
+                anchors.horizontalCenter: parent.horizontalCenter
+                Image{
+                    anchors.fill: user_image
+                    anchors.verticalCenter: parent.verticalCenter
+                    source: "/res/user_photo.png"
+
+                }
+                Image{
+                    id:user_profile_image
+                    anchors.fill: user_image
+                    width: 75
+                    height: 75
+                    visible: true
+                    source: image_file_dialog.fileUrl
+                    fillMode: Image.PreserveAspectCrop
+                    layer.enabled: true
+                    layer.effect: OpacityMask {
+                        maskSource: user_image
+                    }
+                }
+                MouseArea{
+                    anchors.fill: parent
+                    onClicked: {
+                        image_file_dialog.open()
+                        //user_profile_image.source = image_file_dialog.fileUrl
+                    }
+                }
+            }
+
+            Rectangle{
+                id: scrollview
+                width: parent.width
+                height: parent.height / 2
+                anchors.top: user_image.bottom
+                anchors.topMargin: 2
+                border.width: 1
+                border.color: "#05324D"
+                color: "#031C28"
+                //ScrollView {
+                Flickable {
+                    id: flickable
+                    anchors.fill: parent
+                    contentWidth: column.width // Set content width to allow horizontal scrolling if needed
+                    clip: true
+                    contentHeight: column.height // Set content height to enable vertical scrolling
+
+                    ScrollBar.vertical: ScrollBar {
+                        policy: ScrollBar.AlwaysOn
+                        size: flickable.height / flickable.contentHeight
+                        position: flickable.contentY / flickable.contentHeight
+                        interactive: true
+                    }
+                    Column{
+                        id: column
+                        spacing: 30
+                        anchors.left: parent.left
+                        anchors.leftMargin: 750
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        Column{
+                            spacing: 10
+                            Label{
+                                text: "Full Name*"
+                                color: "white"
+                            }
+                            TextField{
+                                id: user_name_text
+                                width: mainWindow.width/3
+                                height: mainWindow.height/10
+                                text: ""
+                                color: "white"
+                                placeholderText: qsTr("Your Name")
+                                leftPadding: 70
+                                onTextChanged: {
+                                    user_name.border.color = "#C0C0C0"
+                                }
+                                background: Rectangle
+                                {
+                                    id: user_name
+                                    anchors.fill: parent
+                                    color: "#031C28"
+                                    border.color: "#05324D"
+                                    border.width: 1.5
+                                }
+                                Image {
+                                    fillMode: Image.PreserveAspectFit
+                                    source: "/res/user_image.png"
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+                        }
+                        Column{
+                            spacing: 10
+                            Label{
+                                text: "Email Address*"
+                                color: "white"
+                            }
+                            TextField{
+                                id: user_mail_text
+                                width: mainWindow.width/3
+                                height: mainWindow.height/10
+                                text: ""
+                                color: "white"
+                                placeholderText: qsTr("example@gmail.com")
+                                inputMethodHints: Qt.ImhEmailCharactersOnly
+                                //validator: RegExpValidator{regExp:/[A-Z0-9a-z._-]{1,}@(\\w+)(\\.(\\w+))(\\.(\\w+))?(\\.(\\w+))?$"*/}
+                                leftPadding: 70
+                                onTextChanged: {
+                                    user_mail.border.color = "#C0C0C0"
+                                }
+                                background: Rectangle
+                                {
+                                    id: user_mail
+                                    anchors.fill: parent
+                                    color: "#031C28"
+                                    border.color: "#05324D"
+                                    border.width: 1.5
+                                }
+                                Image {
+                                    fillMode: Image.PreserveAspectFit
+                                    source: "/res/mailLogo.png"
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+                        }
+                        Column{
+                            spacing: 10
+                            Label{
+                                text: "Mobile Number*"
+                                color: "white"
+                            }
+                            TextField{
+                                id: user_number_text
+                                width: mainWindow.width/3
+                                height: mainWindow.height/10
+                                text: ""
+                                color: "white"
+                                maximumLength: 10
+                                placeholderText: qsTr("Your Mobile Number")
+                                leftPadding: 160
+                                validator: RegExpValidator{regExp: /[0-9,/]*/}
+                                onTextChanged: {
+                                    user_number.border.color = "#C0C0C0"
+                                }
+                                background: Rectangle
+                                {
+                                    id: user_number
+                                    anchors.fill: parent
+                                    color: "#031C28"
+                                    border.color: "#05324D"
+                                    border.width: 1.5
+                                }
+                                Image {
+                                    id:image
+                                    fillMode: Image.PreserveAspectFit
+                                    source: "/res/user_phone.png"
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 15
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                                Label {
+                                    anchors.left: image.right
+                                    anchors.leftMargin:3
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: "+91"
+                                    color: "white"
+                                }
+                            }
+                        }
+
+
+                        Column{
+                            spacing: 10
+                            Label{
+                                text: "Address Line*"
+                                color: "white"
+                            }
+                            TextField{
+                                id: user_address_text
+                                width: mainWindow.width/3
+                                height: mainWindow.height/10
+                                text: ""
+                                color: "white"
+                                placeholderText: qsTr("Your Address")
+                                leftPadding: 70
+                                onTextChanged: {
+                                    user_address.border.color = "#C0C0C0"
+                                }
+                                background: Rectangle
+                                {
+                                    id: user_address
+                                    anchors.fill: parent
+                                    color: "#031C28"
+                                    border.color: "#05324D"
+                                    border.width: 1.5
+                                }
+                                Image {
+                                    fillMode: Image.PreserveAspectFit
+                                    source: "/res/user_location.png"
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+                        }
+                        Column{
+                            spacing: 10
+                            Label{
+                                text: "Locality*"
+                                color: "white"
+                            }
+                            TextField{
+                                id: user_locality_text
+                                width: mainWindow.width/3
+                                height: mainWindow.height/10
+                                text: ""
+                                color: "white"
+                                placeholderText: qsTr("Your Locality")
+                                leftPadding: 70
+                                onTextChanged: {
+                                    user_locality.border.color = "#C0C0C0"
+                                }
+                                background: Rectangle
+                                {
+                                    id: user_locality
+                                    anchors.fill: parent
+                                    color: "#031C28"
+                                    border.color: "#05324D"
+                                    border.width: 1.5
+                                }
+                                Image {
+                                    fillMode: Image.PreserveAspectFit
+                                    source: "/res/user_locality.png"
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+                        }
+                        Column{
+                            spacing: 10
+                            Label{
+                                text: "Password*"
+                                color: "white"
+                            }
+                            TextField{
+                                id: user_password_text
+                                width: mainWindow.width/3
+                                height: mainWindow.height/10
+                                text: ""
+                                color: "white"
+                                placeholderText: qsTr("password")
+                                leftPadding: 70
+                                rightPadding: 50
+                                echoMode: TextInput.Password
+                                onTextChanged: {
+                                    user_password.border.color = "#C0C0C0"
+                                }
+                                background: Rectangle
+                                {
+                                    id: user_password
+                                    anchors.fill: parent
+                                    color: "#031C28"
+                                    border.color: "#05324D"
+                                    border.width: 1.5
+                                }
+                                Image {
+                                    fillMode: Image.PreserveAspectFit
+                                    source: "/res/password.png"
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 8
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                                Image {
+                                    id: password_hide_image1
+                                    fillMode: Image.PreserveAspectFit
+                                    source: "/res/password_hide.png"
+                                    anchors.right: parent.right
+                                    anchors.rightMargin: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    MouseArea{
+                                        anchors.fill: parent
+                                        onClicked: {
+                                            password_hide_image1.visible = false
+                                            password_show_image1.visible = true
+                                            user_password_text.echoMode = TextInput.Normal
+                                        }
+                                    }
+                                }
+                                Image {
+                                    id: password_show_image1
+                                    visible: false
+                                    fillMode: Image.PreserveAspectFit
+                                    source: "/res/password_show.png"
+                                    anchors.right: parent.right
+                                    anchors.rightMargin: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    MouseArea{
+                                        anchors.fill: parent
+                                        onClicked: {
+                                            password_show_image1.visible = false
+                                            password_hide_image1.visible = true
+                                            user_password_text.echoMode = TextInput.Password
+                                        }
+                                    }
+                                }
+                            }
+                            Label{
+                                text: "*Password must be at least 6 characters"
+                                color: "white"
+                                font.pointSize:ScreenTools.smallFontPointSize
+                            }
+
+                        }
+                    }
+                }
+
+            }
+            Column{
+                anchors.top: scrollview.bottom
+                anchors.topMargin: 30
+                anchors.horizontalCenter: parent.horizontalCenter
+                spacing: 10
+                Button {
+                    Text{
+                        text: "Verify Account ->"
+                        font.pointSize: ScreenTools.defaultFontPointSize
+                        font.bold: true
+                        anchors.centerIn: parent
+                        color: "white"
+                    }
+                    background: Rectangle {
+                        id: verify_account_button
+                        implicitWidth: mainWindow.width/4
+                        implicitHeight:  mainWindow.height/10
+                        color: "#F25822"
+                        radius: 4
+                    }
+                    onPressed: {
+                        verify_account_button.color = "#05324D"
+                    }
+                    onReleased: {
+                        verify_account_button.color = "#F25822"
+                    }
+                    onClicked: {
+                        if(user_name_text.text == ""
+                                || user_mail_text.text == ""
+                                || user_number_text.text == ""
+                                || user_address_text.text == ""
+                                || user_locality_text.text == ""
+                                || user_password_text.text == ""
+                                || user_profile_image.source == ""){
+                            enter_all_fields.open()
+                        }
+                        else{
+                            if(user_password_text.text.length < 6){
+                                password_length_error_dialog.open()
+                            }
+                            else{
+                                second_user_details_page.visible = false
+                                third_user_details_page.visible = true
+                                new_user_image_rect.source = "/res/otp.png"
+                                second_circle_text.text = "/"
+                                second_circle.color = "green"
+                                third_circle.color = "#F25822"
+                                password_hide_image1.visible = true
+                                password_show_image1.visible = false
+                            }
+                        }
+                    }
+                }
+                Label{
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: "PREVIOUS STEP"
+                    font.pointSize:ScreenTools.defaultFontPointSize
+                    font.bold: true
+                    color: "white"
+                    MouseArea{
+                        anchors.fill: parent
+                        onClicked: {
+                            first_circle_text.text = "1"
+                            second_circle_text.text = "2"
+                            first_circle.color = "#F25822"
+                            second_circle.color = "#031C28"
+                            second_user_details_page.visible = false
+                            first_user_details_page.visible = true
+                            user_name_text.text == ""
+                            user_mail_text.text == ""
+                            user_number_text.text == ""
+                            user_address_text.text == ""
+                            user_locality_text.text == ""
+                            user_password_text.text == ""
+                            control.currentIndex = -1
+                            control_role.currentIndex = -1
+                            user_image.color = "white"
+                            password_hide_image1.visible = true
+                            password_show_image1.visible = false
+                            new_user_image_rect.source = "/res/First Time Signup screen.png"
+                        }
+                    }
+                }
+            }
+        }
+        Rectangle{
+            id: third_user_details_page
+            visible: false
+            width: parent.width
+            anchors.top: circle_row.bottom
+            anchors.topMargin: 20
+            height: parent.height
+            color: "#031C28"
+            Label{
+                id: otp_label
+                anchors.top: parent.top
+                anchors.topMargin: 40
+                anchors.left: parent.left
+                anchors.leftMargin: 20
+                text: "Please enter the"
+                color: "white"
+                font.pointSize:ScreenTools.defaultFontPointSize
+                Label{
+                    anchors.left: parent.right
+                    anchors.leftMargin: 3
+                    text: "One Time Password"
+                    color: "#00FFFF"
+                    font.pointSize:ScreenTools.defaultFontPointSize
+                }
+            }
+            Row{
+                id: otp_row
+                spacing: 30
+                anchors.top: otp_label.bottom
+                anchors.topMargin: 30
+                anchors.horizontalCenter: parent.horizontalCenter
+                TextField{
+                    height: mainWindow.height/12
+                    width: height
+                    text: ""
+                    color: "white"
+                    maximumLength: 1
+                    onTextChanged: {
+                        otp.border.color = "green"
+                    }
+                    background: Rectangle
+                    {
+                        id: otp
+                        anchors.fill: parent
+                        color: "#031C28"
+                        border.color: "#05324D"
+                        border.width: 2
+                    }
+                }
+                TextField{
+                    height: mainWindow.height/12
+                    width: height
+                    text: ""
+                    color: "white"
+                    maximumLength: 1
+                    onTextChanged: {
+                        otp1.border.color = "green"
+                    }
+                    background: Rectangle
+                    {
+                        id: otp1
+                        anchors.fill: parent
+                        color: "#031C28"
+                        border.color: "#05324D"
+                        border.width: 2
+                    }
+                }
+                TextField{
+                    height: mainWindow.height/12
+                    width: height
+                    text: ""
+                    color: "white"
+                    maximumLength: 1
+                    onTextChanged: {
+                        otp2.border.color = "green"
+                    }
+                    background: Rectangle
+                    {
+                        id: otp2
+                        anchors.fill: parent
+                        color: "#031C28"
+                        border.color: "#05324D"
+                        border.width: 2
+                    }
+                }
+                TextField{
+                    height: mainWindow.height/12
+                    width: height
+                    text: ""
+                    color: "white"
+                    maximumLength: 1
+                    onTextChanged: {
+                        otp3.border.color = "green"
+                    }
+                    background: Rectangle
+                    {
+                        id: otp3
+                        anchors.fill: parent
+                        color: "#031C28"
+                        border.color: "#05324D"
+                        border.width: 2
+                    }
+                }
+                TextField{
+                    height: mainWindow.height/12
+                    width: height
+                    text: ""
+                    color: "white"
+                    maximumLength: 1
+                    onTextChanged: {
+                        otp4.border.color = "green"
+                    }
+                    background: Rectangle
+                    {
+                        id: otp4
+                        anchors.fill: parent
+                        color: "#031C28"
+                        border.color: "#05324D"
+                        border.width: 2
+                    }
+                }
+                TextField{
+                    height: mainWindow.height/12
+                    width: height
+                    text: ""
+                    color: "white"
+                    maximumLength: 1
+                    onTextChanged: {
+                        otp5.border.color = "green"
+                    }
+                    background: Rectangle
+                    {
+                        id: otp5
+                        anchors.fill: parent
+                        color: "#031C28"
+                        border.color: "#05324D"
+                        border.width: 2
+                    }
+                }
+            }
+            Row{
+                id: otp_error
+                spacing: 110
+                anchors.top: otp_row.bottom
+                anchors.topMargin: 40
+                anchors.horizontalCenter: parent.horizontalCenter
+                Label{
+                    text: "Didn't get the OTP"
+                    color: "white"
+                }
+                Label{
+                    text: "Reset Code"
+                    color: "#F25822"
+                }
+            }
+            Column{
+                id: otp_column
+                spacing: 100
+                anchors.top: otp_error.bottom
+                anchors.topMargin: 90
+                anchors.horizontalCenter: parent.horizontalCenter
+                Label{
+                    text: "OTP has been sent to your Mobile"
+                    color: "white"
+                    Label{
+                        anchors.top: parent.bottom
+                        anchors.topMargin: 10
+                        text: "Registered with Go Drona"
+                        color: "white"
+                    }
+                }
+                Button {
+                    Text{
+                        text: "Verify Now ->"
+                        font.pointSize:ScreenTools.defaultFontPointSize
+                        font.bold: true
+                        anchors.centerIn: parent
+                        color: "white"
+                    }
+                    background: Rectangle {
+                        id: verify_now_button
+                        implicitWidth: mainWindow.width/3
+                        implicitHeight:  mainWindow.height/10
+                        color: "#F25822"
+                        radius: 4
+                    }
+                    onPressed: {
+                        verify_now_button.color = "#05324D"
+                    }
+                    onReleased: {
+                        verify_now_button.color = "#F25822"
+                    }
+                    onClicked: {
+                        database_access.new_user_registration(combobox_text.text,combobox_role_text.text,user_name_text.text,user_mail_text.text,user_number_text.text,user_address_text.text,user_locality_text.text,user_password_text.text)
+                        control.currentIndex = -1
+                        control_role.currentIndex = -1
+                        user_name_text.text = ''
+                        user_mail_text.text = ''
+                        user_number_text.text = ''
+                        user_address_text.text = ''
+                        user_locality_text.text = ''
+                        user_password_text.text = ''
+                        user_image.color = "white"
+                        user_profile_image.source == ""
+                        user_profile_image.visible = false
+                    }
+                }
+            }
+            Label{
+                anchors.top: otp_column.bottom
+                anchors.topMargin: 60
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "PREVIOUS STEP"
+                font.bold: true
+                color: "white"
+                font.pointSize:ScreenTools.defaultFontPointSize
+                MouseArea{
+                    anchors.fill: parent
+                    onClicked: {
+                        second_circle_text.text = "2"
+                        second_circle.color = "#031C28"
+                        third_circle.color = "#031C28"
+                        third_user_details_page.visible = false
+                        second_user_details_page.visible = true
+                        new_user_image_rect.source = "/res/user_details.png"
+                    }
+                }
+            }
+        }
+        Image{
+            id: back_to_login_logo
+            anchors.bottom: parent.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottomMargin: 90
+            width: 90
+            height: 90
+            source: "/res/backtologin-removebg-preview.png"
+            Label{
+                anchors.top: parent.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "Already have an account ?"
+                color: "white"
+            }
+            MouseArea{
+                anchors.fill: parent
+                onClicked: {
+                    new_user_first_page.visible = false
+                    login_page_rectangle.visible = true
+                }
+            }
+        }
+    }
 
     FileDialog {
         id: image_file_dialog
@@ -2114,6 +2125,12 @@ ApplicationWindow {
         title: "Role Type"
         text: "Please Select the Role."
     }
+    MessageDialog{
+        id: aboutDialog
+        title: "About"
+        text:"GoDrona GCS V1.0"
+        informativeText: "@2023 Casca E-Connect Private Limited"
+    }
 
     MessageDialog {
         id: userRegisteredDialog
@@ -2143,7 +2160,7 @@ ApplicationWindow {
 
         }
 
-     }
+    }
     MessageDialog {
         id: mailrecord_Dialog
         title: "Already Registered Mail"
@@ -2158,30 +2175,30 @@ ApplicationWindow {
     MessageDialog {
         id: uinrecord_Dialog
         title: "Already used UIN"
-            text: "Entered UIN is Already Used."
+        text: "Entered UIN is Already Used."
         standardButtons: Dialog.Ok
 
     }
     MessageDialog {
         id: mailrecord_not_found
         title: "Wrong Mail ID"
-            text: "Please provide your Valid Mail Id"
+        text: "Please provide your Valid Mail Id"
     }
 
     MessageDialog {
         id: connection_not_established_dialog
         title: "Connection Lost"
-            text: "Connection not established, Please try after Sometime."
+        text: "Connection not established, Please try after Sometime."
     }
     MessageDialog {
         id: connectionLostdialog
         title: "Connection Lost"
-            text: "Connection Lost, Please check your Internet Connection."
+        text: "Connection Lost, Please check your Internet Connection."
     }
     MessageDialog {
         id: enter_all_fields
         title: "Somefield not filled"
-            text: "Please fill all the details"
+        text: "Please fill all the details"
     }
     MessageDialog {
         id: password_mismatch
@@ -2189,10 +2206,10 @@ ApplicationWindow {
         text: "Both passwords do not match"
     }
     MessageDialog {
-            id: password_length_error_dialog
-            title: "Password Length Error"
-            text: "Password Length must be greater than 6"
-        }
+        id: password_length_error_dialog
+        title: "Password Length Error"
+        text: "Password Length must be greater than 6"
+    }
     MessageDialog {
         id: password_updated
         title: "Updated"
@@ -2323,9 +2340,9 @@ ApplicationWindow {
         toolDrawer.visible      = true
     }
 
-//    function showAnalyzeTool() {
-//        showTool(qsTr("Analyze Tools"), "AnalyzeView.qml", "/qmlimages/Analyze.svg")
-//    }
+    //    function showAnalyzeTool() {
+    //        showTool(qsTr("Analyze Tools"), "AnalyzeView.qml", "/qmlimages/Analyze.svg")
+    //    }
 
     function showSetupTool() {
         showTool(qsTr("Vehicle Setup"), "SetupView.qml", "/qmlimages/Gears.svg")
@@ -2555,21 +2572,21 @@ ApplicationWindow {
                         }
                     }
 
-//                    SubMenuButton {
-//                        id:                 analyzeButton
-//                        height:             _toolButtonHeight
-//                        Layout.fillWidth:   true
-//                        text:               qsTr("Analyze Tools")
-//                        imageResource:      "/qmlimages/Analyze.svg"
-//                        imageColor:         qgcPal.text
-//                        visible:            QGroundControl.corePlugin.showAdvancedUI
-//                        onClicked: {
-//                            if (!mainWindow.preventViewSwitch()) {
-//                                toolSelectDialog.hideDialog()
-//                                mainWindow.showAnalyzeTool()
-//                            }
-//                        }
-//                    }
+                    //                    SubMenuButton {
+                    //                        id:                 analyzeButton
+                    //                        height:             _toolButtonHeight
+                    //                        Layout.fillWidth:   true
+                    //                        text:               qsTr("Analyze Tools")
+                    //                        imageResource:      "/qmlimages/Analyze.svg"
+                    //                        imageColor:         qgcPal.text
+                    //                        visible:            QGroundControl.corePlugin.showAdvancedUI
+                    //                        onClicked: {
+                    //                            if (!mainWindow.preventViewSwitch()) {
+                    //                                toolSelectDialog.hideDialog()
+                    //                                mainWindow.showAnalyzeTool()
+                    //                            }
+                    //                        }
+                    //                    }
 
                     SubMenuButton {
                         id:                 settingsButton
@@ -2915,6 +2932,7 @@ ApplicationWindow {
                             anchors.right: brand_rect.right
                             anchors.rightMargin: 20
                             text: qsTr("GoDrona GCS")
+                            font.family: "Mistral"
                             font.pointSize:ScreenTools.defaultFontPointSize * 1.1
                             font.bold: true
                             color: "white"
@@ -3019,6 +3037,7 @@ ApplicationWindow {
                                 flight_log_button.color = "#031C28"
                                 firmware_button.color = "#031C28"
                                 profile_button.color = "#031C28"
+                                about_button.color = "#031C28"
                                 manage_rpa_rectangle.visible = false
                                 flight_log_rectangle.visible = false
                                 rpa_register_page.visible = false
@@ -3072,6 +3091,7 @@ ApplicationWindow {
                                 firmware_button.color = "#031C28"
                                 profile_button.color = "#031C28"
                                 managerpa_button.color = "#F25822"
+                                about_button.color = "#031C28"
                                 manage_rpa_header1.visible = true
                                 showPanel(this,"SetupParameterEditor.qml")
                                 console.log(" width : "+table_rect.width)
@@ -3261,6 +3281,7 @@ ApplicationWindow {
                                 dashboard_button.color = "#031C28"
                                 firmware_button.color = "#031C28"
                                 profile_button.color = "#031C28"
+                                about_button.color = "#031C28"
                             }
                         }
                     }
@@ -3309,6 +3330,7 @@ ApplicationWindow {
                                 dashboard_button.color = "#031C28"
                                 flight_log_button.color = "#031C28"
                                 profile_button.color = "#031C28"
+                                about_button.color = "#031C28"
                                 rpadatabase.firmwareupgrade_data()
                             }
                         }
@@ -3361,6 +3383,7 @@ ApplicationWindow {
                                 dashboard_button.color = "#031C28"
                                 firmware_button.color = "#031C28"
                                 flight_log_button.color = "#031C28"
+                                about_button.color = "#031C28"
                                 users_profile_header1.visible = false
                                 users_information_header1.visible = true
                                 userprofile_name.text = database_access.name
@@ -3407,6 +3430,46 @@ ApplicationWindow {
                         }
                     }
                     Rectangle{
+                        id: about_button
+                        width: menu_rect_1.width -15
+                        height: 50
+                        color: "#031C28"
+                        radius: 4
+                        Layout.alignment: Qt.AlignLeft
+                        Layout.leftMargin: 10
+
+                        Image {
+                            id: about_image
+                            source: "/res/about.png"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: about_button.left
+                            anchors.leftMargin: 20
+                        }
+                        Text{
+                            text: "ABOUT"
+                            color: "#FFFFFF"
+                            font.pointSize: ScreenTools.smallFontPointSize
+                            font.bold: true
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: about_image.left
+                            anchors.leftMargin: 35
+                        }
+
+                        MouseArea{
+                            anchors.fill: about_button
+                            onClicked: {
+                                aboutDialog.open()
+                                logout_button.color = "#031C28"
+                                managerpa_button.color = "#031C28"
+                                dashboard_button.color = "#031C28"
+                                flight_log_button.color = "#031C28"
+                                firmware_button.color = "#031C28"
+                                profile_button.color = "#031C28"
+                                about_button.color = "#F25822"
+                            }
+                        }
+                    }
+                    Rectangle{
                         id: logout_button
                         width: menu_rect_1.width -15
                         height: 50
@@ -3442,8 +3505,7 @@ ApplicationWindow {
                                 flight_log_button.color = "#031C28"
                                 firmware_button.color = "#031C28"
                                 profile_button.color = "#031C28"
-
-
+                                about_button.color = "#031C28"
                             }
                         }
                     }
@@ -3619,17 +3681,17 @@ ApplicationWindow {
                                                 height: 120
                                                 anchors.centerIn: parent
                                                 color: "transparent"
-                                            Image {
-                                                id: flight_log_image
-                                                anchors.fill: parent
-                                                source: "qrc:/res/Flight_log.png"
+                                                Image {
+                                                    id: flight_log_image
+                                                    anchors.fill: parent
+                                                    source: "qrc:/res/Flight_log.png"
 
-                                            }
-                                            ColorOverlay{
-                                                anchors.fill: flight_log_image
-                                                source:flight_log_image
-                                                color: "white"
-                                            }
+                                                }
+                                                ColorOverlay{
+                                                    anchors.fill: flight_log_image
+                                                    source:flight_log_image
+                                                    color: "white"
+                                                }
 
                                             }
 
@@ -3668,19 +3730,19 @@ ApplicationWindow {
                                                 height: 120
                                                 anchors.centerIn: parent
                                                 color: "transparent"
-                                            Image {
-                                                id: customersimage
-                                                anchors.fill: parent
-                                                source: "qrc:/qmlimages/customers_black.png"
+                                                Image {
+                                                    id: customersimage
+                                                    anchors.fill: parent
+                                                    source: "qrc:/qmlimages/customers_black.png"
+
+                                                }
+                                                ColorOverlay{
+                                                    anchors.fill: customersimage
+                                                    source:customersimage
+                                                    color: "white"
+                                                }
 
                                             }
-                                            ColorOverlay{
-                                                anchors.fill: customersimage
-                                                source:customersimage
-                                                color: "white"
-                                            }
-
-                                        }
                                         }
 
                                         Text {
@@ -3717,19 +3779,19 @@ ApplicationWindow {
                                                 height: 120
                                                 anchors.centerIn: parent
                                                 color: "transparent"
-                                            Image {
-                                                id: remote_pilots_image
-                                                anchors.fill: parent
-                                                source: "qrc:/qmlimages/Remote_pilot.png"
+                                                Image {
+                                                    id: remote_pilots_image
+                                                    anchors.fill: parent
+                                                    source: "qrc:/qmlimages/Remote_pilot.png"
+
+                                                }
+                                                ColorOverlay{
+                                                    anchors.fill: remote_pilots_image
+                                                    source:remote_pilots_image
+                                                    color: "white"
+                                                }
 
                                             }
-                                            ColorOverlay{
-                                                anchors.fill: remote_pilots_image
-                                                source:remote_pilots_image
-                                                color: "white"
-                                            }
-
-                                        }
                                         }
 
                                         Text {
@@ -3771,18 +3833,18 @@ ApplicationWindow {
                                                 height: 120
                                                 anchors.centerIn: parent
                                                 color: "transparent"
-                                            Image {
-                                                id: back_to_fly_image
-                                                anchors.fill: parent
-                                                source: "qrc:/qmlimages/Back_to_fly.png"
+                                                Image {
+                                                    id: back_to_fly_image
+                                                    anchors.fill: parent
+                                                    source: "qrc:/qmlimages/Back_to_fly.png"
 
+                                                }
+                                                ColorOverlay{
+                                                    anchors.fill: back_to_fly_image
+                                                    source:back_to_fly_image
+                                                    color: "white"
+                                                }
                                             }
-                                            ColorOverlay{
-                                                anchors.fill: back_to_fly_image
-                                                source:back_to_fly_image
-                                                color: "white"
-                                            }
-                                        }
                                         }
                                         Text {
                                             id: back_to_fly_text
@@ -3817,10 +3879,11 @@ ApplicationWindow {
                                 anchors.bottomMargin: 65
                                 height: mainWindow.height/20
                                 width: parent.width
-                                color: "transparent"
+                                color: "#05324D"
+
                                 Text {
                                     anchors.centerIn: parent
-                                    text: "@2023 Go Drona | All Rights Reserved"
+                                    text: "@2023 Casca E-Connect Private Limited | All Rights Reserved"
                                     font.pointSize: ScreenTools.smallFontPointSize
                                     color: "White"
                                 }
@@ -3993,31 +4056,32 @@ ApplicationWindow {
                                 }
                             }
 
-                           Rectangle {
-                            id: table_rect
-                            anchors.left: manage_rpa_header1.left
-                            anchors.leftMargin: 20
-                            anchors.top: list_of_rpa_text.bottom
-                            anchors.topMargin: 30
-                            width: manage_rpa_header1.width - 50
-                            height: mainWindow.height - 180
-                            color: "#031C28"
-                            visible: true
+                            Rectangle {
+                                id: table_rect
+                                anchors.left: manage_rpa_header1.left
+                                anchors.leftMargin: 20
+                                anchors.top: list_of_rpa_text.bottom
+                                anchors.topMargin: 30
+                                width: manage_rpa_header1.width - 50
+                                height: mainWindow.height - 330
+                                color: "#031C28"
+                                visible: true
 
                             }
-                           Rectangle {
-                               anchors.bottom: manage_rpa_header1.bottom
-                               anchors.bottomMargin: 65
-                               height: mainWindow.height/20
-                               width: parent.width
-                               color: "transparent"
-                               Text {
-                                   anchors.centerIn: parent
-                                   text: "@2023 Go Drona | All Rights Reserved"
-                                   font.pointSize: ScreenTools.smallFontPointSize
-                                   color: "White"
-                               }
-                           }
+                            Rectangle {
+                                anchors.bottom: manage_rpa_header1.bottom
+                                anchors.bottomMargin: 65
+                                height: mainWindow.height/20
+                                width: parent.width
+                                color: "#05324D"
+
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: "@2023 Casca E-Connect Private Limited | All Rights Reserved"
+                                    font.pointSize: ScreenTools.smallFontPointSize
+                                    color: "White"
+                                }
+                            }
                         }
                     }
                     Rectangle{
@@ -4595,10 +4659,11 @@ ApplicationWindow {
                             anchors.bottomMargin: 65
                             height: mainWindow.height/20
                             width: parent.width
-                            color: "transparent"
+                            color: "#05324D"
+
                             Text {
                                 anchors.centerIn: parent
-                                text: "@2023 Go Drona | All Rights Reserved"
+                                text: "@2023 Casca E-Connect Private Limited | All Rights Reserved"
                                 font.pointSize:ScreenTools.smallFontPointSize
                                 color: "White"
                             }
@@ -4799,10 +4864,11 @@ ApplicationWindow {
                                 anchors.bottomMargin: 65
                                 height: mainWindow.height/20
                                 width: parent.width
-                                color: "transparent"
+                                color: "#05324D"
+
                                 Text {
                                     anchors.centerIn: parent
-                                    text: "@2023 Go Drona | All Rights Reserved"
+                                    text: "@2023 Casca E-Connect Private Limited | All Rights Reserved"
                                     font.pointSize: ScreenTools.smallFontPointSize
                                     color: "White"
                                 }
@@ -4909,10 +4975,11 @@ ApplicationWindow {
                                 anchors.bottomMargin: 65
                                 height: mainWindow.height/20
                                 width: parent.width
-                                color: "transparent"
+                                color: "#05324D"
+
                                 Text {
                                     anchors.centerIn: parent
-                                    text: "@2023 Go Drona | All Rights Reserved"
+                                    text: "@2023 Casca E-Connect Private Limited | All Rights Reserved"
                                     font.pointSize: ScreenTools.smallFontPointSize
                                     color: "White"
                                 }
@@ -5014,7 +5081,8 @@ ApplicationWindow {
                         Rectangle {
                             id: image_rect
                             anchors.right: users_profile_header.right
-                            anchors.rightMargin: 160
+                            //anchors.rightMargin: 160
+                            anchors.rightMargin: third_rectangle.width/2
                             anchors.verticalCenter: parent.verticalCenter
                             height: 60
                             width: 60
@@ -5071,47 +5139,47 @@ ApplicationWindow {
                         border.width: 1
                         border.color: "#05324D"
 
-//                        Rectangle {
-//                            id: go_to_profile
-//                            anchors.right: parent.right
-//                            anchors.rightMargin: 25
-//                            anchors.top: parent.top
-//                            anchors.topMargin: 10
-//                            color: "#05324D"
-//                            border.color: "#F25822"
-//                            border.width: 0.5
-//                            width: mainWindow.width/11
-//                            height: mainWindow.height/17
-//                            radius: 3
-//                            Text {
-//                                text: "Your Profile"
-//                                color: "#FFFFFF"
-//                                font.pointSize:ScreenTools.smallFontPointSize
-//                                font.bold: true
-//                                anchors.centerIn: parent
-//                                anchors.verticalCenter: parent.verticalCenter
-//                            }
-//                            MouseArea{
-//                                anchors.fill: go_to_profile
-//                                onClicked: {
-//                                    users_profile_header1.visible = false
-//                                    users_information_header1.visible = true
-//                                    userprofile_name.text = database_access.name
-//                                    address_field.activeFocus = true
-//                                    locality_field.activeFocus = true
-//                                    mail_address.text = database_access.mail
-//                                    mobile_number.text = database_access.number
-//                                    address_field.text = database_access.address
-//                                    locality_field.text = database_access.locality
-//                                }
-//                                onPressed: {
-//                                    go_to_profile.color = "#F25822"
-//                                }
-//                                onReleased: {
-//                                    go_to_profile.color = "#05324D"
-//                                }
-//                            }
-//                        }
+                        //                        Rectangle {
+                        //                            id: go_to_profile
+                        //                            anchors.right: parent.right
+                        //                            anchors.rightMargin: 25
+                        //                            anchors.top: parent.top
+                        //                            anchors.topMargin: 10
+                        //                            color: "#05324D"
+                        //                            border.color: "#F25822"
+                        //                            border.width: 0.5
+                        //                            width: mainWindow.width/11
+                        //                            height: mainWindow.height/17
+                        //                            radius: 3
+                        //                            Text {
+                        //                                text: "Your Profile"
+                        //                                color: "#FFFFFF"
+                        //                                font.pointSize:ScreenTools.smallFontPointSize
+                        //                                font.bold: true
+                        //                                anchors.centerIn: parent
+                        //                                anchors.verticalCenter: parent.verticalCenter
+                        //                            }
+                        //                            MouseArea{
+                        //                                anchors.fill: go_to_profile
+                        //                                onClicked: {
+                        //                                    users_profile_header1.visible = false
+                        //                                    users_information_header1.visible = true
+                        //                                    userprofile_name.text = database_access.name
+                        //                                    address_field.activeFocus = true
+                        //                                    locality_field.activeFocus = true
+                        //                                    mail_address.text = database_access.mail
+                        //                                    mobile_number.text = database_access.number
+                        //                                    address_field.text = database_access.address
+                        //                                    locality_field.text = database_access.locality
+                        //                                }
+                        //                                onPressed: {
+                        //                                    go_to_profile.color = "#F25822"
+                        //                                }
+                        //                                onReleased: {
+                        //                                    go_to_profile.color = "#05324D"
+                        //                                }
+                        //                            }
+                        //                        }
 
                         Column{
                             spacing: 30
@@ -5323,23 +5391,23 @@ ApplicationWindow {
                             MouseArea {
                                 anchors.fill: update_profile
                                 onClicked: {
-                                        if(userprofile_name.text == "" || mail_address.text == "" || locality_field.text == "" || address_field.text == ""){
-                                            popupDialog.open()
-                                        }
-                                        else {
-                                            database_access.update_profile(userprofile_name.text,mail_address.text,mobile_number.text,address_field.text,locality_field.text)
-                                            users_profile_header1.visible = true
-                                            users_information_header1.visible = false
-                                            profileDialog.open()
-                                            userprofile_name = database_access.name
-                                            mail_address.text = database_access.mail
-                                            mobile_number.text = database_access.number
-                                            address_field.text = database_access.address
-                                            locality_field.text = database_access.locality
-                                            address_field.activeFocus = false
-                                            locality_field.activeFocus = false
-                                        }
+                                    if(userprofile_name.text == "" || mail_address.text == "" || locality_field.text == "" || address_field.text == ""){
+                                        popupDialog.open()
                                     }
+                                    else {
+                                        database_access.update_profile(userprofile_name.text,mail_address.text,mobile_number.text,address_field.text,locality_field.text)
+                                        users_profile_header1.visible = true
+                                        users_information_header1.visible = false
+                                        profileDialog.open()
+                                        userprofile_name = database_access.name
+                                        mail_address.text = database_access.mail
+                                        mobile_number.text = database_access.number
+                                        address_field.text = database_access.address
+                                        locality_field.text = database_access.locality
+                                        address_field.activeFocus = false
+                                        locality_field.activeFocus = false
+                                    }
+                                }
                                 onPressed: {
                                     update_profile.color = "#F25822"
                                 }

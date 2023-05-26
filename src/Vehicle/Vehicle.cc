@@ -3822,6 +3822,7 @@ void Vehicle::_initializeCsv()
     QDir saveDir1 (flightlog_filename);
     _userTextFile.setFileName(saveDir1.absoluteFilePath(user_text_file));
 
+//    emit flightlog_filenameChanged();
 
     if (!_csvLogFile.open(QIODevice::Append)) {
         qCWarning(VehicleLog) << "unable to open file for csv logging, Stopping csv logging!";
@@ -3869,11 +3870,8 @@ void Vehicle::_writeCsvLine()
         (_armed || _toolbox->settingsManager()->appSettings()->telemetrySaveNotArmed()->rawValue().toBool())){
         _initializeCsv();
     }
-
-
-    current_model = obj.model(); //_toolbox->tableModel()->model();
-    current_uin = obj.uin(); //_toolbox->tableModel()->uin();
-
+    current_model = obj.model();
+    current_uin = obj.uin();
 
     if(previous_model == "" && previous_uin == ""){
         previous_model = current_model;
@@ -3920,11 +3918,11 @@ void Vehicle::_writeCsvLine()
             if (vehicle_armed == 1){
 
                 obj.upload_function(file_name,user_name,folder_location);
-            }
-            vehicle_armed = 0;
-        if (vehicle_armed == 1){
-            QTextStream stream(&_userTextFile);
-            stream << file_name;
+//            }
+//            vehicle_armed = 0;
+//        if (vehicle_armed == 1){
+//            QTextStream stream(&_userTextFile);
+//            stream << file_name;
         }
         vehicle_armed = 0;
     }

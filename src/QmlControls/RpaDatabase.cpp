@@ -372,14 +372,19 @@ void TableModel::read_text_file(QString user_text_file_name, QString user_text_f
     });
 }
 
-void TableModel::download_function(const QString &file_name, const QString &firebase_folder_name, QString local_pc_location)
+void TableModel::download_function(const QString &file_name, const QString &firebase_folder_name, const QString &local_pc_location)
 {
     QString user_file = firebase_folder_name;
     int pos = user_file.lastIndexOf("@");
     user_file = user_file.left(pos);
     qDebug() << user_file.left(pos);
 
-    QString user_download_location = local_pc_location + ".csv";
+    //QString user_download_location = local_pc_location + ".csv";
+
+    QString user_download_location = "QGroundControl.settingsManager.appSettings.telemetrySavePath" + file_name + "/.csv";
+
+
+    qDebug() << local_pc_location;
     QNetworkRequest request;
 
     QString link = "https://firebasestorage.googleapis.com/v0/b/" + _projectID + ".appspot.com/o/" + user_file + "%2F" + file_name + "?alt=media";
@@ -388,7 +393,7 @@ void TableModel::download_function(const QString &file_name, const QString &fire
     request.setRawHeader("Authorization","Bearer");
 
     QNetworkReply *response1 = m_networkAccessManager->get(QNetworkRequest(QUrl(QString::fromStdString(link.toStdString()))));
-    connect(response1,&QNetworkReply::finished,[response1, local_pc_location, user_download_location](){
+    connect(response1,&QNetworkReply::finished, [response1,local_pc_location, user_download_location](){
     QByteArray data = response1->readAll();
         QFile file(user_download_location);
         if (!file.open(QIODevice::WriteOnly)) {

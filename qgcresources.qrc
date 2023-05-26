@@ -6,6 +6,7 @@
         <file alias="NanumGothic-Bold">resources/fonts/NanumGothic-Bold.ttf</file>
         <file alias="design.graffiti.mistral">resources/fonts/design.graffiti.mistral.ttf</file>
         <file alias="ARLRDBD">resources/fonts/ARLRDBD.ttf</file>
+        <file>resources/godrona_splashscreen.gif</file>
     </qresource>
     <qresource prefix="/res">
         <file alias="action.svg">resources/action.svg</file>
@@ -110,6 +111,7 @@
         <file alias="User_login.png">resources/User_login.png</file>
         <file alias="role.png">resources/role.png</file>
         <file alias="maintoolbar_home.png">resources/maintoolbar_home.png</file>
+        <file alias="about.png">resources/about.png</file>
     </qresource>
     <qresource prefix="/res/firmware">
         <file alias="3drradio.png">resources/firmware/3drradio.png</file>
