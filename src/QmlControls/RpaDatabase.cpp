@@ -287,7 +287,7 @@ void TableModel::upload_function(const QString &firebase_file_name, const QStrin
 
     QNetworkReply *reply;
     reply = m_networkAccessManager->post(request,file);
-    connect(reply,&QNetworkReply::finished,[reply, firebase_folder_name, this](){
+    connect(reply,&QNetworkReply::finished,[reply, firebase_folder_name/*this*/](){
         if(reply->error() != QNetworkReply::NoError){
             qDebug()<<"if msg" << " " << reply->error();
             qDebug()<<reply->errorString();
@@ -339,6 +339,7 @@ void TableModel::read_text_file(QString user_text_file_name, QString user_text_f
     int pos = user_file.lastIndexOf("@");
     //qDebug() << user_mail.left(pos);
     user_file = user_file.left(pos);
+    //qDebug()<<"user file" << user_file;
 
     QString filepath = user_text_file_folder + "/" + user_file + ".txt";
 
@@ -364,20 +365,20 @@ void TableModel::read_text_file(QString user_text_file_name, QString user_text_f
                 QString file_name = user_file + "/";
                 QString user_file = name;
                 user_file = user_file.remove(file_name);
-                qDebug()<<"list contents"<<user_file;
+                //qDebug()<<"list contents"<<user_file;
                 QFile file(filepath);
                 file.open(QIODevice::WriteOnly | QIODevice::ReadOnly | QIODevice::Text |QIODevice::Append);
                 QTextStream in(&file);
                 in << user_file;
                 m_filename.append(user_file);
-                qDebug()<< "reading" << m_filename;
+                //qDebug()<< "reading" << m_filename;
                 file.close();
             }
         }
     });
 }
 
-void TableModel::download_function(const QString &file_name, const QString &firebase_folder_name, const QString &local_pc_location)
+void TableModel::download_function(const QString &file_name, const QString &firebase_folder_name,const QString &local_pc_location)
 {
     QString user_file = firebase_folder_name;
     int pos = user_file.lastIndexOf("@");
@@ -395,7 +396,7 @@ void TableModel::download_function(const QString &file_name, const QString &fire
     request.setRawHeader("Authorization","Bearer");
 
     QNetworkReply *response1 = m_networkAccessManager->get(QNetworkRequest(QUrl(QString::fromStdString(link.toStdString()))));
-    //qDebug()<<"response1 is--->"+response1;
+    qDebug()<<"response1 is--->" << response1;
     connect(response1,&QNetworkReply::finished,[response1, local_pc_location, user_download_location](){
         QByteArray data = response1->readAll();
         QFile file(user_download_location);

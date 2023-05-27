@@ -39,7 +39,7 @@ void FireBaseAccess::new_user_registration(const QString &industry,const QString
 
     m_NetworkReply = m_NetworkAccessManager->get(QNetworkRequest(QUrl("https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/.json")));
     connect(m_NetworkReply,&QNetworkReply::readyRead,this,&FireBaseAccess::rds_data_network_reply_read);
-
+    qDebug()<<g_name+g_mail+g_number+g_address+g_locality+g_industry+g_role;
     new_user_account_creation(mail,password);
 }
 

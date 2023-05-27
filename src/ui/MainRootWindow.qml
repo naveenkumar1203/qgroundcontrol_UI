@@ -178,7 +178,7 @@ ApplicationWindow {
 
                                                          style: TableViewStyle {
                                                             headerDelegate: Rectangle {
-                                                                height: textItem.implicitHeight * 2.5
+                                                                height: textItem.implicitHeight * 2
                                                                 width: textItem.implicitWidth
                                                                  color: "#031C28"
                                                                  border.width: 1
@@ -197,8 +197,8 @@ ApplicationWindow {
                                                             }
                                                         }
                                                          itemDelegate: Rectangle {
-                                                             height: text_body_item.implicitHeight * 4
-                                                             width: text_body_item.implicitWdith
+                                                             height: textItem.implicitHeight * 4
+                                                             width: textItem.implicitWidth
                                                              anchors.fill:parent
                                                              color: "#031C28"
                                                              border.width: 1
@@ -209,7 +209,7 @@ ApplicationWindow {
                                                                  anchors.centerIn:parent
                                                                  color: "white"
                                                                  text: styleData.value
-                                                                 font.pointSize : 12
+                                                                 font.pointSize : 10
                                                                  //font.pointSize: ScreenTools.smallFontPointSize
                                                              }
                                                          }
@@ -370,8 +370,6 @@ ApplicationWindow {
                 oldTableObject = newObject
             }
         }
-
-
 
     function showPanel(button, qmlSource) {
         if (mainWindow.preventViewSwitch()) {
@@ -586,9 +584,12 @@ ApplicationWindow {
                     }
                     MessageDialog{
                         id:messagedialog1
-                        height: 50
-                        width: 50
                         text:"please enter your details correctly"
+//                        Component.onCompleted: {
+//                           var dialog = messagedialog1.dialog
+//                           var contentItem = dialog.contentItem
+//                           contentItem.color = "#031C28" // Set the background color
+//                       }
                     }
                     onPressed: {
                         login_button.color = "#05324D"
@@ -694,147 +695,177 @@ ApplicationWindow {
         anchors.fill: parent
         color: "#031C28"
         z: 1
-        Label{
-            text: "<- Forgot Password"
-            font.pixelSize: 20
-            color: "white"
-            font.bold: true
-            anchors.left: parent.left
-            anchors.leftMargin: 10
-            anchors.top: parent.top
-            anchors.topMargin: 30
-            MouseArea{
-                anchors.fill: parent
-                onClicked: {
-                    forgot_password_page_rectangle.visible = false
-                    login_page_rectangle.visible = true
-                    forgot_password_mail_text.text = ""
-                    password_hide_image.visible = true
-                    password_show_image.visible = false
-                    login_page_password_textfield.echoMode = TextInput.Password
-                }
-            }
-        }
-        Column{
-            anchors.centerIn: parent
-            spacing: 40
-            Label{
-                text: "Enter your registered email address to"
-                color: "white"
-                Label{
-                    anchors.top: parent.bottom
-                    text: "Reset your password"
-                    color: "#00FFFF"
-                }
-            }
-            Column{
-                spacing: 10
-                Label{
-                    text: "Email Address*"
-                    color: "white"
-                }
-                TextField{
-                    id: forgot_password_mail_text
-                    width: 300
-                    height: 35
-                    text: ""
-                    color: "white"
-                    placeholderText: qsTr("example@gmail.com")
-                    inputMethodHints: Qt.ImhEmailCharactersOnly
-                    leftPadding: 50
-                    onTextChanged: {
-                        forgot_password_page_email.border.color = "#C0C0C0"
-                    }
-                    background: Rectangle
-                    {
-                        id: forgot_password_page_email
-                        anchors.fill: parent
-                        color: "#031C28"
-                        border.color: "#05324D"
-                        border.width: 1.5
-                    }
-                    Image {
-                        width: 25
-                        height: 25
-                        fillMode: Image.PreserveAspectFit
-                        source: "/res/mailLogo.png"//"qrc:/../../../../Downloads/mailLogo.png"
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
-                }
-            }
-            Button {
-                anchors.horizontalCenter: parent.horizontalCenter
-                Text{
-                    text: "Submit ->"
-                    font.pixelSize: 15
-                    anchors.centerIn: parent
-                    color: "white"
-                }
-                background: Rectangle {
-                    id: submit_button
-                    implicitWidth: 200
-                    implicitHeight: 40
-                    color: "#F25822"
-                    radius: 4
-                }
-                onPressed: {
-                    submit_button.color = "#05324D"
-                }
-                onReleased: {
-                    submit_button.color = "#F25822"
-                }
-                onClicked: {
-                    database_access.reset_password(forgot_password_mail_text.text)
+        RowLayout{
+            anchors.fill:parent
+            spacing: 0
 
-                }
-            }
-            Label{
-                text: "Reset Password"
-                color: "#00FFFF"
-                Label{
-                    anchors.left: parent.right
-                    anchors.leftMargin: 3
-                    text: "Link will be sent to your"
-                    color: "white"
-                }
-                Label{
-                    anchors.top: parent.bottom
+            Rectangle{
+                id: forgot_password_image_rectangle
+                color: "#031C28"
+                Layout.preferredWidth: mainWindow.width/2
+                Layout.preferredHeight: mainWindow.height
+                Rectangle {
+                    id: forgot_password_image_rect
                     anchors.left: parent.left
-                    text: "registered email address"
-                    color: "white"
+                    anchors.leftMargin: 40
+                    anchors.top: parent.top
+                    anchors.topMargin: 40
+                    width: parent.width - 70
+                    height: parent.height - 70
+                    color: "red"
+                    Image{
+                        anchors.fill: forgot_password_image_rect
+                        source: "/res/User_login.png"
+                    }
                 }
             }
-        }
-        Image{
-            anchors.bottom: parent.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottomMargin: 40
-            width: 75
-            height: 75
-            source: "/res/backtologin-removebg-preview.png"//"qrc:/../../../../Downloads/backtologin-removebg-preview.png"
-            Label{
-                anchors.top: parent.bottom
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: "Back to Login"
-                color: "white"
-            }
-            MouseArea{
-                anchors.fill: parent
-                onClicked: {
-                    forgot_password_page_rectangle.visible = false
-                    login_page_rectangle.visible = true
-                    user_name_text.text = ""
-                    user_mail_text.text = ""
-                    user_number_text.text = ""
-                    user_address_text.text = ""
-                    user_locality_text.text = ""
-                    user_password_text.text = ""
-                    forgot_password_mail_text.text =""
-                    password_show_image.visible = false
-                    password_hide_image.visible = true
-                    login_page_password_textfield.echoMode = TextInput.Password
+            Rectangle {
+                color: "#031C28"
+                Layout.fillWidth: true
+                Layout.preferredHeight: mainWindow.height
+                Label{
+                    text: "<- Forgot Password"
+                    font.pixelSize: 20
+                    color: "white"
+                    font.bold: true
+                    anchors.left: parent.left
+                    anchors.leftMargin: 10
+                    anchors.top: parent.top
+                    anchors.topMargin: 30
+                    MouseArea{
+                        anchors.fill: parent
+                        onClicked: {
+                            forgot_password_page_rectangle.visible = false
+                            login_page_rectangle.visible = true
+                            forgot_password_mail_text.text = ""
+                            password_hide_image.visible = true
+                            password_show_image.visible = false
+                            login_page_password_textfield.echoMode = TextInput.Password
+                        }
+                    }
+                }
+                Column{
+                    anchors.centerIn: parent
+                    spacing: 40
+                    Label{
+                        text: "Enter your registered email address to"
+                        color: "white"
+                        Label{
+                            anchors.top: parent.bottom
+                            text: "Reset your password"
+                            color: "#00FFFF"
+                        }
+                    }
+                    Column{
+                        spacing: 10
+                        Label{
+                            text: "Email Address*"
+                            color: "white"
+                        }
+                        TextField{
+                            id: forgot_password_mail_text
+                            width: 300
+                            height: 35
+                            text: ""
+                            color: "white"
+                            placeholderText: qsTr("example@gmail.com")
+                            inputMethodHints: Qt.ImhEmailCharactersOnly
+                            leftPadding: 50
+                            onTextChanged: {
+                                forgot_password_page_email.border.color = "#C0C0C0"
+                            }
+                            background: Rectangle
+                            {
+                                id: forgot_password_page_email
+                                anchors.fill: parent
+                                color: "#031C28"
+                                border.color: "#05324D"
+                                border.width: 1.5
+                            }
+                            Image {
+                                width: 25
+                                height: 25
+                                fillMode: Image.PreserveAspectFit
+                                source: "/res/mailLogo.png"//"qrc:/../../../../Downloads/mailLogo.png"
+                                anchors.left: parent.left
+                                anchors.leftMargin: 12
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+                    }
+                    Button {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        Text{
+                            text: "Submit ->"
+                            font.pixelSize: 15
+                            anchors.centerIn: parent
+                            color: "white"
+                        }
+                        background: Rectangle {
+                            id: submit_button
+                            implicitWidth: 200
+                            implicitHeight: 40
+                            color: "#F25822"
+                            radius: 4
+                        }
+                        onPressed: {
+                            submit_button.color = "#05324D"
+                        }
+                        onReleased: {
+                            submit_button.color = "#F25822"
+                        }
+                        onClicked: {
+                            database_access.reset_password(forgot_password_mail_text.text)
+
+                        }
+                    }
+                    Label{
+                        text: "Reset Password"
+                        color: "#00FFFF"
+                        Label{
+                            anchors.left: parent.right
+                            anchors.leftMargin: 3
+                            text: "Link will be sent to your"
+                            color: "white"
+                        }
+                        Label{
+                            anchors.top: parent.bottom
+                            anchors.left: parent.left
+                            text: "registered email address"
+                            color: "white"
+                        }
+                    }
+                }
+                Image{
+                    anchors.bottom: parent.bottom
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.bottomMargin: 40
+                    width: 75
+                    height: 75
+                    source: "/res/backtologin-removebg-preview.png"//"qrc:/../../../../Downloads/backtologin-removebg-preview.png"
+                    Label{
+                        anchors.top: parent.bottom
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        text: "Back to Login"
+                        color: "white"
+                    }
+                    MouseArea{
+                        anchors.fill: parent
+                        onClicked: {
+                            forgot_password_page_rectangle.visible = false
+                            login_page_rectangle.visible = true
+                            user_name_text.text = ""
+                            user_mail_text.text = ""
+                            user_number_text.text = ""
+                            user_address_text.text = ""
+                            user_locality_text.text = ""
+                            user_password_text.text = ""
+                            forgot_password_mail_text.text =""
+                            password_show_image.visible = false
+                            password_hide_image.visible = true
+                            login_page_password_textfield.echoMode = TextInput.Password
+                        }
+                    }
                 }
             }
         }
@@ -2174,7 +2205,7 @@ ApplicationWindow {
         title: "New User"
         text: "We think your are a new user"
         informativeText: "Please Sign up/ Create a New Account."
-        icon: StandardIcon.Warning
+        //icon: StandardIcon.Warning
         standardButtons: Dialog.Ok
         onButtonClicked: {
             login_page_email_textfield.text = ""
@@ -2183,8 +2214,8 @@ ApplicationWindow {
     }
     MessageDialog {
         id: incorrect_password_Dialog
-        title: "Password is wrong"
-            text: "Entered password is incorrect"
+        title: "Wrong Password"
+        text: "Entered password is incorrect"
         standardButtons: Dialog.Ok
     }
 
@@ -2198,7 +2229,9 @@ ApplicationWindow {
         id: selectRoleDialog
         title: "Role Type"
         text: "Please Select the Role."
+        standardButtons: Dialog.Ok
     }
+
 
 //    MessageDialog {
 //        id: profileImageDialog
@@ -2227,6 +2260,8 @@ ApplicationWindow {
             login_page_password_textfield.text = ""
             password_hide_image.visible = true
             password_show_image.visible = false
+            flightView.visible = false
+            planView.visible = false
         }
         onNo: {
             landing_page_rectangle.visible = true
@@ -3034,7 +3069,7 @@ ApplicationWindow {
 
                 ColumnLayout {
                     id: menu_column
-                    anchors.fill: parent
+                    //anchors.fill: parent
                     spacing: 12
 
                     Rectangle{
@@ -3043,16 +3078,6 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         width: first_rectangle.width
                         color: "#031C28"
-                        Text {
-                            id: brand_text
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.right: brand_rect.right
-                            anchors.rightMargin: 40
-                            text: qsTr("Go Drona")
-                            font.pointSize: 13
-                            font.bold: true
-                            color: "white"
-                        }
                         Rectangle{
                             id: brand_logo
                             width: 90
@@ -3066,11 +3091,23 @@ ApplicationWindow {
                                 source: "/res/goDrona.png"
                             }
                         }
+                        Text {
+                            id: brand_text
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: brand_logo.right
+                            anchors.leftMargin: 5
+                            text: qsTr("GoDrona GCS")
+                            font.pixelSize: ScreenTools.defaultFontPointSize * 7.5
+                            font.family: "Mistral"
+                            font.bold: true
+                            color: "white"
+                        }
+
                     }
                     Rectangle {
                         id: menu_rect_1
                         color: "#05324D"
-                        height: 25
+                        height: 40
                         width: first_rectangle.width
                         Layout.alignment: Qt.AlignLeft
                         Layout.fillWidth: true
@@ -3109,8 +3146,8 @@ ApplicationWindow {
 
                     Rectangle{
                         id: dashboard_button
-                        width: menu_rect_1.width -15
-                        height: 25
+                        width: menu_rect_1.width -45
+                        height: 35
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3154,10 +3191,14 @@ ApplicationWindow {
                                 managerpa_button.color = "#031C28"
                                 flight_log_button.color = "#031C28"
                                 firmware_button.color = "#031C28"
+                                profile_button.color = "#031C28"
+                                about_button.color = "#031C28"
                                 manage_rpa_rectangle.visible = false
                                 flight_log_rectangle.visible = false
                                 rpa_register_page.visible = false
                                 firmware_log_rectangle.visible = false
+                                users_profile_header1.visible = true
+                                users_information_header1.visible = false
                             }
                         }
                         /*states: State {
@@ -3172,8 +3213,8 @@ ApplicationWindow {
 
                     Rectangle{
                         id: managerpa_button
-                        width: menu_rect_1.width -15
-                        height: 25
+                        width: menu_rect_1.width -45
+                        height: 35
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3204,10 +3245,14 @@ ApplicationWindow {
                                 dashboard_rectangle.visible = false
                                 flight_log_rectangle.visible = false
                                 firmware_log_rectangle.visible = false
+                                users_profile_header1.visible = true
+                                users_information_header1.visible = false
                                 logout_button.color = "#031C28"
                                 dashboard_button.color = "#031C28"
                                 flight_log_button.color = "#031C28"
                                 firmware_button.color = "#031C28"
+                                profile_button.color = "#031C28"
+                                about_button.color = "#031C28"
                                 managerpa_button.color = "#F25822"
                                 manage_rpa_header1.visible = true
                                 showPanel(this,"SetupParameterEditor.qml")
@@ -3222,8 +3267,8 @@ ApplicationWindow {
 
                     Rectangle{
                         id: customers_button
-                        width: menu_rect_1.width -15
-                        height: 25
+                        width: menu_rect_1.width -45
+                        height: 35
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3258,8 +3303,8 @@ ApplicationWindow {
 
                     Rectangle{
                         id: remote_button
-                        width: menu_rect_1.width -15
-                        height: 25
+                        width: menu_rect_1.width -45
+                        height: 35
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3293,8 +3338,8 @@ ApplicationWindow {
                     }
                     Rectangle{
                         id: missions_button
-                        width: menu_rect_1.width -15
-                        height: 25
+                        width: menu_rect_1.width -45
+                        height: 35
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3328,8 +3373,8 @@ ApplicationWindow {
                     }
                     Rectangle{
                         id: create_button
-                        width: menu_rect_1.width -15
-                        height: 25
+                        width: menu_rect_1.width -45
+                        height: 35
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3364,8 +3409,8 @@ ApplicationWindow {
 
                     Rectangle{
                         id: flight_log_button
-                        width: menu_rect_1.width -15
-                        height: 25
+                        width: menu_rect_1.width -45
+                        height: 35
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3401,10 +3446,14 @@ ApplicationWindow {
                                 dashboard_rectangle.visible = false
                                 rpa_register_page.visible = false
                                 firmware_log_rectangle.visible = false
+                                users_profile_header1.visible = true
+                                users_information_header1.visible = false
                                 logout_button.color = "#031C28"
                                 managerpa_button.color = "#031C28"
                                 dashboard_button.color = "#031C28"
                                 firmware_button.color = "#031C28"
+                                profile_button.color = "#031C28"
+                                about_button.color = "#031C28"
                                 console.log(screen.width)
                                 console.log(screen.width/5)
                                 console.log(screen.width/1.8)
@@ -3415,8 +3464,8 @@ ApplicationWindow {
 
                     Rectangle{
                         id: firmware_button
-                        width: menu_rect_1.width -15
-                        height: 25
+                        width: menu_rect_1.width -45
+                        height: 35
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3451,10 +3500,14 @@ ApplicationWindow {
                                 manage_rpa_rectangle.visible = false
                                 dashboard_rectangle.visible = false
                                 rpa_register_page.visible = false
+                                users_profile_header1.visible = true
+                                users_information_header1.visible = false
                                 logout_button.color = "#031C28"
                                 managerpa_button.color = "#031C28"
                                 dashboard_button.color = "#031C28"
                                 flight_log_button.color = "#031C28"
+                                profile_button.color = "#031C28"
+                                about_button.color = "#031C28"
                                 flight_log_rectangle.visible = false
                                 rpadatabase.firmwareupgrade_data()
                             }
@@ -3473,8 +3526,8 @@ ApplicationWindow {
                     }
                     Rectangle{
                         id: profile_button
-                        width: menu_rect_1.width -15
-                        height: 25
+                        width: menu_rect_1.width -45
+                        height: 35
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3502,14 +3555,30 @@ ApplicationWindow {
                             //                            onExited: parent.color = '#031C28'
                             anchors.fill: profile_button
                             onClicked: {
-
+                                checkBoxState = 0
+                                logout_button.color = "#031C28"
+                                managerpa_button.color = "#031C28"
+                                dashboard_button.color = "#031C28"
+                                flight_log_button.color = "#031C28"
+                                firmware_button.color = "#031C28"
+                                about_button.color = "#031C28"
+                                profile_button.color = "#F25822"
+                                users_profile_header1.visible = false
+                                users_information_header1.visible = true
+                                userprofile_name.text = database_access.name
+                                address_field.activeFocus = true
+                                locality_field.activeFocus = true
+                                mail_address.text = database_access.mail
+                                mobile_number.text = database_access.number
+                                address_field.text = database_access.address
+                                locality_field.text = database_access.locality
                             }
                         }
                     }
                     Rectangle{
                         id: notification_button
-                        width: menu_rect_1.width -15
-                        height: 25
+                        width: menu_rect_1.width -45
+                        height: 35
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3542,9 +3611,57 @@ ApplicationWindow {
                         }
                     }
                     Rectangle{
+                        id: about_button
+                        width: menu_rect_1.width -45
+                        height: 35
+                        color: "#031C28"
+                        radius: 4
+                        Layout.alignment: Qt.AlignLeft
+                        Layout.leftMargin: 10
+
+                        Image {
+                            id: about_image
+                            source: "/res/about.png"
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: about_button.left
+                            anchors.leftMargin: 20
+                        }
+                        Text{
+                            text: "ABOUT"
+                            color: "#FFFFFF"
+                            font.pointSize: 9
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: about_image.left
+                            anchors.leftMargin: 30
+                        }
+
+                        MouseArea{
+                            //                            hoverEnabled: true
+                            //                            onEntered: parent.color = '#F25822'
+                            //                            onExited: parent.color = '#031C28'
+                            anchors.fill: about_button
+                            onClicked: {
+                                aboutDialog.open()
+                                logout_button.color = "#031C28"
+                                managerpa_button.color = "#031C28"
+                                dashboard_button.color = "#031C28"
+                                flight_log_button.color = "#031C28"
+                                firmware_button.color = "#031C28"
+                                profile_button.color = "#031C28"
+                                about_button.color = "#F25822"
+                            }
+                        }
+                        MessageDialog{
+                            id: aboutDialog
+                            text:"<b>GoDrona GCS V1.0<b>"
+                            informativeText: "@2023 Casca E-Connect Private Limited."
+                            standardButtons: Dialog.Ok
+                        }
+                    }
+                    Rectangle{
                         id: logout_button
-                        width: menu_rect_1.width -15
-                        height: 25
+                        width: menu_rect_1.width -45
+                        height: 35
                         color: "#031C28"
                         radius: 4
                         Layout.alignment: Qt.AlignLeft
@@ -3578,6 +3695,10 @@ ApplicationWindow {
                                 managerpa_button.color = "#031C28"
                                 flight_log_button.color = "#031C28"
                                 firmware_button.color = "#031C28"
+                                profile_button.color = "#031C28"
+                                about_button.color = "#031C28"
+                                users_profile_header1.visible = true
+                                users_information_header1.visible = false
                             }
                         }
                     }
@@ -3913,13 +4034,13 @@ ApplicationWindow {
                             Rectangle {
                                 id: copyrights
                                 anchors.bottom: dashboard_rectangle_header1.bottom
-                                anchors.bottomMargin: 20
+                                anchors.bottomMargin: 100
                                 height: 40
                                 width: parent.width
-                                color: "transparent"//"#05324D"
+                                color: "#05324D"
                                 Text {
                                     anchors.centerIn: parent
-                                    text: "@2023 GoDrona | All Rights Reserved"
+                                    text: "@2023 Casca E-Connect Private Limited | All Rights Reserved"
                                     font.pointSize: 10
                                     color: "White"
                                 }
@@ -4087,28 +4208,28 @@ ApplicationWindow {
                             }
 
                            Rectangle {
-                            id: table_rect
-                            anchors.left: manage_rpa_header1.left
-                            anchors.leftMargin: 20
-                            anchors.top: list_of_rpa_text.bottom
-                            anchors.topMargin: 30
-                            width: manage_rpa_header1.width - 50
-                            height: mainWindow.height - 180
-                            color: "#031C28"
-//                            border.width: 1
-//                            border.color: "#05324D"
-                            visible: true
+                                id: table_rect
+                                anchors.left: manage_rpa_header1.left
+                                anchors.leftMargin: 20
+                                anchors.top: list_of_rpa_text.bottom
+                                anchors.topMargin: 30
+                                width: manage_rpa_header1.width - 50
+                                height: mainWindow.height - 250
+                                color: "#031C28"
+    //                            border.width: 1
+    //                            border.color: "#05324D"
+                                visible: true
 
                             }
                            Rectangle {
                                anchors.bottom: manage_rpa_header1.bottom
-                               anchors.bottomMargin: 20
+                               anchors.bottomMargin: 100
                                height: 40
                                width: parent.width
-                               color: "transparent"//"#05324D"
+                               color: "#05324D"
                                Text {
                                    anchors.centerIn: parent
-                                   text: "@2023 GoDrona | All Rights Reserved"
+                                   text: "@2023 Casca E-Connect Private Limited | All Rights Reserved"
                                    font.pointSize: 10
                                    color: "White"
                                }
@@ -4674,13 +4795,13 @@ ApplicationWindow {
                         }                       
                         Rectangle {
                             anchors.bottom: rpa_register_page.bottom
-                            anchors.bottomMargin: 20
+                            anchors.bottomMargin: 100
                             height: 40
                             width: parent.width
-                            color: "transparent"//"#05324D"
+                            color: "#05324D"
                             Text {
                                 anchors.centerIn: parent
-                                text: "@2023 GoDrona | All Rights Reserved"
+                                text: "@2023 Casca E-Connect Private Limited | All Rights Reserved"
                                 font.pointSize: 10
                                 color: "White"
                             }
@@ -5134,6 +5255,7 @@ ApplicationWindow {
                                                 //aws.download_file(modelData,destFileLoaction);
                                                 console.log("destfile"+destFileLoaction)
                                                 rpadatabase.download_function(modelData,database_access.mail,destFileLoaction)
+                                                fileDownloaded_Dialog.open()
                                             });
                                             fileDialog.rejected.connect(function(){
                                                 log_download_button.color = "#DA2C43";
@@ -5141,18 +5263,22 @@ ApplicationWindow {
                                             });
                                             fileDialog.open();
                                         }
+                                        MessageDialog{
+                                            id: fileDownloaded_Dialog
+                                            text: "File Download Completed."
+                                        }
                                     }
                                 }
                             }
                             Rectangle {
                                 anchors.bottom: flightlog_header1.bottom
-                                anchors.bottomMargin: 20
+                                anchors.bottomMargin: 100
                                 height: 40
                                 width: parent.width
-                                color: "transparent"//"#05324D"
+                                color: "#05324D"
                                 Text {
                                     anchors.centerIn: parent
-                                    text: "@2023 GoDrona | All Rights Reserved"
+                                    text: "@2023 Casca E-Connect Private Limited | All Rights Reserved"
                                     font.pointSize: 10
                                     color: "White"
                                 }
@@ -5254,13 +5380,13 @@ ApplicationWindow {
                             }
                             Rectangle {
                                 anchors.bottom: firmware_log_header1.bottom
-                                anchors.bottomMargin: 20
+                                anchors.bottomMargin: 100
                                 height: 40
                                 width: parent.width
-                                color: "transparent"//"#05324D"
+                                color: "#05324D"
                                 Text {
                                     anchors.centerIn: parent
-                                    text: "@2023 GoDrona | All Rights Reserved"
+                                    text: "@2023 Casca E-Connect Private Limited | All Rights Reserved"
                                     font.pointSize: 10
                                     color: "White"
                                 }
@@ -5362,7 +5488,7 @@ ApplicationWindow {
                         Rectangle {
                             id: image_rect
                             anchors.right: users_profile_header.right
-                            anchors.rightMargin: 80
+                            anchors.rightMargin: third_rectangle.width/2 //120
                             anchors.verticalCenter: parent.verticalCenter
                             height: 40
                             width: 40
@@ -5438,7 +5564,7 @@ ApplicationWindow {
                         border.width: 1
                         border.color: "#05324D"
 
-                        Rectangle {
+                        /*Rectangle {
                             id: go_to_profile
                             anchors.right: parent.right
                             anchors.rightMargin: 15
@@ -5478,7 +5604,7 @@ ApplicationWindow {
                                     go_to_profile.color = "#05324D"
                                 }
                             }
-                        }
+                        }*/
 
                         Column{
                             spacing: 10
@@ -5647,6 +5773,7 @@ ApplicationWindow {
                                     text: database_access.locality
                                     color:"white"
                                     background: Rectangle{
+                                        id:locality_field_rect
                                         color: "#05324D"
                                         radius: 4
                                         border.width: 1
@@ -5664,7 +5791,7 @@ ApplicationWindow {
                             anchors.right: users_information_header1.right
                             anchors.rightMargin: 100
                             anchors.bottom: users_information_header1.bottom
-                            anchors.bottomMargin: 80
+                            anchors.bottomMargin: 150
                             color: "#05324D"
                             radius: 4
                             border.width: 1
@@ -5719,7 +5846,7 @@ ApplicationWindow {
                             anchors.left: update_profile.right
                             anchors.leftMargin: 20
                             anchors.bottom: users_information_header1.bottom
-                            anchors.bottomMargin: 80
+                            anchors.bottomMargin: 150
                             color: "#05324D"
                             radius: 4
                             border.width: 1
