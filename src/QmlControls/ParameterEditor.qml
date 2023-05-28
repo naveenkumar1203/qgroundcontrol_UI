@@ -91,83 +91,21 @@ Item{
         }
         onClicked: {
             if(checkBoxState === 0){
-                            select_the_modelDialog.open()
-                            console.log("model not selected")
-                        }
-                        else if(checkBoxState === 1){
-                            rpadatabase.modelSelected(checkBoxNumber)
-                            console.log("model is selected")
-                            console.log(checkBoxNumber)
-                            //rpadatabase.modelSelected(checkBoxNumber)
-//                            flightView.visible = true
-//                            toolbar.visible =true
-//                            landing_page_rectangle.visible = false
-                            checkBoxState = 0
-//                            if(rpadatabase.model == "Model A"){
-//                                console.log("model a is selected")
-//                                firmware_load1.checksum_generation_process_model_A()
-//                                flightView.visible = true
-//                                toolbar.visible =true
-//                                landing_page_rectangle.visible = false
-//                            }
-//                            else if(rpadatabase.model == "Model B"){
-//                                console.log("model b is selected")
-//                                firmware_load1.checksum_generation_process_model_B()
-//                                flightView.visible = true
-//                                toolbar.visible =true
-//                                landing_page_rectangle.visible = false
-//                            }
-                        }
-                        else{
-                            console.log("no checkboxstate")
-                        }
-            /*if(check_box.checked === false && check_box1.checked === false && check_box2.checked === false && check_box3.checked === false && check_box4.checked === false){
                 select_the_modelDialog.open()
                 console.log("model not selected")
             }
-            if(check_box.checked === true){
-               //rpadatabase.checkboxSqlfly("select MODEL_NAME,UIN from RpaList limit 1")
-                firebase.checkboxSqlfly("https://myfirebasefreemode-default-rtdb.asia-southeast1.firebasedatabase.app/UIN.json")
-                if(rpadatabase.model == "Model A") {
-                   firmware_load1.checksum_generation_process_model_A()
-                   flightView.visible = true
-                   toolbar.visible =true
-                   landing_page_rectangle.visible = false
-
-               }
-               else if(rpadatabase.model == "Model B"){
-                    firmware_load1.checksum_generation_process_model_B()
-                    flightView.visible = true
-                    toolbar.visible =true
-                    landing_page_rectangle.visible = false
-
-                }
-            }*/
-            /*else if(check_box.checked === true || check_box1.checked === true || check_box2.checked === true || check_box3.checked === true ||check_box4.checked === true){
-                console.log("model not selected------>")
-                rpadatabase.checkboxSqlfly("select MODEL_NAME,UIN from RpaList")
-                if(rpadatabase.model === ""){
-                    select_the_modelDialog.open()
-                    console.log("model not selected")
-                }
+            else if(checkBoxState === 1){
+                rpadatabase.modelSelected(checkBoxNumber)
+                console.log("model is selected")
+                console.log(checkBoxNumber)
+                //rpadatabase.modelSelected(checkBoxNumber)
             }
-            else if(check_box.checked !== true || check_box1.checked !== true || check_box2.checked !== true || check_box3.checked !== true ||check_box4.checked !== true){
-                console.log("check_box is not selected")
-                select_the_checkboxDialog.open()
+            else{
+                console.log("no checkboxstate")
             }
-
-            if(drone_model_list.currentText === "Model A") {
-                firmware_load1.checksum_generation_process_model_A()
-
-            }
-            else if(drone_model_list.currentText === "Model B") {
-                firmware_load1.checksum_generation_process_model_B()
-            }
-            else if (uin_input_text.text !== ""){
-                rpadatabase.existingUIN(uin_input_text.text)
-                //uin_input_text.text=""
-            }
-*/
+            flightView.visible = true
+            toolbar.visible =true
+            landing_page_rectangle.visible = false
 
 
         }
@@ -188,20 +126,20 @@ Item{
         }
         onFirmware_load_model_AChanged:{
             if (controller.buildDiffFromFile(firmware_load1.firmware_load_model_A)) {
-                mainWindow.showPopupDialogFromComponent(parameterDiffDialog)
+//                mainWindow.showPopupDialogFromComponent(parameterDiffDialog)
                 console.log("mainroot" + firmware_load1.firmware_load_model_A)
-                flightView.visible = true
-                toolbar.visible =true
-                landing_page_rectangle.visible = false
+//                flightView.visible = true
+//                toolbar.visible =true
+//                landing_page_rectangle.visible = false
             }
         }
         onFirmware_load_model_BChanged:{
             if (controller.buildDiffFromFile(firmware_load1.firmware_load_model_B)) {
-                mainWindow.showPopupDialogFromComponent(parameterDiffDialog)
+//                mainWindow.showPopupDialogFromComponent(parameterDiffDialog)
                 console.log("mainroot" + firmware_load1.firmware_load_model_B)
-                flightView.visible = true
-                toolbar.visible =true
-                landing_page_rectangle.visible = false
+//                flightView.visible = true
+//                toolbar.visible =true
+//                landing_page_rectangle.visible = false
 
             }
         }
