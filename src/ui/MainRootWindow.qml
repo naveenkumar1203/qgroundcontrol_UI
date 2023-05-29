@@ -47,6 +47,7 @@ ApplicationWindow {
     property var newWindowObject
     property var group: buttonGroup
     property var image_upload;
+    FontLoader {id: fixedFont}
 
     ButtonGroup {
         id: buttonGroup
@@ -629,6 +630,12 @@ ApplicationWindow {
                                 login_page_email_textfield.text = ""
                                 login_page_password_textfield.text = ""
                                 login_page_password_textfield.echoMode = TextInput.Password
+                                user_name.border.color = "#05324D"
+                                user_mail.border.color = "#05324D"
+                                user_number.border.color = "#05324D"
+                                user_address.border.color = "#05324D"
+                                user_locality.border.color = "#05324D"
+                                user_password.border.color = "#05324D"
                                 if(first_user_details_page.visible == true){
                                     console.log("in first user details page")
                                     new_user_image_rect.source = "/res/First Time Signup screen.png"
@@ -2244,6 +2251,8 @@ ApplicationWindow {
             login_page_rectangle.visible = true
             login_page_email_textfield.text = ""
             login_page_password_textfield.text = ""
+            login_page_password.border.color = "#05324D"
+            login_page_email.border.color = "#05324D"
             password_hide_image.visible = true
             password_show_image.visible = false
             flightView.visible = false
@@ -3083,8 +3092,14 @@ ApplicationWindow {
                             anchors.left: brand_logo.right
                             anchors.leftMargin: 5
                             text: qsTr("GoDrona GCS")
-                            font.pixelSize: ScreenTools.defaultFontPointSize * 7.5
+                            font.pixelSize: ScreenTools.defaultFontPointSize * 5.5
                             font.family: "Mistral"
+//                            font.family: {
+//                                if(landing_page_rectangle.visible == true){
+//                                    fixedFont.source = "/fonts/design.graffiti.mistral"
+//                                }
+//                            }
+
                             font.bold: true
                             color: "white"
                         }
@@ -4197,7 +4212,7 @@ ApplicationWindow {
                             anchors.top: list_of_rpa_text.bottom
                             anchors.topMargin: 30
                             width: manage_rpa_header1.width - 50
-                            height: mainWindow.height - 180
+                            height: mainWindow.height - 220
                             color: "#031C28"
 //                            border.width: 1
 //                            border.color: "#05324D"
