@@ -197,8 +197,8 @@ ApplicationWindow {
                                                             }
                                                         }
                                                          itemDelegate: Rectangle {
-                                                             height: textItem.implicitHeight * 4
-                                                             width: textItem.implicitWidth
+//                                                             height: textItem.implicitHeight * 4
+//                                                             width: textItem.implicitWidth
                                                              anchors.fill:parent
                                                              color: "#031C28"
                                                              border.width: 1
@@ -636,6 +636,11 @@ ApplicationWindow {
                                 first_user_details_page.visible = true
                                 login_page_email_textfield.text = ""
                                 login_page_password_textfield.text = ""
+                                user_name.border.color = "#05324D"
+                                user_mail.border.color = "#05324D"
+                                user_address.border.color = "#05324D"
+                                user_locality.border.color = "#05324D"
+                                user_password.border.color = "#05324D"
                                 login_page_password_textfield.echoMode = TextInput.Password
                                 if(first_user_details_page.visible == true){
                                     console.log("in first user details page")
@@ -2311,7 +2316,7 @@ ApplicationWindow {
     }
     MessageDialog {
         id: enter_all_fields
-        title: "Somefield not filled"
+        //title: "Somefield not filled"
             text: "Please fill all the details"
     }
     MessageDialog {
@@ -3697,6 +3702,8 @@ ApplicationWindow {
                                 firmware_button.color = "#031C28"
                                 profile_button.color = "#031C28"
                                 about_button.color = "#031C28"
+                                login_page_email.border.color = "#05324D"
+                                login_page_password.border.color = "#05324D"
                                 users_profile_header1.visible = true
                                 users_information_header1.visible = false
                             }
