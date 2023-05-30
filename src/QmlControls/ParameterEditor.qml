@@ -141,11 +141,6 @@ Item{
         onFirmware_load_model_BChanged:{
             if (controller.buildDiffFromFile(firmware_load1.firmware_load_model_B)) {
                 //                mainWindow.showPopupDialogFromComponent(parameterDiffDialog)
-                console.log("mainroot" + firmware_load1.firmware_load_model_B)
-                //                flightView.visible = true
-                //                toolbar.visible =true
-                //                landing_page_rectangle.visible = false
-
             }
         }
     }

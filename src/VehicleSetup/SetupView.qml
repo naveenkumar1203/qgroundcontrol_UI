@@ -18,6 +18,7 @@ import QGroundControl.Controls              1.0
 import QGroundControl.ScreenTools           1.0
 import QGroundControl.MultiVehicleManager   1.0
 
+
 Rectangle {
     id:     setupView
     color:  qgcPal.window
@@ -235,16 +236,16 @@ Rectangle {
             }
 
             SubMenuButton {
-                id:                 firmwareButton
-                imageResource:      "/qmlimages/FirmwareUpgradeIcon.png"
-                setupIndicator:     false
-                exclusiveGroup:     setupButtonGroup
-                visible:            !ScreenTools.isMobile && _corePlugin.options.showFirmwareUpgrade
-                text:               qsTr("Firmware")
-                Layout.fillWidth:   true
-
+                id: firmwareButton
+                imageResource: "/qmlimages/FirmwareUpgradeIcon.png"
+                setupIndicator: false
+                exclusiveGroup: setupButtonGroup
+                visible: !ScreenTools.isMobile && _corePlugin.options.showFirmwareUpgrade
+                text: qsTr("Firmware")
+                Layout.fillWidth: true
                 onClicked: showPanel(this, "FirmwareUpgrade.qml")
             }
+
 
             SubMenuButton {
                 id:                 px4FlowButton

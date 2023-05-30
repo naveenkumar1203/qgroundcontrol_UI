@@ -80,13 +80,13 @@ void FirmwareUpdate::checksum_calculation_process_model_A(QString real_file_loca
     QTextStream in(&file);
     //if(file.exists())
     //{
-        while (!file.atEnd()) {
-            QString line1 = in.readAll();
-            QStringList split_text = line1.split( "=" );
-            QString data_checksum_calculated_model_A = split_text.value( split_text.length()-1);
-            data_checksum_calculated_model_A = data_checksum_calculated_model_A.trimmed();
-            data_model_A_value2 = data_checksum_calculated_model_A;
-       // }
+    while (!file.atEnd()) {
+        QString line1 = in.readAll();
+        QStringList split_text = line1.split( "=" );
+        QString data_checksum_calculated_model_A = split_text.value( split_text.length()-1);
+        data_checksum_calculated_model_A = data_checksum_calculated_model_A.trimmed();
+        data_model_A_value2 = data_checksum_calculated_model_A;
+        // }
     }
 
     QString calculated_code_checksum_cmd_model_A =  real_file_location + "/GoDrona GCS/Telemetry/code_A_checksum.txt";
@@ -98,11 +98,11 @@ void FirmwareUpdate::checksum_calculation_process_model_A(QString real_file_loca
     QTextStream in1(&file1);
     //if(file1.exists()){
     while (!file1.atEnd()) {
-            QString line1 = in1.readAll();
-            QStringList split_text = line1.split( "=" );
-            QString code_checksum_calculated_model_A = split_text.value( split_text.length()-1);
-            code_checksum_calculated_model_A = code_checksum_calculated_model_A.trimmed();
-            code_model_A_value2 = code_checksum_calculated_model_A;
+        QString line1 = in1.readAll();
+        QStringList split_text = line1.split( "=" );
+        QString code_checksum_calculated_model_A = split_text.value( split_text.length()-1);
+        code_checksum_calculated_model_A = code_checksum_calculated_model_A.trimmed();
+        code_model_A_value2 = code_checksum_calculated_model_A;
     }
     compare_file_model_A(real_file_location);
     //}
@@ -138,11 +138,11 @@ void FirmwareUpdate::compare_file_model_A(QString real_file_location)
 
     if((data_list1 == data_list2) && (code_list1 == code_list2)){
 
-//        QMessageBox msgBox;
-//        msgBox.setText("Model A - The Checksum Matches");
-//        msgBox.setStyleSheet("color:white;background:#05324D");
-//        msgBox.setDefaultButton(QMessageBox::Ok);
-//        msgBox.exec();
+        //        QMessageBox msgBox;
+        //        msgBox.setText("Model A - The Checksum Matches");
+        //        msgBox.setStyleSheet("color:white;background:#05324D");
+        //        msgBox.setDefaultButton(QMessageBox::Ok);
+        //        msgBox.exec();
 
         load_file_model_A(real_file_location);
 
@@ -298,11 +298,11 @@ void FirmwareUpdate::compare_file_model_B(QString real_file_location)
 
     if((data_list1 == data_list2) && (code_list1 == code_list2)){
 
-//        QMessageBox msgBox;
-//        msgBox.setText("Model B - The checksum matches. Please continue");
-//        msgBox.setStyleSheet("color:white;background:#05324D");
-//        msgBox.setDefaultButton(QMessageBox::Ok);
-//        msgBox.exec();
+        //        QMessageBox msgBox;
+        //        msgBox.setText("Model B - The checksum matches. Please continue");
+        //        msgBox.setStyleSheet("color:white;background:#05324D");
+        //        msgBox.setDefaultButton(QMessageBox::Ok);
+        //        msgBox.exec();
 
         load_file_model_B(real_file_location);
 
@@ -338,6 +338,5 @@ void FirmwareUpdate::setfirmware_load_model_B(const QString &newfirmware_load_mo
 {
     if (model_B_firmware_load == newfirmware_load_model_B)
         return;
-      model_B_firmware_load = newfirmware_load_model_B;
+    model_B_firmware_load = newfirmware_load_model_B;
 }
-

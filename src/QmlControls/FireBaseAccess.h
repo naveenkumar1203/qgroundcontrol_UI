@@ -12,6 +12,7 @@
 #include "RpaDatabase.h"
 #include "FirmwareUpgradeController.h"
 
+
 extern QString usermail;
 
 class FireBaseAccess : public QObject
@@ -150,6 +151,7 @@ private:
     QString m_locality;
     QString m_role;
     QString m_storagename;
+
 };
 
 #endif // FIREBASEACCESS_H

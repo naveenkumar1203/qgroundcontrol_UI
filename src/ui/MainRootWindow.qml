@@ -1435,7 +1435,6 @@ ApplicationWindow {
                     anchors.fill: parent
                     onClicked: {
                         image_file_dialog.open()
-                        //user_profile_image.source = image_file_dialog.fileUrl
                     }
                 }
             }
@@ -1449,288 +1448,260 @@ ApplicationWindow {
                 border.width: 1
                 border.color: "#05324D"
                 color: "#031C28"
-                //ScrollView {
-                Flickable {
-                    id: flickable
+                ScrollView {
                     anchors.fill: parent
-                    contentWidth: column.width // Set content width to allow horizontal scrolling if needed
                     clip: true
-                    contentHeight: column.height // Set content height to enable vertical scrolling
-
-                    ScrollBar.vertical: ScrollBar {
-                        policy: ScrollBar.AlwaysOn
-                        size: flickable.height / flickable.contentHeight
-                        position: flickable.contentY / flickable.contentHeight
-                        interactive: true
-                    }
+                    ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                    ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+                    contentWidth: parent.width
                     Column{
                         id: column
-                        spacing: 30
+                        spacing: 20
                         anchors.left: parent.left
                         anchors.leftMargin: 750
                         anchors.horizontalCenter: parent.horizontalCenter
-                        Column{
-                            spacing: 10
-                            Label{
-                                text: "Full Name*"
-                                color: "white"
+                        Label{
+                            text: "Full Name*"
+                            color: "white"
+                        }
+                        TextField{
+                            id: user_name_text
+                            width: mainWindow.width/3
+                            height: mainWindow.height/10
+                            text: ""
+                            color: "white"
+                            placeholderText: qsTr("Your Name")
+                            leftPadding: 70
+                            onTextChanged: {
+                                user_name.border.color = "#C0C0C0"
                             }
-                            TextField{
-                                id: user_name_text
-                                width: mainWindow.width/3
-                                height: mainWindow.height/10
-                                text: ""
-                                color: "white"
-                                placeholderText: qsTr("Your Name")
-                                leftPadding: 70
-                                onTextChanged: {
-                                    user_name.border.color = "#C0C0C0"
-                                }
-                                background: Rectangle
-                                {
-                                    id: user_name
-                                    anchors.fill: parent
-                                    color: "#031C28"
-                                    border.color: "#05324D"
-                                    border.width: 1.5
-                                }
-                                Image {
-                                    fillMode: Image.PreserveAspectFit
-                                    source: "/res/user_image.png"
-                                    anchors.left: parent.left
-                                    anchors.leftMargin: 12
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
+                            background: Rectangle
+                            {
+                                id: user_name
+                                anchors.fill: parent
+                                color: "#031C28"
+                                border.color: "#05324D"
+                                border.width: 1.5
+                            }
+                            Image {
+                                fillMode: Image.PreserveAspectFit
+                                source: "/res/user_image.png"
+                                anchors.left: parent.left
+                                anchors.leftMargin: 12
+                                anchors.verticalCenter: parent.verticalCenter
                             }
                         }
-                        Column{
-                            spacing: 10
-                            Label{
-                                text: "Email Address*"
-                                color: "white"
-                            }
-                            TextField{
-                                id: user_mail_text
-                                width: mainWindow.width/3
-                                height: mainWindow.height/10
-                                text: ""
-                                color: "white"
-                                placeholderText: qsTr("example@gmail.com")
-                                inputMethodHints: Qt.ImhEmailCharactersOnly
-                                //validator: RegExpValidator{regExp:/[A-Z0-9a-z._-]{1,}@(\\w+)(\\.(\\w+))(\\.(\\w+))?(\\.(\\w+))?$"*/}
-                                leftPadding: 70
-                                onTextChanged: {
-                                    user_mail.border.color = "#C0C0C0"
-                                }
-                                background: Rectangle
-                                {
-                                    id: user_mail
-                                    anchors.fill: parent
-                                    color: "#031C28"
-                                    border.color: "#05324D"
-                                    border.width: 1.5
-                                }
-                                Image {
-                                    fillMode: Image.PreserveAspectFit
-                                    source: "/res/mailLogo.png"
-                                    anchors.left: parent.left
-                                    anchors.leftMargin: 12
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
-                            }
+                        Label{
+                            text: "Email Address*"
+                            color: "white"
                         }
-                        Column{
-                            spacing: 10
-                            Label{
-                                text: "Mobile Number*"
-                                color: "white"
+                        TextField{
+                            id: user_mail_text
+                            width: mainWindow.width/3
+                            height: mainWindow.height/10
+                            text: ""
+                            color: "white"
+                            placeholderText: qsTr("example@gmail.com")
+                            inputMethodHints: Qt.ImhEmailCharactersOnly
+                            //validator: RegExpValidator{regExp:/[A-Z0-9a-z._-]{1,}@(\\w+)(\\.(\\w+))(\\.(\\w+))?(\\.(\\w+))?$"*/}
+                            leftPadding: 70
+                            onTextChanged: {
+                                user_mail.border.color = "#C0C0C0"
                             }
-                            TextField{
-                                id: user_number_text
-                                width: mainWindow.width/3
-                                height: mainWindow.height/10
-                                text: ""
-                                color: "white"
-                                maximumLength: 10
-                                placeholderText: qsTr("Your Mobile Number")
-                                leftPadding: 160
-                                validator: RegExpValidator{regExp: /[0-9,/]*/}
-                                onTextChanged: {
-                                    user_number.border.color = "#C0C0C0"
-                                }
-                                background: Rectangle
-                                {
-                                    id: user_number
-                                    anchors.fill: parent
-                                    color: "#031C28"
-                                    border.color: "#05324D"
-                                    border.width: 1.5
-                                }
-                                Image {
-                                    id:image
-                                    fillMode: Image.PreserveAspectFit
-                                    source: "/res/user_phone.png"
-                                    anchors.left: parent.left
-                                    anchors.leftMargin: 15
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
-                                Label {
-                                    anchors.left: image.right
-                                    anchors.leftMargin:3
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    text: "+91"
-                                    color: "white"
-                                }
+                            background: Rectangle
+                            {
+                                id: user_mail
+                                anchors.fill: parent
+                                color: "#031C28"
+                                border.color: "#05324D"
+                                border.width: 1.5
+                            }
+                            Image {
+                                fillMode: Image.PreserveAspectFit
+                                source: "/res/mailLogo.png"
+                                anchors.left: parent.left
+                                anchors.leftMargin: 12
+                                anchors.verticalCenter: parent.verticalCenter
                             }
                         }
 
+                        Label{
+                            text: "Mobile Number*"
+                            color: "white"
+                        }
+                        TextField{
+                            id: user_number_text
+                            width: mainWindow.width/3
+                            height: mainWindow.height/10
+                            text: ""
+                            color: "white"
+                            maximumLength: 10
+                            placeholderText: qsTr("Your Mobile Number")
+                            leftPadding: 160
+                            validator: RegExpValidator{regExp: /[0-9,/]*/}
+                            onTextChanged: {
+                                user_number.border.color = "#C0C0C0"
+                            }
+                            background: Rectangle
+                            {
+                                id: user_number
+                                anchors.fill: parent
+                                color: "#031C28"
+                                border.color: "#05324D"
+                                border.width: 1.5
+                            }
+                            Image {
+                                id:image
+                                fillMode: Image.PreserveAspectFit
+                                source: "/res/user_phone.png"
+                                anchors.left: parent.left
+                                anchors.leftMargin: 15
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                            Label {
+                                anchors.left: image.right
+                                anchors.leftMargin:3
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: "+91"
+                                color: "white"
+                            }
+                        }
 
-                        Column{
-                            spacing: 10
-                            Label{
-                                text: "Address Line*"
-                                color: "white"
+                        Label{
+                            text: "Address Line*"
+                            color: "white"
+                        }
+                        TextField{
+                            id: user_address_text
+                            width: mainWindow.width/3
+                            height: mainWindow.height/10
+                            text: ""
+                            color: "white"
+                            placeholderText: qsTr("Your Address")
+                            leftPadding: 70
+                            onTextChanged: {
+                                user_address.border.color = "#C0C0C0"
                             }
-                            TextField{
-                                id: user_address_text
-                                width: mainWindow.width/3
-                                height: mainWindow.height/10
-                                text: ""
-                                color: "white"
-                                placeholderText: qsTr("Your Address")
-                                leftPadding: 70
-                                onTextChanged: {
-                                    user_address.border.color = "#C0C0C0"
-                                }
-                                background: Rectangle
-                                {
-                                    id: user_address
-                                    anchors.fill: parent
-                                    color: "#031C28"
-                                    border.color: "#05324D"
-                                    border.width: 1.5
-                                }
-                                Image {
-                                    fillMode: Image.PreserveAspectFit
-                                    source: "/res/user_location.png"
-                                    anchors.left: parent.left
-                                    anchors.leftMargin: 12
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
+                            background: Rectangle
+                            {
+                                id: user_address
+                                anchors.fill: parent
+                                color: "#031C28"
+                                border.color: "#05324D"
+                                border.width: 1.5
+                            }
+                            Image {
+                                fillMode: Image.PreserveAspectFit
+                                source: "/res/user_location.png"
+                                anchors.left: parent.left
+                                anchors.leftMargin: 12
+                                anchors.verticalCenter: parent.verticalCenter
                             }
                         }
-                        Column{
-                            spacing: 10
-                            Label{
-                                text: "Locality*"
-                                color: "white"
+                        Label{
+                            text: "Locality*"
+                            color: "white"
+                        }
+                        TextField{
+                            id: user_locality_text
+                            width: mainWindow.width/3
+                            height: mainWindow.height/10
+                            text: ""
+                            color: "white"
+                            placeholderText: qsTr("Your Locality")
+                            leftPadding: 70
+                            onTextChanged: {
+                                user_locality.border.color = "#C0C0C0"
                             }
-                            TextField{
-                                id: user_locality_text
-                                width: mainWindow.width/3
-                                height: mainWindow.height/10
-                                text: ""
-                                color: "white"
-                                placeholderText: qsTr("Your Locality")
-                                leftPadding: 70
-                                onTextChanged: {
-                                    user_locality.border.color = "#C0C0C0"
-                                }
-                                background: Rectangle
-                                {
-                                    id: user_locality
-                                    anchors.fill: parent
-                                    color: "#031C28"
-                                    border.color: "#05324D"
-                                    border.width: 1.5
-                                }
-                                Image {
-                                    fillMode: Image.PreserveAspectFit
-                                    source: "/res/user_locality.png"
-                                    anchors.left: parent.left
-                                    anchors.leftMargin: 12
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
+                            background: Rectangle
+                            {
+                                id: user_locality
+                                anchors.fill: parent
+                                color: "#031C28"
+                                border.color: "#05324D"
+                                border.width: 1.5
+                            }
+                            Image {
+                                fillMode: Image.PreserveAspectFit
+                                source: "/res/user_locality.png"
+                                anchors.left: parent.left
+                                anchors.leftMargin: 12
+                                anchors.verticalCenter: parent.verticalCenter
                             }
                         }
-                        Column{
-                            spacing: 10
-                            Label{
-                                text: "Password*"
-                                color: "white"
+                        Label{
+                            text: "Password*"
+                            color: "white"
+                        }
+                        TextField{
+                            id: user_password_text
+                            width: mainWindow.width/3
+                            height: mainWindow.height/10
+                            text: ""
+                            color: "white"
+                            placeholderText: qsTr("password")
+                            leftPadding: 70
+                            rightPadding: 50
+                            echoMode: TextInput.Password
+                            onTextChanged: {
+                                user_password.border.color = "#C0C0C0"
                             }
-                            TextField{
-                                id: user_password_text
-                                width: mainWindow.width/3
-                                height: mainWindow.height/10
-                                text: ""
-                                color: "white"
-                                placeholderText: qsTr("password")
-                                leftPadding: 70
-                                rightPadding: 50
-                                echoMode: TextInput.Password
-                                onTextChanged: {
-                                    user_password.border.color = "#C0C0C0"
-                                }
-                                background: Rectangle
-                                {
-                                    id: user_password
+                            background: Rectangle
+                            {
+                                id: user_password
+                                anchors.fill: parent
+                                color: "#031C28"
+                                border.color: "#05324D"
+                                border.width: 1.5
+                            }
+                            Image {
+                                fillMode: Image.PreserveAspectFit
+                                source: "/res/password.png"
+                                anchors.left: parent.left
+                                anchors.leftMargin: 8
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                            Image {
+                                id: password_hide_image1
+                                fillMode: Image.PreserveAspectFit
+                                source: "/res/password_hide.png"
+                                anchors.right: parent.right
+                                anchors.rightMargin: 12
+                                anchors.verticalCenter: parent.verticalCenter
+                                MouseArea{
                                     anchors.fill: parent
-                                    color: "#031C28"
-                                    border.color: "#05324D"
-                                    border.width: 1.5
-                                }
-                                Image {
-                                    fillMode: Image.PreserveAspectFit
-                                    source: "/res/password.png"
-                                    anchors.left: parent.left
-                                    anchors.leftMargin: 8
-                                    anchors.verticalCenter: parent.verticalCenter
-                                }
-                                Image {
-                                    id: password_hide_image1
-                                    fillMode: Image.PreserveAspectFit
-                                    source: "/res/password_hide.png"
-                                    anchors.right: parent.right
-                                    anchors.rightMargin: 12
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    MouseArea{
-                                        anchors.fill: parent
-                                        onClicked: {
-                                            password_hide_image1.visible = false
-                                            password_show_image1.visible = true
-                                            user_password_text.echoMode = TextInput.Normal
-                                        }
-                                    }
-                                }
-                                Image {
-                                    id: password_show_image1
-                                    visible: false
-                                    fillMode: Image.PreserveAspectFit
-                                    source: "/res/password_show.png"
-                                    anchors.right: parent.right
-                                    anchors.rightMargin: 12
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    MouseArea{
-                                        anchors.fill: parent
-                                        onClicked: {
-                                            password_show_image1.visible = false
-                                            password_hide_image1.visible = true
-                                            user_password_text.echoMode = TextInput.Password
-                                        }
+                                    onClicked: {
+                                        password_hide_image1.visible = false
+                                        password_show_image1.visible = true
+                                        user_password_text.echoMode = TextInput.Normal
                                     }
                                 }
                             }
-                            Label{
-                                text: "*Password must be at least 6 characters"
-                                color: "white"
-                                font.pointSize:ScreenTools.smallFontPointSize
+                            Image {
+                                id: password_show_image1
+                                visible: false
+                                fillMode: Image.PreserveAspectFit
+                                source: "/res/password_show.png"
+                                anchors.right: parent.right
+                                anchors.rightMargin: 12
+                                anchors.verticalCenter: parent.verticalCenter
+                                MouseArea{
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        password_show_image1.visible = false
+                                        password_hide_image1.visible = true
+                                        user_password_text.echoMode = TextInput.Password
+                                    }
+                                }
                             }
-
+                        }
+                        Label{
+                            text: "*Password must be at least 6 characters"
+                            color: "white"
+                            font.pointSize:ScreenTools.smallFontPointSize
                         }
                     }
                 }
-
             }
             Column{
                 anchors.top: scrollview.bottom
@@ -4063,7 +4034,7 @@ ApplicationWindow {
                                 anchors.top: list_of_rpa_text.bottom
                                 anchors.topMargin: 30
                                 width: manage_rpa_header1.width - 50
-                                height: mainWindow.height - 330
+                                height: mainWindow.height - 320
                                 color: "#031C28"
                                 visible: true
 
@@ -4829,32 +4800,41 @@ ApplicationWindow {
                                         }
 
                                         onClicked: {
+
+                                            rpadatabase.download_function(modelData,database_access.mail,QGroundControl.settingsManager.appSettings.telemetrySavePath);
+                                            log_download_button.color = "#DA2C43"
+                                            log_checkBox.checked = false
+                                            fileDownloaded_Dialog.open()
                                             //var sourceFile = folderModel.folder + "/" + fileName;
                                             //console.log("Source file path: " + sourceFile);
 
-                                            var fileDialog = Qt.createQmlObject('import QtQuick.Dialogs 1.3; FileDialog {}', downloadButton);
-                                            fileDialog.selectExisting = false;
-                                            fileDialog.selectMultiple = false;
-                                            fileDialog.title = "Save file";
+//                                            var fileDialog = Qt.createQmlObject('import QtQuick.Dialogs 1.3; FileDialog {}', downloadButton);
+//                                            fileDialog.selectExisting = false;
+//                                            fileDialog.selectMultiple = false;
+//                                            fileDialog.title = "Save file";
 
-                                            fileDialog.accepted.connect(function() {
-                                                log_download_button.color = "#DA2C43"
-                                                log_checkBox.checked = false
-                                                var destFile = fileDialog.fileUrls.length > 0 ? fileDialog.fileUrls[0].toString() : "";
-                                                console.log("Destination file path: " + destFile);
-                                                var destFileLoaction;
-                                                function pfx_file_location_function(str)
-                                                {
-                                                    destFileLoaction = str.slice(str.lastIndexOf("file://")+7)
-                                                }
-                                                pfx_file_location_function(destFile);
-                                                rpadatabase.download_function(modelData,database_access.mail,destFileLoaction)
-                                            });
-                                            fileDialog.rejected.connect(function(){
-                                                log_download_button.color = "#DA2C43";
-                                                log_checkBox.checked = false
-                                            });
-                                            fileDialog.open();
+//                                            fileDialog.accepted.connect(function() {
+//                                                log_download_button.color = "#DA2C43"
+//                                                log_checkBox.checked = false
+//                                                var destFile = fileDialog.fileUrls.length > 0 ? fileDialog.fileUrls[0].toString() : "";
+//                                                console.log("Destination file path: " + destFile);
+//                                                var destFileLoaction;
+//                                                function pfx_file_location_function(str)
+//                                                {
+//                                                    destFileLoaction = str.slice(str.lastIndexOf("file://")+7)
+//                                                }
+//                                                pfx_file_location_function(destFile);
+//                                                rpadatabase.download_function(modelData,database_access.mail,destFileLoaction)
+//                                            });
+//                                            fileDialog.rejected.connect(function(){
+//                                                log_download_button.color = "#DA2C43";
+//                                                log_checkBox.checked = false
+//                                            });
+//                                            fileDialog.open();
+                                        }
+                                        MessageDialog{
+                                            id: fileDownloaded_Dialog
+                                            text: "File Download Completed."
                                         }
                                     }
                                 }

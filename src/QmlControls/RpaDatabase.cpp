@@ -47,11 +47,9 @@ void TableModel::network_reply_read()
 
 void TableModel::network_reply_read_addData()
 {
-    //qDebug()<< m_networkreply->readAll();
     QByteArray response = m_networkreply->readAll();
     QJsonDocument doc = QJsonDocument::fromJson(response);
     QJsonObject object = doc.object();
-    //QList<QJsonObject> jsonObjectList;
     qDebug()<<"inside add data read";
     uinlist.clear();
     typelist.clear();
@@ -66,24 +64,19 @@ void TableModel::network_reply_read_addData()
             if(key1 == "Model"){
                 QJsonValue value = jsonObject.value("Model");
                 modellist.append(value.toString());
-                qDebug()<<"Model appended";
             }
             if(key1 == "Type"){
                 QJsonValue value = jsonObject.value("Type");
                 typelist.append(value.toString());
-                qDebug()<<"type appended";
             }
             if(key1 == "UINNO"){
                 QJsonValue value = jsonObject.value("UINNO");
                 uinlist.append(value.toString());
-                qDebug()<<"uin appended";
             }
             if(key1 == "Name"){
                 QJsonValue value = jsonObject.value("Name");
                 dronelist.append(value.toString());
-                qDebug()<<"drone list appended";
             }
-            //dronelist.append("dji1");
         }
     }
     qDebug()<<uinlist;
@@ -106,7 +99,6 @@ bool TableModel::setData(const QModelIndex &index1, const QVariant &value, int r
                                           SqlEditRole});
 
     qDebug()<<"show table called";
-    //emit showTable();
     emit dataAdded();
     return true;
 }
@@ -127,9 +119,6 @@ QVariant TableModel::data(const QModelIndex & index, int role) const {
 
     if (index.row() < 0 || index.row() >= typelist.count())
         return QVariant();
-
-    //    if (role == CheckBoxRole)
-    //        return typelist[index.row()];
 
     else if (role== TypeRole){
         return typelist[index.row()]; //.isEnabled();
@@ -196,7 +185,6 @@ void TableModel::manageRpaClicked(const QString &userName)
 {
     QString user_mail = userName;
     int pos = user_mail.lastIndexOf("@");
-    //qDebug() << user_mail.left(pos);
     user_mail = user_mail.left(pos);
     user = user_mail;
     getData();
@@ -237,17 +225,14 @@ void TableModel::modelSelected_list()
             if(key1 == "Model"){
                 QJsonValue value = jsonObject.value("Model");
                 modellist.append(value.toString());
-                //qDebug()<<"Model appended";
             }
             if(key1 == "Type"){
                 QJsonValue value = jsonObject.value("Type");
                 typelist.append(value.toString());
-                //qDebug()<<"type appended";
             }
             if(key1 == "UINNO"){
                 QJsonValue value = jsonObject.value("UINNO");
                 uinlist.append(value.toString());
-                //qDebug()<<"uin appended";
             }
             if(key1 == "Name"){
                 QJsonValue value = jsonObject.value("Name");
@@ -381,7 +366,7 @@ void TableModel::download_function(const QString &file_name, const QString &fire
 
     //QString user_download_location = local_pc_location + ".csv";
 
-    QString user_download_location = "QGroundControl.settingsManager.appSettings.telemetrySavePath" + file_name + "/.csv";
+    QString user_download_location = local_pc_location  + "/" + file_name;
 
 
     qDebug() << local_pc_location;
@@ -397,22 +382,17 @@ void TableModel::download_function(const QString &file_name, const QString &fire
     QByteArray data = response1->readAll();
         QFile file(user_download_location);
         if (!file.open(QIODevice::WriteOnly)) {
-            // handle error
         }
         file.write(data);
         file.close();
     });
 }
 
-
-
-
 void TableModel::firmwareupgrade_data()
 {
     QString link1 = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + usermail + "/FIRMWARELOG/.json";
     m_networkreply = m_networkAccessManager->get(QNetworkRequest(QUrl(link1)));
     connect(m_networkreply,&QNetworkReply::readyRead,this,&TableModel::firmwarelog_contain_data);
-    qDebug()<<"i am enter in the new function ";
 }
 
 void TableModel:: firmwarelog_contain_data()
@@ -449,9 +429,6 @@ void TableModel::firmware_apply_read_addData(const QByteArray &response)
     }
 
 }
-
-
-
 
 QHash<int, QByteArray> TableModel::roleNames() const {
     QHash<int, QByteArray> roles;

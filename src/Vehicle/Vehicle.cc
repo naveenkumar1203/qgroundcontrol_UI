@@ -3804,9 +3804,7 @@ void Vehicle::_initializeCsv()
     }
     QString now = QDateTime::currentDateTime().toString("yyyy-MM-dd hh-mm-ss");
     QString model = obj.model(); //_toolbox->tableModel()->model();
-    qDebug()<<"model file name is " <<model;
     QString uin = obj.uin(); //_toolbox->tableModel()->uin();
-    qDebug()<<"uin file name is " <<uin;
 
     QString fileName = QString("%1%2%3.csv").arg(now).arg(model).arg(uin);
     QString flightlog_filename = _toolbox->settingsManager()->appSettings()->telemetrySavePath();
@@ -3817,7 +3815,7 @@ void Vehicle::_initializeCsv()
 
     user_name = obj1.storagename();
 
-    QString userName = obj1.storagename(); //_toolbox->ajaydatabase()->awsname();
+    QString userName = obj1.storagename();
     QString user_text_file = QString("%1.txt").arg(userName);
     QDir saveDir1 (flightlog_filename);
     _userTextFile.setFileName(saveDir1.absoluteFilePath(user_text_file));
@@ -3863,7 +3861,6 @@ void Vehicle::setFlightlog_filename(const QString &newFlightlog_filename)
 void Vehicle::_writeCsvLine()
 {
     qDebug()<<"inside write csv";
-    //RpaDatabase obj;
 
     // Only save the logs after the the vehicle gets armed, unless "Save logs even if vehicle was not armed" is checked
     if(!_csvLogFile.isOpen() &&
