@@ -40,14 +40,16 @@ ApplicationWindow {
     property int updateButton: 1
     property bool editUin: true
     property int number: 0
-    property real rectangleWidth: (table_rect.width - 40) / 5
 
     property int checkBoxState: 0
     property int checkBoxNumber
     property var newWindowObject
     property var group: buttonGroup
     property var image_upload;
-    FontLoader {id: fixedFont}
+    FontLoader {
+        id: fixedFont
+        source: "/fonts/design.graffiti.mistral"
+    }
 
     ButtonGroup {
         id: buttonGroup
@@ -3092,8 +3094,8 @@ ApplicationWindow {
                             anchors.left: brand_logo.right
                             anchors.leftMargin: 5
                             text: qsTr("GoDrona GCS")
-                            font.pixelSize: ScreenTools.defaultFontPointSize * 5.5
                             font.family: "Mistral"
+                            font.pixelSize: ScreenTools.defaultFontPointSize * 5.5
 //                            font.family: {
 //                                if(landing_page_rectangle.visible == true){
 //                                    fixedFont.source = "/fonts/design.graffiti.mistral"
