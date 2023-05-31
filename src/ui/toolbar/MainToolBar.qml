@@ -36,6 +36,11 @@ Rectangle {
     QGCPalette { id: qgcPal }
     FontLoader { id: fixedFont}
 
+    FontLoader {
+        id: fixedFont1
+        source: "/fonts/design.graffiti.mistral"
+    }
+
     /// Bottom single pixel divider
     Rectangle {
         anchors.left:   parent.left
@@ -77,8 +82,8 @@ Rectangle {
             id: godrona
             text: "Go Drona  "
             color: "White"
-            font.family: fixedFont.name
-            font.pixelSize: ScreenTools.defaultFontPointSize * 3  //: ScreenTools.largeFontPointSize
+            font.family: "Mistral"
+            font.pointSize: ScreenTools.defaultFontPointSize * 2  //: ScreenTools.largeFontPointSize
             font.bold: true
         }
 

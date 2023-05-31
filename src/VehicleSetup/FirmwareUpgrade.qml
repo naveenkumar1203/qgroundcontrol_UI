@@ -21,6 +21,7 @@ import QGroundControl.FactControls  1.0
 import QGroundControl.Palette       1.0
 import QGroundControl.Controllers   1.0
 import QGroundControl.ScreenTools   1.0
+import TableModel 1.0
 
 SetupPage {
     id:             firmwarePage
@@ -77,17 +78,39 @@ SetupPage {
                 _defaultFirmwareIsPX4 = _defaultFirmwareFact.rawValue === _defaultFimwareTypePX4 // we don't want this to be bound and change as radios are selected
             }
 
-            QGCFileDialog {
-                id:                 customFirmwareDialog
-                title:              qsTr("Select Firmware File")
-                nameFilters:        [qsTr("Firmware Files (*.px4 *.apj *.bin *.ihx)"), qsTr("All Files (*)")]
-                selectExisting:     true
-                folder:             QGroundControl.settingsManager.appSettings.logSavePath
-                onAcceptedForLoad: {
-                    controller.flashFirmwareUrl(file)
-                    close()
+//            QGCFileDialog {
+//                id:                 customFirmwareDialog
+//                title:              qsTr("Select Firmware File")
+//                nameFilters:        [qsTr("Firmware Files (*.px4 *.apj *.bin *.ihx)"), qsTr("All Files (*)")]
+//                selectExisting:     true
+//                folder:             QGroundControl.settingsManager.appSettings.logSavePath
+//                onAcceptedForLoad: {
+//                    controller.flashFirmwareUrl(file)
+//                    close()
+//                }
+//            }
+
+            TableModel {
+                id: rpadatabase
+            }
+
+            property string firmwareFilePath: ""
+
+            Button {
+                text: "Flash Firmware"
+                onClicked: {
+                    if (rpadatabase.model === "Model A") {
+                        firmwareFilePath = QGroundControl.settingsManager.appSettings.telemetrySavePath + "/firmware_A.apj";
+                        controller.flashFirmwareUrl(firmwareFilePath);
+                    } else if (rpadatabase.model === "Model B") {
+                        firmwareFilePath = QGroundControl.settingsManager.appSettings.telemetrySavePath + "/firmware_B.apj";
+                        controller.flashFirmwareUrl(firmwareFilePath);
+                    }
                 }
             }
+
+
+
 
             FirmwareUpgradeController {
                 id:             controller

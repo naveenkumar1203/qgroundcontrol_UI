@@ -53,6 +53,11 @@ ApplicationWindow {
         exclusive: true
     }
 
+    FontLoader {
+        id: fixedFont
+        source: "/fonts/design.graffiti.mistral"
+    }
+
     FireBaseAccess{
         id: database_access
         onNameChanged:{
@@ -170,8 +175,6 @@ ApplicationWindow {
                                                  id: table
                                                  anchors.fill: parent
                                                  clip:true
-                                                 //width: parent.width
-                                                 //height: parent.height
                                                  anchors.top: table_rect.top
                                                  backgroundVisible: false
                                                  model:  rpadatabase
@@ -186,7 +189,6 @@ ApplicationWindow {
                                                  id: textItem
                                                  anchors.centerIn: parent
                                                  text: styleData.value
-                                                 //font.pixelSize: 15
                                                  font.pointSize: ScreenTools.smallFontPointSize
                                                  font.bold:true
                                                  elide: Text.ElideRight
@@ -201,11 +203,9 @@ ApplicationWindow {
                                                  border.width: 1
                                                  border.color: "#05324D"
                                                  Text {
-                                                 //anchors.horizontalCenter: parent.horizontalCenter
                                                  anchors.centerIn:parent
                                                  color: "white"
                                                  text: styleData.value
-                                                 //font.pixelSize: 15
                                                  font.pointSize: ScreenTools.smallFontPointSize
                                                  }
                                                  }
@@ -233,7 +233,6 @@ ApplicationWindow {
                                                  border.color: "#F25822"
                                                  anchors.centerIn: parent
                                                  Rectangle {
-                                                 //visible: check_box.checked
                                                  color: delegate_checkbox.checked ? "#F25822" : "#031C28"
                                                  radius: 1
                                                  anchors.margins: 2
@@ -246,9 +245,6 @@ ApplicationWindow {
                                                  checkBoxNumber = model.index
                                                  ButtonGroup.group = mainWindow.group
                                                  }
-                                                 //                                                                         else{
-                                                 //                                                                            checkBoxState = 0
-                                                 //                                                                         }
                                                  }
                                                  }
                                                  }
@@ -264,14 +260,14 @@ ApplicationWindow {
                                                  TableViewColumn{
                                                  width: (parent.width - checkbox.width)/4
                                                  role: "model_name"
-                                                 title: "ModelName"
+                                                 title: "Model Name"
                                                  movable: false
                                                  resizable: false
                                                  }
                                                  TableViewColumn{
                                                  width: (parent.width - checkbox.width)/4
                                                  role: "drone_name"
-                                                 title: "DroneName"
+                                                 title: "Drone Name"
                                                  movable: false
                                                  resizable: false
                                                  }
@@ -282,80 +278,6 @@ ApplicationWindow {
                                                  resizable: false
                                                  role: "uin_number"
                                                  }
-                                                 //                                                         TableViewColumn{
-                                                 //                                                             width: (parent.width - checkbox.width)/4
-                                                 //                                                             title: "Actions"
-                                                 //                                                             movable: false
-                                                 //                                                             resizable: false
-                                                 //                                                             role: "edit_operations"
-                                                 //                                                             delegate: Rectangle{
-                                                 //                                                             color:"#031C28"
-                                                 //                                                             Row{
-                                                 //                                                                 anchors.fill:parent
-                                                 //                                                                 Button{
-                                                 //                                                                     height: parent.height
-                                                 //                                                                     width : parent.width/2
-                                                 //                                                                     //text: "edit"
-                                                 //                                                                     Text{
-                                                 //                                                                         text: "edit"
-                                                 //                                                                         font.pointSize: ScreenTools.smallFontPointSize
-                                                 //                                                                         //font.pixelSize: 15
-                                                 //                                                                         anchors.centerIn: parent
-                                                 //                                                                         color: "white"
-                                                 //                                                                     }
-                                                 //                                                                     background: Rectangle {
-                                                 //                                                                         id: edit_button
-                                                 //                                                                         implicitWidth: parent.width/2
-                                                 //                                                                         implicitHeight: parent.height
-                                                 //                                                                         color: "#F25822"
-                                                 //                                                                         radius: 4
-                                                 //                                                                     }
-                                                 //                                                                     onPressed:{
-                                                 //                                                                        edit_button.color = "#031C28"
-                                                 //                                                                     }
-                                                 //                                                                     onReleased:{
-                                                 //                                                                        edit_button.color = "#F25822"
-                                                 //                                                                     }
-                                                 //                                                                     onClicked: {
-                                                 //                                                                        //rpadatabase.edit_query(database_access.mail,model.index)
-                                                 //                                                                           updateButton = 2
-                                                 //                                                                           manage_rpa_header1.visible = false
-                                                 //                                                                           rpa_register_page.visible = true
-                                                 //                                                                           drone_contents.visible = true
-                                                 //                                                                    }
-                                                 //                                                                }
-                                                 //                                                                Button{
-                                                 //                                                                     height: parent.height
-                                                 //                                                                     width: parent.width/2
-                                                 //                                                                     //text: "delete"
-                                                 //                                                                     Text{
-                                                 //                                                                         text: "Delete"
-                                                 //                                                                         font.pointSize: ScreenTools.smallFontPointSize
-                                                 //                                                                         //font.pixelSize: 15
-                                                 //                                                                         anchors.centerIn: parent
-                                                 //                                                                         color: "white"
-                                                 //                                                                     }
-                                                 //                                                                     background: Rectangle {
-                                                 //                                                                         id: delete_button
-                                                 //                                                                         implicitWidth: parent.width/2
-                                                 //                                                                         implicitHeight: parent.height
-                                                 //                                                                         color: "#F25822"
-                                                 //                                                                         radius: 4
-                                                 //                                                                     }
-                                                 //                                                                     onPressed:{
-                                                 //                                                                        delete_button.color = "#031C28"
-                                                 //                                                                     }
-                                                 //                                                                     onReleased:{
-                                                 //                                                                        delete_button.color = "#F25822"
-                                                 //                                                                     }
-                                                 //                                                                     onClicked: {
-                                                 //                                                                         rpadatabase.delete_query(database_access.mail,model.index)
-                                                 //                                                                         deleteDialog.open()
-                                                 //                                                                     }
-                                                 //                                                                }
-                                                 //                                                             }
-                                                 //                                                             }
-                                                 // }
                                                  }
                                                  `,
                                                  table_rect,
@@ -2901,10 +2823,10 @@ ApplicationWindow {
                             id: brand_text
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.right: brand_rect.right
-                            anchors.rightMargin: 20
+                            anchors.rightMargin: 30
                             text: qsTr("GoDrona GCS")
                             font.family: "Mistral"
-                            font.pointSize:ScreenTools.defaultFontPointSize * 1.1
+                            font.pointSize:ScreenTools.defaultFontPointSize * 1.4
                             font.bold: true
                             color: "white"
                         }
@@ -4640,14 +4562,21 @@ ApplicationWindow {
                             }
                         }
                     }
+                    MessageDialog {
+                        id: profilePicUpdated_Dialog
+                        text: "Profile Picture Updated Successfully";
+                    }
+
                     MessageDialog{
                         id:fillDialog
                         text:"please fill the details correctly"
                     }
+
                     MessageDialog{
                         id:tableDialog
                         text:"Updated Successfully."
                     }
+
                     MessageDialog{
                         id:deleteDialog
                         text:"Row Deleted Successfully."
@@ -5082,8 +5011,30 @@ ApplicationWindow {
                                     maskSource: image_rect
                                 }
                             }
+                            MouseArea{
+                                 anchors.fill: parent
+                                 onClicked: {
+                                     image_update_dialog.open()
+                                 }
+                             }
 
                         }
+                        FileDialog {
+                             id:image_update_dialog
+                             title: "Please choose an image"
+                             folder: shortcuts.documents
+                             nameFilters: [ "(*.jpg)"]
+                             selectMultiple: false
+                             onAccepted: {
+                                 user_profile_image.visible = true
+                                 var filePath = fileUrl.toString().replace("file://", "")
+                                 image_upload = filePath;
+                                 console.log("You chose: " + image_update_dialog.fileUrls)
+                                 rpadatabase.upload_function("user_profile.jpg",database_access.storagename, image_upload)
+                                 user_image_inprofile.source = image_update_dialog.fileUrl
+                                 profilePicUpdated_Dialog.open()
+                             }
+                         }
                         Column {
                             spacing: 5
                             anchors.left: image_rect.right
@@ -5118,48 +5069,6 @@ ApplicationWindow {
                         color: "#031C28"
                         border.width: 1
                         border.color: "#05324D"
-
-                        //                        Rectangle {
-                        //                            id: go_to_profile
-                        //                            anchors.right: parent.right
-                        //                            anchors.rightMargin: 25
-                        //                            anchors.top: parent.top
-                        //                            anchors.topMargin: 10
-                        //                            color: "#05324D"
-                        //                            border.color: "#F25822"
-                        //                            border.width: 0.5
-                        //                            width: mainWindow.width/11
-                        //                            height: mainWindow.height/17
-                        //                            radius: 3
-                        //                            Text {
-                        //                                text: "Your Profile"
-                        //                                color: "#FFFFFF"
-                        //                                font.pointSize:ScreenTools.smallFontPointSize
-                        //                                font.bold: true
-                        //                                anchors.centerIn: parent
-                        //                                anchors.verticalCenter: parent.verticalCenter
-                        //                            }
-                        //                            MouseArea{
-                        //                                anchors.fill: go_to_profile
-                        //                                onClicked: {
-                        //                                    users_profile_header1.visible = false
-                        //                                    users_information_header1.visible = true
-                        //                                    userprofile_name.text = database_access.name
-                        //                                    address_field.activeFocus = true
-                        //                                    locality_field.activeFocus = true
-                        //                                    mail_address.text = database_access.mail
-                        //                                    mobile_number.text = database_access.number
-                        //                                    address_field.text = database_access.address
-                        //                                    locality_field.text = database_access.locality
-                        //                                }
-                        //                                onPressed: {
-                        //                                    go_to_profile.color = "#F25822"
-                        //                                }
-                        //                                onReleased: {
-                        //                                    go_to_profile.color = "#05324D"
-                        //                                }
-                        //                            }
-                        //                        }
 
                         Column{
                             spacing: 30
