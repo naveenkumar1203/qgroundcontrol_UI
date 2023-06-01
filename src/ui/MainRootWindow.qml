@@ -91,6 +91,8 @@ ApplicationWindow {
             managerpa_button.color = "#031C28"
             flight_log_button.color = "#031C28"
             logout_button.color = "#031C28"
+            firmware_button.color = "#031C28"
+            profile_button.color = "#031C28"
         }
         onEmailNotFound:{
             no_recordDialog.open()
@@ -190,7 +192,7 @@ ApplicationWindow {
                                                                     id: textItem
                                                                     anchors.centerIn: parent
                                                                     text: styleData.value
-                                                                    font.pointSize : 15
+                                                                    font.pointSize : 13
                                                                     font.bold:true
                                                                     elide: Text.ElideRight
                                                                     color: '#F25822'
@@ -266,14 +268,14 @@ ApplicationWindow {
                                                          TableViewColumn{
                                                              width: (parent.width - checkbox.width)/4
                                                              role: "model_name"
-                                                             title: "ModelName"
+                                                             title: "Model Name"
                                                              movable: false
                                                              resizable: false
                                                          }
                                                          TableViewColumn{
                                                              width: (parent.width - checkbox.width)/4
                                                              role: "drone_name"
-                                                             title: "DroneName"
+                                                             title: "Drone Name"
                                                              movable: false
                                                              resizable: false
                                                          }
@@ -5506,6 +5508,12 @@ ApplicationWindow {
                                     maskSource: image_rect
                                 }
                             }
+                            MouseArea{
+                                anchors.fill: parent
+                                onClicked: {
+                                    image_update_dialog.open()
+                                }
+                            }
 
                             /*MouseArea{
                                 anchors.fill: image_rect
@@ -5529,6 +5537,23 @@ ApplicationWindow {
                                 }
                             }*/
                         }
+                        FileDialog {
+                            id:image_update_dialog
+                            title: "Please choose an image"
+                            folder: shortcuts.documents
+                            nameFilters: [ "(*.jpg)"]
+                            selectMultiple: false
+                            onAccepted: {
+                                user_profile_image.visible = true
+                                var filePath = fileUrl.toString().replace("file://", "")
+                                image_upload = filePath;
+                                console.log("You chose: " + image_update_dialog.fileUrls)
+                                rpadatabase.upload_function("user_profile.jpg",database_access.storagename, image_upload)
+                                user_image_inprofile.source = image_update_dialog.fileUrl
+                                profilePicUpdated_Dialog.open()
+                            }
+                        }
+
                         Column {
                             spacing: 5
                             anchors.left: image_rect.right
@@ -5552,6 +5577,10 @@ ApplicationWindow {
 
                         }
                     }
+                    MessageDialog {
+                        id: profilePicUpdated_Dialog
+                        text: "Profile Picture Updated Successfully";
+                    }
                     Rectangle {
                         id: users_profile_header1
                         anchors.top: users_profile_header.bottom
@@ -5561,47 +5590,6 @@ ApplicationWindow {
                         color: "#031C28"
                         border.width: 1
                         border.color: "#05324D"
-
-                        /*Rectangle {
-                            id: go_to_profile
-                            anchors.right: parent.right
-                            anchors.rightMargin: 15
-                            anchors.top: parent.top
-                            anchors.topMargin: 10
-                            color: "#05324D"
-                            border.color: "#F25822"
-                            border.width: 0.5
-                            width: 100
-                            height: 30
-                            radius: 3
-                            Text {
-                                text: "Your Profile"
-                                color: "#FFFFFF"
-                                font.pointSize: 10
-                                anchors.centerIn: parent
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                            MouseArea{
-                                anchors.fill: go_to_profile
-                                onClicked: {
-                                    users_profile_header1.visible = false
-                                    users_information_header1.visible = true
-                                    userprofile_name.text = database_access.name
-                                    address_field.activeFocus = true
-                                    locality_field.activeFocus = true
-                                    mail_address.text = database_access.mail
-                                    mobile_number.text = database_access.number
-                                    address_field.text = database_access.address
-                                    locality_field.text = database_access.locality
-                                }
-                                onPressed: {
-                                    go_to_profile.color = "#F25822"
-                                }
-                                onReleased: {
-                                    go_to_profile.color = "#05324D"
-                                }
-                            }
-                        }*/
 
                         Column{
                             spacing: 10

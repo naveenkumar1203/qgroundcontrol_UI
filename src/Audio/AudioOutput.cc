@@ -46,8 +46,10 @@ void AudioOutput::say(const QString& inText)
     bool muted = qgcApp()->toolbox()->settingsManager()->appSettings()->audioMuted()->rawValue().toBool();
     muted |= qgcApp()->runningUnitTests();
     if (!muted && !qgcApp()->runningUnitTests()) {
+        qDebug()<<"running unit test";
         QString text = fixTextMessageForAudio(inText);
         if(_tts->state() == QTextToSpeech::Speaking) {
+            qDebug()<<"speech started";
             if(!_texts.contains(text)) {
                 //-- Some arbitrary limit
                 if(_texts.size() > 20) {

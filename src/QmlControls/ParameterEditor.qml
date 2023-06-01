@@ -44,16 +44,14 @@ Item{
         id: rpadatabase
 
         onModelChanged:{
-                                        if(rpadatabase.model == "Model A"){
-                                            console.log("model a is selected")
-                                            firmware_load1.checksum_generation_process_model_A(file_Dialog.shortcuts.documents)
-                                        }
-                                        else if(rpadatabase.model == "Model B"){
-                                            console.log("model b is selected")
-                                            firmware_load1.checksum_generation_process_model_B(file_Dialog.shortcuts.documents)
-                                        }
-
-
+            if(rpadatabase.model == "Model A"){
+                console.log("model a is selected")
+                firmware_load1.checksum_generation_process_model_A(file_Dialog.shortcuts.documents)
+            }
+            else if(rpadatabase.model == "Model B"){
+                console.log("model b is selected")
+                firmware_load1.checksum_generation_process_model_B(file_Dialog.shortcuts.documents)
+            }
         }
     }
 
@@ -106,8 +104,6 @@ Item{
             flightView.visible = true
             toolbar.visible =true
             landing_page_rectangle.visible = false
-
-
         }
     }
     MessageDialog {

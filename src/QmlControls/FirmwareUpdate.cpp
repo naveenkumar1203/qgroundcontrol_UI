@@ -312,6 +312,7 @@ void FirmwareUpdate::setfirmware_load_model_B(const QString &newfirmware_load_mo
 #include "FirmwareUpdate.h"
 #include "ParameterEditorController.h"
 #include <QMessageBox>
+#include "Vehicle.h"
 
 QString data_model_A_value1="a";
 QString data_model_A_value2= "b";

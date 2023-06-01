@@ -52,6 +52,7 @@
 #include "VehicleBatteryFactGroup.h"
 #include "EventHandler.h"
 #include "Actuators/Actuators.h"
+#include "FirmwareUpdate.h"
 #ifdef QT_DEBUG
 #include "MockLink.h"
 #endif
@@ -2350,6 +2351,7 @@ void Vehicle::virtualTabletJoystickValue(double roll, double pitch, double yaw, 
 
 void Vehicle::_say(const QString& text)
 {
+    qDebug()<<"in _say function from firmwareUpdate";
     _toolbox->audioOutput()->say(text.toLower());
 }
 
