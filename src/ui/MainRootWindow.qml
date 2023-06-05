@@ -88,6 +88,8 @@ ApplicationWindow {
             managerpa_button.color = "#031C28"
             flight_log_button.color = "#031C28"
             logout_button.color = "#031C28"
+            firmware_button.color = "#031C28"
+            profile_button.color = "#031C28"
         }
         onEmailNotFound:{
             no_recordDialog.open()
@@ -187,7 +189,7 @@ ApplicationWindow {
                                                                     id: textItem
                                                                     anchors.centerIn: parent
                                                                     text: styleData.value
-                                                                    font.pointSize: 15
+                                                                    font.pointSize: 13
                                                                     //font.pointSize: ScreenTools.smallFontPointSize
                                                                     font.bold:true
                                                                     elide: Text.ElideRight
@@ -268,14 +270,14 @@ ApplicationWindow {
                                                          TableViewColumn{
                                                              width: (parent.width - checkbox.width)/4
                                                              role: "model_name"
-                                                             title: "ModelName"
+                                                             title: "Model Name"
                                                              movable: false
                                                              resizable: false
                                                          }
                                                          TableViewColumn{
                                                              width: (parent.width - checkbox.width)/4
                                                              role: "drone_name"
-                                                             title: "DroneName"
+                                                             title: "Drone Name"
                                                              movable: false
                                                              resizable: false
                                                          }
@@ -585,11 +587,6 @@ ApplicationWindow {
                     MessageDialog{
                         id:messagedialog1
                         text:"please enter your details correctly"
-//                        Component.onCompleted: {
-//                           var dialog = messagedialog1.dialog
-//                           var contentItem = dialog.contentItem
-//                           contentItem.color = "#031C28" // Set the background color
-//                       }
                     }
                     onPressed: {
                         login_button.color = "#05324D"
@@ -641,6 +638,7 @@ ApplicationWindow {
                                 user_address.border.color = "#05324D"
                                 user_locality.border.color = "#05324D"
                                 user_password.border.color = "#05324D"
+                                user_number.border.color = "#05324D"
                                 login_page_password_textfield.echoMode = TextInput.Password
                                 if(first_user_details_page.visible == true){
                                     console.log("in first user details page")
@@ -1518,11 +1516,7 @@ ApplicationWindow {
                         clip: true
                         anchors.horizontalCenter: parent.horizontalCenter
                         Image{
-                            width: 25
-                            height: 25
-//                            anchors.left: user_image.left
-//                            anchors.leftMargin: user_image.radius + 20
-                            anchors.fill: parent
+                            anchors.fill: user_image
                             anchors.verticalCenter: parent.verticalCenter
                             source: "/res/user_photo.png"//"qrc:/../../../../Downloads/user_photo.png"
 
@@ -2263,6 +2257,8 @@ ApplicationWindow {
             login_page_rectangle.visible = true
             login_page_email_textfield.text = ""
             login_page_password_textfield.text = ""
+            login_page_email.border.color = "#05324D"
+            login_page_password.border.color = "#05324D"
             password_hide_image.visible = true
             password_show_image.visible = false
             flightView.visible = false
@@ -2459,9 +2455,9 @@ ApplicationWindow {
         toolDrawer.visible      = true
     }
 
-//    function showAnalyzeTool() {
-//        showTool(qsTr("Analyze Tools"), "AnalyzeView.qml", "/qmlimages/Analyze.svg")
-//    }
+    function showAnalyzeTool() {
+        showTool(qsTr("Analyze Tools"), "AnalyzeView.qml", "/qmlimages/Analyze.svg")
+    }
 
     function showSetupTool() {
         showTool(qsTr("Vehicle Setup"), "SetupView.qml", "/qmlimages/Gears.svg")
@@ -2691,21 +2687,21 @@ ApplicationWindow {
                         }
                     }
 
-//                    SubMenuButton {
-//                        id:                 analyzeButton
-//                        height:             _toolButtonHeight
-//                        Layout.fillWidth:   true
-//                        text:               qsTr("Analyze Tools")
-//                        imageResource:      "/qmlimages/Analyze.svg"
-//                        imageColor:         qgcPal.text
-//                        visible:            QGroundControl.corePlugin.showAdvancedUI
-//                        onClicked: {
-//                            if (!mainWindow.preventViewSwitch()) {
-//                                toolSelectDialog.hideDialog()
-//                                mainWindow.showAnalyzeTool()
-//                            }
-//                        }
-//                    }
+                    SubMenuButton {
+                        id:                 analyzeButton
+                        height:             _toolButtonHeight
+                        Layout.fillWidth:   true
+                        text:               qsTr("Analyze Tools")
+                        imageResource:      "/qmlimages/Analyze.svg"
+                        imageColor:         qgcPal.text
+                        visible:            QGroundControl.corePlugin.showAdvancedUI
+                        onClicked: {
+                            if (!mainWindow.preventViewSwitch()) {
+                                toolSelectDialog.hideDialog()
+                                mainWindow.showAnalyzeTool()
+                            }
+                        }
+                    }
 
                     SubMenuButton {
                         id:                 settingsButton
@@ -2730,7 +2726,7 @@ ApplicationWindow {
 
                         QGCLabel {
                             id:                     versionLabel
-                            text:                   qsTr("%1 Version").arg(QGroundControl.appName)
+                            text:                   qsTr("%1 Version").arg(QGroundControl.appName)+" v1.0"
                             font.pointSize:         ScreenTools.smallFontPointSize
                             wrapMode:               QGCLabel.WordWrap
                             Layout.maximumWidth:    parent.width
@@ -3102,7 +3098,7 @@ ApplicationWindow {
                             anchors.left: brand_logo.right
                             anchors.leftMargin: 5
                             text: qsTr("GoDrona GCS")
-                            font.pixelSize: ScreenTools.defaultFontPointSize * 7.5
+                            font.pixelSize: ScreenTools.defaultFontPointSize * 6.5
                             font.family: "Mistral"
                             font.bold: true
                             color: "white"
@@ -4376,9 +4372,9 @@ ApplicationWindow {
 
                             FileDialog {
                                 id: choose_image_fileDialog
-                                title: "Please Choose the Image file *png"
+                                title: "Please Choose the Image file *jpg"
                                 folder: shortcuts.documents
-                                nameFilters: [ "png files (*.png)"]
+                                nameFilters: [ "jpg files (*.jpg)"]
                                 selectMultiple: false
                                 visible: false
                                 onAccepted: {
@@ -5515,6 +5511,12 @@ ApplicationWindow {
                                     maskSource: image_rect
                                 }
                             }
+                            MouseArea{
+                                anchors.fill: parent
+                                onClicked: {
+                                    image_update_dialog.open()
+                                }
+                            }
 
                             /*MouseArea{
                                 anchors.fill: image_rect
@@ -5537,6 +5539,22 @@ ApplicationWindow {
                                     image_rect.color = "#05324D"
                                 }
                             }*/
+                        }
+                        FileDialog {
+                            id:image_update_dialog
+                            title: "Please choose an image"
+                            folder: shortcuts.documents
+                            nameFilters: [ "(*.jpg)"]
+                            selectMultiple: false
+                            onAccepted: {
+                                user_profile_image.visible = true
+                                var filePath = fileUrl.toString().replace("file:///", "")
+                                image_upload = filePath;
+                                console.log("You chose: " + image_update_dialog.fileUrls)
+                                rpadatabase.upload_function("user_profile.jpg",database_access.storagename, image_upload)
+                                user_image_inprofile.source = image_update_dialog.fileUrl
+                                profilePicUpdated_Dialog.open()
+                            }
                         }
                         Column {
                             spacing: 5
@@ -5561,6 +5579,11 @@ ApplicationWindow {
 
                         }
                     }
+                    MessageDialog {
+                        id: profilePicUpdated_Dialog
+                        text: "Profile Picture Updated Successfully";
+                    }
+
                     Rectangle {
                         id: users_profile_header1
                         anchors.top: users_profile_header.bottom

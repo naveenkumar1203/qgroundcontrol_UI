@@ -244,7 +244,7 @@ int main(int argc, char *argv[])
     // not be able to run at the same time
 
     //QString runguardString(QGC_APPLICATION_NAME);
-    QString runguardString("GoDronaGCS");
+    QString runguardString("GoDrona GCS");
     runguardString.append("RunGuardKey");
 
     RunGuard guard(runguardString);
@@ -253,7 +253,7 @@ int main(int argc, char *argv[])
         QApplication errorApp(argc, argv);
         QMessageBox::critical(nullptr, QObject::tr("Error"),
                               //QObject::tr("A second instance of %1 is already running. Please close the other instance and try again.").arg(QGC_APPLICATION_NAME)
-                              QObject::tr("A second instance of %1 is already running. Please close the other instance and try again.").arg("GoDronaGCS")
+                              QObject::tr("A second instance of %1 is already running. Please close the other instance and try again.").arg("GoDrona GCS")
                               );
         return -1;
     }

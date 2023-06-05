@@ -2350,7 +2350,9 @@ void Vehicle::virtualTabletJoystickValue(double roll, double pitch, double yaw, 
 
 void Vehicle::_say(const QString& text)
 {
-    _toolbox->audioOutput()->say(text.toLower());
+    if(checkbox_compare == 1){
+        _toolbox->audioOutput()->say(text.toLower());
+    }
 }
 
 bool Vehicle::airship() const
@@ -3848,7 +3850,7 @@ void Vehicle::_initializeCsv()
 }
 QString Vehicle::flightlog_filename() const
 {
-    QString flightlog_filename = "file://"+ _toolbox->settingsManager()->appSettings()->telemetrySavePath();
+    QString flightlog_filename = "file:///"+ _toolbox->settingsManager()->appSettings()->telemetrySavePath();
     return flightlog_filename;
 }
 
