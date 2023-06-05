@@ -56,6 +56,7 @@
 #include "MockLink.h"
 #endif
 #include "Autotune.h"
+#include "FirmwareUpdate.h"
 
 #if defined(QGC_AIRMAP_ENABLED)
 #include "AirspaceVehicleManager.h"
