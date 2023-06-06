@@ -9,6 +9,7 @@
 
 import QtQuick                      2.12
 import QtQuick.Layouts              1.12
+import QtQuick.Dialogs              1.3
 
 import QGroundControl                       1.0
 import QGroundControl.MultiVehicleManager   1.0
@@ -33,6 +34,8 @@ Rectangle {
 //visible: _activeVehicle !== null
     visible:_activeVehicle !== null && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params===1 ||
             rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params===2)
+
+
 
     property bool       bottomMode: true
 

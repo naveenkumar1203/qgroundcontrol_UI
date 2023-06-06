@@ -50,8 +50,8 @@ RowLayout {
         function mainStatusText() {
             var statusText
             console.log("I ENTERED INTO MAIN_STATTUS_TEXT")
-            if (_activeVehicle && rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params ===1 ||
-                                  rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params ===2)
+            if (_activeVehicle && rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params === 1 ||
+                                  rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params === 2)
             {
 
                 if (_communicationLost) {
@@ -115,7 +115,7 @@ RowLayout {
             height:                 _root.height
             //enabled:                _activeVehicle
             enabled:  _activeVehicle !== null && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params ===1 ||
-                                                  rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params ===2)
+                                                              rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params ===2)
             onClicked:              mainWindow.showIndicatorPopup(mainStatusLabel, sensorStatusInfoComponent)
         }
     }
@@ -151,9 +151,8 @@ RowLayout {
         mouseAreaLeftMargin:    -(flightModeMenu.x - flightModeIcon.x)
        // visible:                _activeVehicle
         visible:  _activeVehicle !== null && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params === 1 ||
-                                              rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params === 2)
-    }
-
+                                                    rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params === 2)
+           }
     Item {
         Layout.preferredWidth:  ScreenTools.defaultFontPixelWidth * ScreenTools.largeFontPointRatio * 1.5
         height:                 1
