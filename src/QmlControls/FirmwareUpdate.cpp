@@ -143,7 +143,7 @@ void FirmwareUpdate::compare_file_model_A(QString real_file_location)
     if((data_list1 == data_list2) && (code_list1 == code_list2))
             {
                 QMessageBox msgBox;
-                msgBox.setText("Model A - The Checksum Matches");
+                msgBox.setText("Model A - The Checksum Matches. Please continue");
                 msgBox.setStyleSheet("color:white;background:#05324D");
                 QPushButton *confirmButton = new QPushButton("OK", &msgBox);
                 msgBox.addButton(confirmButton, QMessageBox::AcceptRole);
@@ -152,6 +152,8 @@ void FirmwareUpdate::compare_file_model_A(QString real_file_location)
 
         load_file_model_A(real_file_location);
         qDebug()<< "Model A - The checksum matches. Please continue";
+
+
 
         return;
 
@@ -311,7 +313,7 @@ void FirmwareUpdate::compare_file_model_B(QString real_file_location)
     if((data_list1 == data_list2) && (code_list1 == code_list2)){
 
         QMessageBox msgBox;
-        msgBox.setText("Model B - The Checksum Matches");
+        msgBox.setText("Model B - The Checksum Matches. Please continue");
         msgBox.setStyleSheet("color:white;background:#05324D");
         QPushButton *confirmButton = new QPushButton("OK", &msgBox);
         msgBox.addButton(confirmButton, QMessageBox::AcceptRole);

@@ -19,11 +19,13 @@
 #include "QGCOptions.h"
 #include "LinkManager.h"
 
+
 #if defined (__ios__) || defined(__android__)
 #include "MobileScreenMgr.h"
 #endif
 
 #include <QQmlEngine>
+
 
 QGC_LOGGING_CATEGORY(MultiVehicleManagerLog, "MultiVehicleManagerLog")
 
@@ -344,9 +346,14 @@ QString MultiVehicleManager::loadSetting(const QString &name, const QString& def
 
 Vehicle* MultiVehicleManager::getVehicleById(int vehicleId)
 {
+
+   // qDebug()<<"VEHICLE COUNT ::: "<<_vehicles.count();
     for (int i=0; i< _vehicles.count(); i++) {
         Vehicle* vehicle = qobject_cast<Vehicle*>(_vehicles[i]);
         if (vehicle->id() == vehicleId) {
+            //vehicleid_params = vehicleId;
+            setVehicleid_params (vehicleId);
+            //qDebug()<< "vehicle id is" << vehicleid_params() ;
             return vehicle;
         }
     }
@@ -397,4 +404,17 @@ void MultiVehicleManager::_sendGCSHeartbeat(void)
             link->writeBytesThreadSafe((const char*)buffer, len);
         }
     }
+}
+
+int MultiVehicleManager::vehicleid_params() const
+{
+    return m_vehicleid_params;
+}
+
+void MultiVehicleManager::setVehicleid_params(int newVehicleid_params)
+{
+    if (m_vehicleid_params == newVehicleid_params)
+        return;
+    m_vehicleid_params = newVehicleid_params;
+    emit vehicleid_paramsChanged();
 }

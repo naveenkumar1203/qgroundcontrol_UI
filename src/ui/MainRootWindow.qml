@@ -518,18 +518,18 @@ ApplicationWindow {
                         login_page_email_textfield.text = ""
                         login_page_password_textfield.text = ""
                         login_page_password_textfield.echoMode = TextInput.Password
-                        if(first_user_details_page.visible == true){
-                            console.log("in first user details page")
-                            new_user_image_rect.source = "/res/First Time Signup screen.png"
-                        }
-                        if (second_user_details_page.visible == true){
-                            console.log("in second user details page")
-                            new_user_image_rect.source = "/res/user_details.png"
-                        }
-                        if(third_user_details_page.visible == true){
-                            console.log("in third user details page")
-                            new_user_image_rect.source = "/res/otp.png"
-                        }
+//                        if(first_user_details_page.visible == true){
+//                            console.log("in first user details page")
+//                            //new_user_image_rect.source = "/res/First Time Signup screen.png"
+//                        }
+//                        if (second_user_details_page.visible == true){
+//                            console.log("in second user details page")
+//                            //new_user_image_rect.source = "/res/user_details.png"
+//                        }
+//                        if(third_user_details_page.visible == true){
+//                            console.log("in third user details page")
+//                            //new_user_image_rect.source = "/res/otp.png"
+//                        }
                     }
                 }
             }
@@ -996,7 +996,7 @@ ApplicationWindow {
                     password_show_image.visible = false
                     password_show_image1.visible = false
                     password_hide_image1.visible = true
-                    new_user_image_rect.source = "/res/First Time Signup screen.png"
+                   // new_user_image_rect.source = "/res/First Time Signup screen.png"
                 }
             }
         }
@@ -1299,7 +1299,7 @@ ApplicationWindow {
                             back_to_login_logo.visible = false
                             first_user_details_page.visible = false
                             second_user_details_page.visible = true
-                            new_user_image_rect.source = "/res/user_details.png"
+                            //new_user_image_rect.source = "/res/user_details.png"
                             first_circle_text.text = "/"
                             first_circle.color = "green"
                             second_circle.color = "#F25822"
@@ -1668,7 +1668,7 @@ ApplicationWindow {
                             else{
                                 second_user_details_page.visible = false
                                 third_user_details_page.visible = true
-                                new_user_image_rect.source = "/res/otp.png"
+                                //new_user_image_rect.source = "/res/otp.png"
                                 second_circle_text.text = "/"
                                 second_circle.color = "green"
                                 third_circle.color = "#F25822"
@@ -1704,7 +1704,7 @@ ApplicationWindow {
                             user_image.color = "white"
                             password_hide_image1.visible = true
                             password_show_image1.visible = false
-                            new_user_image_rect.source = "/res/First Time Signup screen.png"
+                            //new_user_image_rect.source = "/res/First Time Signup screen.png"
                         }
                     }
                 }
@@ -1934,7 +1934,7 @@ ApplicationWindow {
                         third_circle.color = "#031C28"
                         third_user_details_page.visible = false
                         second_user_details_page.visible = true
-                        new_user_image_rect.source = "/res/user_details.png"
+                        //new_user_image_rect.source = "/res/user_details.png"
                     }
                 }
             }
@@ -2233,9 +2233,9 @@ ApplicationWindow {
         toolDrawer.visible      = true
     }
 
-    //    function showAnalyzeTool() {
-    //        showTool(qsTr("Analyze Tools"), "AnalyzeView.qml", "/qmlimages/Analyze.svg")
-    //    }
+        function showAnalyzeTool() {
+            showTool(qsTr("Analyze Tools"), "AnalyzeView.qml", "/qmlimages/Analyze.svg")
+        }
 
     function showSetupTool() {
         showTool(qsTr("Vehicle Setup"), "SetupView.qml", "/qmlimages/Gears.svg")
@@ -2465,21 +2465,21 @@ ApplicationWindow {
                         }
                     }
 
-                    //                    SubMenuButton {
-                    //                        id:                 analyzeButton
-                    //                        height:             _toolButtonHeight
-                    //                        Layout.fillWidth:   true
-                    //                        text:               qsTr("Analyze Tools")
-                    //                        imageResource:      "/qmlimages/Analyze.svg"
-                    //                        imageColor:         qgcPal.text
-                    //                        visible:            QGroundControl.corePlugin.showAdvancedUI
-                    //                        onClicked: {
-                    //                            if (!mainWindow.preventViewSwitch()) {
-                    //                                toolSelectDialog.hideDialog()
-                    //                                mainWindow.showAnalyzeTool()
-                    //                            }
-                    //                        }
-                    //                    }
+                                        SubMenuButton {
+                                            id:                 analyzeButton
+                                            height:             _toolButtonHeight
+                                            Layout.fillWidth:   true
+                                            text:               qsTr("Analyze Tools")
+                                            imageResource:      "/qmlimages/Analyze.svg"
+                                            imageColor:         qgcPal.text
+                                            visible:            QGroundControl.corePlugin.showAdvancedUI
+                                            onClicked: {
+                                                if (!mainWindow.preventViewSwitch()) {
+                                                    toolSelectDialog.hideDialog()
+                                                    mainWindow.showAnalyzeTool()
+                                                }
+                                            }
+                                        }
 
                     SubMenuButton {
                         id:                 settingsButton
@@ -2504,7 +2504,7 @@ ApplicationWindow {
 
                         QGCLabel {
                             id:                     versionLabel
-                            text:                   qsTr("%1 Version").arg(QGroundControl.appName)
+                            text:                   qsTr("%1 Version").arg(QGroundControl.appName) + " v1.0"
                             font.pointSize:         ScreenTools.smallFontPointSize
                             wrapMode:               QGCLabel.WordWrap
                             Layout.maximumWidth:    parent.width

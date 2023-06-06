@@ -9,12 +9,15 @@
 
 import QtQuick          2.11
 import QtQuick.Layouts  1.11
+import QtQuick.Dialogs 1.3
 
 import QGroundControl                       1.0
 import QGroundControl.Controls              1.0
 import QGroundControl.MultiVehicleManager   1.0
 import QGroundControl.ScreenTools           1.0
 import QGroundControl.Palette               1.0
+import QGroundControl.FlightDisplay         1.0
+import TableModel 1.0
 
 RowLayout {
     id:         _root
@@ -40,15 +43,23 @@ RowLayout {
         property string _flyingText:        qsTr("Flying")
         property string _landingText:       qsTr("Landing")
 
+        TableModel{
+            id:rpadatabase
+        }
+
         function mainStatusText() {
             var statusText
-            if (_activeVehicle) {
+            console.log("I ENTERED INTO MAIN_STATTUS_TEXT")
+            if (_activeVehicle && rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params ===1 ||
+                                  rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params ===2)
+            {
+
                 if (_communicationLost) {
                     fixedFont.source = "/fonts/ARLRDBD"
                     _mainStatusBGColor = "red"
                     return mainStatusLabel._commLostText
                 }
-                if (_activeVehicle.armed) {
+                if (_activeVehicle.armed ) {
                     fixedFont.source = "/fonts/design.graffiti.mistral"
                     _mainStatusBGColor = "green"
                     if (_activeVehicle.flying) {
@@ -64,38 +75,47 @@ RowLayout {
                             _mainStatusBGColor = "green"
                             fixedFont.source = "/fonts/design.graffiti.mistral"
                             return mainStatusLabel._readyToFlyText
-                        } else {
+
+                    }else {
                             _mainStatusBGColor = "red" //"yellow"
                             //fixedFont.source = "/fonts/design.graffiti.mistral"
                             fixedFont.source = "/fonts/ARLRDBD"
                             return mainStatusLabel._notReadyToFlyText
                         }
-                    } else {
+                    }
+                   else {
                         // Best we can do is determine readiness based on AutoPilot component setup and health indicators from SYS_STATUS
-                        if (_activeVehicle.allSensorsHealthy && _activeVehicle.autopilot.setupComplete) {
+                        if (_activeVehicle.allSensorsHealthy && _activeVehicle.autopilot.setupComplete ) {
                             _mainStatusBGColor = "green"
                             fixedFont.source = "/fonts/design.graffiti.mistral"
                             return mainStatusLabel._readyToFlyText
-                        } else {
+                        }
+
+                    else {
                             _mainStatusBGColor = "red" //"yellow"
                             fixedFont.source = "/fonts/ARLRDBD"
                             return mainStatusLabel._notReadyToFlyText
                         }
                     }
                 }
-            } else {
+        }
+        else {
                 _mainStatusBGColor =  "red" //qgcPal.brandingPurple
                 fixedFont.source = "/fonts/ARLRDBD"
                 return mainStatusLabel._disconnectedText
             }
         }
 
+
+
         MouseArea {
             anchors.left:           parent.left
             anchors.right:          parent.right
             anchors.verticalCenter: parent.verticalCenter
             height:                 _root.height
-            enabled:                _activeVehicle
+            //enabled:                _activeVehicle
+            enabled:  _activeVehicle !== null && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params ===1 ||
+                                                  rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params ===2)
             onClicked:              mainWindow.showIndicatorPopup(mainStatusLabel, sensorStatusInfoComponent)
         }
     }
@@ -129,7 +149,9 @@ RowLayout {
         verticalAlignment:      Text.AlignVCenter
         font.pointSize:         _vehicleInAir ?  ScreenTools.largeFontPointSize : ScreenTools.defaultFontPointSize
         mouseAreaLeftMargin:    -(flightModeMenu.x - flightModeIcon.x)
-        visible:                _activeVehicle
+       // visible:                _activeVehicle
+        visible:  _activeVehicle !== null && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params === 1 ||
+                                              rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params === 2)
     }
 
     Item {
@@ -145,6 +167,7 @@ RowLayout {
         text:                   _vtolInFWDFlight ? qsTr("FW(vtol)") : qsTr("MR(vtol)")
         font.pointSize:         ScreenTools.largeFontPointSize
         visible:                _activeVehicle ? _activeVehicle.vtol && _vehicleInAir : false
+
 
         QGCMouseArea {
             anchors.fill:   parent

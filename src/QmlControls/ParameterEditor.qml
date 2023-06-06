@@ -41,6 +41,8 @@ Item{
         id: controller
     }
 
+
+
     TableModel{
         id: rpadatabase
 
@@ -48,6 +50,7 @@ Item{
             if(rpadatabase.model == "Model A"){
                 console.log("model a is selected")
                 firmware_load1.checksum_generation_process_model_A(file_Dialog.shortcuts.documents)
+
             }
             else if(rpadatabase.model == "Model B"){
                 console.log("model b is selected")
@@ -131,7 +134,7 @@ Item{
         }
         onFirmware_load_model_AChanged:{
             if (controller.buildDiffFromFile(firmware_load1.firmware_load_model_A)) {
-                //                mainWindow.showPopupDialogFromComponent(parameterDiffDialog)
+                //mainWindow.showPopupDialogFromComponent(parameterDiffDialog)
                 console.log("mainroot" + firmware_load1.firmware_load_model_A)
                 //                flightView.visible = true
                 //                toolbar.visible =true
@@ -140,7 +143,7 @@ Item{
         }
         onFirmware_load_model_BChanged:{
             if (controller.buildDiffFromFile(firmware_load1.firmware_load_model_B)) {
-                //                mainWindow.showPopupDialogFromComponent(parameterDiffDialog)
+               // mainWindow.showPopupDialogFromComponent(parameterDiffDialog)
             }
         }
     }

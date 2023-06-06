@@ -196,10 +196,13 @@ void FirmwareUpgradeController::flash(AutoPilotStackType_t stackType,
 void FirmwareUpgradeController::flashFirmwareUrl(QString firmwareFlashUrl)
 {
     _firmwareFilename = firmwareFlashUrl;
+    qDebug()<<"i am entered in this flashfirmwareurl function";
     if (_bootloaderFound) {
+        qDebug()<<"hiiiiiiiiiiiii";
         _downloadFirmware();
     } else {
         // We haven't found the bootloader yet. Need to wait until then to flash
+        qDebug()<<"helloooooo";
         _startFlashWhenBootloaderFound = true;
     }
 }

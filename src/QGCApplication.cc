@@ -519,12 +519,9 @@ void QGCApplication::_initCommon()
     qmlRegisterType<TerrainProfile>                 ("QGroundControl.Controls",             1, 0, "TerrainProfile");
     qmlRegisterType<ToolStripAction>                ("QGroundControl.Controls",             1, 0, "ToolStripAction");
     qmlRegisterType<ToolStripActionList>            ("QGroundControl.Controls",             1, 0, "ToolStripActionList");
-    qmlRegisterType<FirmwareUpdate>                 ("FirmwareUpdate",             1, 0, "FirmwareUpdate");
-    qmlRegisterType<FireBaseAccess>                ("FireBaseAccess",               1, 0, "FireBaseAccess");
-    qmlRegisterType<TableModel>                     ("TableModel",                  1, 0, "TableModel");
-    qmlRegisterType<FirmwareUpdate>                 ("FirmwareUpdate",           1, 0, "FirmwareUpdate");
-    qmlRegisterType<TableModel>                     ("TableModel",              1, 0, "TableModel");
-    qmlRegisterType<FireBaseAccess>                 ("FireBaseAccess",           1, 0, "FireBaseAccess");
+    qmlRegisterType<FirmwareUpdate>                 ("FirmwareUpdate",                      1, 0, "FirmwareUpdate");
+    qmlRegisterType<TableModel>                     ("TableModel",                          1, 0, "TableModel");
+    qmlRegisterType<FireBaseAccess>                 ("FireBaseAccess",                      1, 0, "FireBaseAccess");
 
 #ifndef __mobile__
 #ifndef NO_SERIAL_LINK

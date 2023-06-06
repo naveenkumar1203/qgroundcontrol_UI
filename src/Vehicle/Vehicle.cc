@@ -2350,7 +2350,10 @@ void Vehicle::virtualTabletJoystickValue(double roll, double pitch, double yaw, 
 
 void Vehicle::_say(const QString& text)
 {
+    QString new1 = obj.model();
+
     _toolbox->audioOutput()->say(text.toLower());
+
 }
 
 bool Vehicle::airship() const
