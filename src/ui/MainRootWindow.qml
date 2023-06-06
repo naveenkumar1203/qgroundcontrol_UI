@@ -1525,6 +1525,7 @@ ApplicationWindow {
                             anchors.fill: user_image
                             width: 75
                             height: 75
+                            visible : true
                             source: image_file_dialog.fileUrl
                             fillMode: Image.PreserveAspectCrop
                             layer.enabled: true
@@ -2203,7 +2204,7 @@ ApplicationWindow {
         title: "New User"
         text: "We think your are a new user"
         informativeText: "Please Sign up/ Create a New Account."
-        icon: StandardIcon.Warning
+        //icon: StandardIcon.Warning
         standardButtons: Dialog.Ok
         onButtonClicked: {
             login_page_email_textfield.text = ""
@@ -2310,7 +2311,7 @@ ApplicationWindow {
     }
     MessageDialog {
         id: enter_all_fields
-        title: "Somefield not filled"
+        //title: "Somefield not filled"
             text: "Please fill all the details"
     }
     MessageDialog {
@@ -2453,9 +2454,9 @@ ApplicationWindow {
         toolDrawer.visible      = true
     }
 
-//    function showAnalyzeTool() {
-//        showTool(qsTr("Analyze Tools"), "AnalyzeView.qml", "/qmlimages/Analyze.svg")
-//    }
+    function showAnalyzeTool() {
+        showTool(qsTr("Analyze Tools"), "AnalyzeView.qml", "/qmlimages/Analyze.svg")
+    }
 
     function showSetupTool() {
         showTool(qsTr("Vehicle Setup"), "SetupView.qml", "/qmlimages/Gears.svg")
@@ -2685,21 +2686,21 @@ ApplicationWindow {
                         }
                     }
 
-//                    SubMenuButton {
-//                        id:                 analyzeButton
-//                        height:             _toolButtonHeight
-//                        Layout.fillWidth:   true
-//                        text:               qsTr("Analyze Tools")
-//                        imageResource:      "/qmlimages/Analyze.svg"
-//                        imageColor:         qgcPal.text
-//                        visible:            QGroundControl.corePlugin.showAdvancedUI
-//                        onClicked: {
-//                            if (!mainWindow.preventViewSwitch()) {
-//                                toolSelectDialog.hideDialog()
-//                                mainWindow.showAnalyzeTool()
-//                            }
-//                        }
-//                    }
+                    SubMenuButton {
+                        id:                 analyzeButton
+                        height:             _toolButtonHeight
+                        Layout.fillWidth:   true
+                        text:               qsTr("Analyze Tools")
+                        imageResource:      "/qmlimages/Analyze.svg"
+                        imageColor:         qgcPal.text
+                        visible:            QGroundControl.corePlugin.showAdvancedUI
+                        onClicked: {
+                            if (!mainWindow.preventViewSwitch()) {
+                                toolSelectDialog.hideDialog()
+                                mainWindow.showAnalyzeTool()
+                            }
+                        }
+                    }
 
                     SubMenuButton {
                         id:                 settingsButton
@@ -2724,7 +2725,7 @@ ApplicationWindow {
 
                         QGCLabel {
                             id:                     versionLabel
-                            text:                   qsTr("%1 Version").arg(QGroundControl.appName)
+                            text:                   qsTr("%1 Version").arg(QGroundControl.appName)+" v1.0"
                             font.pointSize:         ScreenTools.smallFontPointSize
                             wrapMode:               QGCLabel.WordWrap
                             Layout.maximumWidth:    parent.width
@@ -3655,7 +3656,7 @@ ApplicationWindow {
                         }
                         MessageDialog{
                             id: aboutDialog
-                            text:"<b>GoDrona GCS V1.0<b>"
+                            text:"<b>GoDrona GCS v1.0<b>"
                             informativeText: "@2023 Casca E-Connect Private Limited."
                             standardButtons: Dialog.Ok
                         }

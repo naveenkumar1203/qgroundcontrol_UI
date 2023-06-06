@@ -15,6 +15,7 @@ import QGroundControl.Controls              1.0
 import QGroundControl.MultiVehicleManager   1.0
 import QGroundControl.ScreenTools           1.0
 import QGroundControl.Palette               1.0
+import TableModel                           1.0
 
 //-------------------------------------------------------------------------
 //-- RC RSSI Indicator
@@ -28,6 +29,10 @@ Item {
 
     property var    _activeVehicle:     QGroundControl.multiVehicleManager.activeVehicle
     property bool   _rcRSSIAvailable:   _activeVehicle ? _activeVehicle.rcRSSI > 0 && _activeVehicle.rcRSSI <= 100 : false
+
+    TableModel{
+        id: rpadatabase
+    }
 
     Component {
         id: rcRSSIInfo
@@ -94,6 +99,16 @@ Item {
             anchors.bottom:     parent.bottom
             source:             "/qmlimages/RC_1.svg"
             //smooth:             true
+            visible: {
+                if(_activeVehicle && rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params === 1
+                                  || rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params === 2)
+                {
+                   rc.visible = true
+                }
+                else{
+                    rc.visible = false
+                }
+            }
         }
 
 //        QGCColorOverlay {
@@ -103,9 +118,21 @@ Item {
 //        }
 
         SignalStrength {
+            id: signalstrength
             anchors.verticalCenter: parent.verticalCenter
             size:                   parent.height * 0.5
-            percent:                _rcRSSIAvailable ? _activeVehicle.rcRSSI : 0
+//          percent:                _rcRSSIAvailable ? _activeVehicle.rcRSSI : 0
+            percent: {
+                if (_activeVehicle && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params === 1
+                                   ||  rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params === 2))
+                {
+                    signalstrength.visible = true;
+                    return _rcRSSIAvailable ? _activeVehicle.rcRSSI : 0;
+                } else {
+                    signalstrength.visible = false;
+                    return 0;
+                }
+            }
         }
     }
 

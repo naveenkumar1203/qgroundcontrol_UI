@@ -52,11 +52,11 @@
 #include "VehicleBatteryFactGroup.h"
 #include "EventHandler.h"
 #include "Actuators/Actuators.h"
-#include "FirmwareUpdate.h"
 #ifdef QT_DEBUG
 #include "MockLink.h"
 #endif
 #include "Autotune.h"
+#include "FirmwareUpdate.h"
 
 #if defined(QGC_AIRMAP_ENABLED)
 #include "AirspaceVehicleManager.h"
@@ -2351,8 +2351,14 @@ void Vehicle::virtualTabletJoystickValue(double roll, double pitch, double yaw, 
 
 void Vehicle::_say(const QString& text)
 {
-    qDebug()<<"in _say function from firmwareUpdate";
-    _toolbox->audioOutput()->say(text.toLower());
+    //qDebug()<<"in _say function";
+    qDebug()<<"checksum_compare OUT SIDE IF LOOP >> "<<checksum_compare;
+    if(checksum_compare == 1){
+        qDebug()<<"in _say function from firmwareUpdate";
+        _toolbox->audioOutput()->say(text.toLower());
+        qDebug()<<"checksum_compare"<<checksum_compare;
+
+    }
 }
 
 bool Vehicle::airship() const

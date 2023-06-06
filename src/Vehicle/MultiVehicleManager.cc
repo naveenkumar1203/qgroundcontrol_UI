@@ -347,6 +347,7 @@ Vehicle* MultiVehicleManager::getVehicleById(int vehicleId)
     for (int i=0; i< _vehicles.count(); i++) {
         Vehicle* vehicle = qobject_cast<Vehicle*>(_vehicles[i]);
         if (vehicle->id() == vehicleId) {
+            setVehicleid_params (vehicleId);
             return vehicle;
         }
     }
@@ -397,4 +398,17 @@ void MultiVehicleManager::_sendGCSHeartbeat(void)
             link->writeBytesThreadSafe((const char*)buffer, len);
         }
     }
+}
+
+int MultiVehicleManager::vehicleid_params() const
+{
+    return m_vehicleid_params;
+}
+
+void MultiVehicleManager::setVehicleid_params(int newVehicleid_params)
+{
+    if (m_vehicleid_params == newVehicleid_params)
+        return;
+    m_vehicleid_params = newVehicleid_params;
+    emit vehicleid_paramsChanged();
 }

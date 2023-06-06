@@ -9,12 +9,14 @@
 
 import QtQuick          2.11
 import QtQuick.Layouts  1.11
+import QtQuick.Dialogs 1.3
 
 import QGroundControl                       1.0
 import QGroundControl.Controls              1.0
 import QGroundControl.MultiVehicleManager   1.0
 import QGroundControl.ScreenTools           1.0
 import QGroundControl.Palette               1.0
+import TableModel                           1.0
 
 //-------------------------------------------------------------------------
 //-- GPS Indicator
@@ -27,6 +29,11 @@ Item {
     property bool showIndicator: true
 
     property var _activeVehicle: QGroundControl.multiVehicleManager.activeVehicle
+
+    TableModel{
+        id: rpadatabase
+    }
+
 
     Component {
         id: gpsInfo
@@ -96,6 +103,29 @@ Item {
         source:             "/qmlimages/Gps_1.svg"
         sourceSize.height:  height
         smooth:             true
+        visible: {
+            if( _activeVehicle !== null && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params ===1 ||
+             rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params ===2))
+            {
+                gpsIcon.visible = true
+                //crt_controller.open()
+            }
+            else{
+                gpsIcon.visible = false
+                wrong_controller.open()
+            }
+        }
+    }
+//    MessageDialog
+//    {
+//        id: crt_controller
+//        text: qsTr("The Model and Controller matches, so please continue.")
+//    }
+
+    MessageDialog
+    {
+        id: wrong_controller
+        text: qsTr("The Model and Controller does not match. Please contact OEM ")
     }
 
     Column {
@@ -108,14 +138,20 @@ Item {
             anchors.horizontalCenter:   hdopValue.horizontalCenter
             visible:                    _activeVehicle && !isNaN(_activeVehicle.gps.hdop.value)
             color:                      qgcPal.buttonText
-            text:                       _activeVehicle ? _activeVehicle.gps.count.valueString : ""
+            //text:                       _activeVehicle ? _activeVehicle.gps.count.valueString : ""
+            text: _activeVehicle && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params === 1 ||
+                                     rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params === 2) ? _activeVehicle.gps.count.valueString : ""
+
         }
 
         QGCLabel {
             id:         hdopValue
             visible:    _activeVehicle && !isNaN(_activeVehicle.gps.hdop.value)
             color:      qgcPal.buttonText
-            text:       _activeVehicle ? _activeVehicle.gps.hdop.value.toFixed(1) : ""
+            //text:       _activeVehicle ? _activeVehicle.gps.hdop.value.toFixed(1) : ""
+            text: _activeVehicle && ( rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params ===1 ||
+                                     rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params ===2 )? _activeVehicle.gps.hdop.value.toFixed(1) : ""
+
         }
     }
 

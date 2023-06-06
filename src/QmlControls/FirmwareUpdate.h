@@ -9,6 +9,7 @@
 #include "QGCToolbox.h"
 #include "SettingsManager.h"
 
+extern int checksum_compare;
 
 class FirmwareUpdate : public QObject
 {

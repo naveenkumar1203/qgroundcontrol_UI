@@ -45,6 +45,7 @@ public:
     Q_PROPERTY(bool                 gcsHeartBeatEnabled             READ gcsHeartbeatEnabled            WRITE setGcsHeartbeatEnabled    NOTIFY gcsHeartBeatEnabledChanged)
     Q_PROPERTY(Vehicle*             offlineEditingVehicle           READ offlineEditingVehicle                                          CONSTANT)
     Q_PROPERTY(QGeoCoordinate       lastKnownLocation               READ lastKnownLocation                                              NOTIFY lastKnownLocationChanged) //< Current vehicles last know location
+    Q_PROPERTY(int                  vehicleid_params                READ vehicleid_params               WRITE setVehicleid_params       NOTIFY vehicleid_paramsChanged)
 
     // Methods
 
@@ -73,6 +74,9 @@ public:
 
     QGeoCoordinate lastKnownLocation    () { return _lastKnownLocation; }
 
+    int vehicleid_params() const;
+    void setVehicleid_params(int newVehicleid_params);
+
 signals:
     void vehicleAdded                   (Vehicle* vehicle);
     void vehicleRemoved                 (Vehicle* vehicle);
@@ -84,6 +88,8 @@ signals:
 #ifndef DOXYGEN_SKIP
     void _deleteVehiclePhase2Signal     (void);
 #endif
+
+    void vehicleid_paramsChanged();
 
 private slots:
     void _deleteVehiclePhase1           (Vehicle* vehicle);
@@ -119,6 +125,7 @@ private:
     bool                _gcsHeartbeatEnabled;           ///< Enabled/disable heartbeat emission
     static const int    _gcsHeartbeatRateMSecs = 1000;  ///< Heartbeat rate
     static const char*  _gcsHeartbeatEnabledKey;
+    int m_vehicleid_params;
 };
 
 #endif
