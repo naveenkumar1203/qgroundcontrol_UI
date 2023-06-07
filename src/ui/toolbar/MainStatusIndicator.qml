@@ -15,6 +15,8 @@ import QGroundControl.Controls              1.0
 import QGroundControl.MultiVehicleManager   1.0
 import QGroundControl.ScreenTools           1.0
 import QGroundControl.Palette               1.0
+import QGroundControl.FlightDisplay         1.0
+import TableModel 1.0
 
 RowLayout {
     id:         _root
@@ -40,9 +42,15 @@ RowLayout {
         property string _flyingText:        qsTr("Flying")
         property string _landingText:       qsTr("Landing")
 
+        TableModel{
+            id:rpadatabase
+        }
+
         function mainStatusText() {
             var statusText
-            if (_activeVehicle) {
+            if (_activeVehicle && rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params ===1 ||
+                                  rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params ===2)
+                {
                 if (_communicationLost) {
                     fixedFont.source = "/fonts/ARLRDBD"
                     _mainStatusBGColor = "red"
@@ -95,7 +103,9 @@ RowLayout {
             anchors.right:          parent.right
             anchors.verticalCenter: parent.verticalCenter
             height:                 _root.height
-            enabled:                _activeVehicle
+            //enabled:                _activeVehicle
+            enabled:  _activeVehicle !== null && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params ===1 ||
+                                                  rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params ===2)
             onClicked:              mainWindow.showIndicatorPopup(mainStatusLabel, sensorStatusInfoComponent)
         }
     }
@@ -129,7 +139,9 @@ RowLayout {
         verticalAlignment:      Text.AlignVCenter
         font.pointSize:         _vehicleInAir ?  ScreenTools.largeFontPointSize : ScreenTools.defaultFontPointSize
         mouseAreaLeftMargin:    -(flightModeMenu.x - flightModeIcon.x)
-        visible:                _activeVehicle
+        //visible:                _activeVehicle
+        visible:  _activeVehicle !== null && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params === 1 ||
+                                              rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params === 2)
     }
 
     Item {

@@ -15,6 +15,8 @@ import QGroundControl.ScreenTools   1.0
 import QGroundControl.Vehicle       1.0
 import QGroundControl.Controls      1.0
 import QGroundControl.Palette       1.0
+import TableModel                   1.0
+import QGroundControl.MultiVehicleManager   1.0
 
 Rectangle {
     id:                 telemetryPanel
@@ -22,6 +24,17 @@ Rectangle {
     width:              telemetryLayout.width + (_toolsMargin * 2)
     color:              qgcPal.window
     radius:             ScreenTools.defaultFontPixelWidth / 2
+
+    TableModel{
+        id: rpadatabase
+    }
+
+    property var    _activeVehicle:     QGroundControl.multiVehicleManager.activeVehicle
+    //visible: _activeVehicle !== null
+    visible:_activeVehicle !== null && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params===1 ||
+            rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params===2)
+
+
 
     property bool       bottomMode: true
 

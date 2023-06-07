@@ -155,13 +155,13 @@ QVariantList &QGCCorePlugin::settingsPages()
                                               QUrl::fromUserInput(""));
         _p->settingsList.append(QVariant::fromValue(reinterpret_cast<QmlComponentInfo*>(_p->pMicrohard)));
 #endif
-#if defined(QGC_AIRMAP_ENABLED)
+/*#if defined(QGC_AIRMAP_ENABLED)
         _p->pAirmap = new QmlComponentInfo(tr("AirMap"),
                                            QUrl::fromUserInput("qrc:/qml/AirmapSettings.qml"),
                                            QUrl::fromUserInput(""));
         _p->settingsList.append(QVariant::fromValue(reinterpret_cast<QmlComponentInfo*>(_p->pAirmap)));
 #endif
-        /*_p->pMAVLink = new QmlComponentInfo(tr("MAVLink"),
+        _p->pMAVLink = new QmlComponentInfo(tr("MAVLink"),
                                             QUrl::fromUserInput("qrc:/qml/MavlinkSettings.qml"),
                                             QUrl::fromUserInput("qrc:/res/waves.svg"));
         _p->settingsList.append(QVariant::fromValue(reinterpret_cast<QmlComponentInfo*>(_p->pMAVLink)));*/
@@ -171,7 +171,7 @@ QVariantList &QGCCorePlugin::settingsPages()
         _p->pHelp = new QmlComponentInfo(tr("Help"),
                                          QUrl::fromUserInput("qrc:/qml/HelpSettings.qml"));
         _p->settingsList.append(QVariant::fromValue(reinterpret_cast<QmlComponentInfo*>(_p->pHelp)));
-#if defined(QT_DEBUG)
+/*#if defined(QT_DEBUG)
         //-- These are always present on Debug builds
         _p->pMockLink = new QmlComponentInfo(tr("Mock Link"),
                                              QUrl::fromUserInput("qrc:/qml/MockLink.qml"));
@@ -182,7 +182,7 @@ QVariantList &QGCCorePlugin::settingsPages()
         _p->pQmlTest = new QmlComponentInfo(tr("Palette Test"),
                                             QUrl::fromUserInput("qrc:/qml/QmlTest.qml"));
         _p->settingsList.append(QVariant::fromValue(reinterpret_cast<QmlComponentInfo*>(_p->pQmlTest)));
-#endif
+#endif*/
     }
     return _p->settingsList;
 }
@@ -197,8 +197,8 @@ QVariantList& QGCCorePlugin::analyzePages()
         /*_p->analyzeList.append(QVariant::fromValue(new QmlComponentInfo(tr("MAVLink Console"),  QUrl::fromUserInput("qrc:/qml/MavlinkConsolePage.qml"),     QUrl::fromUserInput("qrc:/qmlimages/MavlinkConsoleIcon"))));
 #if !defined(QGC_DISABLE_MAVLINK_INSPECTOR)
         _p->analyzeList.append(QVariant::fromValue(new QmlComponentInfo(tr("MAVLink Inspector"),QUrl::fromUserInput("qrc:/qml/MAVLinkInspectorPage.qml"),   QUrl::fromUserInput("qrc:/qmlimages/MAVLinkInspector"))));
-#endif
-        _p->analyzeList.append(QVariant::fromValue(new QmlComponentInfo(tr("Vibration"),        QUrl::fromUserInput("qrc:/qml/VibrationPage.qml"),          QUrl::fromUserInput("qrc:/qmlimages/VibrationPageIcon"))));*/
+#endif*/
+        _p->analyzeList.append(QVariant::fromValue(new QmlComponentInfo(tr("Vibration"),        QUrl::fromUserInput("qrc:/qml/VibrationPage.qml"),          QUrl::fromUserInput("qrc:/qmlimages/VibrationPageIcon"))));
     }
     return _p->analyzeList;
 }

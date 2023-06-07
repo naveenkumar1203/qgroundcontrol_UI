@@ -1883,7 +1883,7 @@ ApplicationWindow {
                                     else{
                                         second_user_details_page.visible = false
                                         third_user_details_page.visible = true
-                                        new_user_image_rect.source = "/res/otp.png"
+                                        //new_user_image_rect.source = "/res/otp.png"
                                         second_circle_text.text = "/"
                                         second_circle.color = "green"
                                         third_circle.color = "#F25822"
@@ -3098,7 +3098,7 @@ ApplicationWindow {
                             anchors.left: brand_logo.right
                             anchors.leftMargin: 5
                             text: qsTr("GoDrona GCS")
-                            font.pixelSize: ScreenTools.defaultFontPointSize * 6.5
+                            font.pixelSize: ScreenTools.defaultFontPointSize * 5
                             font.family: "Mistral"
                             font.bold: true
                             color: "white"
@@ -3654,7 +3654,7 @@ ApplicationWindow {
                         }
                         MessageDialog{
                             id: aboutDialog
-                            text:"<b>GoDrona GCS V1.0<b>"
+                            text:"<b>GoDrona GCS v1.0<b>"
                             informativeText: "@2023 Casca E-Connect Private Limited."
                             standardButtons: Dialog.Ok
                         }
