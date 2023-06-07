@@ -99,16 +99,16 @@ Item {
             anchors.bottom:     parent.bottom
             source:             "/qmlimages/RC_1.svg"
             //smooth:             true
-            visible: {
-                if(_activeVehicle && rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params === 1
-                                  || rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params === 2)
-                {
-                   rc.visible = true
-                }
-                else{
-                    rc.visible = false
-                }
-            }
+//            visible: {
+//                if(_activeVehicle && rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params === 1
+//                                  || rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params === 2)
+//                {
+//                   rc.visible = true
+//                }
+//                else{
+//                    rc.visible = false
+//                }
+//            }
         }
 
 //        QGCColorOverlay {
@@ -121,18 +121,18 @@ Item {
             id: signalstrength
             anchors.verticalCenter: parent.verticalCenter
             size:                   parent.height * 0.5
-//          percent:                _rcRSSIAvailable ? _activeVehicle.rcRSSI : 0
-            percent: {
-                if (_activeVehicle && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params === 1
-                                   ||  rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params === 2))
-                {
-                    signalstrength.visible = true;
-                    return _rcRSSIAvailable ? _activeVehicle.rcRSSI : 0;
-                } else {
-                    signalstrength.visible = false;
-                    return 0;
-                }
-            }
+          percent:                _rcRSSIAvailable ? _activeVehicle.rcRSSI : 0
+//            percent: {
+//                if (_activeVehicle && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params === 1
+//                                   ||  rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params === 2))
+//                {
+//                    signalstrength.visible = true;
+//                    return _rcRSSIAvailable ? _activeVehicle.rcRSSI : 0;
+//                } else {
+//                    signalstrength.visible = false;
+//                    return 0;
+//                }
+//            }
         }
     }
 

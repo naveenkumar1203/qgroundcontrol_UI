@@ -40,9 +40,9 @@ Item {
         anchors.bottom: parent.bottom
 
         Repeater {
-            //model: _activeVehicle ? _activeVehicle.batteries : 0
-            model: _activeVehicle && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params ===1 ||
-                                      rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params ===2)? _activeVehicle.batteries : 0
+            model: _activeVehicle ? _activeVehicle.batteries : 0
+            //model: _activeVehicle && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params ===1 ||
+              //                        rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params ===2)? _activeVehicle.batteries : 0
             Loader {
                 anchors.top:        parent.top
                 anchors.bottom:     parent.bottom
@@ -121,16 +121,16 @@ Item {
                 source:             "/qmlimages/Battery_1.svg"
                 fillMode:           Image.PreserveAspectFit
                 color:              getBatteryColor()
-                visible: {
-                    if(rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params ===1 ||
-                     rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params ===2)
-                    {
-                        battery_image.visible = true
-                    }
-                    else{
-                        battery_image.visible = false
-                    }
-                }
+//                visible: {
+//                    if(rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params ===1 ||
+//                     rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params ===2)
+//                    {
+//                        battery_image.visible = true
+//                    }
+//                    else{
+//                        battery_image.visible = false
+//                    }
+//                }
             }
 
             QGCLabel {

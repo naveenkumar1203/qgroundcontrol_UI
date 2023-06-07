@@ -61,17 +61,17 @@ Item {
         sourceSize.height:  height
         fillMode:           Image.PreserveAspectFit
         cache:              false
-        //visible:            _activeVehicle && _activeVehicle.messageCount > 0 && _isMessageImportant
-        visible: {
-            if(_activeVehicle && (_activeVehicle.messageCount > 0 && _isMessageImportant) &&
-                    (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params ===1
-                     || rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params ===2)){
-                criticalMessageIcon.visible = true
-            }
-            else{
-                criticalMessageIcon.visible = false
-            }
-        }
+        visible:            _activeVehicle && _activeVehicle.messageCount > 0 && _isMessageImportant
+//        visible: {
+//            if(_activeVehicle && (_activeVehicle.messageCount > 0 && _isMessageImportant) &&
+//                    (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params ===1
+//                     || rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params ===2)){
+//                criticalMessageIcon.visible = true
+//            }
+//            else{
+//                criticalMessageIcon.visible = false
+//            }
+//        }
     }
 
     QGCColoredImage {
@@ -82,18 +82,18 @@ Item {
         sourceSize.height:  height
         fillMode:           Image.PreserveAspectFit
         color:              getMessageColor()
-        //visible:            !criticalMessageIcon.visible
-        visible:{
-            if(_activeVehicle && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params === 1 ||
-                                  rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params === 2)
-                                  ? !criticalMessageIcon.visible : false){
+        visible:            !criticalMessageIcon.visible
+//        visible:{
+//            if(_activeVehicle && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params === 1 ||
+//                                  rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params === 2)
+//                                  ? !criticalMessageIcon.visible : false){
 
-                megaphone.visible = true
-            }
-            else{
-                megaphone.visible = false
-            }
-        }
+//                megaphone.visible = true
+//            }
+//            else{
+//                megaphone.visible = false
+//            }
+//        }
     }
 
     MouseArea {
