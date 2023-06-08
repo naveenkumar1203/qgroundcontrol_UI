@@ -108,6 +108,7 @@ SetupPage {
                         if(QGroundControl.multiVehicleManager.vehicleid_params === 1){
                             console.log("model A matches with drone type");
                             firmwareFilePath = QGroundControl.settingsManager.appSettings.telemetrySavePath + "/firmware_A.apj";
+                            console.log("firmware file path"+ firmwareFilePath);
                             controller.flashFirmwareUrl(firmwareFilePath);
                             crt_modelA_firmware.open()
 
@@ -122,7 +123,8 @@ SetupPage {
                         console.log("i am in model B : "+ QGroundControl.multiVehicleManager.vehicleid_params)
                         if(QGroundControl.multiVehicleManager.vehicleid_params === 2){
                             console.log("model B matches with drone type");
-                            firmwareFilePath = QGroundControl.settingsManager.appSettings.telemetrySavePath + "/firmware_A.apj";
+                            firmwareFilePath = QGroundControl.settingsManager.appSettings.telemetrySavePath + "/firmware_B.apj";
+                            console.log("firmware file path"+ firmwareFilePath);
                             controller.flashFirmwareUrl(firmwareFilePath);
                             crt_modelB_firmware.open()
                         }
