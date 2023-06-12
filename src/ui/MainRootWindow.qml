@@ -358,6 +358,9 @@ ApplicationWindow {
                 onTextChanged: {
                     login_page_email.border.color = "#C0C0C0"
                 }
+                Keys.onReturnPressed: {
+                    login_page_password_textfield.forceActiveFocus()  // Move focus to the next text field
+                }
                 background: Rectangle
                 {
                     id: login_page_email
@@ -450,8 +453,10 @@ ApplicationWindow {
                     }
                 }
             }
+
         }
         Button {
+
             anchors.top: login_page_label_password_column.bottom
             anchors.topMargin: 35
             anchors.horizontalCenter: parent.horizontalCenter
@@ -461,6 +466,7 @@ ApplicationWindow {
                 font.bold: true
                 anchors.centerIn: parent
                 color: "white"
+
             }
             background: Rectangle {
                 id: login_button
@@ -1303,7 +1309,7 @@ ApplicationWindow {
                             first_circle_text.text = "/"
                             first_circle.color = "green"
                             second_circle.color = "#F25822"
-                            user_profile_image.source = "/res/user_photo.png"
+                            //user_profile_image.source = "/res/user_photo.png"
                             //control.currentIndex = -1
                         }
                     }
@@ -1397,6 +1403,9 @@ ApplicationWindow {
                             onTextChanged: {
                                 user_name.border.color = "#C0C0C0"
                             }
+                            Keys.onReturnPressed: {
+                                user_mail_text.forceActiveFocus()  // Move focus to the next text field
+                            }
                             background: Rectangle
                             {
                                 id: user_name
@@ -1430,6 +1439,10 @@ ApplicationWindow {
                             onTextChanged: {
                                 user_mail.border.color = "#C0C0C0"
                             }
+                            Keys.onReturnPressed: {
+                                user_number_text.forceActiveFocus()
+                            }
+
                             background: Rectangle
                             {
                                 id: user_mail
@@ -1463,6 +1476,9 @@ ApplicationWindow {
                             validator: RegExpValidator{regExp: /[0-9,/]*/}
                             onTextChanged: {
                                 user_number.border.color = "#C0C0C0"
+                            }
+                            Keys.onReturnPressed: {
+                                user_address_text.forceActiveFocus()
                             }
                             background: Rectangle
                             {
@@ -1504,6 +1520,9 @@ ApplicationWindow {
                             onTextChanged: {
                                 user_address.border.color = "#C0C0C0"
                             }
+                            Keys.onReturnPressed: {
+                                user_locality_text.forceActiveFocus()
+                            }
                             background: Rectangle
                             {
                                 id: user_address
@@ -1534,6 +1553,9 @@ ApplicationWindow {
                             leftPadding: 70
                             onTextChanged: {
                                 user_locality.border.color = "#C0C0C0"
+                            }
+                            Keys.onReturnPressed: {
+                                user_password_text.forceActiveFocus()
                             }
                             background: Rectangle
                             {
@@ -2167,6 +2189,7 @@ ApplicationWindow {
 
         property var                planMasterControllerPlanView:   null
         property var                currentPlanMissionItem:         planMasterControllerPlanView ? planMasterControllerPlanView.missionController.currentPlanViewItem : null
+        property int                wrong_controller_flag: 0
     }
 
     /// Default color palette used throughout the UI
@@ -4399,9 +4422,12 @@ ApplicationWindow {
                                     anchors.verticalCenter: parent.verticalCenter
                                     anchors.margins: 5
                                     text: ''
-                                    font.pointSize:     ScreenTools.smallFontPointSize
+                                    font.pointSize:ScreenTools.smallFontPointSize
                                     color: "white"
                                     selectByMouse: true
+                                    Keys.onReturnPressed: {
+                                        uin_input_text.forceActiveFocus()  // Move focus to the next text field
+                                    }
                                     background: Rectangle {
                                         color: "#031C28"
                                         radius: 4
@@ -5219,6 +5245,9 @@ ApplicationWindow {
                                     text: database_access.address
                                     color:"white"
                                     font.pointSize: ScreenTools.smallFontPointSize
+                                    Keys.onReturnPressed: {
+                                        locality_field.forceActiveFocus()  // Move focus to the next text field
+                                    }
                                     background: Rectangle{
                                         color: "#05324D"
                                         radius: 4

@@ -31,7 +31,6 @@ SetupPage {
     pageComponent:  firmwarePageComponent
     pageName:       qsTr("Firmware")
     showAdvanced:   globals.activeVehicle && globals.activeVehicle.apmFirmware
-    signal boardInserted()
 
     Component {
         id: firmwarePageComponent
@@ -137,6 +136,7 @@ SetupPage {
                         if(QGroundControl.multiVehicleManager.vehicleid_params === 1){
                             console.log("model A matches with drone type");
                             firmwareFilePath = QGroundControl.settingsManager.appSettings.telemetrySavePath + "/firmware_A.apj";
+                            console.log("FLASH FIRMWARE PATH : " + firmwareFilePath)
                             controller.flashFirmwareUrl(firmwareFilePath);
                             crt_modelA_firmware.open()
 
@@ -151,7 +151,8 @@ SetupPage {
                         console.log("i am in model B : "+ QGroundControl.multiVehicleManager.vehicleid_params)
                         if(QGroundControl.multiVehicleManager.vehicleid_params === 2){
                             console.log("model B matches with drone type");
-                            firmwareFilePath = QGroundControl.settingsManager.appSettings.telemetrySavePath + "/firmware_A.apj";
+                            firmwareFilePath = QGroundControl.settingsManager.appSettings.telemetrySavePath + "/firmware_B.apj";
+                             console.log("FLASH FIRMWARE PATH : " + firmwareFilePath)
                             controller.flashFirmwareUrl(firmwareFilePath);
                             crt_modelB_firmware.open()
                         }

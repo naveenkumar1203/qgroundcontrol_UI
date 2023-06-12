@@ -105,6 +105,7 @@ Item{
                 console.log("model is selected")
                 console.log(checkBoxNumber)
                 //checkBoxState = 0
+                globals.wrong_controller_flag = 1
 
             }
             else{

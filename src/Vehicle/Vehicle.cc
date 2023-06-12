@@ -52,6 +52,7 @@
 #include "VehicleBatteryFactGroup.h"
 #include "EventHandler.h"
 #include "Actuators/Actuators.h"
+#include "FirmwareUpdate.h"
 #ifdef QT_DEBUG
 #include "MockLink.h"
 #endif
@@ -2350,9 +2351,16 @@ void Vehicle::virtualTabletJoystickValue(double roll, double pitch, double yaw, 
 
 void Vehicle::_say(const QString& text)
 {
-    QString new1 = obj.model();
+//    QString new1 = obj.model();
+//    _toolbox->audioOutput()->say(text.toLower());
 
-    _toolbox->audioOutput()->say(text.toLower());
+    qDebug()<<"checksum_compare OUT SIDE IF LOOP >> "<<checksum_compare;
+    if(checksum_compare == 1){
+        qDebug()<<"in _say function from firmwareUpdate";
+        _toolbox->audioOutput()->say(text.toLower());
+        qDebug()<<"checksum_compare"<<checksum_compare;
+
+    }
 
 }
 
@@ -3863,7 +3871,7 @@ void Vehicle::setFlightlog_filename(const QString &newFlightlog_filename)
 
 void Vehicle::_writeCsvLine()
 {
-    qDebug()<<"inside write csv";
+    //qDebug()<<"inside write csv";
 
     // Only save the logs after the the vehicle gets armed, unless "Save logs even if vehicle was not armed" is checked
     if(!_csvLogFile.isOpen() &&

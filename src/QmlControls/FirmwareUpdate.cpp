@@ -17,6 +17,7 @@ QString code_model_A_value2= "f";
 QString code_model_B_value1= "g";
 QString code_model_B_value2= "h";
 
+int checksum_compare = 0;
 
 FirmwareUpdate::FirmwareUpdate(QObject *parent)
     : QObject{parent}
@@ -108,6 +109,8 @@ void FirmwareUpdate::checksum_calculation_process_model_A(QString real_file_loca
         code_checksum_calculated_model_A = code_checksum_calculated_model_A.trimmed();
         code_model_A_value2 = code_checksum_calculated_model_A;
     }
+    file.close();
+    file1.close();
     compare_file_model_A(real_file_location);
 
 
@@ -140,6 +143,8 @@ void FirmwareUpdate::compare_file_model_A(QString real_file_location)
     qDebug() << "Code Generated"<< code_list1;
     qDebug() << "Code Calculated"<< code_list2;
 
+    checksum_compare = 0;
+
     if((data_list1 == data_list2) && (code_list1 == code_list2))
             {
                 QMessageBox msgBox;
@@ -153,7 +158,7 @@ void FirmwareUpdate::compare_file_model_A(QString real_file_location)
         load_file_model_A(real_file_location);
         qDebug()<< "Model A - The checksum matches. Please continue";
 
-
+        checksum_compare = 1;
 
         return;
 
@@ -278,6 +283,9 @@ void FirmwareUpdate::checksum_calculation_process_model_B(QString real_file_loca
         code_model_B_value2 = code_checksum_calculated_model_B;
     }
 
+    file.close();
+    file1.close();
+
     compare_file_model_B(real_file_location);
 
 }
@@ -310,6 +318,8 @@ void FirmwareUpdate::compare_file_model_B(QString real_file_location)
     qDebug() << "Code Generated"<< code_list1;
     qDebug() << "Code Calculated"<< code_list2;
 
+    checksum_compare = 0;
+
     if((data_list1 == data_list2) && (code_list1 == code_list2)){
 
         QMessageBox msgBox;
@@ -323,6 +333,8 @@ void FirmwareUpdate::compare_file_model_B(QString real_file_location)
         load_file_model_B(real_file_location);
 
         qDebug()<< "Model B - The checksum matches. Please continue";
+
+        checksum_compare = 1;
         return;
     }
     else {

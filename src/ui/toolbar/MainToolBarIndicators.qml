@@ -51,10 +51,16 @@ Row {
                     return true;
                 }
                 else{
-                    wrong_controller.open()
+
+                    if (globals.wrong_controller_flag === 1){
+
+                        wrong_controller.open()
+                        globals.wrong_controller_flag = 0
+                    }
                     return false;
                 }
-            }        }
+            }
+        }
     }
 
     MessageDialog
