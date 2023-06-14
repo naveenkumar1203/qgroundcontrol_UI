@@ -95,39 +95,10 @@ Item{
                             console.log("model not selected")
                         }
                         else if(checkBoxState === 1){
-                            rpadatabase.modelSelected(checkBoxNumber)
-//                            if(rpadatabase.model == "Model A"){
-//                                console.log("selected model A")
-//                                model_a_dialog.open()
-//                                flightView.visible = true
-//                                toolbar.visible =true
-//                                landing_page_rectangle.visible = false
-//                            }
-//                            if(rpadatabase.model == "Model B"){
-//                                console.log("selected model B")
-//                                model_b_dialog.open()
-//                                flightView.visible = true
-//                                toolbar.visible =true
-//                                landing_page_rectangle.visible = false
-//                            }
-
                             console.log("model is selected")
                             console.log(checkBoxNumber)
+                            globals.wrong_controller_flag = 1
                             //checkBoxState = 0
-//                            if(rpadatabase.model == "Model A"){
-//                                console.log("model a is selected")
-//                                firmware_load1.checksum_generation_process_model_A()
-//                                flightView.visible = true
-//                                toolbar.visible =true
-//                                landing_page_rectangle.visible = false
-//                            }
-//                            else if(rpadatabase.model == "Model B"){
-//                                console.log("model b is selected")
-//                                firmware_load1.checksum_generation_process_model_B()
-//                                flightView.visible = true
-//                                toolbar.visible =true
-//                                landing_page_rectangle.visible = false
-//                            }
                         }
                         else{
                             console.log("no checkboxstate")
@@ -145,18 +116,6 @@ Item{
         text: "You have to select the model before you fly."
     }
 
-//    MessageDialog {
-//        id: model_a_dialog
-//        title: "Model Selected"
-//        text: "The checksum matches. Please continue"
-//    }
-
-//    MessageDialog {
-//        id: model_b_dialog
-//        title: "Model Selected"
-//        text: "The checksum matches. Please continue"
-//    }
-
 
     FirmwareUpdate{
         id:firmware_load1
@@ -169,18 +128,12 @@ Item{
             if (controller.buildDiffFromFile(firmware_load1.firmware_load_model_A)) {
                 //mainWindow.showPopupDialogFromComponent(parameterDiffDialog)
                 console.log("mainroot" + firmware_load1.firmware_load_model_A)
-//                flightView.visible = true
-//                toolbar.visible =true
-//                landing_page_rectangle.visible = false
             }
         }
         onFirmware_load_model_BChanged:{
             if (controller.buildDiffFromFile(firmware_load1.firmware_load_model_B)) {
                 //mainWindow.showPopupDialogFromComponent(parameterDiffDialog)
                 console.log("mainroot" + firmware_load1.firmware_load_model_B)
-//                flightView.visible = true
-//                toolbar.visible =true
-//                landing_page_rectangle.visible = false
 
             }
         }

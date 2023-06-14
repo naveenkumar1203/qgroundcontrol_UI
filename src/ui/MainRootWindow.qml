@@ -2407,6 +2407,7 @@ ApplicationWindow {
 
         property var                planMasterControllerPlanView:   null
         property var                currentPlanMissionItem:         planMasterControllerPlanView ? planMasterControllerPlanView.missionController.currentPlanViewItem : null
+        property int                wrong_controller_flag: 0
     }
 
     /// Default color palette used throughout the UI
@@ -3165,7 +3166,7 @@ ApplicationWindow {
 
                     Rectangle{
                         id: dashboard_button
-                        width: menu_rect_1.width -45
+                        width: first_rectangle.width -45
                         height: 35
                         color: "#031C28"
                         radius: 4
@@ -3232,7 +3233,7 @@ ApplicationWindow {
 
                     Rectangle{
                         id: managerpa_button
-                        width: menu_rect_1.width -45
+                        width: first_rectangle.width -45
                         height: 35
                         color: "#031C28"
                         radius: 4
@@ -3286,7 +3287,7 @@ ApplicationWindow {
 
                     Rectangle{
                         id: customers_button
-                        width: menu_rect_1.width -45
+                        width: first_rectangle.width -45
                         height: 35
                         color: "#031C28"
                         radius: 4
@@ -3322,7 +3323,7 @@ ApplicationWindow {
 
                     Rectangle{
                         id: remote_button
-                        width: menu_rect_1.width -45
+                        width: first_rectangle.width -45
                         height: 35
                         color: "#031C28"
                         radius: 4
@@ -3357,7 +3358,7 @@ ApplicationWindow {
                     }
                     Rectangle{
                         id: missions_button
-                        width: menu_rect_1.width -45
+                        width: first_rectangle.width -45
                         height: 35
                         color: "#031C28"
                         radius: 4
@@ -3392,7 +3393,7 @@ ApplicationWindow {
                     }
                     Rectangle{
                         id: create_button
-                        width: menu_rect_1.width -45
+                        width: first_rectangle.width -45
                         height: 35
                         color: "#031C28"
                         radius: 4
@@ -3428,7 +3429,7 @@ ApplicationWindow {
 
                     Rectangle{
                         id: flight_log_button
-                        width: menu_rect_1.width -45
+                        width: first_rectangle.width -45
                         height: 35
                         color: "#031C28"
                         radius: 4
@@ -3483,7 +3484,7 @@ ApplicationWindow {
 
                     Rectangle{
                         id: firmware_button
-                        width: menu_rect_1.width -45
+                        width: first_rectangle.width -45
                         height: 35
                         color: "#031C28"
                         radius: 4
@@ -3545,7 +3546,7 @@ ApplicationWindow {
                     }
                     Rectangle{
                         id: profile_button
-                        width: menu_rect_1.width -45
+                        width: first_rectangle.width -45
                         height: 35
                         color: "#031C28"
                         radius: 4
@@ -3596,7 +3597,7 @@ ApplicationWindow {
                     }
                     Rectangle{
                         id: notification_button
-                        width: menu_rect_1.width -45
+                        width: first_rectangle.width -45
                         height: 35
                         color: "#031C28"
                         radius: 4
@@ -3631,7 +3632,7 @@ ApplicationWindow {
                     }
                     Rectangle{
                         id: about_button
-                        width: menu_rect_1.width -45
+                        width: first_rectangle.width -45
                         height: 35
                         color: "#031C28"
                         radius: 4
@@ -3679,7 +3680,7 @@ ApplicationWindow {
                     }
                     Rectangle{
                         id: logout_button
-                        width: menu_rect_1.width -45
+                        width: first_rectangle.width -45
                         height: 35
                         color: "#031C28"
                         radius: 4
