@@ -3125,7 +3125,7 @@ ApplicationWindow {
 
                     }
                     Rectangle {
-                        id: menu_rect_1
+                        id: menu_rect
                         color: "#05324D"
                         height: 40
                         width: first_rectangle.width
@@ -3138,7 +3138,7 @@ ApplicationWindow {
                             id: home_image
                             source: "/res/home.png"
                             anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: menu_rect_1.left
+                            anchors.left: menu_rect.left
                             anchors.leftMargin: 30
                         }
 
