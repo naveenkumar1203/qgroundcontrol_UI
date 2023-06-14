@@ -455,6 +455,7 @@ void FirmwareUpdate::compare_file_model_A(QString real_file_location)
     qDebug() << "Code Calculated"<< code_list2;
 
     checksum_compare = 0;
+    qDebug()<<"checksum_compare in A == :" <<checksum_compare;
 
     if((data_list1 == data_list2) && (code_list1 == code_list2)){
 
@@ -466,6 +467,7 @@ void FirmwareUpdate::compare_file_model_A(QString real_file_location)
         load_file_model_A(real_file_location);
         qDebug()<< "Model A - The checksum matches. Please continue";
         checksum_compare = 1;
+        qDebug()<<"checksum_compare in firmware update A ------->" << checksum_compare;
         return;
     }
     else {
@@ -628,6 +630,7 @@ void FirmwareUpdate::compare_file_model_B(QString real_file_location)
     qDebug() << "Code Calculated"<< code_list2;
 
     checksum_compare = 0;
+    qDebug()<<"checksum_compare in B== :" <<checksum_compare;
 
     if((data_list1 == data_list2) && (code_list1 == code_list2)){
 
@@ -639,7 +642,7 @@ void FirmwareUpdate::compare_file_model_B(QString real_file_location)
         load_file_model_B(real_file_location);
         qDebug()<< "Model B - The checksum matches. Please continue";
         checksum_compare = 1;
-        qDebug()<<"checksum_compare in firmware update ------->" << checksum_compare;
+        qDebug()<<"checksum_compare in firmware update B ------->" << checksum_compare;
         return;
     }
     else {

@@ -199,7 +199,7 @@ QVariantList& QGCCorePlugin::analyzePages()
 //#if !defined(QGC_DISABLE_MAVLINK_INSPECTOR)
 //        _p->analyzeList.append(QVariant::fromValue(new QmlComponentInfo(tr("MAVLink Inspector"),QUrl::fromUserInput("qrc:/qml/MAVLinkInspectorPage.qml"),   QUrl::fromUserInput("qrc:/qmlimages/MAVLinkInspector"))));
 //#endif
-//        _p->analyzeList.append(QVariant::fromValue(new QmlComponentInfo(tr("Vibration"),        QUrl::fromUserInput("qrc:/qml/VibrationPage.qml"),          QUrl::fromUserInput("qrc:/qmlimages/VibrationPageIcon"))));
+        _p->analyzeList.append(QVariant::fromValue(new QmlComponentInfo(tr("Vibration"),        QUrl::fromUserInput("qrc:/qml/VibrationPage.qml"),          QUrl::fromUserInput("qrc:/qmlimages/VibrationPageIcon"))));
     }
     return _p->analyzeList;
 }
@@ -442,7 +442,10 @@ QString QGCCorePlugin::stableVersionCheckFileUrl() const
     // Custom builds must override to turn on and provide their own location
     return QString();
 #else
-    return QString("https://s3-us-west-2.amazonaws.com/qgroundcontrol/latest/QGC.version.txt");
+    //return QString("https://s3-us-west-2.amazonaws.com/qgroundcontrol/latest/QGC.version.txt");
+    // download url from firebase storage
+    return QString("https://firebasestorage.googleapis.com/v0/b/godrona-gcs.appspot.com/o/GoDronaGCS%2Fgodrona.txt?alt=media");
+    //return QString("https://tinyurl.com/4fxumd64"); // shorten the above url from firebase storage
 #endif
 }
 

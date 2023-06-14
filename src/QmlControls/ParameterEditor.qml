@@ -96,6 +96,7 @@ Item{
                 rpadatabase.modelSelected(checkBoxNumber)
                 console.log("model is selected")
                 console.log(checkBoxNumber)
+                globals.wrong_controller_flag = 1
                 //rpadatabase.modelSelected(checkBoxNumber)
             }
             else{

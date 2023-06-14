@@ -832,6 +832,7 @@ void QGCApplication::_checkForNewVersion()
     if (!_runningUnitTests) {
         if (_parseVersionText(applicationVersion(), _majorVersion, _minorVersion, _buildVersion)) {
             QString versionCheckFile = toolbox()->corePlugin()->stableVersionCheckFileUrl();
+            qDebug()<< "versionCheckFile : " <<versionCheckFile;
             if (!versionCheckFile.isEmpty()) {
                 QGCFileDownload* download = new QGCFileDownload(this);
                 connect(download, &QGCFileDownload::downloadComplete, this, &QGCApplication::_qgcCurrentStableVersionDownloadComplete);
@@ -876,11 +877,15 @@ void QGCApplication::_qgcCurrentStableVersionDownloadComplete(QString /*remoteFi
 bool QGCApplication::_parseVersionText(const QString& versionString, int& majorVersion, int& minorVersion, int& buildVersion)
 {
     QRegularExpression regExp("v(\\d+)\\.(\\d+)\\.(\\d+)");
+    qDebug()<<versionString;
     QRegularExpressionMatch match = regExp.match(versionString);
+    qDebug()<< "match : " <<match;
     if (match.hasMatch() && match.lastCapturedIndex() == 3) {
         majorVersion = match.captured(1).toInt();
         minorVersion = match.captured(2).toInt();
         buildVersion = match.captured(3).toInt();
+        qDebug()<< "in _parseversiontext ------> "  << majorVersion << " " << minorVersion <<  " " << buildVersion;
+
         return true;
     }
 

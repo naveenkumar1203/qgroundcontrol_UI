@@ -31,6 +31,7 @@ bool QGCFileDownload::download(const QString& remoteFile, bool redirect)
         return false;
     }
     
+    qDebug()<<"REMOTE FILE NAME : "<<remoteFile;
 
     QUrl remoteUrl;
     if (remoteFile.startsWith("http:") || remoteFile.startsWith("https:")) {
@@ -43,6 +44,7 @@ bool QGCFileDownload::download(const QString& remoteFile, bool redirect)
         return false;
     }
     
+    qDebug() << "MY REMOTE URL : " <<remoteUrl;
     QNetworkRequest networkRequest(remoteUrl);
 
     QNetworkProxy tProxy;

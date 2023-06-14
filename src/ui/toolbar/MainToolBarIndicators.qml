@@ -50,8 +50,13 @@ Row {
                  return true;
                 }
                 else{
-                 wrong_controller.open()
-                 return false;
+
+                    if (globals.wrong_controller_flag === 1){
+
+                        wrong_controller.open()
+                        globals.wrong_controller_flag = 0
+                    }
+                    return false;
                 }
             }
         }
