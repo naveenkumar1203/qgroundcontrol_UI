@@ -44,16 +44,14 @@ Item{
         id: rpadatabase
 
         onModelChanged:{
-                if(rpadatabase.model == "Model A"){
-                    console.log("model a is selected")
-                    firmware_load1.checksum_generation_process_model_A(file_Dialog.shortcuts.documents)
-                }
-                else if(rpadatabase.model == "Model B"){
-                    console.log("model b is selected")
-                    firmware_load1.checksum_generation_process_model_B(file_Dialog.shortcuts.documents)
-                }
-
-
+            if(rpadatabase.model == "Model A"){
+                console.log("model a is selected")
+                firmware_load1.checksum_generation_process_model_A(file_Dialog.shortcuts.documents)
+            }
+            else if(rpadatabase.model == "Model B"){
+                console.log("model b is selected")
+                firmware_load1.checksum_generation_process_model_B(file_Dialog.shortcuts.documents)
+            }
         }
     }
 
@@ -91,24 +89,22 @@ Item{
         }
         onClicked: {
             if(checkBoxState === 0){
-                            select_the_modelDialog.open()
-                            console.log("model not selected")
-                        }
-                        else if(checkBoxState === 1){
-                            rpadatabase.modelSelected(checkBoxNumber)
-                            console.log("model is selected")
-                            console.log(checkBoxNumber)
-                            globals.wrong_controller_flag = 1
-                            //checkBoxState = 0
-                        }
-                        else{
-                            console.log("no checkboxstate")
-                        }
-                        flightView.visible = true
-                        toolbar.visible =true
-                        landing_page_rectangle.visible = false
-
-
+                    select_the_modelDialog.open()
+                    console.log("model not selected")
+                }
+                else if(checkBoxState === 1){
+                    rpadatabase.modelSelected(checkBoxNumber)
+                    console.log("model is selected")
+                    console.log(checkBoxNumber)
+                    globals.wrong_controller_flag = 1
+                    //checkBoxState = 0
+                }
+                else{
+                    console.log("no checkboxstate")
+                }
+                flightView.visible = true
+                toolbar.visible =true
+                landing_page_rectangle.visible = false
         }
     }
     MessageDialog {
@@ -147,8 +143,6 @@ Item{
             paramController: _controller
         }
     }
-
-
 }
 
 
