@@ -422,7 +422,7 @@ ApplicationWindow {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: 90
                     height: 90
-                    source: "/res/godrona-logo.png"//"qrc:/../../../../Downloads/godrona-logo.png"
+                    source: "/res/vaagai-logo.png"//"qrc:/../../../../Downloads/godrona-logo.png"
                 }
                 Column{
                     id: login_page_label
@@ -438,7 +438,7 @@ ApplicationWindow {
                         font.pixelSize: 20
                     }
                     Label{
-                        text: "- Hello, Welcome back to GoDrona"
+                        text: "- Hello, Welcome back to Vaagai GCS"
                         color: "#F25822"
                         font.bold: true
                         font.pixelSize: 20
@@ -616,7 +616,7 @@ ApplicationWindow {
                     anchors.left: parent.left
                     anchors.leftMargin: 20
                     Label{
-                        text: "New to GoDrona ?"
+                        text: "New to Vaagai GCS ?"
                         color: "white"
                         Image{
                             id: new_user_logo
@@ -2728,7 +2728,7 @@ ApplicationWindow {
                         Layout.fillWidth:   true
                         text:               qsTr("Application Settings")
                         //imageResource:      "/res/QGCLogoFull"
-                        imageResource:      "/res/goDrona"
+                        imageResource:      "/res/vaagai-logo"
                         imageColor:         "transparent"
                         visible:            !QGroundControl.corePlugin.options.combineSettingsAndSetup
                         onClicked: {
@@ -3108,7 +3108,7 @@ ApplicationWindow {
                             color: "#031C28"
                             Image {
                                 anchors.fill: parent
-                                source: "/res/goDrona.png"
+                                source: "/res/vaagai-logo.png"
                             }
                         }
                         Text {
@@ -3116,9 +3116,9 @@ ApplicationWindow {
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: brand_logo.right
                             anchors.leftMargin: 5
-                            text: qsTr("GoDrona GCS")
-                            font.pixelSize: ScreenTools.defaultFontPointSize * 5
-                            font.family: "Mistral"
+                            text: qsTr("Vaagai GCS")
+                            font.pixelSize: ScreenTools.defaultFontPointSize * 4
+                            //font.family: "Mistral"
                             font.bold: true
                             color: "white"
                         }
@@ -3673,8 +3673,9 @@ ApplicationWindow {
                         }
                         MessageDialog{
                             id: aboutDialog
-                            text:"<b>GoDrona GCS v1.0<b>"
-                            informativeText: "@2023 Casca E-Connect Private Limited."
+                            text:"<b>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  Vaagai GCS v1.0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <b>"
+                            informativeText: "@2022 Beavoice Infotech Private Limited."
+                            //detailedText: "@2022 Beavoice Infotech Private Limited."
                             standardButtons: Dialog.Ok
                         }
                     }
@@ -3848,7 +3849,7 @@ ApplicationWindow {
                                 anchors.leftMargin: 20
                                 anchors.top: greet.bottom
                                 anchors.topMargin: 15
-                                text: "Welcome back to <b>GoDrona<b>"
+                                text: "Welcome back to <b>Vaagai GCS<b>"
                                 color : "white"
                                 font.pointSize: 14
                             }
@@ -4062,7 +4063,7 @@ ApplicationWindow {
                                 color: "#05324D"
                                 Text {
                                     anchors.centerIn: parent
-                                    text: "@2023 Casca E-Connect Private Limited | All Rights Reserved"
+                                    text: "@2022 Beavoice Infotech Private Limited | All Rights Reserved"
                                     font.pointSize: 10
                                     color: "White"
                                 }
@@ -4251,7 +4252,7 @@ ApplicationWindow {
                                color: "#05324D"
                                Text {
                                    anchors.centerIn: parent
-                                   text: "@2023 Casca E-Connect Private Limited | All Rights Reserved"
+                                   text: "@2022 Beavoice Infotech Private Limited | All Rights Reserved"
                                    font.pointSize: 10
                                    color: "White"
                                }
@@ -4826,7 +4827,7 @@ ApplicationWindow {
                             color: "#05324D"
                             Text {
                                 anchors.centerIn: parent
-                                text: "@2023 Casca E-Connect Private Limited | All Rights Reserved"
+                                text: "@2022 Beavoice Infotech Private Limited | All Rights Reserved"
                                 font.pointSize: 10
                                 color: "White"
                             }
@@ -5303,7 +5304,7 @@ ApplicationWindow {
                                 color: "#05324D"
                                 Text {
                                     anchors.centerIn: parent
-                                    text: "@2023 Casca E-Connect Private Limited | All Rights Reserved"
+                                    text: "@2022 Beavoice Infotech Private Limited | All Rights Reserved"
                                     font.pointSize: 10
                                     color: "White"
                                 }
@@ -5411,7 +5412,7 @@ ApplicationWindow {
                                 color: "#05324D"
                                 Text {
                                     anchors.centerIn: parent
-                                    text: "@2023 Casca E-Connect Private Limited | All Rights Reserved"
+                                    text: "@2022 Beavoice Infotech Private Limited | All Rights Reserved"
                                     font.pointSize: 10
                                     color: "White"
                                 }
