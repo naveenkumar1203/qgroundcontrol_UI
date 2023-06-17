@@ -3673,7 +3673,7 @@ ApplicationWindow {
                         }
                         MessageDialog{
                             id: aboutDialog
-                            text:"<b>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  Vaagai GCS v1.0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <b>"
+                            text:"<b>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  GoDrona GCS v1.0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <b>"
                             informativeText: "@2023 Casca E-Connect Private Limited."
                             standardButtons: Dialog.Ok
                         }
