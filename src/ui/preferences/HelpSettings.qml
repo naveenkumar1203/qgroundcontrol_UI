@@ -35,7 +35,7 @@ Rectangle {
             columns:    2
 
             //QGCLabel { text: qsTr("QGroundControl User Guide") }
-            QGCLabel { text: qsTr("GoDrona GCS User Guide") }
+            QGCLabel { text: qsTr("Vaagai GCS User Guide") }
             QGCLabel {
                 linkColor:          qgcPal.text
                 text:               "<a href=\"https://docs.qgroundcontrol.com\">https://docs.qgroundcontrol.com</a>"
@@ -43,7 +43,7 @@ Rectangle {
             }
 
             //QGCLabel { text: qsTr("PX4 Users Discussion Forum") }
-            QGCLabel { text: qsTr("GoDrona GCS Website") }
+            QGCLabel { text: qsTr("Vaagai GCS Website") }
             QGCLabel {
                 linkColor:          qgcPal.text
                 text:               "<a href=\"http://discuss.px4.io/c/qgroundcontrol\">http://discuss.px4.io/c/qgroundcontrol</a>"

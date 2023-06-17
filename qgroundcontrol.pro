@@ -28,7 +28,7 @@ message(Qt version $$[QT_VERSION])
 include(QGCCommon.pri)
 
 #TARGET   = QGroundControl
-TARGET   = GoDronaGCS
+TARGET   = VaagaiGCS
 TEMPLATE = app
 QGCROOT  = $$PWD
 
@@ -53,7 +53,7 @@ LinuxBuild {
 
 WindowsBuild {
     #RC_ICONS = resources/icons/qgroundcontrol.ico
-    RC_ICONS = resources/icons/goDrona.ico
+    RC_ICONS = resources/icons/vaagai-logo.ico
     CONFIG += resources_big
 }
 
@@ -68,8 +68,8 @@ WindowsBuild {
 #QGC_APP_DESCRIPTION = "Open source ground control app provided by QGroundControl dev team"
 #QGC_APP_COPYRIGHT   = "Copyright (C) 2019 QGroundControl Development Team. All rights reserved."
 
-QGC_APP_NAME        = "GoDronaGCS"
-QGC_ORG_NAME        = "CascaE-ConnectPrivateLimited"
+QGC_APP_NAME        = "VaagaiGCS"
+QGC_ORG_NAME        = "BeavoiceInfotechPrivateLimited"
 QGC_ORG_DOMAIN      = " "
 QGC_APP_DESCRIPTION = " "
 QGC_APP_COPYRIGHT   = " "
@@ -77,9 +77,9 @@ QGC_APP_COPYRIGHT   = " "
 WindowsBuild {
     QGC_INSTALLER_SCRIPT        = "$$SOURCE_DIR\\deploy\\windows\\nullsoft_installer.nsi"
     #QGC_INSTALLER_ICON          = "$$SOURCE_DIR\\deploy\\windows\\WindowsQGC.ico"
-    QGC_INSTALLER_ICON          = "$$SOURCE_DIR\\deploy\\windows\\goDrona.ico"
+    QGC_INSTALLER_ICON          = "$$SOURCE_DIR\\deploy\\windows\\vaagai-logo.ico"
     #QGC_INSTALLER_HEADER_BITMAP = "$$SOURCE_DIR\\deploy\\windows\\installheader.bmp"
-    QGC_INSTALLER_HEADER_BITMAP = "$$SOURCE_DIR\\deploy\\windows\\goDrona.bmp"
+    QGC_INSTALLER_HEADER_BITMAP = "$$SOURCE_DIR\\deploy\\windows\\vaagai.bmp"
     QGC_INSTALLER_DRIVER_MSI    = "$$SOURCE_DIR\\deploy\\windows\\driver.msi"
 }
 
@@ -368,7 +368,7 @@ CustomBuild {
     }
 } else {
     #DEFINES += QGC_APPLICATION_NAME=\"\\\"QGroundControl\\\"\"
-    DEFINES += QGC_APPLICATION_NAME=\"\\\"GoDronaGCS\\\"\"
+    DEFINES += QGC_APPLICATION_NAME=\"\\\"VaagaiGCS\\\"\"
     DEFINES += QGC_ORG_NAME=\"\\\"QGroundControl.org\\\"\"
     DEFINES += QGC_ORG_DOMAIN=\"\\\"org.qgroundcontrol\\\"\"
     RESOURCES += \

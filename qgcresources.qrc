@@ -110,6 +110,8 @@
         <file alias="role.png">resources/role.png</file>
         <file alias="Flight_log.png">resources/Flight_log.png</file>
         <file alias="about.png">resources/about.png</file>
+        <file alias="vaagai-logo.png">resources/vaagai-logo.png</file>
+        <file>resources/icons/vaagai-logo.ico</file>
     </qresource>
     <qresource prefix="/res/firmware">
         <file alias="3drradio.png">resources/firmware/3drradio.png</file>

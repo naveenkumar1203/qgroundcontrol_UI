@@ -64,7 +64,7 @@ Rectangle {
                     smooth:                 false
                     mipmap:                 false
                     cache:                  false
-                    source:                 "/res/goDrona" //"/res/ArrowRight.svg"
+                    source:                 "/res/vaagai-logo" //"/res/ArrowRight.svg"
                 }
 
     }

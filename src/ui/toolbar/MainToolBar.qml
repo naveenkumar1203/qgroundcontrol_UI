@@ -69,7 +69,7 @@ Rectangle {
             id:                     currentButton
             Layout.preferredHeight: viewButtonRow.height
             //icon.source:            "/res/QGCLogoFull"
-            icon.source:            "/res/goDrona"
+            icon.source:            "/res/vaagai-logo"
             logo:                   true
             onClicked:              mainWindow.showToolSelectDialog()
         }
@@ -85,9 +85,9 @@ Rectangle {
 
         Text{
             id: godrona
-            text: "Go Drona  "
+            text: "Vaagai GCS  "
             color: "White"
-            font.family: fixedFont.name
+            //font.family: fixedFont.name
             font.pixelSize: ScreenTools.defaultFontPointSize * 3  //: ScreenTools.largeFontPointSize
             font.bold: true
         }
