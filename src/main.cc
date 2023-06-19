@@ -244,7 +244,7 @@ int main(int argc, char *argv[])
     // not be able to run at the same time
 
     //QString runguardString(QGC_APPLICATION_NAME);
-    QString runguardString("GoDrona GCS");
+    QString runguardString("Vaagai GCS");
     runguardString.append("RunGuardKey");
 
     RunGuard guard(runguardString);
@@ -253,7 +253,7 @@ int main(int argc, char *argv[])
         QApplication errorApp(argc, argv);
         QMessageBox::critical(nullptr, QObject::tr("Error"),
                               //QObject::tr("A second instance of %1 is already running. Please close the other instance and try again.").arg(QGC_APPLICATION_NAME)
-                              QObject::tr("A second instance of %1 is already running. Please close the other instance and try again.").arg("GoDrona GCS")
+                              QObject::tr("A second instance of %1 is already running. Please close the other instance and try again.").arg("Vaagai GCS")
                               );
         return -1;
     }
@@ -378,7 +378,7 @@ int main(int argc, char *argv[])
 
 #ifdef Q_OS_LINUX
     //QApplication::setWindowIcon(QIcon(":/res/resources/icons/qgroundcontrol.ico"));
-    QApplication::setWindowIcon(QIcon(":/res/resources/icons/goDrona.ico"));
+    QApplication::setWindowIcon(QIcon(":/res/resources/icons/vaagai-logo.ico"));
 #endif /* Q_OS_LINUX */
 
     // There appears to be a threading issue in qRegisterMetaType which can cause it to throw a qWarning

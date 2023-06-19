@@ -31,11 +31,11 @@ void FirmwareUpdate::checksum_generation_process_model_A(QString real_file_locat
     real_file_location = real_file_location.remove("file://");
     real_file_location.remove("/Documents");
 
-    QString a_data_params_location = real_file_location + "/GoDrona GCS/Telemetry/model_A.params";
-    QString a_data_checksum_location = real_file_location + "/GoDrona GCS/Telemetry/new_data_A_checksum.txt";
+    QString a_data_params_location = real_file_location + "/Vaagai GCS/Telemetry/model_A.params";
+    QString a_data_checksum_location = real_file_location + "/Vaagai GCS/Telemetry/new_data_A_checksum.txt";
 
-    QString a_code_location = real_file_location + "/GoDrona GCS/Telemetry/firmware_A.apj";
-    QString a_code_checksum_location = real_file_location + "/GoDrona GCS/Telemetry/new_code_A_checksum.txt";
+    QString a_code_location = real_file_location + "/Vaagai GCS/Telemetry/firmware_A.apj";
+    QString a_code_checksum_location = real_file_location + "/Vaagai GCS/Telemetry/new_code_A_checksum.txt";
 
 
     QFile file(a_data_params_location);
@@ -77,7 +77,7 @@ void FirmwareUpdate::setgenerated_checksum_model_A(const QString &newgenerated_c
 void FirmwareUpdate::checksum_calculation_process_model_A(QString real_file_location)
 {
 
-    QString calculated_data_checksum_cmd_model_A =  real_file_location + "/GoDrona GCS/Telemetry/data_A_checksum.txt";
+    QString calculated_data_checksum_cmd_model_A =  real_file_location + "/Vaagai GCS/Telemetry/data_A_checksum.txt";
     QFile file(calculated_data_checksum_cmd_model_A);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
 
@@ -94,7 +94,7 @@ void FirmwareUpdate::checksum_calculation_process_model_A(QString real_file_loca
 
     }
 
-    QString calculated_code_checksum_cmd_model_A =  real_file_location + "/GoDrona GCS/Telemetry/code_A_checksum.txt";
+    QString calculated_code_checksum_cmd_model_A =  real_file_location + "/Vaagai GCS/Telemetry/code_A_checksum.txt";
     QFile file1(calculated_code_checksum_cmd_model_A);
     if (!file1.open(QIODevice::ReadOnly | QIODevice::Text)){
 
@@ -179,7 +179,7 @@ void FirmwareUpdate::compare_file_model_A(QString real_file_location)
 }
 void FirmwareUpdate::load_file_model_A(QString real_file_location)
 {
-    QString filename = real_file_location + "/GoDrona GCS/Telemetry/model_A.params";;
+    QString filename = real_file_location + "/Vaagai GCS/Telemetry/model_A.params";;
 
     QFile file(filename);
     if(file.exists()){
@@ -211,11 +211,11 @@ void FirmwareUpdate::checksum_generation_process_model_B(QString real_file_locat
     real_file_location = real_file_location.remove("file://");
     real_file_location.remove("/Documents");
 
-    QString b_data_params_location = real_file_location + "/GoDrona GCS/Telemetry/model_B.params";
-    QString b_data_checksum_location =  real_file_location + "/GoDrona GCS/Telemetry/new_data_B_checksum.txt";
+    QString b_data_params_location = real_file_location + "/Vaagai GCS/Telemetry/model_B.params";
+    QString b_data_checksum_location =  real_file_location + "/Vaagai GCS/Telemetry/new_data_B_checksum.txt";
 
-    QString b_code_location = real_file_location + "/GoDrona GCS/Telemetry/firmware_B.apj";
-    QString b_code_checksum_location =  real_file_location + "/GoDrona GCS/Telemetry/new_code_B_checksum.txt";
+    QString b_code_location = real_file_location + "/Vaagai GCS/Telemetry/firmware_B.apj";
+    QString b_code_checksum_location =  real_file_location + "/Vaagai GCS/Telemetry/new_code_B_checksum.txt";
 
     QFile file(b_data_params_location);
     if (file.open(QIODevice::ReadOnly)) {
@@ -253,7 +253,7 @@ void FirmwareUpdate::setgenerated_checksum_model_B(const QString &newgenerated_c
 
 void FirmwareUpdate::checksum_calculation_process_model_B(QString real_file_location)
 {
-    QString calculated_data_checksum_cmd_model_B =  real_file_location + "/GoDrona GCS/Telemetry/data_B_checksum.txt";
+    QString calculated_data_checksum_cmd_model_B =  real_file_location + "/Vaagai GCS/Telemetry/data_B_checksum.txt";
     qDebug()<<"my name is " << real_file_location;
     QFile file(calculated_data_checksum_cmd_model_B);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
@@ -268,7 +268,7 @@ void FirmwareUpdate::checksum_calculation_process_model_B(QString real_file_loca
         data_model_B_value2 = data_checksum_calculated_model_B;
     }
 
-    QString calculated_code_checksum_cmd_model_B =  real_file_location + "/GoDrona GCS/Telemetry/code_B_checksum.txt";
+    QString calculated_code_checksum_cmd_model_B =  real_file_location + "/Vaagai GCS/Telemetry/code_B_checksum.txt";
 
     QFile file1(calculated_code_checksum_cmd_model_B);
     if (!file1.open(QIODevice::ReadOnly | QIODevice::Text)){
@@ -353,7 +353,7 @@ void FirmwareUpdate::compare_file_model_B(QString real_file_location)
 
 void FirmwareUpdate::load_file_model_B(QString real_file_location)
 {
-    QString filename = real_file_location + "/GoDrona GCS/Telemetry/model_B.params";;
+    QString filename = real_file_location + "/Vaagai GCS/Telemetry/model_B.params";;
     QFile file(filename);
 
     if(file.exists()){

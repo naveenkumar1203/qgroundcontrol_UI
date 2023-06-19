@@ -73,17 +73,17 @@ Rectangle {
         QGCToolBarButton {
             id:                     currentButton
             Layout.preferredHeight: viewButtonRow.height
-            icon.source:            "/res/goDrona"
+            icon.source:            "/res/vaagai-logo"
             logo:                   true
             onClicked:              mainWindow.showToolSelectDialog()
         }
 
         Text{
             id: godrona
-            text: "Go Drona  "
+            text: "Vaagai GCS "
             color: "White"
-            font.family: "Mistral"
-            font.pointSize: ScreenTools.defaultFontPointSize * 2  //: ScreenTools.largeFontPointSize
+//            font.family: "Mistral"
+            font.pointSize: ScreenTools.defaultFontPointSize * 1.4  //: ScreenTools.largeFontPointSize
             font.bold: true
         }
 
