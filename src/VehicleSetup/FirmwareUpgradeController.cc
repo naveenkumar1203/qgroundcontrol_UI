@@ -558,6 +558,7 @@ void FirmwareUpgradeController::_appendStatusLog(const QString& text, bool criti
 void FirmwareUpgradeController::_errorCancel(const QString& msg)
 {
     _appendStatusLog(msg, false);
+    _appendStatusLog(tr("Checksum doesnot match,NOT OK"), true);
     _appendStatusLog(tr("Upgrade cancelled"), true);
     _appendStatusLog("------------------------------------------", false);
     emit error();
