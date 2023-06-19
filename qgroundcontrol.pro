@@ -269,7 +269,7 @@ QT += \
     core-private \
     serialport
 
-#QT += androidextras
+QT += androidextras
 
 
 

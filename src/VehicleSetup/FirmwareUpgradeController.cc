@@ -468,7 +468,7 @@ void FirmwareUpgradeController::_flashComplete(void)
         delete _image;
         _image = nullptr;
 
-        _appendStatusLog(tr("Checksum Matches,OK"), true);
+//        _appendStatusLog(tr("Checksum Matches,OK"), true);
 
         _appendStatusLog(tr("Upgrade complete"), true);
         _appendStatusLog("------------------------------------------", false);
