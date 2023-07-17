@@ -29,6 +29,8 @@
 #include <QJsonArray>
 #include <QNetworkProxy>
 
+bool signed_Firmware = false;
+
 class FireBaseAccess;
 
 const char* FirmwareUpgradeController::_manifestFirmwareJsonKey =               "firmware";
@@ -195,6 +197,15 @@ void FirmwareUpgradeController::flash(AutoPilotStackType_t stackType,
 
 void FirmwareUpgradeController::flashFirmwareUrl(QString firmwareFlashUrl)
 {
+//    QFile apjFile(firmwareFlashUrl);
+//    if (apjFile.open(QIODevice::ReadOnly)) {
+//        QByteArray apjData = apjFile.readAll();
+//        QJsonDocument apjDoc = QJsonDocument::fromJson(apjData);
+//        QJsonObject apjObj = apjDoc.object();
+//        if (apjObj.contains("signed_firmware")){
+//            signed_Firmware = true;
+//        }
+//    }
     _firmwareFilename = firmwareFlashUrl;
     if (_bootloaderFound) {
         _downloadFirmware();
@@ -463,15 +474,24 @@ void FirmwareUpgradeController::_flashComplete(void)
     {
         delete _image;
         _image = nullptr;
+        if (signed_Firmware == true){
+            _appendStatusLog(tr("Checksum Matches"), true);
+            signed_Firmware = false;
+        }
+        else {
+            _appendStatusLog(tr("Checksum Not Matches"), true);
+            signed_Firmware = false;
+        }
 
-        //_appendStatusLog(tr("Checksum Matches,OK"), true);
         _appendStatusLog(tr("Upgrade complete"), true);
         _appendStatusLog("------------------------------------------", false);
 
         QString cd = QDate::currentDate().toString();
         QString ct = QTime::currentTime().toString();
+        QString model = file_model;
+        QString uin = file_uin;
 
-        QString cdt = cd + " " + " " + " " + " " + " " + ct;
+        QString cdt = cd + " " + " " + " " + " " + " " + ct + " " + " " + " " + " " + " " + model + " " + " " + " " + " " + " " + uin;
 
         QVariantMap newAddition;
 
@@ -482,6 +502,9 @@ void FirmwareUpgradeController::_flashComplete(void)
         QString link = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + usermail + "/FIRMWARELOG/" + cdt + "/.json";
 
         qDebug()<<"inside firmware " + usermail;
+        qDebug()<<"inside model "<< model;
+        qDebug()<<"inside uin " << uin;
+        qDebug()<<"cdt "<< cdt;
 
         QUrl userUrl = link;
         QNetworkRequest newAdditionRequest((QUrl(userUrl)));
@@ -559,9 +582,10 @@ void FirmwareUpgradeController::_appendStatusLog(const QString& text, bool criti
 void FirmwareUpgradeController::_errorCancel(const QString& msg)
 {
     _appendStatusLog(msg, false);
-    _appendStatusLog(tr("Checksum doesnot match,NOT OK"), true);
-    _appendStatusLog(tr("Upgrade cancelled"), true);
+    //_appendStatusLog(tr("Checksum doesnot match,NOT OK"), true);
+   // _appendStatusLog(tr("Upgrade cancelled"), true);
     _appendStatusLog("------------------------------------------", false);
+   // signed_Firmware = false;
     emit error();
     cancel();
     qgcApp()->toolbox()->linkManager()->setConnectionsAllowed();
@@ -569,8 +593,12 @@ void FirmwareUpgradeController::_errorCancel(const QString& msg)
 
     QString cd = QDate::currentDate().toString();
     QString ct = QTime::currentTime().toString();
+    QString model = file_model;
+    QString uin = file_uin;
 
-    QString cdt = cd + " " + ct;
+
+    QString cdt = cd + " " + " " + " " + " " + " " + ct + " " + " " + " " + " " + " " + model + " " + " " + " " + " " + " " + uin;
+    //QString cdt = cd + " " + ct;
     QVariantMap newAddition;
 
     newAddition["status"] = "Firmware Upgrade is unsuccessfull";

@@ -16,7 +16,7 @@ QString code_model_A_value2="f";
 QString code_model_B_value1="g";
 QString code_model_B_value2="h";
 
-int checkbox_compare = 0;
+int sound_flag = 0;
 
 FirmwareUpdate::FirmwareUpdate(QObject *parent)
     : QObject{parent}
@@ -106,6 +106,8 @@ void FirmwareUpdate::checksum_calculation_process_model_A(QString real_file_loca
            // code_checksum_calculated_model_A = code_checksum_calculated_model_A.trimmed();
             code_model_A_value2 = code_checksum_calculated_model_A;
     }
+    file.close();
+    file1.close();
     compare_file_model_A(real_file_location);
 }
 QString FirmwareUpdate::checksum_calculation_model_A()
@@ -142,18 +144,16 @@ void FirmwareUpdate::compare_file_model_A(QString real_file_location)
 
     qDebug() << "Code Generated"<< code_list1;
     qDebug() << "Code Calculated"<< code_list2;
-    checkbox_compare = 0;
 
     if((data_list1 == data_list2) && (code_list1 == code_list2)){
 
-        QMessageBox msgBox;
-        msgBox.setText("Model A - The checksum matches. Please continue");
-        msgBox.setStyleSheet("color:white;background:#05324D");
-        msgBox.setDefaultButton(QMessageBox::Ok);
-        msgBox.exec();
+//        QMessageBox msgBox;
+//        msgBox.setText("Model A - The checksum matches. Please continue");
+//        msgBox.setStyleSheet("color:white;background:#05324D");
+//        msgBox.setDefaultButton(QMessageBox::Ok);
+//        msgBox.exec();
         load_file_model_A(real_file_location);
-        qDebug()<< "Model A - The checksum matches. Please continue";
-        checkbox_compare = 1;
+        //qDebug()<< "Model A - The checksum matches. Please continue";
         return;
     }
     else {
@@ -169,9 +169,10 @@ void FirmwareUpdate::compare_file_model_A(QString real_file_location)
 }
 void FirmwareUpdate::load_file_model_A(QString real_file_location)
 {
-    //qDebug()<<"load file model A";
-    QString filename = real_file_location + "/GoDrona GCS/Telemetry/model_A.params";;
+    qDebug()<<"load file model A";
+    QString filename = real_file_location + "/GoDrona GCS/Telemetry/model_A.params";
 
+    qDebug()<< "filename :" << filename;
     QFile file(filename);
     if(file.exists()){
         model_A_firmware_load =filename;
@@ -339,18 +340,15 @@ void FirmwareUpdate::compare_file_model_B(QString real_file_location)
     qDebug() << "Code Generated"<< code_list1;
     qDebug() << "Code Calculated"<< code_list2;
 
-    checkbox_compare = 0;
-
     if((data_list1 == data_list2) && (code_list1 == code_list2)){
 
-        QMessageBox msgBox;
-        msgBox.setText("Model B - The checksum matches. Please continue");
-        msgBox.setStyleSheet("color:white;background:#05324D");
-        msgBox.setDefaultButton(QMessageBox::Ok);
-        msgBox.exec();
+//        QMessageBox msgBox;
+//        msgBox.setText("Model B - The checksum matches. Please continue");
+//        msgBox.setStyleSheet("color:white;background:#05324D");
+//        msgBox.setDefaultButton(QMessageBox::Ok);
+//        msgBox.exec();
         load_file_model_B(real_file_location);
-        qDebug()<< "Model B - The checksum matches. Please continue";
-        checkbox_compare = 1;
+        //qDebug()<< "Model B - The checksum matches. Please continue";
         return;
     }
     else {
@@ -388,4 +386,9 @@ void FirmwareUpdate::setfirmware_load_model_B(const QString &newfirmware_load_mo
       model_B_firmware_load = newfirmware_load_model_B;
 }
 
-
+int FirmwareUpdate::mute_sound(int audio_flag)
+{
+    sound_flag = audio_flag;
+    qDebug()<< "sound flag in mute_sound :" <<sound_flag;
+    return 1;
+}

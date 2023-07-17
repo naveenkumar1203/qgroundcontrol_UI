@@ -18,6 +18,7 @@ import QGroundControl.Palette               1.0
 import QGroundControl.MultiVehicleManager   1.0
 import QGroundControl.ScreenTools           1.0
 import QGroundControl.Controllers           1.0
+import FirmwareUpdate                       1.0
 
 Rectangle {
     id:     _root
@@ -35,6 +36,7 @@ Rectangle {
 
     QGCPalette { id: qgcPal }
     FontLoader { id: fixedFont}
+    FirmwareUpdate {id: firmware_update}
 
     /// Bottom single pixel divider
     Rectangle {
@@ -74,14 +76,14 @@ Rectangle {
             onClicked:              mainWindow.showToolSelectDialog()
         }
 
-//        Text{
-//            id: godrona
-//            text: "Go Drona  "
-//            font.bold: true
-//            color: "White"
-//            //font.family: "Mistral"
-//            font.pointSize: ScreenTools.defaultFontPointSize * 3  //: ScreenTools.largeFontPointSize
-//        }
+        //        Text{
+        //            id: godrona
+        //            text: "Go Drona  "
+        //            font.bold: true
+        //            color: "White"
+        //            //font.family: "Mistral"
+        //            font.pointSize: ScreenTools.defaultFontPointSize * 3  //: ScreenTools.largeFontPointSize
+        //        }
 
         Text{
             id: godrona
@@ -142,10 +144,13 @@ Rectangle {
                 anchors.fill: home_button
                 onClicked: {
                     console.log("i clicked home")
+                    firmware_update.mute_sound(0)
+                    QGroundControl.multiVehicleManager.vehicle_connect = false;
                     flightView.visible = false
                     landing_page_rectangle.visible =true
                     toolbar.visible = false
-                    //home_button.color = "#05324D"
+                    console.log("HOME CLICK ACTIVE VEHICLE"+_activeVehicle)
+                    //checkbox_compare = 0;
                 }
                 onPressed: {
                     home_button.color = "#031C28"
@@ -157,7 +162,28 @@ Rectangle {
             }
 
         }
+        function finishCloseProcess()
+        {
 
+
+        }
+
+        MessageDialog {
+            id:                 activeConnectionsCloseDialog
+            title:              qsTr("%1 close").arg("Active Vehicle")
+            text:               qsTr("There are still active connections to vehicles. Are you sure you want to exit?")
+            standardButtons:    StandardButton.Yes | StandardButton.Cancel
+            modality:           Qt.ApplicationModal
+            visible:            false
+            onYes:              finishCloseProcess()
+            function check() {
+                if (QGroundControl.multiVehicleManager.activeVehicle) {
+                    activeConnectionsCloseDialog.open()
+                } else {
+                    finishCloseProcess()
+                }
+            }
+        }
     }
 
 
@@ -245,6 +271,8 @@ Rectangle {
         width:          _activeVehicle ? _activeVehicle.loadProgress * parent.width : 0
         color:          qgcPal.colorGreen
         visible:        !largeProgressBar.visible
+        //        visible: (_activeVehicle && ((rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params === 1) ||
+        //                                    (rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params === 2)) && !largeProgressBar.visible)
     }
 
     // Large parameter download progress bar

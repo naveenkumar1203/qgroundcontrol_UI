@@ -35,6 +35,7 @@ class SettingsManager;
 class AirspaceManager;
 class ADSBVehicleManager;
 class TableModel;
+class FirmwareUpdate;
 #if defined(QGC_ENABLE_PAIRING)
 class PairingManager;
 #endif
@@ -71,6 +72,7 @@ public:
     AirspaceManager*            airspaceManager         () { return _airspaceManager; }
     ADSBVehicleManager*         adsbVehicleManager      () { return _adsbVehicleManager; }
     TableModel*                tablemodel             () { return _tableModelObject; }
+    FirmwareUpdate*             firmwareupdate          () {return _firmwareUpdateObject; }
 #if defined(QGC_ENABLE_PAIRING)
     PairingManager*             pairingManager          () { return _pairingManager; }
 #endif
@@ -112,6 +114,7 @@ private:
     AirspaceManager*            _airspaceManager        = nullptr;
     ADSBVehicleManager*         _adsbVehicleManager     = nullptr;
     TableModel*                _tableModelObject      = nullptr;
+    FirmwareUpdate*             _firmwareUpdateObject   = nullptr;
 
 #if defined(QGC_ENABLE_PAIRING)
     PairingManager*             _pairingManager         = nullptr;

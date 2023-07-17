@@ -13,6 +13,7 @@ import QtQuick.Dialogs 1.2
 import QGroundControl               1.0
 import QGroundControl.ScreenTools   1.0
 import QGroundControl.MultiVehicleManager   1.0
+
 //-------------------------------------------------------------------------
 //-- Toolbar Indicators
 Row {
@@ -37,34 +38,14 @@ Row {
     }
 
     Repeater {
+        id: toolRepeater
         model: _activeVehicle ? _activeVehicle.toolIndicators : []
         Loader {
             anchors.top:        parent.top
             anchors.bottom:     parent.bottom
             source:             modelData
-            //visible:            item.showIndicator
-            visible: {
-                if( _activeVehicle !== null && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params ===1 ||
-                 rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params ===2))
-                {
-                 return true;
-                }
-                else{
-                    if (globals.wrong_controller_flag === 1){
-
-                        wrong_controller.open()
-                        globals.wrong_controller_flag = 0
-                    }
-                    return false;
-                }
-            }
+            visible:            item.showIndicator
         }
-    }
-
-    MessageDialog
-    {
-        id: wrong_controller
-        text: qsTr("The Model and Controller does not match. Please contact OEM ")
     }
 
     Repeater {

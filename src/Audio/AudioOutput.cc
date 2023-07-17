@@ -15,6 +15,7 @@
 #include "QGCApplication.h"
 #include "QGC.h"
 #include "SettingsManager.h"
+#include "FirmwareUpdate.h"
 
 AudioOutput::AudioOutput(QGCApplication* app, QGCToolbox* toolbox)
     : QGCTool   (app, toolbox)
@@ -45,6 +46,7 @@ void AudioOutput::say(const QString& inText)
 
     bool muted = qgcApp()->toolbox()->settingsManager()->appSettings()->audioMuted()->rawValue().toBool();
     muted |= qgcApp()->runningUnitTests();
+    muted |= !sound_flag;
     if (!muted && !qgcApp()->runningUnitTests()) {
         QString text = fixTextMessageForAudio(inText);
         if(_tts->state() == QTextToSpeech::Speaking) {

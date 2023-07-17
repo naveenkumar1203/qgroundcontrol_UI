@@ -19,6 +19,7 @@
 #include "QmlObjectListModel.h"
 #include "QGCToolbox.h"
 #include "QGCLoggingCategory.h"
+#include "RpaDatabase.h"
 
 class FirmwarePluginManager;
 class FollowMe;
@@ -31,6 +32,8 @@ Q_DECLARE_LOGGING_CATEGORY(MultiVehicleManagerLog)
 class MultiVehicleManager : public QGCTool
 {
     Q_OBJECT
+
+    TableModel rpadatabase;
 
 public:
     MultiVehicleManager(QGCApplication* app, QGCToolbox* toolbox);
@@ -46,7 +49,7 @@ public:
     Q_PROPERTY(Vehicle*             offlineEditingVehicle           READ offlineEditingVehicle                                          CONSTANT)
     Q_PROPERTY(QGeoCoordinate       lastKnownLocation               READ lastKnownLocation                                              NOTIFY lastKnownLocationChanged) //< Current vehicles last know location
     Q_PROPERTY(int                  vehicleid_params                READ vehicleid_params               WRITE setVehicleid_params       NOTIFY vehicleid_paramsChanged)
-
+    Q_PROPERTY(bool                 vehicle_connect                 READ vehicle_connect                WRITE setVehicle_connect        NOTIFY vehicle_connectChanged)
     // Methods
 
     Q_INVOKABLE Vehicle* getVehicleById(int vehicleId);
@@ -78,6 +81,9 @@ public:
     void setVehicleid_params(int newVehicleid_params);
 
 
+    bool vehicle_connect() const;
+    void setVehicle_connect(bool newVehicle_connect);
+
 signals:
     void vehicleAdded                   (Vehicle* vehicle);
     void vehicleRemoved                 (Vehicle* vehicle);
@@ -91,6 +97,8 @@ signals:
 #endif
 
     void vehicleid_paramsChanged();
+
+    void vehicle_connectChanged();
 
 private slots:
     void _deleteVehiclePhase1           (Vehicle* vehicle);
@@ -128,6 +136,7 @@ private:
     static const char*  _gcsHeartbeatEnabledKey;
     int m_vehicleid_params;
 
+    bool m_vehicle_connect = false;
 };
 
 #endif

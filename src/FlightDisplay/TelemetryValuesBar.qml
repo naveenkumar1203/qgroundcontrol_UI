@@ -30,11 +30,7 @@ Rectangle {
     }
 
     property var    _activeVehicle:     QGroundControl.multiVehicleManager.activeVehicle
-    //visible: _activeVehicle !== null
-    visible:_activeVehicle !== null && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params===1 ||
-            rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params===2)
-
-
+    visible: _activeVehicle !== null
 
     property bool       bottomMode: true
 

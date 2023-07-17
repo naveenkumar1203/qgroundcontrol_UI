@@ -808,7 +808,7 @@ QQuickWindow* QGCApplication::mainRootWindow()
 void QGCApplication::showSetupView()
 {
     if(_rootQmlObject()) {
-        QMetaObject::invokeMethod(_rootQmlObject(), "showSetupTool");
+       // QMetaObject::invokeMethod(_rootQmlObject(), "showSetupTool");
     }
 }
 

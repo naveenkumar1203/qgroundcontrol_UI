@@ -69,95 +69,103 @@ void MultiVehicleManager::setToolbox(QGCToolbox *toolbox)
 
 void MultiVehicleManager::_vehicleHeartbeatInfo(LinkInterface* link, int vehicleId, int componentId, int vehicleFirmwareType, int vehicleType)
 {
-    // Special case PX4 Flow since depending on firmware it can have different settings. We force to the PX4 Firmware settings.
-    if (link->isPX4Flow()) {
-        vehicleId = 81;
-        componentId = 50;//MAV_COMP_ID_AUTOPILOT1;
-        vehicleFirmwareType = MAV_AUTOPILOT_GENERIC;
-        vehicleType = 0;
-    }
+    QString model_name = rpadatabase.model();
 
-    if (componentId != MAV_COMP_ID_AUTOPILOT1) {
-        // Special case for PX4 Flow
-        if (vehicleId != 81 || componentId != 50) {
-            // Don't create vehicles for components other than the autopilot
-            qCDebug(MultiVehicleManagerLog()) << "Ignoring heartbeat from unknown component port:vehicleId:componentId:fwType:vehicleType"
+    if(((model_name == "Model A") && (vehicleId == 1)) ||((model_name == "Model B") && (vehicleId == 2)))
+    {
+        if (this->vehicle_connect() == true)
+        {
+            // Special case PX4 Flow since depending on firmware it can have different settings. We force to the PX4 Firmware settings.
+            if (link->isPX4Flow()) {
+                vehicleId = 81;
+                componentId = 50;//MAV_COMP_ID_AUTOPILOT1;
+                vehicleFirmwareType = MAV_AUTOPILOT_GENERIC;
+                vehicleType = 0;
+            }
+
+            if (componentId != MAV_COMP_ID_AUTOPILOT1) {
+                // Special case for PX4 Flow
+                if (vehicleId != 81 || componentId != 50) {
+                    // Don't create vehicles for components other than the autopilot
+                    qCDebug(MultiVehicleManagerLog()) << "Ignoring heartbeat from unknown component port:vehicleId:componentId:fwType:vehicleType"
+                                                      << link->linkConfiguration()->name()
+                                                      << vehicleId
+                                                      << componentId
+                                                      << vehicleFirmwareType
+                                                      << vehicleType;
+                    return;
+                }
+            }
+
+#if !defined(NO_ARDUPILOT_DIALECT)
+            // When you flash a new ArduCopter it does not set a FRAME_CLASS for some reason. This is the only ArduPilot variant which
+            // works this way. Because of this the vehicle type is not known at first connection. In order to make QGC work reasonably
+            // we assume ArduCopter for this case.
+            if (vehicleType == 0 && vehicleFirmwareType == MAV_AUTOPILOT_ARDUPILOTMEGA) {
+                vehicleType = MAV_TYPE_QUADROTOR;
+            }
+#endif
+
+            if (_vehicles.count() > 0 && !qgcApp()->toolbox()->corePlugin()->options()->multiVehicleEnabled()) {
+                return;
+            }
+            if (_ignoreVehicleIds.contains(vehicleId) || getVehicleById(vehicleId) || vehicleId == 0) {
+                return;
+            }
+
+            switch (vehicleType) {
+            case MAV_TYPE_GCS:
+            case MAV_TYPE_ONBOARD_CONTROLLER:
+            case MAV_TYPE_GIMBAL:
+            case MAV_TYPE_ADSB:
+                // These are not vehicles, so don't create a vehicle for them
+                return;
+            default:
+                // All other MAV_TYPEs create vehicles
+                break;
+            }
+
+            qCDebug(MultiVehicleManagerLog()) << "Adding new vehicle link:vehicleId:componentId:vehicleFirmwareType:vehicleType "
                                               << link->linkConfiguration()->name()
                                               << vehicleId
                                               << componentId
                                               << vehicleFirmwareType
                                               << vehicleType;
-            return;
-        }
-    }
 
-#if !defined(NO_ARDUPILOT_DIALECT)
-    // When you flash a new ArduCopter it does not set a FRAME_CLASS for some reason. This is the only ArduPilot variant which
-    // works this way. Because of this the vehicle type is not known at first connection. In order to make QGC work reasonably
-    // we assume ArduCopter for this case.
-    if (vehicleType == 0 && vehicleFirmwareType == MAV_AUTOPILOT_ARDUPILOTMEGA) {
-        vehicleType = MAV_TYPE_QUADROTOR;
-    }
-#endif
+            if (vehicleId == _mavlinkProtocol->getSystemId()) {
+                _app->showAppMessage(tr("Warning: A vehicle is using the same system id as %1: %2").arg(qgcApp()->applicationName()).arg(vehicleId));
+            }
 
-    if (_vehicles.count() > 0 && !qgcApp()->toolbox()->corePlugin()->options()->multiVehicleEnabled()) {
-        return;
-    }
-    if (_ignoreVehicleIds.contains(vehicleId) || getVehicleById(vehicleId) || vehicleId == 0) {
-        return;
-    }
+            Vehicle* vehicle = new Vehicle(link, vehicleId, componentId, (MAV_AUTOPILOT)vehicleFirmwareType, (MAV_TYPE)vehicleType, _firmwarePluginManager, _joystickManager);
+            connect(vehicle,                        &Vehicle::requestProtocolVersion,           this, &MultiVehicleManager::_requestProtocolVersion);
+            connect(vehicle->vehicleLinkManager(),  &VehicleLinkManager::allLinksRemoved,       this, &MultiVehicleManager::_deleteVehiclePhase1);
+            connect(vehicle->parameterManager(),    &ParameterManager::parametersReadyChanged,  this, &MultiVehicleManager::_vehicleParametersReadyChanged);
 
-    switch (vehicleType) {
-    case MAV_TYPE_GCS:
-    case MAV_TYPE_ONBOARD_CONTROLLER:
-    case MAV_TYPE_GIMBAL:
-    case MAV_TYPE_ADSB:
-        // These are not vehicles, so don't create a vehicle for them
-        return;
-    default:
-        // All other MAV_TYPEs create vehicles
-        break;
-    }
+            _vehicles.append(vehicle);
 
-    qCDebug(MultiVehicleManagerLog()) << "Adding new vehicle link:vehicleId:componentId:vehicleFirmwareType:vehicleType "
-                                      << link->linkConfiguration()->name()
-                                      << vehicleId
-                                      << componentId
-                                      << vehicleFirmwareType
-                                      << vehicleType;
+            // Send QGC heartbeat ASAP, this allows PX4 to start accepting commands
+            _sendGCSHeartbeat();
 
-    if (vehicleId == _mavlinkProtocol->getSystemId()) {
-        _app->showAppMessage(tr("Warning: A vehicle is using the same system id as %1: %2").arg(qgcApp()->applicationName()).arg(vehicleId));
-    }
+            qgcApp()->toolbox()->settingsManager()->appSettings()->defaultFirmwareType()->setRawValue(vehicleFirmwareType);
 
-    Vehicle* vehicle = new Vehicle(link, vehicleId, componentId, (MAV_AUTOPILOT)vehicleFirmwareType, (MAV_TYPE)vehicleType, _firmwarePluginManager, _joystickManager);
-    connect(vehicle,                        &Vehicle::requestProtocolVersion,           this, &MultiVehicleManager::_requestProtocolVersion);
-    connect(vehicle->vehicleLinkManager(),  &VehicleLinkManager::allLinksRemoved,       this, &MultiVehicleManager::_deleteVehiclePhase1);
-    connect(vehicle->parameterManager(),    &ParameterManager::parametersReadyChanged,  this, &MultiVehicleManager::_vehicleParametersReadyChanged);
+            emit vehicleAdded(vehicle);
 
-    _vehicles.append(vehicle);
-
-    // Send QGC heartbeat ASAP, this allows PX4 to start accepting commands
-    _sendGCSHeartbeat();
-
-    qgcApp()->toolbox()->settingsManager()->appSettings()->defaultFirmwareType()->setRawValue(vehicleFirmwareType);
-
-    emit vehicleAdded(vehicle);
-
-    if (_vehicles.count() > 1) {
-        qgcApp()->showAppMessage(tr("Connected to Vehicle %1").arg(vehicleId));
-    } else {
-        setActiveVehicle(vehicle);
-    }
+            if (_vehicles.count() > 1) {
+                qgcApp()->showAppMessage(tr("Connected to Vehicle %1").arg(vehicleId));
+            } else {
+                setActiveVehicle(vehicle);
+            }
 
 #if defined (__ios__) || defined(__android__)
-    if(_vehicles.count() == 1) {
-        //-- Once a vehicle is connected, keep screen from going off
-        qCDebug(MultiVehicleManagerLog) << "QAndroidJniObject::keepScreenOn";
-        MobileScreenMgr::setKeepScreenOn(true);
-    }
+            if(_vehicles.count() == 1) {
+                //-- Once a vehicle is connected, keep screen from going off
+                qCDebug(MultiVehicleManagerLog) << "QAndroidJniObject::keepScreenOn";
+                MobileScreenMgr::setKeepScreenOn(true);
+            }
 #endif
 
+        }
+    }
 }
 
 /// This slot is connected to the Vehicle::requestProtocolVersion signal such that the vehicle manager
@@ -411,4 +419,17 @@ void MultiVehicleManager::setVehicleid_params(int newVehicleid_params)
         return;
     m_vehicleid_params = newVehicleid_params;
     emit vehicleid_paramsChanged();
+}
+
+bool MultiVehicleManager::vehicle_connect() const
+{
+    return m_vehicle_connect;
+}
+
+void MultiVehicleManager::setVehicle_connect(bool newVehicle_connect)
+{
+    if (m_vehicle_connect == newVehicle_connect)
+        return;
+    m_vehicle_connect = newVehicle_connect;
+    emit vehicle_connectChanged();
 }

@@ -122,6 +122,8 @@ const char* Vehicle::_estimatorStatusFactGroupName =    "estimatorStatus";
 const char* Vehicle::_terrainFactGroupName =            "terrain";
 const char* Vehicle::_hygrometerFactGroupName =         "hygrometer";
 
+
+
 // Standard connected vehicle
 Vehicle::Vehicle(LinkInterface*             link,
                  int                        vehicleId,
@@ -2351,9 +2353,12 @@ void Vehicle::virtualTabletJoystickValue(double roll, double pitch, double yaw, 
 
 void Vehicle::_say(const QString& text)
 {
-    if(checkbox_compare == 1){
+    //int sound_flag = _toolbox->firmwareupdate()->sound();
+    qDebug()<< "Entering _say function in vehicle.cc file as soundcheck :"<<sound_flag;
+    //if(sound_flag == 1){
+        qDebug()<< "inside _say function soundcheck :"<<sound_flag;
         _toolbox->audioOutput()->say(text.toLower());
-    }
+    //}
 }
 
 bool Vehicle::airship() const
@@ -3801,7 +3806,7 @@ bool Vehicle::isInitialConnectComplete() const
 
 void Vehicle::_initializeCsv()
 {
-    qDebug()<<"Inside initialize csv";
+    //qDebug()<<"Inside initialize csv";
     if(!_toolbox->settingsManager()->appSettings()->saveCsvTelemetry()->rawValue().toBool()){
         return;
     }
@@ -3847,7 +3852,7 @@ void Vehicle::_initializeCsv()
     }
     qCDebug(VehicleLog) << "Facts logged to csv:" << allFactNames;
     stream << "Timestamp," << allFactNames.join(",") << "\n";
-    qDebug()<<"inside initialise csv";
+    //qDebug()<<"inside initialise csv";
 }
 QString Vehicle::flightlog_filename() const
 {
@@ -3865,7 +3870,7 @@ void Vehicle::setFlightlog_filename(const QString &newFlightlog_filename)
 
 void Vehicle::_writeCsvLine()
 {
-    qDebug()<<"inside write csv";
+    //qDebug()<<"inside write csv";
     //RpaDatabase obj;
 
     // Only save the logs after the the vehicle gets armed, unless "Save logs even if vehicle was not armed" is checked
@@ -4124,3 +4129,5 @@ void Vehicle::triggerSimpleCamera()
                    0.0, 0.0, 0.0, 0.0,          // param 1-4 unused
                    1.0);                        // trigger camera
 }
+
+

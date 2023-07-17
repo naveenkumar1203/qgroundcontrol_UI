@@ -48,8 +48,7 @@ RowLayout {
 
         function mainStatusText() {
             var statusText
-            if (_activeVehicle && rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params ===1 ||
-                                  rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params ===2)
+            if (_activeVehicle)
                 {
                 if (_communicationLost) {
                     fixedFont.source = "/fonts/ARLRDBD"
@@ -99,13 +98,12 @@ RowLayout {
         }
 
         MouseArea {
+            id: mousearea
             anchors.left:           parent.left
             anchors.right:          parent.right
             anchors.verticalCenter: parent.verticalCenter
             height:                 _root.height
-            //enabled:                _activeVehicle
-            enabled:  _activeVehicle !== null && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params ===1 ||
-                                                  rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params ===2)
+            enabled:                _activeVehicle
             onClicked:              mainWindow.showIndicatorPopup(mainStatusLabel, sensorStatusInfoComponent)
         }
     }
@@ -139,9 +137,8 @@ RowLayout {
         verticalAlignment:      Text.AlignVCenter
         font.pointSize:         _vehicleInAir ?  ScreenTools.largeFontPointSize : ScreenTools.defaultFontPointSize
         mouseAreaLeftMargin:    -(flightModeMenu.x - flightModeIcon.x)
-        //visible:                _activeVehicle
-        visible:  _activeVehicle !== null && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params === 1 ||
-                                              rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params === 2)
+        visible:                _activeVehicle
+
     }
 
     Item {

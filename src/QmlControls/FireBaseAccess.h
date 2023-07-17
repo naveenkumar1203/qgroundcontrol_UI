@@ -8,6 +8,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QByteArray>
+//#include <QNetworkConfigurationManager>
 #include "QNetworkAccessManagerWithPatch.h"
 #include "RpaDatabase.h"
 #include "FirmwareUpgradeController.h"
@@ -39,6 +40,8 @@ public:
     void password_reset_parseResponse(const QByteArray &response);
 
     void profile_update_parse(const QByteArray &resposne);
+
+    //Q_INVOKABLE void online();
 
     Q_INVOKABLE void new_user_registration(const QString &industry,
                                            const QString &role,

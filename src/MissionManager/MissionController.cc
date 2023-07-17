@@ -32,6 +32,7 @@
 #include "QGCCorePlugin.h"
 #include "TakeoffMissionItem.h"
 #include "PlanViewSettings.h"
+#include "FirmwareUpdate.h"
 
 #define UPDATE_TIMEOUT 5000 ///< How often we check for bounding box changes
 
@@ -1256,6 +1257,7 @@ void MissionController::_recalcROISpecialVisuals(void)
 
 void MissionController::_recalcFlightPathSegments(void)
 {
+    qDebug()<<"in mission Controller";
     VisualItemPair      lastSegmentVisualItemPair;
     int                 segmentCount =              0;
     bool                firstCoordinateNotFound =   true;
@@ -2367,173 +2369,174 @@ bool MissionController::_isROICancelItem(SimpleMissionItem* simpleItem)
 
 void MissionController::setCurrentPlanViewSeqNum(int sequenceNumber, bool force)
 {
-    if (_visualItems && (force || sequenceNumber != _currentPlanViewSeqNum)) {
-        qDebug() << "setCurrentPlanViewSeqNum";
-        bool    foundLand =             false;
-        int     takeoffSeqNum =         -1;
-        int     landSeqNum =            -1;
-        int     lastFlyThroughSeqNum =  -1;
+    //qDebug()<<"in setCurrentplanviewseqnum";
+        if (_visualItems && (force || sequenceNumber != _currentPlanViewSeqNum)) {
+            qDebug() << "setCurrentPlanViewSeqNum";
+            bool    foundLand =             false;
+            int     takeoffSeqNum =         -1;
+            int     landSeqNum =            -1;
+            int     lastFlyThroughSeqNum =  -1;
 
-        _splitSegment =                 nullptr;
-        _currentPlanViewItem  =         nullptr;
-        _currentPlanViewSeqNum =        -1;
-        _currentPlanViewVIIndex =       -1;
-        _onlyInsertTakeoffValid =       !_planViewSettings->takeoffItemNotRequired()->rawValue().toBool() && _visualItems->count() == 1; // First item must be takeoff
-        _isInsertTakeoffValid =         true;
-        _isInsertLandValid =            true;
-        _isROIActive =                  false;
-        _isROIBeginCurrentItem =        false;
-        _flyThroughCommandsAllowed =    true;
-        _previousCoordinate =           QGeoCoordinate();
+            _splitSegment =                 nullptr;
+            _currentPlanViewItem  =         nullptr;
+            _currentPlanViewSeqNum =        -1;
+            _currentPlanViewVIIndex =       -1;
+            _onlyInsertTakeoffValid =       !_planViewSettings->takeoffItemNotRequired()->rawValue().toBool() && _visualItems->count() == 1; // First item must be takeoff
+            _isInsertTakeoffValid =         true;
+            _isInsertLandValid =            true;
+            _isROIActive =                  false;
+            _isROIBeginCurrentItem =        false;
+            _flyThroughCommandsAllowed =    true;
+            _previousCoordinate =           QGeoCoordinate();
 
-        for (int viIndex=0; viIndex<_visualItems->count(); viIndex++) {
-            VisualMissionItem*  pVI =        qobject_cast<VisualMissionItem*>(_visualItems->get(viIndex));
-            SimpleMissionItem*  simpleItem = qobject_cast<SimpleMissionItem*>(pVI);
-            int                 currentSeqNumber = pVI->sequenceNumber();
+            for (int viIndex=0; viIndex<_visualItems->count(); viIndex++) {
+                VisualMissionItem*  pVI =        qobject_cast<VisualMissionItem*>(_visualItems->get(viIndex));
+                SimpleMissionItem*  simpleItem = qobject_cast<SimpleMissionItem*>(pVI);
+                int                 currentSeqNumber = pVI->sequenceNumber();
 
-            if (sequenceNumber != 0 && currentSeqNumber <= sequenceNumber) {
-                if (pVI->specifiesCoordinate() && !pVI->isStandaloneCoordinate()) {
-                    // Coordinate based flight commands prior to where the takeoff would be inserted
+                if (sequenceNumber != 0 && currentSeqNumber <= sequenceNumber) {
+                    if (pVI->specifiesCoordinate() && !pVI->isStandaloneCoordinate()) {
+                        // Coordinate based flight commands prior to where the takeoff would be inserted
+                        _isInsertTakeoffValid = false;
+                    }
+                }
+
+                if (qobject_cast<TakeoffMissionItem*>(pVI)) {
+                    takeoffSeqNum = currentSeqNumber;
                     _isInsertTakeoffValid = false;
                 }
-            }
 
-            if (qobject_cast<TakeoffMissionItem*>(pVI)) {
-                takeoffSeqNum = currentSeqNumber;
-                _isInsertTakeoffValid = false;
-            }
-
-            if (!foundLand) {
-                if (simpleItem) {
-                    switch (simpleItem->mavCommand()) {
-                    case MAV_CMD_NAV_LAND:
-                    case MAV_CMD_NAV_VTOL_LAND:
-                    case MAV_CMD_DO_LAND_START:
-                    case MAV_CMD_NAV_RETURN_TO_LAUNCH:
-                        foundLand = true;
-                        landSeqNum = currentSeqNumber;
-                        break;
-                    default:
-                        break;
-                    }
-                } else {
-                    FixedWingLandingComplexItem* fwLanding = qobject_cast<FixedWingLandingComplexItem*>(pVI);
-                    if (fwLanding) {
-                        foundLand = true;
-                        landSeqNum = currentSeqNumber;
-                    }
-                }
-            }
-
-            if (simpleItem) {
-                // Remember previous coordinate
-                if (currentSeqNumber < sequenceNumber && simpleItem->specifiesCoordinate() && !simpleItem->isStandaloneCoordinate()) {
-                    _previousCoordinate = simpleItem->coordinate();
-                }
-
-                // ROI state handling
-                if (currentSeqNumber <= sequenceNumber) {
-                    if (_isROIActive) {
-                        if (_isROICancelItem(simpleItem)) {
-                            _isROIActive = false;
+                if (!foundLand) {
+                    if (simpleItem) {
+                        switch (simpleItem->mavCommand()) {
+                        case MAV_CMD_NAV_LAND:
+                        case MAV_CMD_NAV_VTOL_LAND:
+                        case MAV_CMD_DO_LAND_START:
+                        case MAV_CMD_NAV_RETURN_TO_LAUNCH:
+                            foundLand = true;
+                            landSeqNum = currentSeqNumber;
+                            break;
+                        default:
+                            break;
                         }
                     } else {
-                        if (_isROIBeginItem(simpleItem)) {
-                            _isROIActive = true;
+                        FixedWingLandingComplexItem* fwLanding = qobject_cast<FixedWingLandingComplexItem*>(pVI);
+                        if (fwLanding) {
+                            foundLand = true;
+                            landSeqNum = currentSeqNumber;
                         }
                     }
                 }
-                if (currentSeqNumber == sequenceNumber && _isROIBeginItem(simpleItem)) {
-                    _isROIBeginCurrentItem = true;
-                }
-            }
 
-            if (viIndex != 0) {
-                // Complex items are assumed to be fly through
-                if (!simpleItem || (simpleItem->specifiesCoordinate() && !simpleItem->isStandaloneCoordinate())) {
-                    lastFlyThroughSeqNum = currentSeqNumber;
-                }
-            }
+                if (simpleItem) {
+                    // Remember previous coordinate
+                    if (currentSeqNumber < sequenceNumber && simpleItem->specifiesCoordinate() && !simpleItem->isStandaloneCoordinate()) {
+                        _previousCoordinate = simpleItem->coordinate();
+                    }
 
-            if (currentSeqNumber == sequenceNumber) {
-                pVI->setIsCurrentItem(true);
-                pVI->setHasCurrentChildItem(false);
-
-                _currentPlanViewItem  = pVI;
-                _currentPlanViewSeqNum = sequenceNumber;
-                _currentPlanViewVIIndex = viIndex;
-
-                if (pVI->specifiesCoordinate()) {
-                    if (!pVI->isStandaloneCoordinate()) {
-                        // Determine split segment used to display line split editing ui.
-                        for (int j=viIndex-1; j>0; j--) {
-                            VisualMissionItem* pPrev = qobject_cast<VisualMissionItem*>(_visualItems->get(j));
-                            if (pPrev->specifiesCoordinate() && !pPrev->isStandaloneCoordinate()) {
-                                qDebug() << "Found";
-                                VisualItemPair splitPair(pPrev, pVI);
-                                if (_flightPathSegmentHashTable.contains(splitPair)) {
-                                    qDebug() << "Split segment added in setCurrentPlanViewSeqNum";
-                                    _splitSegment = _flightPathSegmentHashTable[splitPair];
-                                } else {
-                                    // The recalc of flight path segments hasn't happened yet since it is delayed and compressed.
-                                    // So we need to register the fact that we need a split segment update and it will happen in the recalc instead.
-                                    qDebug() << "Delayed split";
-                                    _delayedSplitSegmentUpdate = true;
-                                }
-                                break;
+                    // ROI state handling
+                    if (currentSeqNumber <= sequenceNumber) {
+                        if (_isROIActive) {
+                            if (_isROICancelItem(simpleItem)) {
+                                _isROIActive = false;
+                            }
+                        } else {
+                            if (_isROIBeginItem(simpleItem)) {
+                                _isROIActive = true;
                             }
                         }
                     }
-                } else if (pVI->parentItem()) {
-                    pVI->parentItem()->setHasCurrentChildItem(true);
+                    if (currentSeqNumber == sequenceNumber && _isROIBeginItem(simpleItem)) {
+                        _isROIBeginCurrentItem = true;
+                    }
                 }
-            } else {
-                pVI->setIsCurrentItem(false);
-            }
-        }
 
-        if (takeoffSeqNum != -1) {
-            // Takeoff item was found which means mission starts from ground
-            if (sequenceNumber < takeoffSeqNum) {
-                // Land is only valid after the takeoff item.
+                if (viIndex != 0) {
+                    // Complex items are assumed to be fly through
+                    if (!simpleItem || (simpleItem->specifiesCoordinate() && !simpleItem->isStandaloneCoordinate())) {
+                        lastFlyThroughSeqNum = currentSeqNumber;
+                    }
+                }
+
+                if (currentSeqNumber == sequenceNumber) {
+                    pVI->setIsCurrentItem(true);
+                    pVI->setHasCurrentChildItem(false);
+
+                    _currentPlanViewItem  = pVI;
+                    _currentPlanViewSeqNum = sequenceNumber;
+                    _currentPlanViewVIIndex = viIndex;
+
+                    if (pVI->specifiesCoordinate()) {
+                        if (!pVI->isStandaloneCoordinate()) {
+                            // Determine split segment used to display line split editing ui.
+                            for (int j=viIndex-1; j>0; j--) {
+                                VisualMissionItem* pPrev = qobject_cast<VisualMissionItem*>(_visualItems->get(j));
+                                if (pPrev->specifiesCoordinate() && !pPrev->isStandaloneCoordinate()) {
+                                    qDebug() << "Found";
+                                    VisualItemPair splitPair(pPrev, pVI);
+                                    if (_flightPathSegmentHashTable.contains(splitPair)) {
+                                        qDebug() << "Split segment added in setCurrentPlanViewSeqNum";
+                                        _splitSegment = _flightPathSegmentHashTable[splitPair];
+                                    } else {
+                                        // The recalc of flight path segments hasn't happened yet since it is delayed and compressed.
+                                        // So we need to register the fact that we need a split segment update and it will happen in the recalc instead.
+                                        qDebug() << "Delayed split";
+                                        _delayedSplitSegmentUpdate = true;
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    } else if (pVI->parentItem()) {
+                        pVI->parentItem()->setHasCurrentChildItem(true);
+                    }
+                } else {
+                    pVI->setIsCurrentItem(false);
+                }
+            }
+
+            if (takeoffSeqNum != -1) {
+                // Takeoff item was found which means mission starts from ground
+                if (sequenceNumber < takeoffSeqNum) {
+                    // Land is only valid after the takeoff item.
+                    _isInsertLandValid = false;
+                    // Fly through commands are not allowed prior to the takeoff command
+                    _flyThroughCommandsAllowed = false;
+                }
+            }
+
+            if (lastFlyThroughSeqNum != -1) {
+                // Land item must be after any fly through coordinates
+                if (sequenceNumber < lastFlyThroughSeqNum) {
+                    _isInsertLandValid = false;
+                }
+            }
+
+            if (foundLand) {
+                // Can't have more than one land sequence
                 _isInsertLandValid = false;
-                // Fly through commands are not allowed prior to the takeoff command
-                _flyThroughCommandsAllowed = false;
+                if (sequenceNumber >= landSeqNum) {
+                    // Can't have fly through commands after a land item
+                    _flyThroughCommandsAllowed = false;
+                }
             }
+
+            // These are not valid when only takeoff is allowed
+            _isInsertLandValid =            _isInsertLandValid && !_onlyInsertTakeoffValid;
+            _flyThroughCommandsAllowed =    _flyThroughCommandsAllowed && !_onlyInsertTakeoffValid;
+
+            emit currentPlanViewSeqNumChanged();
+            emit currentPlanViewVIIndexChanged();
+            emit currentPlanViewItemChanged();
+            emit splitSegmentChanged();
+            emit onlyInsertTakeoffValidChanged();
+            emit isInsertTakeoffValidChanged();
+            emit isInsertLandValidChanged();
+            emit isROIActiveChanged();
+            emit isROIBeginCurrentItemChanged();
+            emit flyThroughCommandsAllowedChanged();
+            emit previousCoordinateChanged();
         }
-
-        if (lastFlyThroughSeqNum != -1) {
-            // Land item must be after any fly through coordinates
-            if (sequenceNumber < lastFlyThroughSeqNum) {
-                _isInsertLandValid = false;
-            }
-        }
-
-        if (foundLand) {
-            // Can't have more than one land sequence
-            _isInsertLandValid = false;
-            if (sequenceNumber >= landSeqNum) {
-                // Can't have fly through commands after a land item
-                _flyThroughCommandsAllowed = false;
-            }
-        }
-
-        // These are not valid when only takeoff is allowed
-        _isInsertLandValid =            _isInsertLandValid && !_onlyInsertTakeoffValid;
-        _flyThroughCommandsAllowed =    _flyThroughCommandsAllowed && !_onlyInsertTakeoffValid;
-
-        emit currentPlanViewSeqNumChanged();
-        emit currentPlanViewVIIndexChanged();
-        emit currentPlanViewItemChanged();
-        emit splitSegmentChanged();
-        emit onlyInsertTakeoffValidChanged();
-        emit isInsertTakeoffValidChanged();
-        emit isInsertLandValidChanged();
-        emit isROIActiveChanged();
-        emit isROIBeginCurrentItemChanged();
-        emit flyThroughCommandsAllowedChanged();
-        emit previousCoordinateChanged();
-    }
 }
 
 void MissionController::_updateTimeout()

@@ -4,12 +4,14 @@
 #include <QDebug>
 #include <QJsonArray>
 #include <QTimer>
+#include <QStandardPaths>
+#include <QTextCodec>
 
 QString uin_number;
 QString user;
 
-QString file_model="";
-QString file_uin;
+QString file_model=" ";
+QString file_uin = " ";
 
 QString uin_number_selected;
 
@@ -28,7 +30,6 @@ TableModel::~TableModel()
 
 void TableModel::network_reply_read()
 {
-    //qDebug()<<m_networkreply->readAll();
     QByteArray response = m_networkreply->readAll();
     QJsonDocument doc = QJsonDocument::fromJson(response);
     QJsonObject object = doc.object();
@@ -45,48 +46,36 @@ void TableModel::network_reply_read()
 
 void TableModel::network_reply_read_addData()
 {
-    //qDebug()<< m_networkreply->readAll();
     QByteArray response = m_networkreply->readAll();
     QJsonDocument doc = QJsonDocument::fromJson(response);
     QJsonObject object = doc.object();
-    //QList<QJsonObject> jsonObjectList;
-    qDebug()<<"inside add data read";
     uinlist.clear();
     typelist.clear();
     modellist.clear();
     dronelist.clear();
-    qDebug()<<"cleared list";
     foreach(const QString& key, object.keys()) {
         QJsonValue value = object.value(key);
         QJsonObject jsonObject = value.toObject();
-        qDebug()<<"The Value for Key is" << jsonObject;
         foreach (const QString& key1, jsonObject.keys()) {
             if(key1 == "Model"){
                 QJsonValue value = jsonObject.value("Model");
                 modellist.append(value.toString());
-                qDebug()<<"Model appended";
             }
             if(key1 == "Type"){
                 QJsonValue value = jsonObject.value("Type");
                 typelist.append(value.toString());
-                qDebug()<<"type appended";
             }
             if(key1 == "UINNO"){
                 QJsonValue value = jsonObject.value("UINNO");
                 uinlist.append(value.toString());
-                qDebug()<<"uin appended";
             }
             if(key1 == "Name"){
                 QJsonValue value = jsonObject.value("Name");
                 dronelist.append(value.toString());
-                qDebug()<<"drone list appended";
             }
             //dronelist.append("dji1");
         }
     }
-    qDebug()<<uinlist;
-    qDebug()<<typelist;
-    qDebug()<<modellist;
 
     setData(index(0,0),"1",2);
 }
@@ -125,9 +114,6 @@ QVariant TableModel::data(const QModelIndex & index, int role) const {
 
     if (index.row() < 0 || index.row() >= typelist.count())
         return QVariant();
-
-    //    if (role == CheckBoxRole)
-    //        return typelist[index.row()];
 
     else if (role== TypeRole){
         return typelist[index.row()]; //.isEnabled();
@@ -200,16 +186,6 @@ void TableModel::manageRpaClicked(const QString &userName)
     getData();
 }
 
-/*void TableModel::modelSelected(const QString &number)
-{
-    qDebug()<<"in model selected";
-
-    qDebug()<<uinlist.at(number.toInt());
-    m_uin = uinlist.at(number.toInt());
-    qDebug()<<modellist.at(number.toInt());
-    m_model = modellist.at(number.toInt());
-}*/
-
 void TableModel::modelSelected(const QString &number)
 {
     uin_number_selected = number;
@@ -227,6 +203,8 @@ void TableModel::modelSelected_list()
     typelist.clear();
     modellist.clear();
     dronelist.clear();
+    file_model.clear();
+    file_uin.clear();
 
     foreach(const QString& key, object.keys()) {
         QJsonValue value = object.value(key);
@@ -235,17 +213,14 @@ void TableModel::modelSelected_list()
             if(key1 == "Model"){
                 QJsonValue value = jsonObject.value("Model");
                 modellist.append(value.toString());
-                //qDebug()<<"Model appended";
             }
             if(key1 == "Type"){
                 QJsonValue value = jsonObject.value("Type");
                 typelist.append(value.toString());
-                //qDebug()<<"type appended";
             }
             if(key1 == "UINNO"){
                 QJsonValue value = jsonObject.value("UINNO");
                 uinlist.append(value.toString());
-                //qDebug()<<"uin appended";
             }
             if(key1 == "Name"){
                 QJsonValue value = jsonObject.value("Name");
@@ -260,6 +235,7 @@ void TableModel::modelSelected_list()
     m_model = modellist.at(uin_number_selected.toInt());
     file_model = m_model;
     file_uin = m_uin;
+
     emit modelChanged();
 
 }
@@ -289,11 +265,8 @@ void TableModel::upload_function(const QString &firebase_file_name, const QStrin
     reply = m_networkAccessManager->post(request,file);
     connect(reply,&QNetworkReply::finished,[reply, firebase_folder_name/*this*/](){
         if(reply->error() != QNetworkReply::NoError){
-            qDebug()<<"if msg" << " " << reply->error();
-            qDebug()<<reply->errorString();
         }
         else{
-            qDebug()<<"file uploaded";
         }
     });
 }
@@ -307,7 +280,6 @@ void TableModel::list_function(const QString &firebase_folder_name)
     QNetworkReply *reply;
     reply = m_networkAccessManager->get(request);
     connect(reply,&QNetworkReply::finished,[reply,firebase_folder_name, this](){
-        //qDebug()<<"list is " <<reply->readAll();
         QByteArray response = reply->readAll();
         QJsonDocument doc = QJsonDocument::fromJson(response);
         QJsonObject object = doc.object();
@@ -315,13 +287,10 @@ void TableModel::list_function(const QString &firebase_folder_name)
         for (const QJsonValue& item : items) {
             QString name = item.toObject()["name"].toString();
             if (name.endsWith(".csv")) {
-                //qDebug()<<"total file name" << name;
                 QString file_name = firebase_folder_name + "/";
                 QString user_file = name;
                 user_file = user_file.remove(file_name);
-                //qDebug()<<"file name"<<user_file;
                 m_filename << user_file;
-                //qDebug()<<"list contents"<<user_file;
                 QString filepath = "QGroundControl.settingsManager.appSettings.telemetrySavePath" + user + "/.txt";
                 QFile file(filepath);
                 file.open(QIODevice::WriteOnly | QIODevice::ReadOnly | QIODevice::Text |QIODevice::Append);
@@ -337,13 +306,9 @@ void TableModel::read_text_file(QString user_text_file_name, QString user_text_f
 {
     QString user_file = user_text_file_name;
     int pos = user_file.lastIndexOf("@");
-    //qDebug() << user_mail.left(pos);
     user_file = user_file.left(pos);
-    //qDebug()<<"user file" << user_file;
 
     QString filepath = user_text_file_folder + "/" + user_file + ".txt";
-
-    //qDebug()<<"file to read" << filepath;
 
     m_filename.clear();
     QString link = "https://firebasestorage.googleapis.com/v0/b/" + _projectID + ".appspot.com/o?prefix=" + user_file + "/";
@@ -353,7 +318,6 @@ void TableModel::read_text_file(QString user_text_file_name, QString user_text_f
     QNetworkReply *reply;
     reply = m_networkAccessManager->get(request);
     connect(reply,&QNetworkReply::finished,[reply,user_file, filepath, this](){
-        //qDebug()<<"list is " <<reply->readAll();
         QByteArray response = reply->readAll();
         QJsonDocument doc = QJsonDocument::fromJson(response);
         QJsonObject object = doc.object();
@@ -361,17 +325,14 @@ void TableModel::read_text_file(QString user_text_file_name, QString user_text_f
         for (const QJsonValue& item : items) {
             QString name = item.toObject()["name"].toString();
             if (name.endsWith(".csv")) {
-                //qDebug()<<"total files present" << name;
                 QString file_name = user_file + "/";
                 QString user_file = name;
                 user_file = user_file.remove(file_name);
-                //qDebug()<<"list contents"<<user_file;
                 QFile file(filepath);
                 file.open(QIODevice::WriteOnly | QIODevice::ReadOnly | QIODevice::Text |QIODevice::Append);
                 QTextStream in(&file);
                 in << user_file;
                 m_filename.append(user_file);
-                //qDebug()<< "reading" << m_filename;
                 file.close();
             }
         }
@@ -410,6 +371,48 @@ void TableModel::download_function(const QString &file_name, const QString &fire
     });
 }
 
+void TableModel::download_function_firmware(const QString &local_pc_location)
+{
+
+    QString firmware_Folder = "firmware";
+    QString code_A_Checksum = "code_A_checksum.txt";
+    QString code_B_Checksum = "code_B_checksum.txt";
+    QString data_A_Checksum = "data_A_checksum.txt";
+    QString data_B_Checksum = "data_B_checksum.txt";
+    QString firmware_A = "firmware_A.apj";
+    QString firmware_B = "firmware_B.apj";
+    QString param_A = "model_A.params";
+    QString param_B = "model_B.params";
+
+    QStringList fileList;
+
+    fileList << code_A_Checksum << code_B_Checksum << data_A_Checksum << data_B_Checksum
+             << firmware_A << firmware_B << param_A << param_B;
+
+    for (const QString& fileName : fileList) {
+
+    QString user_download_location = local_pc_location  + "/" + fileName;
+
+
+    QNetworkRequest request;
+
+    QString link = "https://firebasestorage.googleapis.com/v0/b/" + _projectID + ".appspot.com/o/" + firmware_Folder + "%2F" + fileName + "?alt=media";
+    request.setUrl(QUrl(link));
+    request.setHeader(QNetworkRequest::ContentTypeHeader,"text/csv");
+    request.setRawHeader("Authorization","Bearer");
+
+    QNetworkReply *response1 = m_networkAccessManager->get(QNetworkRequest(QUrl(QString::fromStdString(link.toStdString()))));
+    connect(response1,&QNetworkReply::finished, [response1,local_pc_location,user_download_location](){
+        QByteArray data = response1->readAll();
+        QFile file(user_download_location);
+        if (!file.open(QIODevice::WriteOnly)) {
+        }
+        file.write(data);
+        file.close();
+    });
+}
+}
+
 void TableModel::firmwareupgrade_data()
 {
     QString link1 = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + usermail + "/FIRMWARELOG/.json";
@@ -427,7 +430,6 @@ void TableModel:: firmwarelog_contain_data()
 
 void TableModel::firmware_apply_read_addData(const QByteArray &response)
 {
-    //QByteArray response = m_networkreply->readAll();
     m_firmwarelog_list.clear();
     QJsonDocument doc = QJsonDocument::fromJson(response);
     QJsonObject object = doc.object();
@@ -443,7 +445,6 @@ void TableModel::firmware_apply_read_addData(const QByteArray &response)
                 QString adddata = date_time + " " + " " + " " + " " + " " + value.toString();
                 m_firmwarelog_list.append(adddata);
                 qDebug()<<m_firmwarelog_list;
-                qDebug()<<"error while updating firmware log";
                 qDebug()<<"Model appended";
             }
         }
@@ -452,9 +453,6 @@ void TableModel::firmware_apply_read_addData(const QByteArray &response)
     }
 
 }
-
-
-
 
 QHash<int, QByteArray> TableModel::roleNames() const {
     QHash<int, QByteArray> roles;

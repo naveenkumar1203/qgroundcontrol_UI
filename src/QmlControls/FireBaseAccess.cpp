@@ -1,6 +1,7 @@
 #include "FireBaseAccess.h"
 #include "FirmwareUpgradeController.h"
 
+
 #include <QVariantMap>
 
 QString g_industry;
