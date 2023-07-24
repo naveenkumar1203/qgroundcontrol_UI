@@ -165,32 +165,32 @@ AnalyzePage {
                         }
                     }
                 }
-                QGCButton {
-                    enabled:    !logController.requestingList && !logController.downloadingLogs && logController.model.count > 0
-                    text:       qsTr("Erase All")
-                    width:      _butttonWidth
-                    onClicked:  mainWindow.showComponentDialog(
-                        eraseAllMessage,
-                        qsTr("Delete All Log Files"),
-                        mainWindow.showDialogDefaultWidth,
-                        StandardButton.Yes | StandardButton.No)
-                    Component {
-                        id: eraseAllMessage
-                        QGCViewMessage {
-                            message:    qsTr("All log files will be erased permanently. Is this really what you want?")
-                            function accept() {
-                                logController.eraseAll()
-                                hideDialog()
-                            }
-                        }
-                    }
-                }
-                QGCButton {
-                    text:       qsTr("Cancel")
-                    width:      _butttonWidth
-                    enabled:    logController.requestingList || logController.downloadingLogs
-                    onClicked:  logController.cancel()
-                }
+//                QGCButton {
+//                    enabled:    !logController.requestingList && !logController.downloadingLogs && logController.model.count > 0
+//                    text:       qsTr("Erase All")
+//                    width:      _butttonWidth
+//                    onClicked:  mainWindow.showComponentDialog(
+//                        eraseAllMessage,
+//                        qsTr("Delete All Log Files"),
+//                        mainWindow.showDialogDefaultWidth,
+//                        StandardButton.Yes | StandardButton.No)
+//                    Component {
+//                        id: eraseAllMessage
+//                        QGCViewMessage {
+//                            message:    qsTr("All log files will be erased permanently. Is this really what you want?")
+//                            function accept() {
+//                                logController.eraseAll()
+//                                hideDialog()
+//                            }
+//                        }
+//                    }
+//                }
+//                QGCButton {
+//                    text:       qsTr("Cancel")
+//                    width:      _butttonWidth
+//                    enabled:    logController.requestingList || logController.downloadingLogs
+//                    onClicked:  logController.cancel()
+//                }
             }
         }
     }

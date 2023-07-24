@@ -79,6 +79,7 @@ QString file_name;
 QString folder_location;
 int vehicle_armed = 0;
 
+
 const char* Vehicle::_settingsGroup =               "Vehicle%1";        // %1 replaced with mavlink system id
 const char* Vehicle::_joystickEnabledSettingsKey =  "JoystickEnabled";
 
@@ -3822,7 +3823,6 @@ void Vehicle::_initializeCsv()
     folder_location = flightlog_filename + "/" + file_name;
     QDir saveDir (flightlog_filename);
     _csvLogFile.setFileName(saveDir.absoluteFilePath(fileName));
-
 
     user_name = obj1.storagename();
 

@@ -16,6 +16,7 @@
 
 extern QString file_model;
 extern QString file_uin;
+extern int vehicle_id_params;
 
 class TableModel : public QAbstractTableModel
 {

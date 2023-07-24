@@ -83,78 +83,6 @@ SetupPage {
             TableModel {
                 id: rpadatabase
             }
-
-
-//            property string firmwareFilePath: ""
-
-//            QGCButton {
-//                id:customFirmwareDialog
-//                text: "Flash Firmware"
-
-//                onClicked: {
-//                    if(rpadatabase.model === "Model A"){
-//                        console.log("i am in model A : "+QGroundControl.multiVehicleManager.vehicleid_params)
-//                        if(QGroundControl.multiVehicleManager.vehicleid_params === 1){
-//                            console.log("model A matches with drone type");
-//                            firmwareFilePath = QGroundControl.settingsManager.appSettings.telemetrySavePath + "/firmware_A.apj";
-//                            console.log("firmware file path"+ firmwareFilePath);
-//                            controller.flashFirmwareUrl(firmwareFilePath);
-//                            crt_modelA_firmware.open()
-
-//                        }
-//                        else
-//                        {
-//                            wrong_modelA_firmware.open()
-//                            console.log("Vehicle id A does not match with Model");
-//                        }
-//                    }
-//                    else if(rpadatabase.model === "Model B"){
-//                        console.log("i am in model B : "+ QGroundControl.multiVehicleManager.vehicleid_params)
-//                        if(QGroundControl.multiVehicleManager.vehicleid_params === 2){
-//                            console.log("model B matches with drone type");
-//                            firmwareFilePath = QGroundControl.settingsManager.appSettings.telemetrySavePath + "/firmware_B.apj";
-//                            console.log("firmware file path"+ firmwareFilePath);
-//                            controller.flashFirmwareUrl(firmwareFilePath);
-//                            crt_modelB_firmware.open()
-//                        }
-//                        else
-//                        {
-//                            wrong_modelB_firmware.open()
-//                            console.log("Vehicle id B does not match with Model");
-//                        }
-//                    }
-//                }
-//            }
-
-//            MessageDialog{
-//                id: crt_modelA_firmware
-//                text: qsTr("Model A matches with drone type. Please continue ")
-//            }
-//            MessageDialog{
-//                id: crt_modelB_firmware
-//                text: qsTr("Model B matches with drone type. Please continue ")
-//            }
-//            MessageDialog{
-//                id: wrong_modelA_firmware
-//                text: qsTr("Vehicle id and Model A does not match. Please contact OEM ")
-//            }
-//            MessageDialog{
-//                id: wrong_modelB_firmware
-//                text: qsTr("Vehicle id and Model B does not match. Please contact OEM ")
-//            }
-
-//            QGCFileDialog {
-//                     id:                 customFirmwareDialog
-//                     title:              qsTr("Select Firmware File")
-//                     nameFilters:        [qsTr("Firmware Files (*.px4 *.apj *.bin *.ihx)"), qsTr("All Files (*)")]
-//                     selectExisting:     true
-//                     folder:             QGroundControl.settingsManager.appSettings.logSavePath
-//                     onAcceptedForLoad: {
-//                         controller.flashFirmwareUrl(file)
-//                         close()
-//                     }
-//                 }
-
             FirmwareUpgradeController {
                 id:             controller
                 progressBar:    progressBar
@@ -197,13 +125,22 @@ SetupPage {
                             QGroundControl.multiVehicleManager.activeVehicle.vehicleLinkManager.autoDisconnect = true
                         }
                     } else {
-                        // We end up here when we detect a board plugged in after we've started upgrade
-                        statusTextArea.append(highlightPrefix + qsTr("Found device") + highlightSuffix + ": " + controller.boardType)
+                        if(((rpadatabase.model === "Model A") && (QGroundControl.multiVehicleManager.vehicleid_params === 1)) ||
+                           ((rpadatabase.model === "Model B") && (QGroundControl.multiVehicleManager.vehicleid_params === 2)))
+                        {
+                            // We end up here when we detect a board plugged in after we've started upgrade
+                            statusTextArea.append(highlightPrefix + qsTr("Found device") + highlightSuffix + ": " + controller.boardType)
+                        }
                     }
                 }
-
-                onShowFirmwareSelectDlg:    mainWindow.showComponentDialog(firmwareSelectDialogComponent, title, mainWindow.showDialogDefaultWidth, StandardButton.Ok | StandardButton.Cancel)
-                onError:                    statusTextArea.append(flashFailText)
+                onShowFirmwareSelectDlg: {
+                    if(((rpadatabase.model === "Model A") && (QGroundControl.multiVehicleManager.vehicleid_params === 1)) ||
+                       ((rpadatabase.model === "Model B") && (QGroundControl.multiVehicleManager.vehicleid_params === 2)))
+                    {
+                        mainWindow.showComponentDialog(firmwareSelectDialogComponent, title, mainWindow.showDialogDefaultWidth, StandardButton.Ok | StandardButton.Cancel)
+                    }
+                }
+                onError: statusTextArea.append(flashFailText)
             }
 
             Component {
@@ -256,44 +193,44 @@ SetupPage {
                     }
 
                     function accept() {
-//                        if (_singleFirmwareMode) {
-//                            controller.flashSingleFirmwareMode(controller.selectedFirmwareBuildType)
-//                        } else {
-//                            var stack
-//                            var firmwareBuildType = firmwareBuildTypeCombo.model.get(firmwareBuildTypeCombo.currentIndex).firmwareType
-//                            var vehicleType = FirmwareUpgradeController.DefaultVehicleFirmware
+                        //                        if (_singleFirmwareMode) {
+                        //                            controller.flashSingleFirmwareMode(controller.selectedFirmwareBuildType)
+                        //                        } else {
+                        //                            var stack
+                        //                            var firmwareBuildType = firmwareBuildTypeCombo.model.get(firmwareBuildTypeCombo.currentIndex).firmwareType
+                        //                            var vehicleType = FirmwareUpgradeController.DefaultVehicleFirmware
 
-//                            if (px4Flow) {
-//                                stack = px4FlowTypeSelectionCombo.model.get(px4FlowTypeSelectionCombo.currentIndex).stackType
-//                                vehicleType = FirmwareUpgradeController.DefaultVehicleFirmware
-//                            } else {
-//                                stack = apmFlightStack.checked ? FirmwareUpgradeController.AutoPilotStackAPM : FirmwareUpgradeController.AutoPilotStackPX4
-//                                if (apmFlightStack.checked) {
-//                                    if (firmwareBuildType === FirmwareUpgradeController.CustomFirmware) {
-//                                        vehicleType = apmVehicleTypeCombo.currentIndex
-//                                    } else {
-//                                        if (controller.apmFirmwareNames.length === 0) {
-//                                            // Not ready yet, or no firmware available
-//                                            return
-//                                        }
-//                                        var firmwareUrl = controller.apmFirmwareUrls[ardupilotFirmwareSelectionCombo.currentIndex]
-//                                        if (firmwareUrl == "") {
-//                                            return
-//                                        }
-//                                        controller.flashFirmwareUrl(controller.apmFirmwareUrls[ardupilotFirmwareSelectionCombo.currentIndex])
-//                                        hideDialog()
-//                                        return
-//                                    }
-//                                }
-//                            }
-//                            //-- If custom, get file path
-//                            if (firmwareBuildType === FirmwareUpgradeController.CustomFirmware) {
-//                                customFirmwareDialog.openForLoad()
-//                            } else {
-//                                controller.flash(stack, firmwareBuildType, vehicleType)
-//                            }
-//                            hideDialog()
-//                        }
+                        //                            if (px4Flow) {
+                        //                                stack = px4FlowTypeSelectionCombo.model.get(px4FlowTypeSelectionCombo.currentIndex).stackType
+                        //                                vehicleType = FirmwareUpgradeController.DefaultVehicleFirmware
+                        //                            } else {
+                        //                                stack = apmFlightStack.checked ? FirmwareUpgradeController.AutoPilotStackAPM : FirmwareUpgradeController.AutoPilotStackPX4
+                        //                                if (apmFlightStack.checked) {
+                        //                                    if (firmwareBuildType === FirmwareUpgradeController.CustomFirmware) {
+                        //                                        vehicleType = apmVehicleTypeCombo.currentIndex
+                        //                                    } else {
+                        //                                        if (controller.apmFirmwareNames.length === 0) {
+                        //                                            // Not ready yet, or no firmware available
+                        //                                            return
+                        //                                        }
+                        //                                        var firmwareUrl = controller.apmFirmwareUrls[ardupilotFirmwareSelectionCombo.currentIndex]
+                        //                                        if (firmwareUrl == "") {
+                        //                                            return
+                        //                                        }
+                        //                                        controller.flashFirmwareUrl(controller.apmFirmwareUrls[ardupilotFirmwareSelectionCombo.currentIndex])
+                        //                                        hideDialog()
+                        //                                        return
+                        //                                    }
+                        //                                }
+                        //                            }
+                        //                            //-- If custom, get file path
+                        //                            if (firmwareBuildType === FirmwareUpgradeController.CustomFirmware) {
+                        //                                customFirmwareDialog.openForLoad()
+                        //                            } else {
+                        //                                controller.flash(stack, firmwareBuildType, vehicleType)
+                        //                            }
+                        //                            hideDialog()
+                        //                        }
                         controller.flashFirmwareUrl(firmwareFilePath);
                         hideDialog();
 
@@ -368,60 +305,54 @@ SetupPage {
                         anchors.fill:   parent
                         contentHeight:  mainColumn.height
 
-                                    QGCButton {
-                                        id:customFirmwareDialog
-                                        text: "Flash Firmware"
+                        QGCButton {
+                            id:customFirmwareDialog
+                            text: "Flash Firmware"
 
-                                        onClicked: {
-                                            if(rpadatabase.model === "Model A"){
-                                                console.log("i am in model A : "+QGroundControl.multiVehicleManager.vehicleid_params)
-                                                if(QGroundControl.multiVehicleManager.vehicleid_params === 1){
-                                                    console.log("model A matches with drone type");
-                                                    firmwareFilePath = QGroundControl.settingsManager.appSettings.telemetrySavePath + "/firmware_A.apj";
-                                                    console.log("firmware file path"+ firmwareFilePath);
-                                                    text1.visible = true;
-                                                   // controller.flashFirmwareUrl(firmwareFilePath);
-                                                   // crt_modelA_firmware.open()
+                            onClicked: {
+                                if(rpadatabase.model === "Model A"){
+                                    if(QGroundControl.multiVehicleManager.vehicleid_params === 1){
+                                        firmwareFilePath = QGroundControl.settingsManager.appSettings.telemetrySavePath + "/firmware_A.apj";
+                                        text1.visible = true;
 
-                                                }
-                                                else
-                                                {
-                                                  //  wrong_modelA_firmware.open()
-                                                    console.log("Vehicle id A does not match with Model");
-                                                }
-                                            }
-                                            else if(rpadatabase.model === "Model B"){
-                                                console.log("i am in model B : "+ QGroundControl.multiVehicleManager.vehicleid_params)
-                                                if(QGroundControl.multiVehicleManager.vehicleid_params === 2){
-                                                    console.log("model B matches with drone type");
-                                                    firmwareFilePath = QGroundControl.settingsManager.appSettings.telemetrySavePath + "/firmware_B.apj";
-                                                    console.log("firmware file path"+ firmwareFilePath);
-                                                    text2.visible = true;
-
-                                                    //controller.flashFirmwareUrl(firmwareFilePath);
-                                                   // crt_modelB_firmware.open()
-                                                }
-                                                else
-                                                {
-                                                   // wrong_modelB_firmware.open()
-                                                    console.log("Vehicle id B does not match with Model");
-                                                }
-                                            }
-                                        }
                                     }
-
-                                    Text {
-                                        id: text1
-                                        text: qsTr("You are about to flash Model-A Firmware. Click OK to continue ")
-                                        visible: false
+                                    else
+                                    {
                                     }
-                                    Text {
-                                        id: text2
-                                        text: qsTr("You are about to flash Model-B Firmware. Click OK to continue ")
-                                        visible: false
+                                }
+                                else if(rpadatabase.model === "Model B"){
+                                    if(QGroundControl.multiVehicleManager.vehicleid_params === 2){
+                                        firmwareFilePath = QGroundControl.settingsManager.appSettings.telemetrySavePath + "/firmware_B.apj";
+                                        text2.visible = true;
                                     }
+                                    else
+                                    {
+                                    }
+                                }
+                            }
+                        }
 
-/*                        Column {
+                        Text {
+                            id: text1
+                            text: qsTr("You are about to flash Model-A Firmware.\nClick OK to continue")
+                            color: "white"
+                            anchors.top: customFirmwareDialog.bottom
+                            font.pointSize: ScreenTools.defaultFontPointSize
+                            anchors.topMargin: 25
+                            visible: false
+                        }
+                        Text {
+                            id: text2
+                            text: qsTr("You are about to flash Model-B Firmware.\nClick OK to continue")
+                            color: "white"
+                            anchors.top: customFirmwareDialog.bottom
+                            font.pointSize: ScreenTools.defaultFontPointSize
+                            anchors.topMargin: 25
+                            visible: false
+                        }
+
+
+                        /*                        Column {
                             id:             mainColumn
                             anchors.left:   parent.left
                             anchors.right:  parent.right

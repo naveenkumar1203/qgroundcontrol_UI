@@ -29,39 +29,42 @@
 /// Supported firmware types. If you modify these you will need to update the qml file as well.
 
 // Firmware Upgrade MVC Controller for FirmwareUpgrade.qml.
+
+//bool checksum_match = true;
+
 class FirmwareUpgradeController : public QObject
 {
     Q_OBJECT
 
 public:
-        typedef enum {
-            AutoPilotStackPX4 = 0,
-            AutoPilotStackAPM,
-            PX4FlowPX4,
-            PX4FlowAPM,
-            SiKRadio,
-            SingleFirmwareMode
-        } AutoPilotStackType_t;
+    typedef enum {
+        AutoPilotStackPX4 = 0,
+        AutoPilotStackAPM,
+        PX4FlowPX4,
+        PX4FlowAPM,
+        SiKRadio,
+        SingleFirmwareMode
+    } AutoPilotStackType_t;
 
-        typedef enum {
-            StableFirmware = 0,
-            BetaFirmware,
-            DeveloperFirmware,
-            CustomFirmware
-        } FirmwareBuildType_t;
+    typedef enum {
+        StableFirmware = 0,
+        BetaFirmware,
+        DeveloperFirmware,
+        CustomFirmware
+    } FirmwareBuildType_t;
 
-        typedef enum {
-            CopterFirmware = 0,
-            HeliFirmware,
-            PlaneFirmware,
-            RoverFirmware,
-            SubFirmware,
-            DefaultVehicleFirmware
-        } FirmwareVehicleType_t;
+    typedef enum {
+        CopterFirmware = 0,
+        HeliFirmware,
+        PlaneFirmware,
+        RoverFirmware,
+        SubFirmware,
+        DefaultVehicleFirmware
+    } FirmwareVehicleType_t;
 
-        Q_ENUM(AutoPilotStackType_t)
-        Q_ENUM(FirmwareBuildType_t)
-        Q_ENUM(FirmwareVehicleType_t)
+    Q_ENUM(AutoPilotStackType_t)
+    Q_ENUM(FirmwareBuildType_t)
+    Q_ENUM(FirmwareVehicleType_t)
 
     class FirmwareIdentifier
     {

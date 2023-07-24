@@ -43,9 +43,9 @@ ApplicationWindow {
     property bool editUin: true
     property int number: 0
     property real rectangleWidth: (table_rect.width - 40) / 5
-
-    property int checkBoxState: 0
     property int checkBoxNumber
+    property int checkBoxState: 0
+    property int checknumber : 0
     property var newWindowObject
     property var group: buttonGroup
     property var image_upload;
@@ -78,24 +78,24 @@ ApplicationWindow {
             database_access.get_profile_update();
         }
         onSuccessfullLogin: {
-            landing_page_rectangle.visible =true
-            dashboard_rectangle.visible = true
-            login_page_rectangle.z = -1
-            login_page_rectangle.visible = false
-            landing_page_rectangle.visible =true
-            dashboard_rectangle.visible = true
-            users_profile_header1.visible = true
-            manage_rpa_rectangle.visible = false
-            flight_log_rectangle.visible = false
-            firmware_log_rectangle.visible = false
-            users_information_header1.visible = false
-            rpa_register_page.visible = false
-            dashboard_button.color = "#F25822"
-            managerpa_button.color = "#031C28"
-            flight_log_button.color = "#031C28"
-            logout_button.color = "#031C28"
-            firmware_button.color = "#031C28"
-            profile_button.color = "#031C28"
+            login_page_rectangle.z             = -1
+            landing_page_rectangle.visible     = true
+            dashboard_rectangle.visible        = true
+            dashboard_rectangle.visible        = true
+            landing_page_rectangle.visible     = true
+            users_profile_header1.visible      = true
+            login_page_rectangle.visible       = false
+            manage_rpa_rectangle.visible       = false
+            flight_log_rectangle.visible       = false
+            firmware_log_rectangle.visible     = false
+            users_information_header1.visible  = false
+            rpa_register_page.visible          = false
+            dashboard_button.color             = "#F25822"
+            managerpa_button.color             = "#031C28"
+            flight_log_button.color            = "#031C28"
+            logout_button.color                = "#031C28"
+            firmware_button.color              = "#031C28"
+            profile_button.color               = "#031C28"
         }
         onEmailNotFound:{
             no_recordDialog.open()
@@ -220,7 +220,7 @@ ApplicationWindow {
                                                  CheckBox {
                                                  id: delegate_checkbox
                                                  anchors.centerIn: parent
-                                                 checked: false
+                                                 checked: {((model.index === checknumber) && (checkBoxState===1)) ? true : false}
                                                  enabled: { _activeVehicle ? false:true }
                                                  indicator: Rectangle{
                                                  implicitWidth: 16
@@ -241,6 +241,8 @@ ApplicationWindow {
                                                  if(delegate_checkbox.checked == true){
                                                  checkBoxState = 1
                                                  checkBoxNumber = model.index
+                                                 checknumber = model.index
+                                                 console.log ("CHECKBOX NUMBER"+ checknumber)
                                                  ButtonGroup.group = mainWindow.group
                                                  }
                                                  }
@@ -2176,7 +2178,6 @@ ApplicationWindow {
         text: "Are You Sure you want to Sign Out?."
         standardButtons: Dialog.Yes | Dialog.No
         onYes: {
-            //rpadatabase.logout()
             landing_page_rectangle.visible = false
             login_page_rectangle.visible = true
             login_page_email_textfield.text = ""
@@ -2187,6 +2188,7 @@ ApplicationWindow {
             password_show_image.visible = false
             flightView.visible = false
             planView.visible = false
+            checkBoxState = 0
         }
         onNo: {
             landing_page_rectangle.visible = true
@@ -3099,20 +3101,20 @@ ApplicationWindow {
                             id:mouseArea
                             anchors.fill: dashboard_button
                             onClicked: {
-                                dashboard_rectangle.visible = true
-                                logout_button.color = "#031C28"
-                                dashboard_button.color ="#F25822" || "#031C28"
-                                managerpa_button.color = "#031C28"
-                                flight_log_button.color = "#031C28"
-                                firmware_button.color = "#031C28"
-                                profile_button.color = "#031C28"
-                                about_button.color = "#031C28"
-                                manage_rpa_rectangle.visible = false
-                                flight_log_rectangle.visible = false
-                                rpa_register_page.visible = false
-                                firmware_log_rectangle.visible = false
-                                users_profile_header1.visible = true
-                                users_information_header1.visible = false
+                                dashboard_rectangle.visible        = true
+                                users_profile_header1.visible      = true
+                                manage_rpa_rectangle.visible       = false
+                                flight_log_rectangle.visible       = false
+                                rpa_register_page.visible          = false
+                                firmware_log_rectangle.visible     = false
+                                users_information_header1.visible  = false
+                                logout_button.color                = "#031C28"
+                                dashboard_button.color             = "#F25822" || "#031C28"
+                                managerpa_button.color             = "#031C28"
+                                flight_log_button.color            = "#031C28"
+                                firmware_button.color              = "#031C28"
+                                profile_button.color               = "#031C28"
+                                about_button.color                 = "#031C28"
                             }
                         }
                     }
@@ -3145,22 +3147,21 @@ ApplicationWindow {
                         MouseArea{
                             anchors.fill: managerpa_button
                             onClicked: {
-                                //checkBoxState = 0
                                 rpadatabase.manageRpaClicked(database_access.mail)
-                                manage_rpa_rectangle.visible = true
-                                dashboard_rectangle.visible = false
-                                flight_log_rectangle.visible = false
-                                firmware_log_rectangle.visible = false
-                                users_profile_header1.visible = true
+                                manage_rpa_rectangle.visible      = true
+                                manage_rpa_header1.visible        = true
+                                users_profile_header1.visible     = true
+                                dashboard_rectangle.visible       = false
+                                flight_log_rectangle.visible      = false
+                                firmware_log_rectangle.visible    = false
                                 users_information_header1.visible = false
-                                logout_button.color = "#031C28"
-                                dashboard_button.color = "#031C28"
-                                flight_log_button.color = "#031C28"
-                                firmware_button.color = "#031C28"
-                                profile_button.color = "#031C28"
-                                about_button.color = "#031C28"
-                                managerpa_button.color = "#F25822"
-                                manage_rpa_header1.visible = true
+                                managerpa_button.color            = "#F25822"
+                                logout_button.color               = "#031C28"
+                                dashboard_button.color            = "#031C28"
+                                flight_log_button.color           = "#031C28"
+                                firmware_button.color             = "#031C28"
+                                profile_button.color              = "#031C28"
+                                about_button.color                = "#031C28"
                             }
                         }
                     }
@@ -3325,7 +3326,6 @@ ApplicationWindow {
                         MouseArea{
                             anchors.fill: flight_log_button
                             onClicked: {
-                                //checkBoxState = 0
                                 rpadatabase.read_text_file(database_access.mail,QGroundControl.settingsManager.appSettings.telemetrySavePath)
                                 flight_log_button.color = "#F25822"
                                 flight_log_rectangle.visible = true
@@ -3373,7 +3373,6 @@ ApplicationWindow {
                         MouseArea{
                             anchors.fill: firmware_button
                             onClicked: {
-                                //checkBoxState = 0
                                 firmware_button.color = "#F25822"
                                 firmware_log_rectangle.visible = true
                                 flight_log_rectangle.visible = false
@@ -4405,7 +4404,7 @@ ApplicationWindow {
                             Text {
                                 id: drone_model_text
                                 anchors.right: drone_contents.right
-                                anchors.rightMargin: 95
+                                anchors.rightMargin: 115
                                 anchors.top: drone_contents.top
                                 anchors.topMargin: 120
                                 text: qsTr("Name/Drone's Model Name*")
@@ -5111,7 +5110,7 @@ ApplicationWindow {
 
                                     Text {
                                         id: fileNameText
-                                        text: modelData //fileName
+                                        text: modelData
                                         color: "white"
                                         font.pointSize: 11
                                         Layout.alignment: Qt.AlignVCenter
@@ -5280,7 +5279,8 @@ ApplicationWindow {
                                         text: modelData //fileName
                                         color: "white"
                                         font.pointSize: 11
-                                        Layout.alignment: Qt.AlignCenter
+                                        Layout.alignment: Qt.AlignLeft
+                                        Layout.margins: 40
                                     }
                                 }
                             }

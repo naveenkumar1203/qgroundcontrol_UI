@@ -10,6 +10,8 @@
 #include "SettingsManager.h"
 
 extern int sound_flag;
+extern bool checksum_match;
+
 
 class FirmwareUpdate : public QObject
 {

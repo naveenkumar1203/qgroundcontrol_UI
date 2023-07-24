@@ -151,14 +151,11 @@ LogDownloadController::_setActiveVehicle(Vehicle* vehicle)
 void
 LogDownloadController::_logEntry(UASInterface* uas, uint32_t time_utc, uint32_t size, uint16_t id, uint16_t num_logs, uint16_t /*last_log_num*/)
 {
-    //-- Do we care?
+    qDebug()<< "i am enter in log 1";
     if(!_uas || uas != _uas || !_requestingLogEntries) {
         return;
     }
-    //-- If this is the first, pre-fill it
     if(!_logEntriesModel.count() && num_logs > 0) {
-        //-- Is this APM? They send a first entry with bogus ID and only the
-        //   count is valid. From now on, all entries are 1-based.
         if(_vehicle->firmwareType() == MAV_AUTOPILOT_ARDUPILOTMEGA) {
             _apmOneBased = 1;
         }
@@ -169,6 +166,8 @@ LogDownloadController::_logEntry(UASInterface* uas, uint32_t time_utc, uint32_t 
     }
     //-- Update this log record
     if(num_logs > 0) {
+        qDebug()<< "i am enter in log 2";
+
         //-- Skip if empty (APM first packet)
         if(size || _vehicle->firmwareType() != MAV_AUTOPILOT_ARDUPILOTMEGA) {
             id -= _apmOneBased;
@@ -186,6 +185,7 @@ LogDownloadController::_logEntry(UASInterface* uas, uint32_t time_utc, uint32_t 
         //-- No logs to list
         _receivedAllEntries();
     }
+    qDebug()<< "i am enter in log 3";
     //-- Reset retry count
     _retries = 0;
     //-- Do we have it all?

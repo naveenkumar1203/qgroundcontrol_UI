@@ -25,6 +25,8 @@
 
 #include <QQmlEngine>
 
+int vehicle_id_params=0;
+
 QGC_LOGGING_CATEGORY(MultiVehicleManagerLog, "MultiVehicleManagerLog")
 
 const char* MultiVehicleManager::_gcsHeartbeatEnabledKey = "gcsHeartbeatEnabled";
@@ -70,6 +72,7 @@ void MultiVehicleManager::setToolbox(QGCToolbox *toolbox)
 void MultiVehicleManager::_vehicleHeartbeatInfo(LinkInterface* link, int vehicleId, int componentId, int vehicleFirmwareType, int vehicleType)
 {
     QString model_name = rpadatabase.model();
+    vehicle_id_params = vehicleId;
 
     if(((model_name == "Model A") && (vehicleId == 1)) ||((model_name == "Model B") && (vehicleId == 2)))
     {
