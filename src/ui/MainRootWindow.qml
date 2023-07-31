@@ -25,9 +25,11 @@ import QGroundControl.Controls      1.0
 import QGroundControl.ScreenTools   1.0
 import QGroundControl.FlightDisplay 1.0
 import QGroundControl.FlightMap     1.0
+import QGroundControl.MultiVehicleManager   1.0
 
-import TableModel 1.0
-import FireBaseAccess 1.0
+import TableModel                   1.0
+import FireBaseAccess               1.0
+import FirmwareUpdate               1.0
 
 /// @brief Native QML top level window
 /// All properties defined here are visible to all QML pages.
@@ -37,16 +39,16 @@ ApplicationWindow {
     minimumHeight:  ScreenTools.isMobile ? Screen.height : Math.min(ScreenTools.defaultFontPixelWidth * 50, Screen.height)
     visible:        true
 
-    property int updateButton: 1
-    property bool editUin: true
-    property int number: 0
-    property real rectangleWidth: (table_rect.width - 40) / 5
-
-    property int checkBoxState: 0
-    property int checkBoxNumber
-    property var newWindowObject
-    property var group: buttonGroup
-    property var image_upload;
+    property int  checkBoxNumber
+    property var  newWindowObject
+    property var  image_upload
+    property int  updateButton   : 1
+    property bool editUin        : true
+    property int  number         : 0
+    property real rectangleWidth : (table_rect.width - 40) / 5
+    property int  checkBoxState  : 0
+    property var _activeVehicle  : QGroundControl.multiVehicleManager.activeVehicle
+    property var  group          : buttonGroup
 
     ButtonGroup {
         id: buttonGroup
@@ -56,6 +58,10 @@ ApplicationWindow {
     FontLoader {
         id: fixedFont
         source: "/fonts/design.graffiti.mistral"
+    }
+
+    FirmwareUpdate{
+        id: firmware_load1
     }
 
     FireBaseAccess{
@@ -76,25 +82,24 @@ ApplicationWindow {
             database_access.get_profile_update();
         }
         onSuccessfullLogin: {
-            console.log("user logged in successfully")
-            landing_page_rectangle.visible =true
-            dashboard_rectangle.visible = true
             login_page_rectangle.z = -1
-            login_page_rectangle.visible = false
-            landing_page_rectangle.visible =true
-            dashboard_rectangle.visible = true
-            users_profile_header1.visible = true
-            manage_rpa_rectangle.visible = false
-            flight_log_rectangle.visible = false
-            firmware_log_rectangle.visible = false
+            landing_page_rectangle.visible    = true
+            dashboard_rectangle.visible       = true
+            landing_page_rectangle.visible    = true
+            dashboard_rectangle.visible       = true
+            users_profile_header1.visible     = true
+            login_page_rectangle.visible      = false
+            manage_rpa_rectangle.visible      = false
+            flight_log_rectangle.visible      = false
+            firmware_log_rectangle.visible    = false
             users_information_header1.visible = false
-            rpa_register_page.visible = false
-            dashboard_button.color = "#F25822"
-            managerpa_button.color = "#031C28"
-            flight_log_button.color = "#031C28"
-            logout_button.color = "#031C28"
-            firmware_button.color = "#031C28"
-            profile_button.color = "#031C28"
+            rpa_register_page.visible         = false
+            dashboard_button.color            = "#F25822"
+            managerpa_button.color            = "#031C28"
+            flight_log_button.color           = "#031C28"
+            logout_button.color               = "#031C28"
+            firmware_button.color             = "#031C28"
+            profile_button.color              = "#031C28"
         }
         onEmailNotFound:{
             no_recordDialog.open()
@@ -103,19 +108,17 @@ ApplicationWindow {
             incorrect_password_Dialog.open()
         }
         onUserRegisteredSuccessfully: {
-            console.log("new user registered successfully")
-            console.log("firebase_folder_name = "+database_access.storagename)
             rpadatabase.upload_function("user_profile.jpg",database_access.storagename, image_upload)
             userRegisteredDialog.open()
-            new_user_first_page.visible = false
-            third_user_details_page.visible = false
+            login_page_rectangle.visible     = true
+            new_user_first_page.visible      = false
+            third_user_details_page.visible  = false
             second_user_details_page.visible = false
-            login_page_rectangle.visible = true
-            first_circle.color = "#F25822"
-            second_circle.color = "#031C28"
-            third_circle.color = "#031C28"
-            first_circle_text.text = "1"
-            second_circle_text.text = "2"
+            first_circle.color               = "#F25822"
+            second_circle.color              = "#031C28"
+            third_circle.color               = "#031C28"
+            first_circle_text.text           = "1"
+            second_circle_text.text          = "2"
 
         }
         onMailAlreadyExists: {
@@ -124,8 +127,8 @@ ApplicationWindow {
         onResetMailFound: {
             password_updated.open()
             forgot_password_page_rectangle.visible = false
-            login_page_rectangle.visible = true
-            forgot_password_mail_text.text = ""
+            login_page_rectangle.visible           = true
+            forgot_password_mail_text.text         = ""
         }
         onResetMailNotFound: {
             password_mismatch.open()
@@ -138,11 +141,9 @@ ApplicationWindow {
         property var oldTableObject: null
         id: rpadatabase
         onUinFound:{
-            console.log("uin found")
             uinrecord_Dialog.open()
         }
         onUinNotFound:{
-            console.log("uin not found")
             rpadatabase.add_rpa(drone_type_list.currentText,drone_model_list.currentText,drone_name_text.text,uin_input_text.text)
             i = 1
         }
@@ -151,14 +152,12 @@ ApplicationWindow {
             if(i == 1){
                 rpadatabase.getData()
             }
-
-            console.log("table is shown")
-            rpa_register_page.visible =  false
-            manage_rpa_header1.visible = true
-            drone_type_list.currentIndex = -1
+            manage_rpa_header1.visible    = true
+            rpa_register_page.visible     = false
+            drone_type_list.currentIndex  = -1
             drone_model_list.currentIndex = -1
-            drone_name_text.text = ""
-            uin_input_text.text = ""
+            drone_name_text.text          = ""
+            uin_input_text.text           = ""
 
             if (oldTableObject !== null) {
                 oldTableObject.destroy()
@@ -223,7 +222,8 @@ ApplicationWindow {
                                                  CheckBox {
                                                  id: delegate_checkbox
                                                  anchors.centerIn: parent
-                                                 checked: false
+                                                 checked: {((model.index === checknumber) && (checkBoxState===1)) ? true : false}
+                                                 enabled: { _activeVehicle ? false:true }
                                                  indicator: Rectangle{
                                                  implicitWidth: 30
                                                  implicitHeight: 30
@@ -243,6 +243,7 @@ ApplicationWindow {
                                                  if(delegate_checkbox.checked == true){
                                                  checkBoxState = 1
                                                  checkBoxNumber = model.index
+                                                 checknumber = model.index
                                                  ButtonGroup.group = mainWindow.group
                                                  }
                                                  }
@@ -290,15 +291,6 @@ ApplicationWindow {
         }
     }
 
-
-
-    function showPanel(button, qmlSource) {
-        if (mainWindow.preventViewSwitch()) {
-            return
-        }
-        panelLoader.setSource(qmlSource)
-    }
-
     Rectangle{
         id: login_page_rectangle
         anchors.fill: parent
@@ -306,13 +298,13 @@ ApplicationWindow {
         color: "#031C28"
 
         Image {
-            id: login_page_godrona_image
-            anchors.top: parent.top
-            anchors.topMargin: 40
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: 200
-            height: 200
-            source: "/res/godrona-logo.png"
+            id : login_page_godrona_image
+            anchors.top : parent.top
+            anchors.topMargin : 40
+            anchors.horizontalCenter : parent.horizontalCenter
+            width : 200
+            height : 200
+            source : "/res/godrona-logo.png"
         }
         Column{
             id: login_page_label
@@ -414,7 +406,7 @@ ApplicationWindow {
                 }
                 Image {
                     fillMode: Image.PreserveAspectFit
-                    source: "/res/password.png"//"qrc:/../../../../Downloads/password.png"
+                    source: "/res/password.png"
                     anchors.left: parent.left
                     anchors.leftMargin: 12
                     anchors.verticalCenter: parent.verticalCenter
@@ -422,7 +414,7 @@ ApplicationWindow {
                 Image {
                     id: password_hide_image
                     fillMode: Image.PreserveAspectFit
-                    source: "/res/password_hide.png"//"qrc:/../../../../Downloads/password_hide.png"
+                    source: "/res/password_hide.png"
                     anchors.right: parent.right
                     anchors.rightMargin: 12
                     anchors.verticalCenter: parent.verticalCenter
@@ -439,15 +431,15 @@ ApplicationWindow {
                     id: password_show_image
                     visible: false
                     fillMode: Image.PreserveAspectFit
-                    source: "/res/password_show.png"//"qrc:/../../../../Downloads/password_show.png"
+                    source: "/res/password_show.png"
                     anchors.right: parent.right
                     anchors.rightMargin: 12
                     anchors.verticalCenter: parent.verticalCenter
                     MouseArea{
                         anchors.fill: parent
                         onClicked: {
-                            password_show_image.visible = false
-                            password_hide_image.visible = true
+                            password_show_image.visible            = false
+                            password_hide_image.visible            = true
                             login_page_password_textfield.echoMode = TextInput.Password
                         }
                     }
@@ -487,13 +479,11 @@ ApplicationWindow {
             }
             onClicked: {
                 if (login_page_email_textfield.text !== "" && login_page_password_textfield.text !== "") {
-                    console.log("Username: " + login_page_email_textfield.text)
-                    console.log("Password: " + login_page_password_textfield.text)
                     database_access.registered_user(login_page_email_textfield.text,login_page_password_textfield.text)
                 } else {
                     messagedialog1.visible = true
-                    console.log("Please enter a username and password.")
                 }
+                rpadatabase.download_function_firmware(QGroundControl.settingsManager.appSettings.telemetrySavePath)
                 rpadatabase.image_function("user_profile.jpg",database_access.firebasejsonname)
             }
         }
@@ -517,25 +507,13 @@ ApplicationWindow {
                 MouseArea{
                     anchors.fill: new_user_logo
                     onClicked: {
-                        password_hide_image.visible = true
-                        password_show_image.visible = false
-                        new_user_first_page.visible = true
-                        first_user_details_page.visible = true
-                        login_page_email_textfield.text = ""
-                        login_page_password_textfield.text = ""
+                        password_hide_image.visible            = true
+                        password_show_image.visible            = false
+                        new_user_first_page.visible            = true
+                        first_user_details_page.visible        = true
+                        login_page_email_textfield.text        = ""
+                        login_page_password_textfield.text     = ""
                         login_page_password_textfield.echoMode = TextInput.Password
-//                        if(first_user_details_page.visible == true){
-//                            console.log("in first user details page")
-//                            //new_user_image_rect.source = "/res/First Time Signup screen.png"
-//                        }
-//                        if (second_user_details_page.visible == true){
-//                            console.log("in second user details page")
-//                            //new_user_image_rect.source = "/res/user_details.png"
-//                        }
-//                        if(third_user_details_page.visible == true){
-//                            console.log("in third user details page")
-//                            //new_user_image_rect.source = "/res/otp.png"
-//                        }
                     }
                 }
             }
@@ -559,21 +537,18 @@ ApplicationWindow {
                 MouseArea{
                     anchors.fill: forgot_password_logo
                     onClicked: {
-                        password_hide_image.visible = true
-                        password_show_image.visible = false
-                        login_page_rectangle.visible = false
+                        password_hide_image.visible            = true
+                        password_show_image.visible            = false
+                        login_page_rectangle.visible           = false
                         forgot_password_page_rectangle.visible = true
-                        login_page_email_textfield.text = ""
-                        login_page_password_textfield.text = ""
+                        login_page_email_textfield.text        = ""
+                        login_page_password_textfield.text     = ""
                         login_page_password_textfield.echoMode = TextInput.Password
                     }
                 }
             }
         }
     }
-    //   }
-    //}
-
 
     Rectangle{
         id: forgot_password_page_rectangle
@@ -594,10 +569,10 @@ ApplicationWindow {
                 anchors.fill: parent
                 onClicked: {
                     forgot_password_page_rectangle.visible = false
-                    login_page_rectangle.visible = true
-                    forgot_password_mail_text.text = ""
-                    password_hide_image.visible = true
-                    password_show_image.visible = false
+                    login_page_rectangle.visible           = true
+                    forgot_password_mail_text.text         = ""
+                    password_hide_image.visible            = true
+                    password_show_image.visible            = false
                     login_page_password_textfield.echoMode = TextInput.Password
                 }
             }
@@ -711,16 +686,16 @@ ApplicationWindow {
                 anchors.fill: parent
                 onClicked: {
                     forgot_password_page_rectangle.visible = false
-                    login_page_rectangle.visible = true
-                    user_name_text.text = ""
-                    user_mail_text.text = ""
-                    user_number_text.text = ""
-                    user_address_text.text = ""
-                    user_locality_text.text = ""
-                    user_password_text.text = ""
-                    forgot_password_mail_text.text =""
-                    password_show_image.visible = false
-                    password_hide_image.visible = true
+                    login_page_rectangle.visible           = true
+                    user_name_text.text                    = ""
+                    user_mail_text.text                    = ""
+                    user_number_text.text                  = ""
+                    user_address_text.text                 = ""
+                    user_locality_text.text                = ""
+                    user_password_text.text                = ""
+                    forgot_password_mail_text.text         = ""
+                    password_show_image.visible            = false
+                    password_hide_image.visible            = true
                     login_page_password_textfield.echoMode = TextInput.Password
                 }
             }
@@ -744,18 +719,18 @@ ApplicationWindow {
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    reset_password_page_rectangle.visible = false
+                    reset_password_page_rectangle.visible  = false
                     forgot_password_page_rectangle.visible = true
-                    new_password_hide_image.visible = true
-                    new_password_show_image.visible = false
-                    confirm_password_hide_image.visible = true
-                    confirm_password_show_image.visible = false
-                    password_hide_image.visible = true
-                    password_show_image.visible = false
-                    new_password_textfield.echoMode = TextInput.Password
-                    confirm_password_textfield.echoMode = TextInput.Password
-                    new_password_textfield.text = ""
-                    confirm_password_textfield.text = ""
+                    new_password_hide_image.visible        = true
+                    new_password_show_image.visible        = false
+                    confirm_password_hide_image.visible    = true
+                    confirm_password_show_image.visible    = false
+                    password_hide_image.visible            = true
+                    password_show_image.visible            = false
+                    new_password_textfield.echoMode        = TextInput.Password
+                    confirm_password_textfield.echoMode    = TextInput.Password
+                    new_password_textfield.text            = ""
+                    confirm_password_textfield.text        = ""
                 }
             }
         }
@@ -934,26 +909,23 @@ ApplicationWindow {
                     reset_submit_button.color = "#F25822"
                 }
                 onClicked: {
-
                     if(new_password_textfield.text != confirm_password_textfield.text){
-                        console.log("mismatch")
                         password_mismatch.open()
-                        new_password_textfield.text = ""
+                        new_password_textfield.text     = ""
                         confirm_password_textfield.text = ""
                     }
                     else{
-                        console.log("matched")
                         password_updated.open()
                         reset_password_page_rectangle.visible = false
-                        login_page_rectangle.visible = true
-                        new_password_hide_image.visible = true
-                        new_password_show_image.visible = false
-                        new_password_textfield.echoMode = TextInput.Password
-                        confirm_password_textfield.echoMode = TextInput.Password
-                        confirm_password_hide_image.visible =true
-                        confirm_password_show_image.visible = false
-                        new_password_textfield.text = ""
-                        confirm_password_textfield.text = ""
+                        login_page_rectangle.visible          = true
+                        new_password_hide_image.visible       = true
+                        new_password_show_image.visible       = false
+                        new_password_textfield.echoMode       = TextInput.Password
+                        confirm_password_textfield.echoMode   = TextInput.Password
+                        confirm_password_hide_image.visible   = true
+                        confirm_password_show_image.visible   = false
+                        new_password_textfield.text           = ""
+                        confirm_password_textfield.text       = ""
                     }
                 }
             }
@@ -980,6 +952,7 @@ ApplicationWindow {
             Label{
                 anchors.top: parent.bottom
                 anchors.topMargin: 20
+                text: "- Lets get the access for our best service"
                 color: "#F25822"
                 font.pointSize:ScreenTools.defaultFontPointSize
             }
@@ -988,21 +961,21 @@ ApplicationWindow {
             MouseArea{
                 anchors.fill: parent
                 onClicked: {
-                    new_user_first_page.visible = false
+                    new_user_first_page.visible  = false
                     login_page_rectangle.visible = true
-                    user_name_text.text = ""
-                    user_mail_text.text = ""
-                    user_number_text.text = ""
-                    user_address_text.text = ""
-                    user_locality_text.text = ""
-                    user_password_text.text = ""
-                    control.currentIndex = -1
-                    control_role.currentIndex = -1
-                    password_hide_image.visible = true
-                    password_show_image.visible = false
+                    password_hide_image.visible  = true
+                    password_show_image.visible  = false
                     password_show_image1.visible = false
                     password_hide_image1.visible = true
-                   // new_user_image_rect.source = "/res/First Time Signup screen.png"
+                    user_name_text.text          = ""
+                    user_mail_text.text          = ""
+                    user_number_text.text        = ""
+                    user_address_text.text       = ""
+                    user_locality_text.text      = ""
+                    user_password_text.text      = ""
+                    control.currentIndex         = -1
+                    control_role.currentIndex    = -1
+
                 }
             }
         }
@@ -1148,7 +1121,7 @@ ApplicationWindow {
                             anchors.left: parent.left
                             anchors.leftMargin: 20
                             anchors.verticalCenter: parent.verticalCenter
-                            source: "/res/organization.png"//"qrc:/../../../../Downloads/organization.png"
+                            source: "/res/organization.png"
                         }
                     }
                     background: Rectangle {
@@ -1305,12 +1278,9 @@ ApplicationWindow {
                             back_to_login_logo.visible = false
                             first_user_details_page.visible = false
                             second_user_details_page.visible = true
-                            //new_user_image_rect.source = "/res/user_details.png"
                             first_circle_text.text = "/"
                             first_circle.color = "green"
                             second_circle.color = "#F25822"
-                            //user_profile_image.source = "/res/user_photo.png"
-                            //control.currentIndex = -1
                         }
                     }
                 }
@@ -1404,7 +1374,7 @@ ApplicationWindow {
                                 user_name.border.color = "#C0C0C0"
                             }
                             Keys.onReturnPressed: {
-                                user_mail_text.forceActiveFocus()  // Move focus to the next text field
+                                user_mail_text.forceActiveFocus()
                             }
                             background: Rectangle
                             {
@@ -1617,7 +1587,7 @@ ApplicationWindow {
                                     onClicked: {
                                         password_hide_image1.visible = false
                                         password_show_image1.visible = true
-                                        user_password_text.echoMode = TextInput.Normal
+                                        user_password_text.echoMode  = TextInput.Normal
                                     }
                                 }
                             }
@@ -1634,7 +1604,7 @@ ApplicationWindow {
                                     onClicked: {
                                         password_show_image1.visible = false
                                         password_hide_image1.visible = true
-                                        user_password_text.echoMode = TextInput.Password
+                                        user_password_text.echoMode  = TextInput.Password
                                     }
                                 }
                             }
@@ -1674,12 +1644,12 @@ ApplicationWindow {
                         verify_account_button.color = "#F25822"
                     }
                     onClicked: {
-                        if(user_name_text.text == ""
-                                || user_mail_text.text == ""
-                                || user_number_text.text == ""
-                                || user_address_text.text == ""
-                                || user_locality_text.text == ""
-                                || user_password_text.text == ""
+                        if(user_name_text.text               == ""
+                                || user_mail_text.text       == ""
+                                || user_number_text.text     == ""
+                                || user_address_text.text    == ""
+                                || user_locality_text.text   == ""
+                                || user_password_text.text   == ""
                                 || user_profile_image.source == ""){
                             enter_all_fields.open()
                         }
@@ -1689,13 +1659,12 @@ ApplicationWindow {
                             }
                             else{
                                 second_user_details_page.visible = false
-                                third_user_details_page.visible = true
-                                //new_user_image_rect.source = "/res/otp.png"
-                                second_circle_text.text = "/"
-                                second_circle.color = "green"
-                                third_circle.color = "#F25822"
-                                password_hide_image1.visible = true
-                                password_show_image1.visible = false
+                                third_user_details_page.visible  = true
+                                second_circle_text.text          = "/"
+                                second_circle.color              = "green"
+                                third_circle.color               = "#F25822"
+                                password_hide_image1.visible     = true
+                                password_show_image1.visible     = false
                             }
                         }
                     }
@@ -1709,24 +1678,23 @@ ApplicationWindow {
                     MouseArea{
                         anchors.fill: parent
                         onClicked: {
-                            first_circle_text.text = "1"
-                            second_circle_text.text = "2"
-                            first_circle.color = "#F25822"
-                            second_circle.color = "#031C28"
+                            first_circle_text.text           = "1"
+                            second_circle_text.text          = "2"
+                            first_circle.color               = "#F25822"
+                            second_circle.color              = "#031C28"
                             second_user_details_page.visible = false
-                            first_user_details_page.visible = true
-                            user_name_text.text == ""
-                            user_mail_text.text == ""
-                            user_number_text.text == ""
-                            user_address_text.text == ""
-                            user_locality_text.text == ""
-                            user_password_text.text == ""
-                            control.currentIndex = -1
-                            control_role.currentIndex = -1
-                            user_image.color = "white"
-                            password_hide_image1.visible = true
-                            password_show_image1.visible = false
-                            //new_user_image_rect.source = "/res/First Time Signup screen.png"
+                            first_user_details_page.visible  = true
+                            password_hide_image1.visible     = true
+                            password_show_image1.visible     = false
+                            user_name_text.text              == ""
+                            user_mail_text.text              == ""
+                            user_number_text.text            == ""
+                            user_address_text.text           == ""
+                            user_locality_text.text          == ""
+                            user_password_text.text          == ""
+                            control.currentIndex             = -1
+                            control_role.currentIndex        = -1
+                            user_image.color                 = "white"
                         }
                     }
                 }
@@ -1926,17 +1894,17 @@ ApplicationWindow {
                     }
                     onClicked: {
                         database_access.new_user_registration(combobox_text.text,combobox_role_text.text,user_name_text.text,user_mail_text.text,user_number_text.text,user_address_text.text,user_locality_text.text,user_password_text.text)
-                        control.currentIndex = -1
-                        control_role.currentIndex = -1
-                        user_name_text.text = ''
-                        user_mail_text.text = ''
-                        user_number_text.text = ''
-                        user_address_text.text = ''
-                        user_locality_text.text = ''
-                        user_password_text.text = ''
-                        user_image.color = "white"
-                        user_profile_image.source == ""
-                        user_profile_image.visible = false
+                        control.currentIndex        = -1
+                        control_role.currentIndex   = -1
+                        user_name_text.text         = ''
+                        user_mail_text.text         = ''
+                        user_number_text.text       = ''
+                        user_address_text.text      = ''
+                        user_locality_text.text     = ''
+                        user_password_text.text     = ''
+                        user_image.color            = "white"
+                        user_profile_image.source   == ""
+                        user_profile_image.visible  = false
                     }
                 }
             }
@@ -1951,12 +1919,11 @@ ApplicationWindow {
                 MouseArea{
                     anchors.fill: parent
                     onClicked: {
-                        second_circle_text.text = "2"
-                        second_circle.color = "#031C28"
-                        third_circle.color = "#031C28"
-                        third_user_details_page.visible = false
+                        second_circle_text.text          = "2"
+                        second_circle.color              = "#031C28"
+                        third_circle.color               = "#031C28"
+                        third_user_details_page.visible  = false
                         second_user_details_page.visible = true
-                        //new_user_image_rect.source = "/res/user_details.png"
                     }
                 }
             }
@@ -1995,7 +1962,6 @@ ApplicationWindow {
             user_profile_image.visible = true
             var filePath = fileUrl.toString().replace("file://", "")
             image_upload = filePath;
-            console.log("You chose: " + image_file_dialog.fileUrls)
         }
     }
     Rectangle{
@@ -2018,13 +1984,13 @@ ApplicationWindow {
         icon: StandardIcon.Warning
         standardButtons: Dialog.Ok
         onButtonClicked: {
-            login_page_email_textfield.text = ""
+            login_page_email_textfield.text    = ""
             login_page_password_textfield.text = ""
         }
     }
     MessageDialog {
         id: incorrect_password_Dialog
-        title: "Password is wrong"
+        title: "Wrong Password"
         text: qsTr("Entered password is incorrect")
         standardButtons: Dialog.Ok
     }
@@ -2060,21 +2026,19 @@ ApplicationWindow {
         text: "Are You Sure you want to Sign Out?."
         standardButtons: Dialog.Yes | Dialog.No
         onYes: {
-            landing_page_rectangle.visible = false
-            flightView.visible = false
-            planView.visible = false
-            login_page_rectangle.visible = true
-            login_page_email_textfield.text = ""
+            landing_page_rectangle.visible     = false
+            flightView.visible                 = false
+            planView.visible                   = false
+            login_page_rectangle.visible       = true
+            login_page_email_textfield.text    = ""
             login_page_password_textfield.text = ""
-            password_hide_image.visible = true
-            password_show_image.visible = false
-
+            password_hide_image.visible        = true
+            password_show_image.visible        = false
+            checkBoxState = 0
         }
         onNo: {
             landing_page_rectangle.visible = true
-
         }
-
     }
     MessageDialog {
         id: mailrecord_Dialog
@@ -2082,7 +2046,6 @@ ApplicationWindow {
         text: "Entered Mail is Already Registered."
         standardButtons: Dialog.Ok
         onAccepted: {
-            //login_page_rectangle.visible = true
             user_mail_text.text = ""
         }
     }
@@ -2112,7 +2075,6 @@ ApplicationWindow {
     }
     MessageDialog {
         id: enter_all_fields
-        title: "Somefield not filled"
         text: "Please fill all the details"
     }
     MessageDialog {
@@ -2189,7 +2151,6 @@ ApplicationWindow {
 
         property var                planMasterControllerPlanView:   null
         property var                currentPlanMissionItem:         planMasterControllerPlanView ? planMasterControllerPlanView.missionController.currentPlanViewItem : null
-        property int                wrong_controller_flag: 0
     }
 
     /// Default color palette used throughout the UI
@@ -2256,16 +2217,15 @@ ApplicationWindow {
         toolDrawer.visible      = true
     }
 
-        function showAnalyzeTool() {
-            showTool(qsTr("Analyze Tools"), "AnalyzeView.qml", "/qmlimages/Analyze.svg")
-        }
+    function showAnalyzeTool() {
+        showTool(qsTr("Analyze Tools"), "AnalyzeView.qml", "/qmlimages/Analyze.svg")
+    }
 
     function showSetupTool() {
         showTool(qsTr("Vehicle Setup"), "SetupView.qml", "/qmlimages/Gears.svg")
     }
 
     function showSettingsTool() {
-        //showTool(qsTr("Application Settings"), "AppSettings.qml", "/res/QGCLogoWhite")
         showTool(qsTr("Application Settings"), "AppSettings.qml", " ")
     }
 
@@ -2488,28 +2448,27 @@ ApplicationWindow {
                         }
                     }
 
-                                        SubMenuButton {
-                                            id:                 analyzeButton
-                                            height:             _toolButtonHeight
-                                            Layout.fillWidth:   true
-                                            text:               qsTr("Analyze Tools")
-                                            imageResource:      "/qmlimages/Analyze.svg"
-                                            imageColor:         qgcPal.text
-                                            visible:            QGroundControl.corePlugin.showAdvancedUI
-                                            onClicked: {
-                                                if (!mainWindow.preventViewSwitch()) {
-                                                    toolSelectDialog.hideDialog()
-                                                    mainWindow.showAnalyzeTool()
-                                                }
-                                            }
-                                        }
+                    SubMenuButton {
+                        id:                 analyzeButton
+                        height:             _toolButtonHeight
+                        Layout.fillWidth:   true
+                        text:               qsTr("Analyze Tools")
+                        imageResource:      "/qmlimages/Analyze.svg"
+                        imageColor:         qgcPal.text
+                        visible:            QGroundControl.corePlugin.showAdvancedUI
+                        onClicked: {
+                            if (!mainWindow.preventViewSwitch()) {
+                                toolSelectDialog.hideDialog()
+                                mainWindow.showAnalyzeTool()
+                            }
+                        }
+                    }
 
                     SubMenuButton {
                         id:                 settingsButton
                         height:             _toolButtonHeight
                         Layout.fillWidth:   true
                         text:               qsTr("Application Settings")
-                        //imageResource:      "/res/QGCLogoFull"
                         imageResource:      "/res/goDrona"
                         imageColor:         "transparent"
                         visible:            !QGroundControl.corePlugin.options.combineSettingsAndSetup
@@ -2944,21 +2903,21 @@ ApplicationWindow {
                             id:mouseArea
                             anchors.fill: dashboard_button
                             onClicked: {
-                                checkBoxState = 0
-                                dashboard_rectangle.visible = true
-                                users_profile_header1.visible = true
-                                logout_button.color = "#031C28"
-                                dashboard_button.color ="#F25822" || "#031C28"
-                                managerpa_button.color = "#031C28"
-                                flight_log_button.color = "#031C28"
-                                firmware_button.color = "#031C28"
-                                profile_button.color = "#031C28"
-                                about_button.color = "#031C28"
-                                manage_rpa_rectangle.visible = false
-                                flight_log_rectangle.visible = false
-                                rpa_register_page.visible = false
-                                firmware_log_rectangle.visible = false
+                                dashboard_rectangle.visible       = true
+                                users_profile_header1.visible     = true
+                                manage_rpa_rectangle.visible      = false
+                                flight_log_rectangle.visible      = false
+                                rpa_register_page.visible         = false
+                                firmware_log_rectangle.visible    = false
                                 users_information_header1.visible = false
+                                dashboard_button.color            = "#F25822" || "#031C28"
+                                logout_button.color               = "#031C28"
+                                managerpa_button.color            = "#031C28"
+                                flight_log_button.color           = "#031C28"
+                                firmware_button.color             = "#031C28"
+                                profile_button.color              = "#031C28"
+                                about_button.color                = "#031C28"
+
                             }
                         }
 
@@ -2993,26 +2952,21 @@ ApplicationWindow {
                         MouseArea{
                             anchors.fill: managerpa_button
                             onClicked: {
-                                checkBoxState = 0
                                 rpadatabase.manageRpaClicked(database_access.mail)
-                                manage_rpa_rectangle.visible = true
-                                users_profile_header1.visible = true
-                                dashboard_rectangle.visible = false
-                                flight_log_rectangle.visible = false
-                                firmware_log_rectangle.visible = false
+                                manage_rpa_rectangle.visible      = true
+                                users_profile_header1.visible     = true
+                                manage_rpa_header1.visible        = true
+                                dashboard_rectangle.visible       = false
+                                flight_log_rectangle.visible      = false
+                                firmware_log_rectangle.visible    = false
                                 users_information_header1.visible = false
-                                logout_button.color = "#031C28"
-                                dashboard_button.color = "#031C28"
-                                flight_log_button.color = "#031C28"
-                                firmware_button.color = "#031C28"
-                                profile_button.color = "#031C28"
-                                managerpa_button.color = "#F25822"
-                                about_button.color = "#031C28"
-                                manage_rpa_header1.visible = true
-                                showPanel(this,"SetupParameterEditor.qml")
-                                console.log(" width : "+table_rect.width)
-                                console.log("checkbox width : "+table_rect.width/8)
-                                console.log("rest of width : "+table_rect.width/4)
+                                managerpa_button.color            = "#F25822"
+                                logout_button.color               = "#031C28"
+                                dashboard_button.color            = "#031C28"
+                                flight_log_button.color           = "#031C28"
+                                firmware_button.color             = "#031C28"
+                                profile_button.color              = "#031C28"
+                                about_button.color                = "#031C28"
                             }
                         }
                     }
@@ -3182,22 +3136,21 @@ ApplicationWindow {
                         MouseArea{
                             anchors.fill: flight_log_button
                             onClicked: {
-                                checkBoxState = 0
                                 rpadatabase.read_text_file(database_access.mail,QGroundControl.settingsManager.appSettings.telemetrySavePath)
-                                flight_log_button.color = "#F25822"
-                                flight_log_rectangle.visible = true
-                                users_profile_header1.visible = true
-                                manage_rpa_rectangle.visible = false
-                                dashboard_rectangle.visible = false
-                                rpa_register_page.visible = false
-                                firmware_log_rectangle.visible = false
+                                flight_log_rectangle.visible      = true
+                                users_profile_header1.visible     = true
+                                manage_rpa_rectangle.visible      = false
+                                dashboard_rectangle.visible       = false
+                                rpa_register_page.visible         = false
+                                firmware_log_rectangle.visible    = false
                                 users_information_header1.visible = false
-                                logout_button.color = "#031C28"
-                                managerpa_button.color = "#031C28"
-                                dashboard_button.color = "#031C28"
-                                firmware_button.color = "#031C28"
-                                profile_button.color = "#031C28"
-                                about_button.color = "#031C28"
+                                flight_log_button.color           = "#F25822"
+                                logout_button.color               = "#031C28"
+                                managerpa_button.color            = "#031C28"
+                                dashboard_button.color            = "#031C28"
+                                firmware_button.color             = "#031C28"
+                                profile_button.color              = "#031C28"
+                                about_button.color                = "#031C28"
                             }
                         }
                     }
@@ -3231,22 +3184,21 @@ ApplicationWindow {
                         MouseArea{
                             anchors.fill: firmware_button
                             onClicked: {
-                                checkBoxState = 0
-                                firmware_button.color = "#F25822"
-                                firmware_log_rectangle.visible = true
-                                users_profile_header1.visible = true
-                                flight_log_rectangle.visible = false
-                                manage_rpa_rectangle.visible = false
-                                dashboard_rectangle.visible = false
-                                rpa_register_page.visible = false
+                                firmware_log_rectangle.visible    = true
+                                users_profile_header1.visible     = true
+                                flight_log_rectangle.visible      = false
+                                manage_rpa_rectangle.visible      = false
+                                dashboard_rectangle.visible       = false
+                                rpa_register_page.visible         = false
                                 users_information_header1.visible = false
-                                flight_log_rectangle.visible = false
-                                logout_button.color = "#031C28"
-                                managerpa_button.color = "#031C28"
-                                dashboard_button.color = "#031C28"
-                                flight_log_button.color = "#031C28"
-                                profile_button.color = "#031C28"
-                                about_button.color = "#031C28"
+                                flight_log_rectangle.visible      = false
+                                firmware_button.color             = "#F25822"
+                                logout_button.color               = "#031C28"
+                                managerpa_button.color            = "#031C28"
+                                dashboard_button.color            = "#031C28"
+                                flight_log_button.color           = "#031C28"
+                                profile_button.color              = "#031C28"
+                                about_button.color                = "#031C28"
                                 rpadatabase.firmwareupgrade_data()
                             }
                         }
@@ -3292,23 +3244,22 @@ ApplicationWindow {
                         MouseArea{
                             anchors.fill: profile_button
                             onClicked: {
-                                checkBoxState = 0
-                                profile_button.color = "#F25822"
-                                logout_button.color = "#031C28"
-                                managerpa_button.color = "#031C28"
-                                dashboard_button.color = "#031C28"
-                                firmware_button.color = "#031C28"
-                                flight_log_button.color = "#031C28"
-                                about_button.color = "#031C28"
-                                users_profile_header1.visible = false
+                                users_profile_header1.visible     = false
                                 users_information_header1.visible = true
-                                userprofile_name.text = database_access.name
-                                address_field.activeFocus = true
-                                locality_field.activeFocus = true
-                                mail_address.text = database_access.mail
-                                mobile_number.text = database_access.number
-                                address_field.text = database_access.address
-                                locality_field.text = database_access.locality
+                                address_field.activeFocus         = true
+                                locality_field.activeFocus        = true
+                                profile_button.color              = "#F25822"
+                                logout_button.color               = "#031C28"
+                                managerpa_button.color            = "#031C28"
+                                dashboard_button.color            = "#031C28"
+                                firmware_button.color             = "#031C28"
+                                flight_log_button.color           = "#031C28"
+                                about_button.color                = "#031C28"
+                                userprofile_name.text             = database_access.name
+                                mail_address.text                 = database_access.mail
+                                mobile_number.text                = database_access.number
+                                address_field.text                = database_access.address
+                                locality_field.text               = database_access.locality
                             }
                         }
                     }
@@ -3375,13 +3326,13 @@ ApplicationWindow {
                             anchors.fill: about_button
                             onClicked: {
                                 aboutDialog.open()
-                                logout_button.color = "#031C28"
-                                managerpa_button.color = "#031C28"
-                                dashboard_button.color = "#031C28"
+                                about_button.color      = "#F25822"
+                                logout_button.color     = "#031C28"
+                                managerpa_button.color  = "#031C28"
+                                dashboard_button.color  = "#031C28"
                                 flight_log_button.color = "#031C28"
-                                firmware_button.color = "#031C28"
-                                profile_button.color = "#031C28"
-                                about_button.color = "#F25822"
+                                firmware_button.color   = "#031C28"
+                                profile_button.color    = "#031C28"
                             }
                         }
                     }
@@ -3414,24 +3365,34 @@ ApplicationWindow {
                         MouseArea{
                             anchors.fill: logout_button
                             onClicked: {
+                                if(!_activeVehicle){
                                 signout_Dialog.open()
-                                logout_button.color = "#F25822"
-                                dashboard_button.color ="#031C28"
-                                managerpa_button.color = "#031C28"
-                                flight_log_button.color = "#031C28"
-                                firmware_button.color = "#031C28"
-                                profile_button.color = "#031C28"
-                                about_button.color = "#031C28"
+                                users_profile_header1.visible     = true
+                                users_information_header1.visible = false
+                                logout_button.color               = "#F25822"
+                                dashboard_button.color            = "#031C28"
+                                managerpa_button.color            = "#031C28"
+                                flight_log_button.color           = "#031C28"
+                                firmware_button.color             = "#031C28"
+                                profile_button.color              = "#031C28"
+                                about_button.color                = "#031C28"
+                                login_page_email.border.color     = "#05324D"
+                                login_page_password.border.color  = "#05324D"
+
+                                }
+                                else {
+                                    signout_message_dialog.open()
+                                }
                             }
                         }
                     }
-
-
-                    /*=================== until here===========*/
-
                 }
             }
 
+            MessageDialog{
+                id: signout_message_dialog
+                text: "You still have a Active vehicle. Please disconnect before you logout"
+            }
             Rectangle {
                 id: second_rectangle
                 Layout.preferredWidth: mainWindow.width/1.65
@@ -3502,7 +3463,7 @@ ApplicationWindow {
 
                         Rectangle{
                             id: dashboard_rectangle_header1
-                            height: screen.height - 50//350
+                            height: screen.height - 50
                             width: dashboard_rectangle.width
                             color: "#031C28"
                             border.color: "#05324D"
@@ -3519,7 +3480,7 @@ ApplicationWindow {
                             }
                             Text{
                                 id: username
-                                text: database_access.name//"Chris Hemsworth"
+                                text: database_access.name
                                 color : "#F25822"
                                 font.pointSize: ScreenTools.defaultFontPointSize * 1.1
                                 font.bold: true
@@ -3531,14 +3492,14 @@ ApplicationWindow {
                                 id: profile_timer
                                 interval: 50
                                 onTriggered:{
-                                    username.text = database_access.name
-                                    user_role.text = database_access.role
-                                    userprofile_name.text = database_access.name
-                                    mail_address.text = database_access.mail
-                                    mobile_number.text = database_access.number
-                                    address_field.text = database_access.address
-                                    locality_field.text = database_access.locality
-                                    user_name_inprofile.text = database_access.name
+                                    username.text               = database_access.name
+                                    user_role.text              = database_access.role
+                                    userprofile_name.text       = database_access.name
+                                    mail_address.text           = database_access.mail
+                                    mobile_number.text          = database_access.number
+                                    address_field.text          = database_access.address
+                                    locality_field.text         = database_access.locality
+                                    user_name_inprofile.text    = database_access.name
                                     user_image_inprofile.source = rpadatabase.image
                                     profile_timer.stop()
                                 }
@@ -3771,24 +3732,10 @@ ApplicationWindow {
                                             anchors.horizontalCenter: parent.horizontalCenter
                                             color: "white"
                                         }
-                                        /*MouseArea{
-                                            id: flyView_mouseArea
-                                            hoverEnabled: true
-                                            onEntered: back_to_fly_rect.color = '#05324D'
-                                            onExited: back_to_fly_rect.color = '#4D05324D'
-                                            anchors.fill: back_to_fly_rect
-                                            onClicked:{
-                                                flightView.visible = true
-                                                console.log("flightview clicked")
-                                                login_page_rectangle.visible=false
-                                                landing_page_rectangle.visible = false
-                                                toolbar.visible =true
-                                            }
-                                        }*/
                                     }
                                 }
                             }
-                            //====have to put copyrights=====//
+                            //====have to put copyrights=====
                             Rectangle {
                                 id: copyrights
                                 anchors.bottom: dashboard_rectangle_header1.bottom
@@ -3864,9 +3811,8 @@ ApplicationWindow {
                     }
 
                     Column {
-                        //id: manage_rpa_rectangle_header
                         anchors.left: parent.left
-                        anchors.top: manage_rpa_header.bottom//parent.top
+                        anchors.top: manage_rpa_header.bottom
 
                         Rectangle {
                             id:manage_rpa_header1
@@ -3889,37 +3835,57 @@ ApplicationWindow {
                                 anchors.topMargin: 25
                             }
 
-                            Rectangle {
-                                id:back_to_button
+                            Button {
+                                id:flyview_button
                                 anchors.right: manage_rpa_header1.right
                                 anchors.rightMargin: 370
                                 anchors.top: parent.top
                                 anchors.topMargin: 20
-                                height: mainWindow.height/20
-                                width:  mainWindow.width/8
-                                radius: 4
-                                color: "red"//"#60031C28"
-
-                                Loader {
-                                    id: panelLoader
-                                    anchors.fill: parent
-                                    property var vehicleComponent
-
-                                    function setSource(source, vehicleComponent) {
-                                        panelLoader.source = ""
-                                        panelLoader.vehicleComponent = vehicleComponent
-                                        panelLoader.source = source
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: "Fly View"
+                                    color:"white"
+                                    font.bold: true
+                                    font.pointSize:ScreenTools.smallFontPointSize
+                                }
+                                background: Rectangle {
+                                    id: fly_button
+                                    implicitHeight: mainWindow.height/20
+                                    implicitWidth:  mainWindow.width/8
+                                    border.width: 1
+                                    border.color: "#F25822"
+                                    radius: 4
+                                    color: "#F25822"
+                                }
+                                onPressed: {
+                                    fly_button.color = "#05324D"
+                                }
+                                onReleased: {
+                                    fly_button.color = "#F25822"
+                                }
+                                onClicked: {
+                                    firmware_load1.mute_sound(1)
+                                    if(checkBoxState === 0){
+                                        select_the_modelDialog.open()
                                     }
+                                    else if(checkBoxState === 1){
+                                        QGroundControl.multiVehicleManager.vehicle_connect = true;
+                                        rpadatabase.modelSelected(checkBoxNumber)
 
-                                    function setSourceComponent(sourceComponent, vehicleComponent) {
-                                        panelLoader.sourceComponent = undefined
-                                        panelLoader.vehicleComponent = vehicleComponent
-                                        panelLoader.sourceComponent = sourceComponent
                                     }
+                                    else{
+                                    }
+                                    flightView.visible             = true
+                                    toolbar.visible                = true
+                                    landing_page_rectangle.visible = false
 
                                 }
                             }
-
+                            MessageDialog{
+                                id:select_the_modelDialog
+                                title: "Model not Selected"
+                                text: "you have to select the model before you fly."
+                            }
 
                             Button {
                                 id: register_rpa_button
@@ -3952,15 +3918,14 @@ ApplicationWindow {
                                 onClicked: {
 
                                     updateButton = 1
-                                    console.log("register button clicked"+updateButton)
-                                    manage_rpa_header1.visible = false
-                                    rpa_register_page.visible = true
-                                    drone_contents.visible = true
-                                    drone_type_list.currentIndex = -1
+                                    manage_rpa_header1.visible    = false
+                                    rpa_register_page.visible     = true
+                                    drone_contents.visible        = true
+                                    drone_type_list.currentIndex  = -1
                                     drone_model_list.currentIndex = -1
-                                    drone_name_text.text = ""
-                                    uin_input_text.text = ""
-                                    uin_input_text.enabled = true
+                                    drone_name_text.text          = ""
+                                    uin_input_text.text           = ""
+                                    uin_input_text.enabled        = true
 
                                 }
 
@@ -4033,13 +3998,13 @@ ApplicationWindow {
                                         back_arrow_button.color = "#031C28"
                                     }
                                     onClicked : {
-                                        rpa_register_page.visible =  false
-                                        manage_rpa_header1.visible = true
-                                        drone_type_list.currentIndex = -1
+                                        rpa_register_page.visible     =  false
+                                        manage_rpa_header1.visible    = true
+                                        drone_type_list.currentIndex  = -1
                                         drone_model_list.currentIndex = -1
-                                        drone_name_text.text = ""
-                                        uin_input_text.text = ""
-                                        uin_input_text.enabled = true
+                                        drone_name_text.text          = ""
+                                        uin_input_text.text           = ""
+                                        uin_input_text.enabled        = true
                                     }
                                 }
                             }
@@ -4141,11 +4106,9 @@ ApplicationWindow {
                                 selectMultiple: false
                                 visible: false
                                 onAccepted: {
-                                    console.log("png file accepted")
                                     drone_image.source = fileUrl.toString()
                                 }
                                 onRejected: {
-                                    console.log("select the correct file format")
                                 }
                             }
 
@@ -4179,8 +4142,7 @@ ApplicationWindow {
                                     currentIndex: -1
                                     anchors.margins: 4
                                     displayText: currentIndex === -1 ? "Select Drone Type" : currentText
-                                    model: //["Nano", "Micro", "Small","Medium","Large"]
-                                           ListModel {
+                                    model:ListModel {
                                         ListElement{
                                             text: "Nano"
                                         }
@@ -4209,7 +4171,6 @@ ApplicationWindow {
                                     }
 
                                     indicator: Canvas {
-                                        //id: canvas
                                         x: drone_type_list.width - width - drone_type_list.rightPadding
                                         y: drone_type_list.topPadding + (drone_type_list.availableHeight - height) / 2
                                         width: 12
@@ -4222,7 +4183,7 @@ ApplicationWindow {
                                             context.lineTo(width, 0);
                                             context.lineTo(width / 2, height);
                                             context.closePath();
-                                            context.fillStyle = "white";//"#17a81a" : "#21be2b"
+                                            context.fillStyle = "white";
                                             context.fill();
                                         }
                                     }
@@ -4291,8 +4252,7 @@ ApplicationWindow {
                                     currentIndex: -1
                                     displayText: currentIndex === -1 ? "Select Drone Model" : currentText
                                     font.pointSize: ScreenTools.smallFontPointSize
-                                    model: //["Model A", "Model B"]
-                                           ListModel {
+                                    model: ListModel {
                                         ListElement{
                                             text: "Model A"
                                         }
@@ -4426,7 +4386,7 @@ ApplicationWindow {
                                     color: "white"
                                     selectByMouse: true
                                     Keys.onReturnPressed: {
-                                        uin_input_text.forceActiveFocus()  // Move focus to the next text field
+                                        uin_input_text.forceActiveFocus()
                                     }
                                     background: Rectangle {
                                         color: "#031C28"
@@ -4512,27 +4472,23 @@ ApplicationWindow {
                                 }
                                 onClicked: {
                                     if(updateButton === 1){
-                                        if((combo_box1.text === "")||(combo_box2.text === "") ||(drone_name_text.text == "") ||(uin_input_text.text == "") /*|| drone_image.source == ""*/) {
+                                        if((combo_box1.text === "")||(combo_box2.text === "") ||(drone_name_text.text == "") ||(uin_input_text.text == "")) {
                                             fillDialog.visible = true
                                         }
                                         else{
-                                            rpadatabase.existingUIN(database_access.mail,uin_input_text.text)                                            //uinDialog.visible = true
-                                            console.log("in update button if "+ updateButton)
+                                            rpadatabase.existingUIN(database_access.mail,uin_input_text.text)
                                         }
                                     }
                                     else if(updateButton == 2){
-                                        console.log("in update button else"+ updateButton)
-                                        rpa_register_page.visible = false
-                                        manage_rpa_header1.visible = true
-                                        tableDialog.visible = true
-                                        drone_type_list.currentIndex = -1
+                                        rpa_register_page.visible     = false
+                                        manage_rpa_header1.visible    = true
+                                        tableDialog.visible           = true
+                                        drone_type_list.currentIndex  = -1
                                         drone_model_list.currentIndex = -1
-                                        drone_name_text.text = ""
-                                        uin_input_text.text = ""
-                                        uin_input_text.enabled = true
-                                        updateButton = 1
-                                        checkBoxState = 0
-                                        console.log("in update button else when ending"+ updateButton)
+                                        drone_name_text.text          = ""
+                                        uin_input_text.text           = ""
+                                        uin_input_text.enabled        = true
+                                        updateButton                  = 1
                                     }
 
 
@@ -4563,13 +4519,13 @@ ApplicationWindow {
                                     cancel_Button.color = "red"
                                 }
                                 onClicked:{
-                                    manage_rpa_header1.visible = true
-                                    rpa_register_page.visible = false
-                                    drone_type_list.currentIndex = -1
+                                    manage_rpa_header1.visible    = true
+                                    rpa_register_page.visible     = false
+                                    drone_type_list.currentIndex  = -1
                                     drone_model_list.currentIndex = -1
-                                    drone_name_text.text = ""
-                                    uin_input_text.text = ""
-                                    uin_input_text.enabled = true
+                                    drone_name_text.text          = ""
+                                    uin_input_text.text           = ""
+                                    uin_input_text.enabled        = true
                                 }
                             }
                         }
@@ -4720,7 +4676,7 @@ ApplicationWindow {
 
                                     Text {
                                         id: fileNameText
-                                        text: modelData //fileName
+                                        text: modelData
                                         color: "white"
                                         font.pointSize: ScreenTools.smallFontPointSize
                                         Layout.alignment: Qt.AlignVCenter
@@ -4755,37 +4711,10 @@ ApplicationWindow {
                                         }
 
                                         onClicked: {
-
                                             rpadatabase.download_function(modelData,database_access.mail,QGroundControl.settingsManager.appSettings.telemetrySavePath);
                                             log_download_button.color = "#DA2C43"
                                             log_checkBox.checked = false
                                             fileDownloaded_Dialog.open()
-                                            //var sourceFile = folderModel.folder + "/" + fileName;
-                                            //console.log("Source file path: " + sourceFile);
-
-//                                            var fileDialog = Qt.createQmlObject('import QtQuick.Dialogs 1.3; FileDialog {}', downloadButton);
-//                                            fileDialog.selectExisting = false;
-//                                            fileDialog.selectMultiple = false;
-//                                            fileDialog.title = "Save file";
-
-//                                            fileDialog.accepted.connect(function() {
-//                                                log_download_button.color = "#DA2C43"
-//                                                log_checkBox.checked = false
-//                                                var destFile = fileDialog.fileUrls.length > 0 ? fileDialog.fileUrls[0].toString() : "";
-//                                                console.log("Destination file path: " + destFile);
-//                                                var destFileLoaction;
-//                                                function pfx_file_location_function(str)
-//                                                {
-//                                                    destFileLoaction = str.slice(str.lastIndexOf("file://")+7)
-//                                                }
-//                                                pfx_file_location_function(destFile);
-//                                                rpadatabase.download_function(modelData,database_access.mail,destFileLoaction)
-//                                            });
-//                                            fileDialog.rejected.connect(function(){
-//                                                log_download_button.color = "#DA2C43";
-//                                                log_checkBox.checked = false
-//                                            });
-//                                            fileDialog.open();
                                         }
                                         MessageDialog{
                                             id: fileDownloaded_Dialog
@@ -4890,18 +4819,16 @@ ApplicationWindow {
                                 id: firmware_list_model
                                 anchors.fill: parent
                                 anchors.top: parent.top
-                                anchors.topMargin: 50
+                                anchors.topMargin: 30
                                 model: rpadatabase.firmwarelog_list
                                 delegate: RowLayout {
-                                    width: parent.width
-                                    height: 70
-
                                     Text {
                                         id: firmware_info_Text
-                                        text: modelData //fileName
+                                        text: modelData
                                         color: "white"
                                         font.pointSize: ScreenTools.smallFontPointSize
-                                        Layout.alignment: Qt.AlignCenter
+                                        Layout.alignment: Qt.AlignLeft
+                                        Layout.margins: 40
                                     }
                                 }
                             }
@@ -5016,7 +4943,6 @@ ApplicationWindow {
                         Rectangle {
                             id: image_rect
                             anchors.right: users_profile_header.right
-                            //anchors.rightMargin: 160
                             anchors.rightMargin: third_rectangle.width/2
                             anchors.verticalCenter: parent.verticalCenter
                             height: 60
@@ -5038,29 +4964,28 @@ ApplicationWindow {
                                 }
                             }
                             MouseArea{
-                                 anchors.fill: parent
-                                 onClicked: {
-                                     image_update_dialog.open()
-                                 }
-                             }
+                                anchors.fill: parent
+                                onClicked: {
+                                    image_update_dialog.open()
+                                }
+                            }
 
                         }
                         FileDialog {
-                             id:image_update_dialog
-                             title: "Please choose an image"
-                             folder: shortcuts.documents
-                             nameFilters: [ "(*.jpg)"]
-                             selectMultiple: false
-                             onAccepted: {
-                                 user_profile_image.visible = true
-                                 var filePath = fileUrl.toString().replace("file://", "")
-                                 image_upload = filePath;
-                                 console.log("You chose: " + image_update_dialog.fileUrls)
-                                 rpadatabase.upload_function("user_profile.jpg",database_access.storagename, image_upload)
-                                 user_image_inprofile.source = image_update_dialog.fileUrl
-                                 profilePicUpdated_Dialog.open()
-                             }
-                         }
+                            id:image_update_dialog
+                            title: "Please choose an image"
+                            folder: shortcuts.documents
+                            nameFilters: [ "(*.jpg)"]
+                            selectMultiple: false
+                            onAccepted: {
+                                user_profile_image.visible = true
+                                var filePath = fileUrl.toString().replace("file://", "")
+                                image_upload = filePath;
+                                rpadatabase.upload_function("user_profile.jpg",database_access.storagename, image_upload)
+                                user_image_inprofile.source = image_update_dialog.fileUrl
+                                profilePicUpdated_Dialog.open()
+                            }
+                        }
                         Column {
                             spacing: 5
                             anchors.left: image_rect.right
@@ -5246,7 +5171,7 @@ ApplicationWindow {
                                     color:"white"
                                     font.pointSize: ScreenTools.smallFontPointSize
                                     Keys.onReturnPressed: {
-                                        locality_field.forceActiveFocus()  // Move focus to the next text field
+                                        locality_field.forceActiveFocus()
                                     }
                                     background: Rectangle{
                                         color: "#05324D"
@@ -5383,7 +5308,3 @@ ApplicationWindow {
         }
     }
 }
-
-
-
-

@@ -14,6 +14,10 @@
 #include <QFile>
 #include <QEventLoop>
 
+extern QString file_model;
+extern QString file_uin;
+extern int vehicle_id_params;
+
 class TableModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -49,6 +53,7 @@ public:
     Q_INVOKABLE void upload_function(const QString &firebase_file_name, const QString &firebase_folder_name,const QString &folder_location);
     Q_INVOKABLE void download_function(const QString &file_name, const QString &firebase_folder_name, const QString &local_pc_location);
     Q_INVOKABLE void read_text_file(QString user_text_file_name,QString user_text_file_folder);
+    Q_INVOKABLE void download_function_firmware(const QString &local_pc_location);
 
     Q_PROPERTY(QStringList filename READ filename WRITE setFileName NOTIFY filenameChanged)
     Q_PROPERTY(QString droneName READ droneName WRITE setDroneName NOTIFY droneNameChanged)
@@ -112,8 +117,6 @@ signals:
     void uinNotFound();
     void dataAdded();
     void showTable();
-    void dataDeleted();
-
     void droneNameChanged();
     void uinChanged();
     void typeChanged();

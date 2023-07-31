@@ -6,7 +6,6 @@
 #include <QMessageBox>
 #include <QPushButton>
 
-
 QString data_model_A_value1= "a";
 QString data_model_A_value2= "b";
 QString data_model_B_value1= "c";
@@ -17,7 +16,8 @@ QString code_model_A_value2= "f";
 QString code_model_B_value1= "g";
 QString code_model_B_value2= "h";
 
-int checksum_compare = 0;
+int sound_flag = 0;
+bool checksum_match = false;
 
 FirmwareUpdate::FirmwareUpdate(QObject *parent)
     : QObject{parent}
@@ -42,16 +42,13 @@ void FirmwareUpdate::checksum_generation_process_model_A(QString real_file_locat
     if (file.open(QIODevice::ReadOnly)) {
         QByteArray fileData = file.readAll();
         QByteArray hashData = QCryptographicHash::hash(fileData, QCryptographicHash::Sha256);
-        qDebug() << hashData.toHex();
         data_model_A_value1 = hashData.toHex();
     }
-
 
     QFile file1(a_code_location);
     if (file1.open(QIODevice::ReadOnly)) {
         QByteArray fileData = file1.readAll();
         QByteArray hashData = QCryptographicHash::hash(fileData, QCryptographicHash::Sha256);
-        qDebug() << hashData.toHex();
         code_model_A_value1 = hashData.toHex();
     }
     file.close();
@@ -137,16 +134,9 @@ void FirmwareUpdate::compare_file_model_A(QString real_file_location)
     QString code_list1 = code_model_A_value1;
     QString code_list2 = code_model_A_value2;
 
-    qDebug() <<"Model Generated"<< data_list1;
-    qDebug() << "Model Calculated"<< data_list2;
-
-    qDebug() << "Code Generated"<< code_list1;
-    qDebug() << "Code Calculated"<< code_list2;
-
-    checksum_compare = 0;
-
     if((data_list1 == data_list2) && (code_list1 == code_list2))
             {
+                checksum_match = true;
                 QMessageBox msgBox;
                 msgBox.setText("Model A - The Checksum Matches. Please continue");
                 msgBox.setStyleSheet("color:white;background:#05324D");
@@ -156,15 +146,11 @@ void FirmwareUpdate::compare_file_model_A(QString real_file_location)
                 msgBox.exec();
 
         load_file_model_A(real_file_location);
-        qDebug()<< "Model A - The checksum matches. Please continue";
-
-        checksum_compare = 1;
 
         return;
-
     }
     else {
-
+        checksum_match = false;
         QMessageBox msgBox;
         msgBox.setText("Model A - The Checksum does not match. Please contact your OEM");
         msgBox.setStyleSheet("color:white;background:#05324D");
@@ -172,9 +158,6 @@ void FirmwareUpdate::compare_file_model_A(QString real_file_location)
         msgBox.addButton(confirmButton, QMessageBox::AcceptRole);
         msgBox.setDefaultButton(confirmButton);
         msgBox.exec();
-
-        qDebug()<< "Model A - The Checksum does not match. Please contact your OEM";
-
     }
 }
 void FirmwareUpdate::load_file_model_A(QString real_file_location)
@@ -187,7 +170,6 @@ void FirmwareUpdate::load_file_model_A(QString real_file_location)
         emit firmware_load_model_AChanged();
     }
     else {
-        qDebug()<<"no such file";
     }
 }
 QString FirmwareUpdate::firmware_load_model_A()
@@ -221,7 +203,6 @@ void FirmwareUpdate::checksum_generation_process_model_B(QString real_file_locat
     if (file.open(QIODevice::ReadOnly)) {
         QByteArray fileData = file.readAll();
         QByteArray hashData = QCryptographicHash::hash(fileData, QCryptographicHash::Sha256);
-        qDebug() << hashData.toHex();
         data_model_B_value1 = hashData.toHex();
     }
 
@@ -229,7 +210,6 @@ void FirmwareUpdate::checksum_generation_process_model_B(QString real_file_locat
     if (file2.open(QIODevice::ReadOnly)) {
         QByteArray fileData = file2.readAll();
         QByteArray hashData = QCryptographicHash::hash(fileData, QCryptographicHash::Sha256);
-        qDebug() << hashData.toHex();
         code_model_B_value1 = hashData.toHex();
     }
     file.close();
@@ -254,7 +234,6 @@ void FirmwareUpdate::setgenerated_checksum_model_B(const QString &newgenerated_c
 void FirmwareUpdate::checksum_calculation_process_model_B(QString real_file_location)
 {
     QString calculated_data_checksum_cmd_model_B =  real_file_location + "/GoDrona GCS/Telemetry/data_B_checksum.txt";
-    qDebug()<<"my name is " << real_file_location;
     QFile file(calculated_data_checksum_cmd_model_B);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
 
@@ -312,16 +291,9 @@ void FirmwareUpdate::compare_file_model_B(QString real_file_location)
     QString code_list1 = code_model_B_value1;
     QString code_list2 = code_model_B_value2;
 
-    qDebug() <<"Model Generated"<< data_list1;
-    qDebug() << "Model Calculated"<< data_list2;
-
-    qDebug() << "Code Generated"<< code_list1;
-    qDebug() << "Code Calculated"<< code_list2;
-
-    checksum_compare = 0;
-
-    if((data_list1 == data_list2) && (code_list1 == code_list2)){
-
+    if((data_list1 == data_list2) && (code_list1 == code_list2))
+    {
+        checksum_match = true;
         QMessageBox msgBox;
         msgBox.setText("Model B - The Checksum Matches. Please continue");
         msgBox.setStyleSheet("color:white;background:#05324D");
@@ -332,13 +304,10 @@ void FirmwareUpdate::compare_file_model_B(QString real_file_location)
 
         load_file_model_B(real_file_location);
 
-        qDebug()<< "Model B - The checksum matches. Please continue";
-
-        checksum_compare = 1;
         return;
     }
     else {
-
+        checksum_match = false;
         QMessageBox msgBox;
         msgBox.setText("Model B - The Checksum does not match. Please contact your OEM");
         msgBox.setStyleSheet("color:white;background:#05324D");
@@ -346,14 +315,13 @@ void FirmwareUpdate::compare_file_model_B(QString real_file_location)
         msgBox.addButton(confirmButton, QMessageBox::AcceptRole);
         msgBox.setDefaultButton(confirmButton);
         msgBox.exec();
-        qDebug()<< "Model B - The Checksum does not match. Please contact your OEM";
     }
 
 }
 
 void FirmwareUpdate::load_file_model_B(QString real_file_location)
 {
-    QString filename = real_file_location + "/GoDrona GCS/Telemetry/model_B.params";;
+    QString filename = real_file_location + "/GoDrona GCS/Telemetry/model_B.params";
     QFile file(filename);
 
     if(file.exists()){
@@ -361,7 +329,6 @@ void FirmwareUpdate::load_file_model_B(QString real_file_location)
     emit firmware_load_model_BChanged();
     }
     else {
-    qDebug()<<"no such file";
     }
 }
 QString FirmwareUpdate::firmware_load_model_B()
@@ -374,4 +341,10 @@ void FirmwareUpdate::setfirmware_load_model_B(const QString &newfirmware_load_mo
     if (model_B_firmware_load == newfirmware_load_model_B)
         return;
     model_B_firmware_load = newfirmware_load_model_B;
+}
+
+int FirmwareUpdate::mute_sound(int audio_flag)
+{
+    sound_flag = audio_flag;
+    return 1;
 }

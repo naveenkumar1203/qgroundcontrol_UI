@@ -30,92 +30,87 @@ RowLayout {
     property real   _margins:           ScreenTools.defaultFontPixelWidth
     property real   _spacing:           ScreenTools.defaultFontPixelWidth / 2
 
-    QGCLabel {
-        id:             mainStatusLabel
-        text:           mainStatusText()
-        font.pointSize: _vehicleInAir ? ScreenTools.defaultFontPointSize : ScreenTools.largeFontPointSize
+        QGCLabel {
+            id:             mainStatusLabel
+            text:           mainStatusText()
+            font.pointSize: _vehicleInAir ? ScreenTools.defaultFontPointSize : ScreenTools.largeFontPointSize
 
-        property string _commLostText:      qsTr("Communication Lost")
-        property string _readyToFlyText:    qsTr("Ready To Fly")
-        property string _notReadyToFlyText: qsTr("Not Ready")
-        property string _disconnectedText:  qsTr("Disconnected")
-        property string _armedText:         qsTr("Armed")
-        property string _flyingText:        qsTr("Flying")
-        property string _landingText:       qsTr("Landing")
+            property string _commLostText:      qsTr("Communication Lost")
+            property string _readyToFlyText:    qsTr("Ready To Fly")
+            property string _notReadyToFlyText: qsTr("Not Ready")
+            property string _disconnectedText:  qsTr("Disconnected")
+            property string _armedText:         qsTr("Armed")
+            property string _flyingText:        qsTr("Flying")
+            property string _landingText:       qsTr("Landing")
 
-        TableModel{
-            id:rpadatabase
-        }
+    TableModel{
+        id:rpadatabase
+    }
 
-        function mainStatusText() {
-            var statusText
-            console.log("I ENTERED INTO MAIN_STATTUS_TEXT")
-            if (_activeVehicle && rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params === 1 ||
-                                  rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params === 2)
-            {
+    function mainStatusText() {
+        var statusText
+        if (_activeVehicle)
+        {
 
-                if (_communicationLost) {
-                    fixedFont.source = "/fonts/ARLRDBD"
-                    _mainStatusBGColor = "red"
-                    return mainStatusLabel._commLostText
-                }
-                if (_activeVehicle.armed ) {
-                    fixedFont.source = "/fonts/design.graffiti.mistral"
-                    _mainStatusBGColor = "green"
-                    if (_activeVehicle.flying) {
-                        return mainStatusLabel._flyingText
-                    } else if (_activeVehicle.landing) {
-                        return mainStatusLabel._landingText
-                    } else {
-                        return mainStatusLabel._armedText
-                    }
+            if (_communicationLost) {
+                fixedFont.source = "/fonts/ARLRDBD"
+                _mainStatusBGColor = "red"
+                return mainStatusLabel._commLostText
+            }
+            if (_activeVehicle.armed ) {
+                fixedFont.source = "/fonts/design.graffiti.mistral"
+                _mainStatusBGColor = "green"
+                if (_activeVehicle.flying) {
+                    return mainStatusLabel._flyingText
+                } else if (_activeVehicle.landing) {
+                    return mainStatusLabel._landingText
                 } else {
-                    if (_activeVehicle.readyToFlyAvailable) {
-                        if (_activeVehicle.readyToFly) {
-                            _mainStatusBGColor = "green"
-                            fixedFont.source = "/fonts/design.graffiti.mistral"
-                            return mainStatusLabel._readyToFlyText
+                    return mainStatusLabel._armedText
+                }
+            } else {
+                if (_activeVehicle.readyToFlyAvailable) {
+                    if (_activeVehicle.readyToFly) {
+                        _mainStatusBGColor = "green"
+                        fixedFont.source = "/fonts/design.graffiti.mistral"
+                        return mainStatusLabel._readyToFlyText
 
                     }else {
-                            _mainStatusBGColor = "red" //"yellow"
-                            //fixedFont.source = "/fonts/design.graffiti.mistral"
-                            fixedFont.source = "/fonts/ARLRDBD"
-                            return mainStatusLabel._notReadyToFlyText
-                        }
-                    }
-                   else {
-                        // Best we can do is determine readiness based on AutoPilot component setup and health indicators from SYS_STATUS
-                        if (_activeVehicle.allSensorsHealthy && _activeVehicle.autopilot.setupComplete ) {
-                            _mainStatusBGColor = "green"
-                            fixedFont.source = "/fonts/design.graffiti.mistral"
-                            return mainStatusLabel._readyToFlyText
-                        }
-
-                    else {
-                            _mainStatusBGColor = "red" //"yellow"
-                            fixedFont.source = "/fonts/ARLRDBD"
-                            return mainStatusLabel._notReadyToFlyText
-                        }
+                        _mainStatusBGColor = "red" //"yellow"
+                        //fixedFont.source = "/fonts/design.graffiti.mistral"
+                        fixedFont.source = "/fonts/ARLRDBD"
+                        return mainStatusLabel._notReadyToFlyText
                     }
                 }
-        }
-        else {
-                _mainStatusBGColor =  "red" //qgcPal.brandingPurple
-                fixedFont.source = "/fonts/ARLRDBD"
-                return mainStatusLabel._disconnectedText
+                else {
+                    // Best we can do is determine readiness based on AutoPilot component setup and health indicators from SYS_STATUS
+                    if (_activeVehicle.allSensorsHealthy && _activeVehicle.autopilot.setupComplete ) {
+                        _mainStatusBGColor = "green"
+                        fixedFont.source = "/fonts/design.graffiti.mistral"
+                        return mainStatusLabel._readyToFlyText
+                    }
+
+                    else {
+                        _mainStatusBGColor = "red" //"yellow"
+                        fixedFont.source = "/fonts/ARLRDBD"
+                        return mainStatusLabel._notReadyToFlyText
+                    }
+                }
             }
         }
-
-
+        else {
+            _mainStatusBGColor =  "red" //qgcPal.brandingPurple
+            fixedFont.source = "/fonts/ARLRDBD"
+            return mainStatusLabel._disconnectedText
+        }
+    }
 
         MouseArea {
+            id: mousearea
             anchors.left:           parent.left
             anchors.right:          parent.right
             anchors.verticalCenter: parent.verticalCenter
             height:                 _root.height
-            //enabled:                _activeVehicle
-            enabled:  _activeVehicle !== null && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params ===1 ||
-                                                              rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params ===2)
+            enabled:                _activeVehicle
             onClicked:              mainWindow.showIndicatorPopup(mainStatusLabel, sensorStatusInfoComponent)
         }
     }
@@ -132,7 +127,6 @@ RowLayout {
         fillMode:   Image.PreserveAspectFit
         mipmap:     true
         color:      qgcPal.text
-        //source:     "/qmlimages/FlightModesComponentIcon.png"
         source:     "/qmlimages/FlightModesComponentIcon_1.svg"
         visible:    flightModeMenu.visible
     }
@@ -149,10 +143,9 @@ RowLayout {
         verticalAlignment:      Text.AlignVCenter
         font.pointSize:         _vehicleInAir ?  ScreenTools.largeFontPointSize : ScreenTools.defaultFontPointSize
         mouseAreaLeftMargin:    -(flightModeMenu.x - flightModeIcon.x)
-       // visible:                _activeVehicle
-        visible:  _activeVehicle !== null && (rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params === 1 ||
-                                                    rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params === 2)
-           }
+        visible:                _activeVehicle
+    }
+
     Item {
         Layout.preferredWidth:  ScreenTools.defaultFontPixelWidth * ScreenTools.largeFontPointRatio * 1.5
         height:                 1

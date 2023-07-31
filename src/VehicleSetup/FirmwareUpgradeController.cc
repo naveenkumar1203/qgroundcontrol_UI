@@ -21,6 +21,7 @@
 #include "FireBaseAccess.h"
 #include "RpaDatabase.h"
 #include "zlib.h"
+#include "FirmwareUpdate.h"
 
 #include <QStandardPaths>
 #include <QRegularExpression>
@@ -28,7 +29,10 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QNetworkProxy>
+#include <QMessageBox>
+#include <QPushButton>
 
+enum signed_Firmware {NotSigned,SignedA, SignedB} gcs_signed_Firmware;
 class FireBaseAccess;
 
 const char* FirmwareUpgradeController::_manifestFirmwareJsonKey =               "firmware";
@@ -53,51 +57,51 @@ struct FirmwareToUrlElement_t {
 
 // See PX4 Bootloader board_types.txt - https://raw.githubusercontent.com/PX4/PX4-Bootloader/master/board_types.txt
 static QMap<int, QString> px4_board_name_map {
-    {9, "px4_fmu-v2_default"},
-    {255, "px4_fmu-v3_default"}, // Simulated board id for V3 which is a V2 board which supports larger flash space
-    {11, "px4_fmu-v4_default"},
-    {13, "px4_fmu-v4pro_default"},
-    {20, "uvify_core_default"},
-    {50, "px4_fmu-v5_default"},
-    {51, "px4_fmu-v5x_default"},
-    {52, "px4_fmu-v6_default"},
-    {53, "px4_fmu-v6x_default"},
-    {54, "px4_fmu-v6u_default"},
-    {56, "px4_fmu-v6c_default"},
-    {55, "sky-drones_smartap-airlink_default"},
-    {88, "airmind_mindpx-v2_default"},
-    {12, "bitcraze_crazyflie_default"},
-    {14, "bitcraze_crazyflie21_default"},
-    {42, "omnibus_f4sd_default"},
-    {33, "mro_x21_default"},
-    {65, "intel_aerofc-v1_default"},
-    {123, "holybro_kakutef7_default"},
-    {41775, "modalai_fc-v1_default"},
-    {41776, "modalai_fc-v2_default"},
-    {78, "holybro_pix32v5_default"},
-    {79, "holybro_can-gps-v1_default"},
-    {28, "nxp_fmuk66-v3_default"},
-    {30, "nxp_fmuk66-e_default"},
-    {31, "nxp_fmurt1062-v1_default"},
-    {85, "freefly_can-rtk-gps_default"},
-    {120, "cubepilot_cubeyellow_default"},
-    {136, "mro_x21-777_default"},
-    {139, "holybro_durandal-v1_default"},
-    {140, "cubepilot_cubeorange_default"},
-    {141, "mro_ctrl-zero-f7_default"},
-    {142, "mro_ctrl-zero-f7-oem_default"},
-    {1009, "cuav_nora_default"},
-    {1010, "cuav_x7pro_default"},
-    {1017, "mro_pixracerpro_default"},
-    {1023, "mro_ctrl-zero-h7_default"},
-    {1024, "mro_ctrl-zero-h7-oem_default"},
-};
+                                             {9, "px4_fmu-v2_default"},
+                                             {255, "px4_fmu-v3_default"}, // Simulated board id for V3 which is a V2 board which supports larger flash space
+                                             {11, "px4_fmu-v4_default"},
+                                             {13, "px4_fmu-v4pro_default"},
+                                             {20, "uvify_core_default"},
+                                             {50, "px4_fmu-v5_default"},
+                                             {51, "px4_fmu-v5x_default"},
+                                             {52, "px4_fmu-v6_default"},
+                                             {53, "px4_fmu-v6x_default"},
+                                             {54, "px4_fmu-v6u_default"},
+                                             {56, "px4_fmu-v6c_default"},
+                                             {55, "sky-drones_smartap-airlink_default"},
+                                             {88, "airmind_mindpx-v2_default"},
+                                             {12, "bitcraze_crazyflie_default"},
+                                             {14, "bitcraze_crazyflie21_default"},
+                                             {42, "omnibus_f4sd_default"},
+                                             {33, "mro_x21_default"},
+                                             {65, "intel_aerofc-v1_default"},
+                                             {123, "holybro_kakutef7_default"},
+                                             {41775, "modalai_fc-v1_default"},
+                                             {41776, "modalai_fc-v2_default"},
+                                             {78, "holybro_pix32v5_default"},
+                                             {79, "holybro_can-gps-v1_default"},
+                                             {28, "nxp_fmuk66-v3_default"},
+                                             {30, "nxp_fmuk66-e_default"},
+                                             {31, "nxp_fmurt1062-v1_default"},
+                                             {85, "freefly_can-rtk-gps_default"},
+                                             {120, "cubepilot_cubeyellow_default"},
+                                             {136, "mro_x21-777_default"},
+                                             {139, "holybro_durandal-v1_default"},
+                                             {140, "cubepilot_cubeorange_default"},
+                                             {141, "mro_ctrl-zero-f7_default"},
+                                             {142, "mro_ctrl-zero-f7-oem_default"},
+                                             {1009, "cuav_nora_default"},
+                                             {1010, "cuav_x7pro_default"},
+                                             {1017, "mro_pixracerpro_default"},
+                                             {1023, "mro_ctrl-zero-h7_default"},
+                                             {1024, "mro_ctrl-zero-h7-oem_default"},
+                                             };
 
 uint qHash(const FirmwareUpgradeController::FirmwareIdentifier& firmwareId)
 {
     return static_cast<uint>(( firmwareId.autopilotStackType |
-                               (firmwareId.firmwareType << 8) |
-                               (firmwareId.firmwareVehicleType << 16) ));
+                              (firmwareId.firmwareType << 8) |
+                              (firmwareId.firmwareVehicleType << 16) ));
 }
 
 /// @Brief Constructs a new FirmwareUpgradeController Widget. This widget is used within the PX4VehicleConfig set of screens.
@@ -196,14 +200,56 @@ void FirmwareUpgradeController::flash(AutoPilotStackType_t stackType,
 void FirmwareUpgradeController::flashFirmwareUrl(QString firmwareFlashUrl)
 {
     _firmwareFilename = firmwareFlashUrl;
-    qDebug()<<"i am entered in this flashfirmwareurl function";
-    if (_bootloaderFound) {
-        qDebug()<<"hiiiiiiiiiiiii";
-        _downloadFirmware();
-    } else {
-        // We haven't found the bootloader yet. Need to wait until then to flash
-        qDebug()<<"helloooooo";
-        _startFlashWhenBootloaderFound = true;
+    gcs_signed_Firmware = NotSigned;
+    QFile apjFile(firmwareFlashUrl);
+
+    if (checksum_match == true)
+    {
+        checksum_match = false;
+
+        if (apjFile.open(QIODevice::ReadOnly)) {
+            QByteArray apjData = apjFile.readAll();
+            QJsonDocument apjDoc = QJsonDocument::fromJson(apjData);
+
+            if (!apjDoc.isNull() && apjDoc.isObject()) {
+                QJsonObject apjObj = apjDoc.object();
+                if (apjObj.contains("signed_firmware_a")||apjObj.contains("signed_firmware_b")) {
+                    qDebug() << "Firmware is signed. Flashing firmware...";
+                    if(apjObj.contains("signed_firmware_a")){
+                        gcs_signed_Firmware = SignedA;
+                    }
+                    else if(apjObj.contains("signed_firmware_b")) {
+                        gcs_signed_Firmware = SignedB;
+                    }
+
+                    if (_bootloaderFound) {
+                        _downloadFirmware();
+                    } else {
+                        _startFlashWhenBootloaderFound = true;
+                    }
+                } else {
+                    QMessageBox msgBox;
+                    msgBox.setText("This is not a Secure firmware. Please contact your OEM");
+                    msgBox.setStyleSheet("color:white;background:#05324D");
+                    QPushButton *confirmButton = new QPushButton("OK", &msgBox);
+                    msgBox.addButton(confirmButton, QMessageBox::AcceptRole);
+                    msgBox.setDefaultButton(confirmButton);
+                    msgBox.exec();
+                }
+            } else {
+            }
+        } else {
+
+        }
+    }
+    else {
+        QMessageBox msgBox;
+        msgBox.setText("The Checksum does not match. Please contact your OEM");
+        msgBox.setStyleSheet("color:white;background:#05324D");
+        QPushButton *confirmButton = new QPushButton("OK", &msgBox);
+        msgBox.addButton(confirmButton, QMessageBox::AcceptRole);
+        msgBox.setDefaultButton(confirmButton);
+        msgBox.exec();
     }
 }
 
@@ -285,10 +331,13 @@ void FirmwareUpgradeController::_foundBoardInfo(int bootloaderVersion, int board
     _bootloaderBoardID          = static_cast<uint32_t>(boardID);
     _bootloaderBoardFlashSize   = static_cast<uint32_t>(flashSize);
 
+    if((file_model == "Model A" && vehicle_id_params == 1 ) || (file_model == "Model B" && vehicle_id_params == 2 ))
+    {
     _appendStatusLog(tr("Connected to bootloader:"));
     _appendStatusLog(tr("  Version: %1").arg(_bootloaderVersion));
     _appendStatusLog(tr("  Board ID: %1").arg(_bootloaderBoardID));
     _appendStatusLog(tr("  Flash size: %1").arg(_bootloaderBoardFlashSize));
+    }
 
     if (_startFlashWhenBootloaderFound) {
         flash(_startFlashWhenBootloaderFoundFirmwareIdentity);
@@ -314,9 +363,9 @@ void FirmwareUpgradeController::_initFirmwareHash()
     /////////////////////////////// px4flow firmwares ///////////////////////////////////////
     FirmwareToUrlElement_t rgPX4FLowFirmwareArray[] = {
         { PX4FlowPX4, StableFirmware, DefaultVehicleFirmware, "http://px4-travis.s3.amazonaws.com/Flow/master/px4flow.px4" },
-    #if !defined(NO_ARDUPILOT_DIALECT)
+#if !defined(NO_ARDUPILOT_DIALECT)
         { PX4FlowAPM, StableFirmware, DefaultVehicleFirmware, "http://firmware.ardupilot.org/Tools/PX4Flow/px4flow-klt-latest.px4" },
-    #endif
+#endif
     };
 
     // We build the maps for PX4 firmwares dynamically using the data below
@@ -345,13 +394,13 @@ QHash<FirmwareUpgradeController::FirmwareIdentifier, QString>* FirmwareUpgradeCo
         FirmwareToUrlElement_t element = { SiKRadio, StableFirmware, DefaultVehicleFirmware, "http://px4-travis.s3.amazonaws.com/SiK/stable/radio~hm_trp.ihx" };
         _rgFirmwareDynamic.insert(FirmwareIdentifier(element.stackType, element.firmwareType, element.vehicleType), element.url);
     }
-        break;
+    break;
     case Bootloader::boardIDSiKRadio1060:
     {
         FirmwareToUrlElement_t element = { SiKRadio, StableFirmware, DefaultVehicleFirmware, "https://px4-travis.s3.amazonaws.com/SiK/stable/radio~hb1060.ihx" };
         _rgFirmwareDynamic.insert(FirmwareIdentifier(element.stackType, element.firmwareType, element.vehicleType), element.url);
     }
-        break;
+    break;
     default:
         if (px4_board_name_map.contains(boardId)) {
             const QString px4Url{"http://px4-travis.s3.amazonaws.com/Firmware/%1/%2.px4"};
@@ -468,15 +517,25 @@ void FirmwareUpgradeController::_flashComplete(void)
         delete _image;
         _image = nullptr;
 
-//        _appendStatusLog(tr("Checksum Matches,OK"), true);
-
         _appendStatusLog(tr("Upgrade complete"), true);
+        if (((gcs_signed_Firmware==SignedA) && (file_model == "Model A")) || ((gcs_signed_Firmware==SignedB) && (file_model == "Model B")))
+        {
+            _appendStatusLog(tr("Checksum Matches"), true);
+        }
+        else {
+
+            _appendStatusLog(tr("Checksum Not Matches"), true);
+        }
+
         _appendStatusLog("------------------------------------------", false);
 
         QString cd = QDate::currentDate().toString();
         QString ct = QTime::currentTime().toString();
 
-        QString cdt = cd + " " + " " + " " + " " + " " + ct;
+        QString model = file_model;
+        QString uin = file_uin;
+
+        QString cdt = cd + " " + " " + " " + " " + " " + ct + " " + " " + " " + " " + " " + model + " " + " " + " " + " " + " " + uin;
 
         QVariantMap newAddition;
 
@@ -486,7 +545,6 @@ void FirmwareUpgradeController::_flashComplete(void)
 
         QString link = "https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/" + usermail + "/FIRMWARELOG/" + cdt + "/.json";
 
-        qDebug()<<"inside firmware " + usermail;
 
         QUrl userUrl = link;
         QNetworkRequest newAdditionRequest((QUrl(userUrl)));
@@ -506,10 +564,10 @@ QStringList FirmwareUpgradeController::modellist() const
 
 void FirmwareUpgradeController::setModellist(const QStringList &newModellist)
 {
-if (m_modellist == newModellist)
-            return;
-m_modellist = newModellist;
-emit modellistChanged();
+    if (m_modellist == newModellist)
+        return;
+    m_modellist = newModellist;
+    emit modellistChanged();
 }
 
 void FirmwareUpgradeController::_error(const QString& errorString)
@@ -564,18 +622,18 @@ void FirmwareUpgradeController::_appendStatusLog(const QString& text, bool criti
 void FirmwareUpgradeController::_errorCancel(const QString& msg)
 {
     _appendStatusLog(msg, false);
-    _appendStatusLog(tr("Checksum doesnot match,NOT OK"), true);
-    _appendStatusLog(tr("Upgrade cancelled"), true);
     _appendStatusLog("------------------------------------------", false);
     emit error();
     cancel();
     qgcApp()->toolbox()->linkManager()->setConnectionsAllowed();
-    qDebug()<<"USER NAME FROM SIGNAL>>"<<usermail;
 
     QString cd = QDate::currentDate().toString();
     QString ct = QTime::currentTime().toString();
+    QString model = file_model;
+    QString uin = file_uin;
 
-    QString cdt = cd + " " + ct;
+    QString cdt = cd + " " + " " + " " + " " + " " + ct + " " + " " + " " + " " + " " + model + " " + " " + " " + " " + " " + uin;
+
     QVariantMap newAddition;
 
     newAddition["status"] = "Firmware Upgrade is unsuccessfull";

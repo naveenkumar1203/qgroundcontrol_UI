@@ -113,7 +113,7 @@ Rectangle {
                     //      The summary panel is already showing and the active vehicle goes away
                     //      The active vehicle goes away and we are not on the Firmware panel.
                     summaryButton.checked = true
-                    _showSummaryPanel()
+                   // _showSummaryPanel()
                 }
             }
         }
@@ -285,16 +285,16 @@ Rectangle {
                 }
             }
 
-//            SubMenuButton {
-//                setupIndicator:     false
-//                exclusiveGroup:     setupButtonGroup
-//                visible:            QGroundControl.multiVehicleManager.parameterReadyVehicleAvailable &&
-//                                    !QGroundControl.multiVehicleManager.activeVehicle.usingHighLatencyLink &&
-//                                    _corePlugin.showAdvancedUI
-//                text:               qsTr("Parameters")
-//                Layout.fillWidth:   true
-//                onClicked:          showPanel(this, "SetupParameterEditor.qml")
-//            }
+            SubMenuButton {
+                setupIndicator:     false
+                exclusiveGroup:     setupButtonGroup
+                visible:            QGroundControl.multiVehicleManager.parameterReadyVehicleAvailable &&
+                                    !QGroundControl.multiVehicleManager.activeVehicle.usingHighLatencyLink &&
+                                    _corePlugin.showAdvancedUI
+                text:               qsTr("Parameters")
+                Layout.fillWidth:   true
+                onClicked:          showPanel(this, "SetupParameterEditor.qml")
+            }
 
         }
     }

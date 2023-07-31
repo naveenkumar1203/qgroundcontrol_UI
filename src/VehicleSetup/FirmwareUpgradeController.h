@@ -157,7 +157,6 @@ public:
      * @return availableBoardNames
      */
     Q_INVOKABLE QStringList availableBoardsName(void);
-   // Q_INVOKABLE void getuserData();
     void network_reply_read_addData();
     QStringList modellist() const;
     void setModellist(const QStringList &newModellist);

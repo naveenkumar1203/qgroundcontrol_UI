@@ -9,7 +9,8 @@
 #include "QGCToolbox.h"
 #include "SettingsManager.h"
 
-extern int checksum_compare;
+extern int sound_flag;
+extern bool checksum_match;
 
 class FirmwareUpdate : public QObject
 {
@@ -18,6 +19,8 @@ public:
     explicit FirmwareUpdate(QObject *parent = nullptr);
 
     QGCToolbox*         _toolbox = nullptr;
+
+    Q_INVOKABLE int mute_sound(int audio_flag);
 
     Q_PROPERTY(QString checksum_generation_model_A READ checksum_generation_model_A WRITE setgenerated_checksum_model_A NOTIFY generation_checksum_model_AChanged)
     Q_PROPERTY(QString checksum_calculation_model_A READ checksum_calculation_model_A WRITE setcalculated_checksum_model_A NOTIFY calculation_checksum_model_AChanged)

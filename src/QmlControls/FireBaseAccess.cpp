@@ -229,8 +229,7 @@ void FireBaseAccess::password_reset_parseResponse(const QByteArray &response)
 {
     QJsonDocument jsonDocument = QJsonDocument::fromJson(response);
     if(jsonDocument.object().contains("error")){
-            emit resetMailNotFound();
-        emit resetMailNotFound();
+         emit resetMailNotFound();
     }
     else if(jsonDocument.object().contains("kind")){
         emit resetMailFound();

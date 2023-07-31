@@ -16,6 +16,10 @@
 
 #include <QObject>
 #include <QVariantList>
+#include <QQuickWindow>
+#include <QQmlComponent>
+#include <QQmlEngine>
+#include <QDebug>
 
 /// @file
 /// @brief Core Plugin Interface for QGroundControl
@@ -214,4 +218,5 @@ protected:
 
 private:
     QGCCorePlugin_p*    _p;
+
 };

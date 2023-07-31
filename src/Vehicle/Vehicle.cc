@@ -11,6 +11,7 @@
 #include <QDateTime>
 #include <QLocale>
 #include <QQuaternion>
+#include <QQmlContext>
 
 #include <Eigen/Eigen>
 
@@ -2351,17 +2352,7 @@ void Vehicle::virtualTabletJoystickValue(double roll, double pitch, double yaw, 
 
 void Vehicle::_say(const QString& text)
 {
-//    QString new1 = obj.model();
-//    _toolbox->audioOutput()->say(text.toLower());
-
-    qDebug()<<"checksum_compare OUT SIDE IF LOOP >> "<<checksum_compare;
-    if(checksum_compare == 1){
-        qDebug()<<"in _say function from firmwareUpdate";
-        _toolbox->audioOutput()->say(text.toLower());
-        qDebug()<<"checksum_compare"<<checksum_compare;
-
-    }
-
+    _toolbox->audioOutput()->say(text.toLower());
 }
 
 bool Vehicle::airship() const
@@ -3809,13 +3800,12 @@ bool Vehicle::isInitialConnectComplete() const
 
 void Vehicle::_initializeCsv()
 {
-    qDebug()<<"Inside initialize csv";
     if(!_toolbox->settingsManager()->appSettings()->saveCsvTelemetry()->rawValue().toBool()){
         return;
     }
     QString now = QDateTime::currentDateTime().toString("yyyy-MM-dd hh-mm-ss");
-    QString model = obj.model(); //_toolbox->tableModel()->model();
-    QString uin = obj.uin(); //_toolbox->tableModel()->uin();
+    QString model = obj.model();
+    QString uin = obj.uin();
 
     QString fileName = QString("%1%2%3.csv").arg(now).arg(model).arg(uin);
     QString flightlog_filename = _toolbox->settingsManager()->appSettings()->telemetrySavePath();
@@ -3830,8 +3820,6 @@ void Vehicle::_initializeCsv()
     QString user_text_file = QString("%1.txt").arg(userName);
     QDir saveDir1 (flightlog_filename);
     _userTextFile.setFileName(saveDir1.absoluteFilePath(user_text_file));
-
-//    emit flightlog_filenameChanged();
 
     if (!_csvLogFile.open(QIODevice::Append)) {
         qCWarning(VehicleLog) << "unable to open file for csv logging, Stopping csv logging!";
@@ -3853,7 +3841,6 @@ void Vehicle::_initializeCsv()
     }
     qCDebug(VehicleLog) << "Facts logged to csv:" << allFactNames;
     stream << "Timestamp," << allFactNames.join(",") << "\n";
-    qDebug()<<"inside initialise csv";
 }
 QString Vehicle::flightlog_filename() const
 {
@@ -3871,8 +3858,6 @@ void Vehicle::setFlightlog_filename(const QString &newFlightlog_filename)
 
 void Vehicle::_writeCsvLine()
 {
-    //qDebug()<<"inside write csv";
-
     // Only save the logs after the the vehicle gets armed, unless "Save logs even if vehicle was not armed" is checked
     if(!_csvLogFile.isOpen() &&
         (_armed || _toolbox->settingsManager()->appSettings()->telemetrySaveNotArmed()->rawValue().toBool())){
@@ -3887,7 +3872,6 @@ void Vehicle::_writeCsvLine()
     }
 
     if(current_model != previous_model || current_uin != previous_uin){
-        qDebug()<<"model changed";
         _csvLogFile.close();
         previous_model = current_model;
         previous_uin = current_uin;
@@ -3900,7 +3884,6 @@ void Vehicle::_writeCsvLine()
 
     if(_armed){
         vehicle_armed = 1 ;
-        //qDebug()<<"vehicle is armed";
     }
 
     QStringList allFactValues;
@@ -3923,14 +3906,9 @@ void Vehicle::_writeCsvLine()
     stream << allFactValues.join(",") << "\n";
 
     if(!_armed){
-            if (vehicle_armed == 1){
+        if (vehicle_armed == 1){
 
-                obj.upload_function(file_name,user_name,folder_location);
-//            }
-//            vehicle_armed = 0;
-//        if (vehicle_armed == 1){
-//            QTextStream stream(&_userTextFile);
-//            stream << file_name;
+            obj.upload_function(file_name,user_name,folder_location);
         }
         vehicle_armed = 0;
     }
@@ -3950,7 +3928,6 @@ void Vehicle::flashBootloader()
 
 void Vehicle::gimbalControlValue(double pitch, double yaw)
 {
-    //qDebug() << "Gimbal:" << pitch << yaw;
     sendMavCommand(
         _defaultComponentId,
         MAV_CMD_DO_MOUNT_CONTROL,
@@ -3967,7 +3944,6 @@ void Vehicle::gimbalControlValue(double pitch, double yaw)
 void Vehicle::gimbalPitchStep(int direction)
 {
     if(_haveGimbalData) {
-        //qDebug() << "Pitch:" << _curGimbalPitch << direction << (_curGimbalPitch + direction);
         double p = static_cast<double>(_curGimbalPitch + direction);
         gimbalControlValue(p, static_cast<double>(_curGimbalYaw));
     }
@@ -3976,7 +3952,6 @@ void Vehicle::gimbalPitchStep(int direction)
 void Vehicle::gimbalYawStep(int direction)
 {
     if(_haveGimbalData) {
-        //qDebug() << "Yaw:" << _curGimbalYaw << direction << (_curGimbalYaw + direction);
         double y = static_cast<double>(_curGimbalYaw + direction);
         gimbalControlValue(static_cast<double>(_curGimbalPitch), y);
     }

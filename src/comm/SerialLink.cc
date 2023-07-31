@@ -279,7 +279,10 @@ void SerialLink::_emitLinkError(const QString& errorMsg)
 {
     QString msg("Error on link %1. %2");
     qDebug() << errorMsg;
+    QString model_name = file_model;
+    if((model_name == "Model A") || (model_name == "Model B")){
     emit communicationError(tr("Link Error"), msg.arg(_config->name()).arg(errorMsg));
+}
 }
 
 //--------------------------------------------------------------------------

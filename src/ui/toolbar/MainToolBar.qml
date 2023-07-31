@@ -19,6 +19,8 @@ import QGroundControl.MultiVehicleManager   1.0
 import QGroundControl.ScreenTools           1.0
 import QGroundControl.Controllers           1.0
 
+import FirmwareUpdate                       1.0
+
 Rectangle {
     id:     _root
     color:  qgcPal.toolbarBackground
@@ -35,6 +37,9 @@ Rectangle {
 
     QGCPalette { id: qgcPal }
     FontLoader { id: fixedFont}
+    FirmwareUpdate{
+        id: firmware_update
+    }
 
     FontLoader {
         id: fixedFont1
@@ -83,7 +88,7 @@ Rectangle {
             text: "Go Drona  "
             color: "White"
             font.family: "Mistral"
-            font.pointSize: ScreenTools.defaultFontPointSize * 2  //: ScreenTools.largeFontPointSize
+            font.pointSize: ScreenTools.defaultFontPointSize * 2
             font.bold: true
         }
 
@@ -96,7 +101,7 @@ Rectangle {
             id:                 disconnectButton
             text:               qsTr("Disconnect")
             font.bold:          true
-            font.pointSize: ScreenTools.defaultFontPointSize * 3//1.5  //: ScreenTools.largeFontPointSize
+            font.pointSize: ScreenTools.defaultFontPointSize * 3
             onClicked:          _activeVehicle.closeVehicle()
             visible:            _activeVehicle && _communicationLost && currentToolbar === flyViewToolbar
         }
@@ -118,10 +123,11 @@ Rectangle {
                 anchors.fill: home_button
                 onClicked: {
                     console.log("i clicked home")
-                    flightView.visible = false
-                    landing_page_rectangle.visible =true
-                    toolbar.visible = false
-                    //home_button.color = "#05324D"
+                    firmware_update.mute_sound(0)
+                    QGroundControl.multiVehicleManager.vehicle_connect = false;
+                    flightView.visible                                 = false
+                    landing_page_rectangle.visible                     = true
+                    toolbar.visible                                    = false
                 }
                 onPressed: {
                     home_button.color = "#031C28"
@@ -129,14 +135,32 @@ Rectangle {
                 onReleased: {
                     home_button.color = "#F25822"
                 }
-
             }
+        }
+        function finishCloseProcess()
+        {
+
 
         }
 
+        MessageDialog {
+            id:                 activeConnectionsCloseDialog
+            title:              qsTr("%1 close").arg("Active Vehicle")
+            text:               qsTr("There are still active connections to vehicles. Are you sure you want to exit?")
+            standardButtons:    StandardButton.Yes | StandardButton.Cancel
+            modality:           Qt.ApplicationModal
+            visible:            false
+            onYes:              finishCloseProcess()
+            function check() {
+                if (QGroundControl.multiVehicleManager.activeVehicle) {
+                    activeConnectionsCloseDialog.open()
+                } else {
+                    finishCloseProcess()
+                }
+            }
+        }
+
     }
-
-
 
     QGCFlickable {
         id:                     toolsFlickable
