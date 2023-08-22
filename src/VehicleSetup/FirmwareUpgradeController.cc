@@ -30,7 +30,7 @@
 #include <QJsonArray>
 #include <QNetworkProxy>
 
-enum signed_Firmware {NotSigned,SignedA, SignedB} gcs_signed_Firmware;
+enum signed_Firmware {NotSigned,Signed} gcs_signed_Firmware;
 
 class FireBaseAccess;
 
@@ -212,15 +212,11 @@ void FirmwareUpgradeController::flashFirmwareUrl(QString firmwareFlashUrl)
 
             if (!apjDoc.isNull() && apjDoc.isObject()) {
                 QJsonObject apjObj = apjDoc.object();
-                if (apjObj.contains("signed_firmware_a")||apjObj.contains("signed_firmware_b")) {
+                if (apjObj.contains("signed_firmware")) {
                     qDebug() << "Firmware is signed. Flashing firmware...";
-                    if(apjObj.contains("signed_firmware_a")){
-                        gcs_signed_Firmware = SignedA;
+                    if(apjObj.contains("signed_firmware")){
+                        gcs_signed_Firmware = Signed;
                     }
-                    else if(apjObj.contains("signed_firmware_b")) {
-                        gcs_signed_Firmware = SignedB;
-                    }
-
                     if (_bootloaderFound) {
                         _downloadFirmware();
                     } else {
@@ -326,9 +322,12 @@ void FirmwareUpgradeController::_foundBoardInfo(int bootloaderVersion, int board
     _bootloaderBoardID          = static_cast<uint32_t>(boardID);
     _bootloaderBoardFlashSize   = static_cast<uint32_t>(flashSize);
 
-    if((file_model == "Model A" && vehicle_id_params == 1 ) || (file_model == "Model B" && vehicle_id_params == 2 ))
-    {
+    int model_index = file_model_index;
+    int new_vehicle_id = vehicle_id_params;
+    int new_model_index = model_index + 1;
 
+    if(new_model_index == new_vehicle_id)
+    {
         _appendStatusLog(tr("Connected to bootloader:"));
         _appendStatusLog(tr("  Version: %1").arg(_bootloaderVersion));
         _appendStatusLog(tr("  Board ID: %1").arg(_bootloaderBoardID));
@@ -512,7 +511,7 @@ void FirmwareUpgradeController::_flashComplete(void)
         _image = nullptr;
 
         _appendStatusLog(tr("Upgrade complete"), true);
-        if (((gcs_signed_Firmware==SignedA) && (file_model == "Model A")) || ((gcs_signed_Firmware==SignedB) && (file_model == "Model B")))
+        if (gcs_signed_Firmware == Signed)
         {
             _appendStatusLog(tr("Checksum Matches"), true);
         }

@@ -77,6 +77,10 @@ Item {
 //            }
 
             function getBatteryColor() {
+
+                console.log("BATTERY STATUS CHARGE RAW  >>>> "+battery.chargeState.rawValue)
+                console.log("BATTERY STATUS In % >>>> "+battery.percentRemaining.rawValue)
+
                 if (battery.percentRemaining.rawValue >=70)  {
                     return qgcPal.colorGreen;
                 }

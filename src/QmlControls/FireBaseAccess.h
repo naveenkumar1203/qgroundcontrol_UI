@@ -8,7 +8,6 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QByteArray>
-//#include <QNetworkConfigurationManager>
 #include "QNetworkAccessManagerWithPatch.h"
 #include "RpaDatabase.h"
 #include "FirmwareUpgradeController.h"
@@ -41,8 +40,6 @@ public:
 
     void profile_update_parse(const QByteArray &resposne);
 
-    //Q_INVOKABLE void online();
-
     Q_INVOKABLE void new_user_registration(const QString &industry,
                                            const QString &role,
                                            const QString &name,
@@ -55,12 +52,25 @@ public:
     Q_INVOKABLE void registered_user(const QString &mail,
                                      const QString &password);
 
-
     Q_INVOKABLE void reset_password(const QString &mail);
 
     Q_INVOKABLE void update_profile(const QString &name, const QString &mail, const QString &number, const QString &address, const QString &locality);
 
     Q_INVOKABLE void get_profile_update();
+
+    Q_INVOKABLE void generateOTP(const QString &phoneNumber);
+
+    Q_INVOKABLE void sendOTP(const QString &phoneNumber, const QString &otp);
+
+    Q_INVOKABLE void verifyOTP(const QString &otpDigits,
+                               const QString &industry_text,
+                               const QString &role_text,
+                               const QString &name_text,
+                               const QString &mail_text,
+                               const QString &number_text,
+                               const QString &address_text,
+                               const QString &locality_text,
+                               const QString &password_text);
 
     Q_PROPERTY(QString industry READ industry WRITE setindustry NOTIFY industryChanged)
     Q_PROPERTY(QString mail READ mail WRITE setMail NOTIFY mailChanged)
@@ -68,11 +78,8 @@ public:
     Q_PROPERTY(QString number READ number WRITE setNumber NOTIFY numberChanged)
     Q_PROPERTY(QString address READ address WRITE setAddress NOTIFY addressChanged)
     Q_PROPERTY(QString locality READ locality WRITE setLocality NOTIFY localityChanged)
-
     Q_PROPERTY(QString role READ role WRITE setRole NOTIFY roleChanged)
-
     Q_PROPERTY(QString firebasejsonname READ firebasejsonname WRITE setFirebasejsonname NOTIFY firebasejsonnameChanged)
-
     Q_PROPERTY(QString storagename READ storagename WRITE setStoragename NOTIFY storagenameChanged)
 
     QString name() const;
@@ -140,12 +147,12 @@ signals:
 
 private:
     QString m_apikey = "AIzaSyDuhh-doXjdmw7FvYKF81Kqmv5AlotC2ZY";
+    QString m_2factor_OTP_apiKey = "a6fef9d0-3b22-11ee-addf-0200cd936042";
     QNetworkAccessManager *m_NetworkAccessManager;
     QNetworkAccessManager *m_NetworkAccessManager1;
     QNetworkAccessManagerWithPatch *m_networkAccessManagerWithPatch;
     QNetworkReply *m_NetworkReply;
     QNetworkReply *m_NetworkReply1;
-
     QString m_name;
     QString m_firebasejsonname;
     QString m_industry;
@@ -155,6 +162,7 @@ private:
     QString m_locality;
     QString m_role;
     QString m_storagename;
+    QString m_verificationId;
 };
 
 #endif // FIREBASEACCESS_H

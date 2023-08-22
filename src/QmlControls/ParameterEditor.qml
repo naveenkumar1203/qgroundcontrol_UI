@@ -25,16 +25,20 @@ import TableModel                   1.0
 Item {
     id:         _root
 
-    property var    _activeVehicle:     QGroundControl.multiVehicleManager.activeVehicle
-    property var    _appSettings:       QGroundControl.settingsManager.appSettings
-    property var    _controller:        controller
+    property var      _activeVehicle:      QGroundControl.multiVehicleManager.activeVehicle
+    property var      _appSettings:        QGroundControl.settingsManager.appSettings
+    property var      _controller:         controller
+    property int      model_index_value:   rpadatabase.modelIndex
+    property string   model_index_name:    rpadatabase.model
+    property int      new_vehicle_id:       QGroundControl.multiVehicleManager.vehicleid_params
+    property int      new_model_index_value: model_index_value+1
+
+
 
     ParameterEditorController {
         id: controller
     }
-    //    FirmwareUpdate{
-    //        id:firmware_load1
-    //    }
+
     TableModel{
         id:rpadatabase
     }
@@ -48,12 +52,11 @@ Item {
         id:flash_firmware
         text: "Flash Parameter"
         onClicked: {
-            if(rpadatabase.model == "Model A"){
-                firmware_load1.checksum_generation_process_model_A(file_Dialog.shortcuts.documents)
-            }
-            else if(rpadatabase.model == "Model B"){
-                firmware_load1.checksum_generation_process_model_B(file_Dialog.shortcuts.documents)
-            }
+            if(new_model_index_value === new_vehicle_id){
+            firmware_load1.checksum_generation_process_model(file_Dialog.shortcuts.documents)
+             }
+             else{
+             }
         }
     }
 
@@ -62,31 +65,20 @@ Item {
         folder: shortcuts.documents
     }
 
-    FirmwareUpdate{
-        id:firmware_load1
-        onFirmware_load_model_AChanged:{
-            if(rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params === 1)
-            {
-                if (controller.buildDiffFromFile(firmware_load1.firmware_load_model_A)) {
-                    {
-                        mainWindow.showPopupDialogFromComponent(parameterDiffDialog)
-                    }
+    FirmwareUpdate {
+        id: firmware_load1
+
+        onFirmware_load_modelChanged: {
+            console.log("model index value is:", model_index_value);
+            console.log("model name is:", model_index_name);
+            console.log("new vehicle id value is",new_vehicle_id);
+            console.log("new model index value is",new_model_index_value);
+
+            if (new_model_index_value === new_vehicle_id) {
+                if (controller.buildDiffFromFile(firmware_load1.firmware_load_model)) {
+                    mainWindow.showPopupDialogFromComponent(parameterDiffDialog);
                 }
-            }
-            else{
-            }
-        }
-        onFirmware_load_model_BChanged:{
-            if(rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params === 2)
-            {
-                if (controller.buildDiffFromFile(firmware_load1.firmware_load_model_B)) {
-                    {
-                        mainWindow.showPopupDialogFromComponent(parameterDiffDialog)
-                        console.log("mainroot_ModelB" + firmware_load1.firmware_load_model_B)
-                    }
-                }
-            }
-            else{
+            } else {
 
             }
         }

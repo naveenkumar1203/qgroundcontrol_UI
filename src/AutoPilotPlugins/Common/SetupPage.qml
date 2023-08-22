@@ -30,8 +30,8 @@ Item {
     property string pageDescription:        vehicleComponent ? vehicleComponent.description : ""
     property real   availableWidth:         width - pageLoader.x
     property real   availableHeight:        height - pageLoader.y
-    property bool   showAdvanced:           false
-    property alias  advanced:               advancedCheckBox.checked
+//    property bool   showAdvanced:           false
+//    property alias  advanced:               advancedCheckBox.checked
 
     property bool   _vehicleIsRover:        globals.activeVehicle ? globals.activeVehicle.rover : false
     property bool   _vehicleArmed:          globals.activeVehicle ? globals.activeVehicle.armed : false
@@ -61,11 +61,11 @@ Item {
             spacing:            _margins
             layoutDirection:    Qt.RightToLeft
 
-            QGCCheckBox {
-                id:         advancedCheckBox
-                text:       qsTr("Advanced")
-                visible:    showAdvanced
-            }
+//            QGCCheckBox {
+//                id:         advancedCheckBox
+//                text:       qsTr("Advanced")
+//                visible:    showAdvanced
+//            }
 
             ColumnLayout {
                 spacing:            _margins

@@ -53,9 +53,9 @@ bool SerialLink::_isBootloader()
         qCDebug(SerialLinkLog) << "PortName    : " << info.portName() << "Description : " << info.description();
         qCDebug(SerialLinkLog) << "Manufacturer: " << info.manufacturer();
         if (info.portName().trimmed() == _serialConfig->portName() &&
-                (info.description().toLower().contains("bootloader") ||
-                 info.description().toLower().contains("px4 bl") ||
-                 info.description().toLower().contains("px4 fmu v1.6"))) {
+            (info.description().toLower().contains("bootloader") ||
+             info.description().toLower().contains("px4 bl") ||
+             info.description().toLower().contains("px4 fmu v1.6"))) {
             qCDebug(SerialLinkLog) << "BOOTLOADER FOUND";
             return true;
         }
@@ -180,8 +180,8 @@ bool SerialLink::_hardwareConnect(QSerialPort::SerialPortError& error, QString& 
     QObject::connect(_port, static_cast<void (QSerialPort::*)(QSerialPort::SerialPortError)>(&QSerialPort::error), this, &SerialLink::linkError);
     QObject::connect(_port, &QIODevice::readyRead, this, &SerialLink::_readBytes);
 
-    // After the bootloader times out, it still can take a second or so for the Pixhawk USB driver to come up and make
-    // the port available for open. So we retry a few times to wait for it.
+// After the bootloader times out, it still can take a second or so for the Pixhawk USB driver to come up and make
+// the port available for open. So we retry a few times to wait for it.
 #ifdef __android__
     _port->open(QIODevice::ReadWrite);
 #else
@@ -279,7 +279,14 @@ void SerialLink::_emitLinkError(const QString& errorMsg)
 {
     QString msg("Error on link %1. %2");
     qDebug() << errorMsg;
-    emit communicationError(tr("Link Error"), msg.arg(_config->name()).arg(errorMsg));
+    int vehicelid = vehicle_id_params;
+    int model_index = file_model_index;
+    int new_model_index = model_index + 1 ;
+
+    if(new_model_index == vehicelid)
+    {
+        emit communicationError(tr("Link Error"), msg.arg(_config->name()).arg(errorMsg));
+    }
 }
 
 //--------------------------------------------------------------------------
@@ -412,47 +419,47 @@ void SerialConfiguration::_initBaudRates()
 #if USE_ANCIENT_RATES
 #if defined(Q_OS_UNIX) || defined(Q_OS_LINUX) || defined(Q_OS_DARWIN)
         "50",
-        "75",
+            "75",
 #endif
-        "110",
+            "110",
 #if defined(Q_OS_UNIX) || defined(Q_OS_LINUX) || defined(Q_OS_DARWIN)
-        "150",
-        "200" ,
-        "134"  ,
+            "150",
+            "200" ,
+            "134"  ,
 #endif
-        "300",
-        "600",
-        "1200",
+            "300",
+            "600",
+            "1200",
 #if defined(Q_OS_UNIX) || defined(Q_OS_LINUX) || defined(Q_OS_DARWIN)
-        "1800",
+            "1800",
 #endif
 #endif
-        "2400",
-        "4800",
-        "9600",
+            "2400",
+            "4800",
+            "9600",
 #if defined(Q_OS_WIN)
-        "14400",
+            "14400",
 #endif
-        "19200",
-        "38400",
+            "19200",
+            "38400",
 #if defined(Q_OS_WIN)
-        "56000",
+            "56000",
 #endif
-        "57600",
-        "115200",
+            "57600",
+            "115200",
 #if defined(Q_OS_WIN)
-        "128000",
+            "128000",
 #endif
-        "230400",
+            "230400",
 #if defined(Q_OS_WIN)
-        "256000",
+            "256000",
 #endif
-        "460800",
-        "500000",
+            "460800",
+            "500000",
 #if defined(Q_OS_LINUX)
-        "576000",
+            "576000",
 #endif
-        "921600",
+            "921600",
     });
 }
 

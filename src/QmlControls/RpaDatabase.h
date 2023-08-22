@@ -17,6 +17,7 @@
 extern QString file_model;
 extern QString file_uin;
 extern int vehicle_id_params;
+extern int file_model_index;
 
 class TableModel : public QAbstractTableModel
 {
@@ -49,7 +50,7 @@ public:
     Q_INVOKABLE void download_function(const QString &file_name, const QString &firebase_folder_name, const QString &local_pc_location);
     Q_INVOKABLE void read_text_file(QString user_text_file_name,QString user_text_file_folder);
     Q_INVOKABLE void download_function_firmware(const QString &local_pc_location);
-
+    Q_INVOKABLE QStringList readModelsFromFile(const QString &filePath);
 
     Q_PROPERTY(QStringList filename READ filename WRITE setFileName NOTIFY filenameChanged)
     Q_PROPERTY(QString droneName READ droneName WRITE setDroneName NOTIFY droneNameChanged)
@@ -58,7 +59,7 @@ public:
     Q_PROPERTY(QString model READ model WRITE setModel NOTIFY modelChanged)
     Q_PROPERTY(QStringList firmwarelog_list READ firmwarelog_list WRITE setFirmwarelog_list NOTIFY firmwarelog_listChanged)
     Q_PROPERTY(QUrl image READ image WRITE setImage NOTIFY imageChanged)
-
+    Q_PROPERTY(int modelIndex READ modelIndex WRITE setModelIndex NOTIFY modelIndexChanged)
 
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role) override;
     void modelSelected_list();
@@ -74,7 +75,7 @@ public:
     QString type() const;
     void setType(const QString &newType);
 
-    QString model() const;
+    QString model() ;
     void setModel(const QString &newModel);
 
     QStringList firmwarelog_list() const;
@@ -85,6 +86,9 @@ public:
 
     QUrl image() const;
     void setImage(const QUrl &newImage);
+
+    int modelIndex() const;
+    void setModelIndex(int newModel_Index);
 
 protected:
     QHash<int, QByteArray> roleNames() const override;
@@ -97,22 +101,16 @@ private:
     QNetworkReply *m_networkreply;
     QNetworkAccessManager *m_networkAccessManager;
     QNetworkAccessManagerWithPatch *m_networkAccessManagerWithPatch;
-
     QString _projectID = "godrona-gcs";
-
     QString m_droneName;
-
     QString m_uin;
-
     QString m_type;
-
     QString m_model;
-
     QStringList m_firmwarelog_list;
-
     QStringList m_filename;
-
     QUrl m_image;
+    QMap<QString, int> m_modelIndexMap;
+    int m_Model_Index = 0;
 
 public slots:
     void network_reply_read();
@@ -124,8 +122,6 @@ signals:
     void uinNotFound();
     void dataAdded();
     void showTable();
-    //void dataDeleted();
-
     void droneNameChanged();
     void uinChanged();
     void typeChanged();
@@ -133,7 +129,7 @@ signals:
     void firmwarelog_listChanged();
     void filenameChanged();
     void imageChanged();
-
+    void modelIndexChanged();
 };
 
 #endif // TABLEMODEL_H

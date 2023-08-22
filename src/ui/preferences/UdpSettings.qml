@@ -71,7 +71,8 @@ ColumnLayout {
         QGCTextField {
             id:                     hostField
             Layout.preferredWidth:  _secondColumnWidth
-            placeholderText:        qsTr("Example: 127.0.0.1:14550")
+//           placeholderText:        qsTr("Example: 127.0.0.1:14550")
+            placeholderText:          qsTr("Example: 127.0.0.1:14452")
         }
         QGCButton {
             text:       qsTr("Add Server")

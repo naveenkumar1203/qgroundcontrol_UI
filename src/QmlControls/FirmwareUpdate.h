@@ -7,7 +7,7 @@
 #include <QFileInfo>
 #include <QFileDialog>
 #include "QGCToolbox.h"
-#include "SettingsManager.h"
+#include "RpaDatabase.h"
 
 extern int sound_flag;
 extern bool checksum_match;
@@ -16,66 +16,42 @@ extern bool checksum_match;
 class FirmwareUpdate : public QObject
 {
     Q_OBJECT
+
+    TableModel obj1;
+
 public:
     explicit FirmwareUpdate(QObject *parent = nullptr);
 
-    QGCToolbox*         _toolbox = nullptr;
+    QGCToolbox* _toolbox = nullptr;
 
     Q_INVOKABLE int mute_sound(int audio_flag);
 
-    Q_PROPERTY(QString checksum_generation_model_A READ checksum_generation_model_A WRITE setgenerated_checksum_model_A NOTIFY generation_checksum_model_AChanged)
-    Q_PROPERTY(QString checksum_calculation_model_A READ checksum_calculation_model_A WRITE setcalculated_checksum_model_A NOTIFY calculation_checksum_model_AChanged)
-    Q_PROPERTY(QString firmware_load_model_A READ firmware_load_model_A WRITE setfirmware_load_model_A NOTIFY firmware_load_model_AChanged)
+    Q_PROPERTY(QString checksum_generation_model READ checksum_generation_model WRITE setgenerated_checksum_model NOTIFY generation_checksum_modelChanged)
+    Q_PROPERTY(QString checksum_calculation_model READ checksum_calculation_model WRITE setcalculated_checksum_model NOTIFY calculation_checksum_modelChanged)
+    Q_PROPERTY(QString firmware_load_model READ firmware_load_model WRITE setfirmware_load_model NOTIFY firmware_load_modelChanged)
 
-    Q_INVOKABLE void checksum_generation_process_model_A(QString folder_location);
-    Q_INVOKABLE void checksum_calculation_process_model_A(QString real_file_location);
-    Q_INVOKABLE void compare_file_model_A(QString real_file_location);
-    Q_INVOKABLE void load_file_model_A(QString real_file_location);
+    Q_INVOKABLE void checksum_generation_process_model(QString folder_location);
+    Q_INVOKABLE void checksum_calculation_process_model(QString real_file_location);
+    Q_INVOKABLE void compare_file_model(QString real_file_location);
+    Q_INVOKABLE void load_file_model(QString real_file_location);
 
-    QString checksum_generation_model_A();
-    QString checksum_calculation_model_A();
-    QString firmware_load_model_A();
+    QString checksum_generation_model();
+    QString checksum_calculation_model();
+    QString firmware_load_model();
 
-    void setgenerated_checksum_model_A(const QString &newgenerated_checksum_model_A);
-    void setcalculated_checksum_model_A(const QString &newcalculated_checksum_model_A);
-    void setfirmware_load_model_A (const QString &newfirmware_load_model_A);
-
-    Q_PROPERTY(QString checksum_generation_model_B READ checksum_generation_model_B WRITE setgenerated_checksum_model_B NOTIFY generation_checksum_model_BChanged)
-    Q_PROPERTY(QString checksum_calculation_model_B READ checksum_calculation_model_B WRITE setcalculated_checksum_model_B NOTIFY calculation_checksum_model_BChanged)
-    Q_PROPERTY(QString firmware_load_model_B READ firmware_load_model_B WRITE setfirmware_load_model_B NOTIFY firmware_load_model_BChanged)
-
-    Q_INVOKABLE void checksum_generation_process_model_B(QString folder_location);
-    Q_INVOKABLE void checksum_calculation_process_model_B(QString real_file_location);
-    Q_INVOKABLE void compare_file_model_B(QString real_file_location);
-    Q_INVOKABLE void load_file_model_B(QString real_file_location);
-
-    QString checksum_generation_model_B();
-    QString checksum_calculation_model_B();
-    QString firmware_load_model_B();
-
-    void setgenerated_checksum_model_B(const QString &newgenerated_checksum_model_B);
-    void setcalculated_checksum_model_B(const QString &newcalculated_checksum_model_B);
-    void setfirmware_load_model_B(const QString &newfirmware_load_model_B);
+    void setgenerated_checksum_model(const QString &newgenerated_checksum_model);
+    void setcalculated_checksum_model(const QString &newcalculated_checksum_model);
+    void setfirmware_load_model(const QString &newfirmware_load_model);
 
 signals:
-   void generation_checksum_model_AChanged();
-   void calculation_checksum_model_AChanged();
-   void firmware_load_model_AChanged();
-
-   void generation_checksum_model_BChanged();
-   void calculation_checksum_model_BChanged();
-   void firmware_load_model_BChanged();
-
+   void generation_checksum_modelChanged();
+   void calculation_checksum_modelChanged();
+   void firmware_load_modelChanged();
 
 private:
-    QString model_A_generated_checksum;
-    QString model_A_calculated_checksum;
-    QString model_A_firmware_load;
-
-    QString model_B_generated_checksum;
-    QString model_B_calculated_checksum;
-    QString model_B_firmware_load;
-
+    QString model_generated_checksum;
+    QString model_calculated_checksum;
+    QString model_firmware_load;
 };
 
 #endif // FIRMWAREUPDATE_H

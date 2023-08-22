@@ -6,12 +6,16 @@
 #include <QTimer>
 #include <QStandardPaths>
 #include <QTextCodec>
+#include <QFile>
+#include <QTextStream>
 
 QString uin_number;
 QString user;
 
 QString file_model=" ";
 QString file_uin = " ";
+int file_model_index = 0;
+QStringList new_model_list;
 
 QString uin_number_selected;
 
@@ -235,9 +239,8 @@ void TableModel::modelSelected_list()
     m_model = modellist.at(uin_number_selected.toInt());
     file_model = m_model;
     file_uin = m_uin;
-
+    file_model_index = m_Model_Index;
     emit modelChanged();
-
 }
 
 void TableModel::image_function(const QString &file_name, const QString &firebase_folder_name)
@@ -351,6 +354,7 @@ void TableModel::download_function(const QString &file_name, const QString &fire
     QNetworkRequest request;
 
     QString link = "https://firebasestorage.googleapis.com/v0/b/" + _projectID + ".appspot.com/o/" + user_file + "%2F" + file_name + "?alt=media";
+
     qDebug()<<"link is"<<link;
     request.setUrl(QUrl(link));
     request.setHeader(QNetworkRequest::ContentTypeHeader,"text/csv");
@@ -373,44 +377,56 @@ void TableModel::download_function(const QString &file_name, const QString &fire
 
 void TableModel::download_function_firmware(const QString &local_pc_location)
 {
-
     QString firmware_Folder = "firmware";
-    QString code_A_Checksum = "code_A_checksum.txt";
-    QString code_B_Checksum = "code_B_checksum.txt";
-    QString data_A_Checksum = "data_A_checksum.txt";
-    QString data_B_Checksum = "data_B_checksum.txt";
-    QString firmware_A = "firmware_A.apj";
-    QString firmware_B = "firmware_B.apj";
-    QString param_A = "model_A.params";
-    QString param_B = "model_B.params";
 
-    QStringList fileList;
+    QNetworkRequest listRequest;
+    QString listLink = "https://firebasestorage.googleapis.com/v0/b/" + _projectID + ".appspot.com/o?prefix=" + firmware_Folder + "/&delimiter=/&alt=json";
+    listRequest.setUrl(QUrl(listLink));
 
-    fileList << code_A_Checksum << code_B_Checksum << data_A_Checksum << data_B_Checksum
-             << firmware_A << firmware_B << param_A << param_B;
+    QNetworkReply *listResponse = m_networkAccessManager->get(listRequest);
+    connect(listResponse, &QNetworkReply::finished, [this, listResponse, local_pc_location, firmware_Folder]() {
+        QByteArray listData = listResponse->readAll();
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(listData);
+        QJsonObject jsonObj = jsonDoc.object();
 
-    for (const QString& fileName : fileList) {
-
-    QString user_download_location = local_pc_location  + "/" + fileName;
-
-
-    QNetworkRequest request;
-
-    QString link = "https://firebasestorage.googleapis.com/v0/b/" + _projectID + ".appspot.com/o/" + firmware_Folder + "%2F" + fileName + "?alt=media";
-    request.setUrl(QUrl(link));
-    request.setHeader(QNetworkRequest::ContentTypeHeader,"text/csv");
-    request.setRawHeader("Authorization","Bearer");
-
-    QNetworkReply *response1 = m_networkAccessManager->get(QNetworkRequest(QUrl(QString::fromStdString(link.toStdString()))));
-    connect(response1,&QNetworkReply::finished, [response1,local_pc_location,user_download_location](){
-        QByteArray data = response1->readAll();
-        QFile file(user_download_location);
-        if (!file.open(QIODevice::WriteOnly)) {
+        if (listResponse->error() != QNetworkReply::NoError) {
+            qDebug() << "Error in listing files:" << listResponse->errorString();
+            return;
         }
-        file.write(data);
-        file.close();
+
+        if (jsonObj.contains("items")) {
+            QJsonArray itemsArray = jsonObj["items"].toArray();
+            for (const QJsonValue& itemValue : itemsArray) {
+                QJsonObject itemObject = itemValue.toObject();
+                QString fileName = itemObject["name"].toString();
+                fileName = fileName.mid(firmware_Folder.length() + 1); // Remove the folder path from the file name
+
+                QString user_download_location = local_pc_location + "/" + fileName;
+
+                QNetworkRequest fileRequest;
+                QString fileLink = "https://firebasestorage.googleapis.com/v0/b/" + _projectID + ".appspot.com/o/" + QUrl::toPercentEncoding(itemObject["name"].toString()) + "?alt=media";
+                fileRequest.setUrl(QUrl(fileLink));
+
+                QNetworkReply *fileResponse = m_networkAccessManager->get(fileRequest);
+                connect(fileResponse, &QNetworkReply::finished, [this , fileResponse, local_pc_location, user_download_location]() {
+                    if (fileResponse->error() != QNetworkReply::NoError) {
+                        qDebug() << "Error downloading file:" << fileResponse->errorString();
+                        return;
+                    }
+
+                    QByteArray data = fileResponse->readAll();
+                    QFile file(user_download_location);
+                    if (!file.open(QIODevice::WriteOnly)) {
+                        qDebug() << "Error opening file for writing:" << file.errorString();
+                        return;
+                    }
+                    file.write(data);
+                    file.close();
+                });
+            }
+        }
     });
-}
+    readModelsFromFile(local_pc_location);
 }
 
 void TableModel::firmwareupgrade_data()
@@ -518,9 +534,19 @@ void TableModel::setType(const QString &newType)
     emit typeChanged();
 }
 
-QString TableModel::model() const
+QString TableModel::model()
 {
-    //return m_model;
+//    qDebug()<< "new model name is :" << file_model;
+    int index=100;
+
+    if (new_model_list.contains(file_model)) {
+        index = new_model_list.indexOf(file_model);
+        m_Model_Index = index;
+//        qDebug()<< "new model index is :" << m_Model_Index;
+
+    } else {
+        qDebug() << "The QStringList does not contain the string:";
+    }
     return file_model;
 }
 
@@ -540,7 +566,7 @@ QStringList TableModel::firmwarelog_list() const
 void TableModel::setFirmwarelog_list(const QStringList &newFirmwarelog_list)
 {
     if (m_firmwarelog_list == newFirmwarelog_list)
-                              return;
+       return;
     m_firmwarelog_list = newFirmwarelog_list;
     emit firmwarelog_listChanged();
 }
@@ -559,5 +585,44 @@ void TableModel::setFileName(const QStringList &newFilename)
     emit filenameChanged();
 }
 
+QStringList TableModel::readModelsFromFile(const QString &filePath)
+{
+    QFile file(filePath);
+    QStringList models;
 
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QTextStream in(&file);
+        QString fileContent = in.readAll();
+        models = fileContent.split("\n", Qt::SkipEmptyParts);
+        file.close();
+        m_modelIndexMap.clear();
+        for (int i = 0; i < models.size(); ++i)
+        {
+            QString modelName = models.at(i);
+            m_modelIndexMap[modelName] = i;
+        }
+        qDebug()<< "model list" << models;
+        new_model_list = models;
+    }
+    else
+    {
+        qWarning() << "Error opening the file:" << file.errorString();
+    }
+    return models;
+}
 
+int TableModel::modelIndex() const
+{
+    file_model_index = m_Model_Index;
+    return m_Model_Index;
+}
+
+void TableModel::setModelIndex(int newModel_Index)
+{
+    m_Model_Index = 0;
+    if (m_Model_Index == newModel_Index)
+        return;
+    m_Model_Index = newModel_Index;
+    emit modelIndexChanged();
+}

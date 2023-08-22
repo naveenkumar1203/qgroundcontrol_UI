@@ -72,9 +72,12 @@ void MultiVehicleManager::setToolbox(QGCToolbox *toolbox)
 void MultiVehicleManager::_vehicleHeartbeatInfo(LinkInterface* link, int vehicleId, int componentId, int vehicleFirmwareType, int vehicleType)
 {
     QString model_name = rpadatabase.model();
+    int model_index = rpadatabase.modelIndex();
     vehicle_id_params = vehicleId;
+    int new_model_index = model_index + 1;
 
-    if(((model_name == "Model A") && (vehicleId == 1)) ||((model_name == "Model B") && (vehicleId == 2)))
+
+    if(new_model_index == vehicleId)
     {
         if (this->vehicle_connect() == true)
         {

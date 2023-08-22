@@ -1,8 +1,10 @@
 #include "FireBaseAccess.h"
 #include "FirmwareUpgradeController.h"
 
-
 #include <QVariantMap>
+#include <QUrlQuery>
+#include <QRandomGenerator>
+#include <QMessageBox>
 
 QString g_industry;
 QString g_name;
@@ -12,7 +14,7 @@ QString g_address;
 QString g_locality;
 QString g_role;
 QString usermail = " ";
-
+QString global_OTP = " ";
 QString firebase_storage_name;
 
 FireBaseAccess::FireBaseAccess(QObject *parent)
@@ -28,7 +30,6 @@ FireBaseAccess::~FireBaseAccess()
 
 void FireBaseAccess::new_user_registration(const QString &industry,const QString &role,const QString &name, const QString &mail, const QString &number, const QString &address, const QString &locality, const QString &password)
 {
-
     g_name = name;
     g_mail = mail;
     g_number = number;
@@ -36,7 +37,6 @@ void FireBaseAccess::new_user_registration(const QString &industry,const QString
     g_locality = locality;
     g_industry = industry;
     g_role = role;
-
 
     m_NetworkReply = m_NetworkAccessManager->get(QNetworkRequest(QUrl("https://godrona-gcs-default-rtdb.asia-southeast1.firebasedatabase.app/.json")));
     connect(m_NetworkReply,&QNetworkReply::readyRead,this,&FireBaseAccess::rds_data_network_reply_read);
@@ -72,7 +72,6 @@ void FireBaseAccess::new_user_POST(const QString &url, const QJsonDocument &payl
 
 void FireBaseAccess::new_user_network_reply_read()
 {
-    //qDebug()<<m_NetworkReply->readAll();
     QByteArray response = m_NetworkReply->readAll();
     m_NetworkReply->deleteLater();
     newUser_parseResponse(response);
@@ -414,3 +413,89 @@ void FireBaseAccess::setStoragename(const QString &newStoragename)
     m_storagename = newStoragename;
     emit storagenameChanged();
 }
+
+void FireBaseAccess::generateOTP(const QString &phoneNumber)
+{
+
+    QString otp = QString::number(QRandomGenerator::global()->bounded(100000, 999999));
+    global_OTP = otp;
+    qDebug()<< "generate function OTP is" << otp;
+    qDebug()<< "global function OTP is" << global_OTP;
+
+    sendOTP(phoneNumber,otp);
+}
+
+void FireBaseAccess::sendOTP(const QString &phoneNumber, const QString &otp) {
+
+    QString url = QString("https://2factor.in/API/V1/%1/SMS/%2/%3/%4")
+                      .arg(m_2factor_OTP_apiKey)
+                      .arg(phoneNumber)
+                      .arg(otp)
+                      .arg("GoDronaGCS");
+
+    QNetworkRequest request((QUrl(url)));
+
+    m_NetworkReply = m_NetworkAccessManager->get(request);
+
+    connect(m_NetworkReply, &QNetworkReply::finished, [=]() {
+        if (m_NetworkReply->error() == QNetworkReply::NoError) {
+            qDebug() << "OTP sent successfully!";
+            qDebug()<< "sendotp function OTP is" << otp;
+
+        } else {
+            qDebug() << "OTP send error:" << m_NetworkReply->errorString();
+        }
+        m_NetworkReply->deleteLater();
+    });
+}
+
+void FireBaseAccess::verifyOTP(const QString &otpDigits,const QString &industry_text,
+                               const QString &role_text,const QString &name_text,
+                               const QString &mail_text,const QString &number_text,
+                               const QString &address_text,const QString &locality_text,
+                               const QString &password_text)
+
+{
+    QString generatedOtp = global_OTP;
+
+    qDebug() << "globalotp is :" << global_OTP;
+    qDebug()<< "generatedOtp function OTP is : " << generatedOtp;
+    qDebug()<< "otpDigits OTP is : " << otpDigits;
+
+    QString cleanedOtpDigits = otpDigits;
+    cleanedOtpDigits.remove(QChar(','), Qt::CaseInsensitive);
+    cleanedOtpDigits.remove(QChar(' '), Qt::CaseInsensitive);
+
+    qDebug()<< "cleanedOtpDigits OTP is : " << cleanedOtpDigits;
+
+    if(cleanedOtpDigits ==generatedOtp)
+    {
+        qDebug() << "OTP Verified Successfully";
+        new_user_registration(industry_text, role_text, name_text,
+                              mail_text, number_text, address_text,
+                              locality_text, password_text);
+
+        qDebug()<< "industry_text OTP is : " << industry_text;
+        qDebug()<< "role_text OTP is : " << role_text;
+        qDebug()<< "name_text OTP is : " << name_text;
+        qDebug()<< "mail_text OTP is : " << mail_text;
+        qDebug()<< "number_text OTP is : " << number_text;
+        qDebug()<< "address_text OTP is : " << address_text;
+        qDebug()<< "locality_text OTP is : " << locality_text;
+        qDebug()<< "password_text OTP is : " << password_text;
+    }
+    else {
+        QMessageBox msgBox;
+        msgBox.setText("The OTP you entered is invalid. Please enter the correct OTP");
+        msgBox.setStyleSheet("color:white;background:#05324D");
+        msgBox.setDefaultButton(QMessageBox::Ok);
+        msgBox.exec();
+        qDebug() << "OTP Verification Failed";
+    }
+
+}
+
+
+
+
+

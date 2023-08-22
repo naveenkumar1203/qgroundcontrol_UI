@@ -271,8 +271,6 @@ Rectangle {
         width:          _activeVehicle ? _activeVehicle.loadProgress * parent.width : 0
         color:          qgcPal.colorGreen
         visible:        !largeProgressBar.visible
-        //        visible: (_activeVehicle && ((rpadatabase.model === "Model A" && QGroundControl.multiVehicleManager.vehicleid_params === 1) ||
-        //                                    (rpadatabase.model === "Model B" && QGroundControl.multiVehicleManager.vehicleid_params === 2)) && !largeProgressBar.visible)
     }
 
     // Large parameter download progress bar

@@ -50,6 +50,10 @@ ApplicationWindow {
     property var group: buttonGroup
     property var image_upload;
     property var _activeVehicle:     QGroundControl.multiVehicleManager.activeVehicle
+    property var formattedPhoneNumber
+    property var lastFourDigits_phonenumber
+    property var otpText: ["", "", "", "", "", ""]
+    property string timerLabelText: ""
 
     ButtonGroup {
         id: buttonGroup
@@ -58,6 +62,19 @@ ApplicationWindow {
 
     FirmwareUpdate{
         id:firmware_load1
+    }
+
+    function loadModelsFromFile(combobox) {
+        var filePath = QGroundControl.settingsManager.appSettings.telemetrySavePath + "/model_list.txt";
+        var models = rpadatabase.readModelsFromFile(filePath);
+        if (models.length > 0) {
+            combobox.model.clear();
+            for (var i = 0; i < models.length; i++) {
+                combobox.model.append({ "text": models[i] });
+            }
+        } else {
+            console.error("No models found in the file.");
+        }
     }
 
     FireBaseAccess{
@@ -338,7 +355,7 @@ ApplicationWindow {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: 90
                     height: 90
-                    source: "/res/godrona-logo.png"//"qrc:/../../../../Downloads/godrona-logo.png"
+                    source: "/res/godrona-logo.png"
                 }
                 Column{
                     id: login_page_label
@@ -379,12 +396,15 @@ ApplicationWindow {
                         leftPadding: 50
                         placeholderText: qsTr("example@gmail.com")
                         inputMethodHints: Qt.ImhEmailCharactersOnly
-                        validator: RegExpValidator{regExp: /.+/}
+//                        validator: RegExpValidator{regExp: /.+/}
+                        validator: RegExpValidator {
+                            regExp: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
+                        }
                         onTextChanged: {
                             login_page_email.border.color = "#C0C0C0"
                         }
                         Keys.onReturnPressed: {
-                            login_page_password_textfield.forceActiveFocus()  // Move focus to the next text field
+                            login_page_password_textfield.forceActiveFocus()
                         }
                         background: Rectangle
                         {
@@ -398,7 +418,7 @@ ApplicationWindow {
                             width: 25
                             height: 25
                             fillMode: Image.PreserveAspectFit
-                            source: "/res/mailLogo.png"//"qrc:/../../../../Downloads/mailLogo.png"
+                            source: "/res/mailLogo.png"
                             anchors.left: parent.left
                             anchors.leftMargin: 12
                             anchors.verticalCenter: parent.verticalCenter
@@ -442,7 +462,7 @@ ApplicationWindow {
                             width: 23
                             height: 23
                             fillMode: Image.PreserveAspectFit
-                            source: "/res/password.png"//"qrc:/../../../../Downloads/password.png"
+                            source: "/res/password.png"
                             anchors.left: parent.left
                             anchors.leftMargin: 8
                             anchors.verticalCenter: parent.verticalCenter
@@ -452,7 +472,7 @@ ApplicationWindow {
                             width: 25
                             height: 25
                             fillMode: Image.PreserveAspectFit
-                            source: "/res/password_hide.png"//"qrc:/../../../../Downloads/password_hide.png"
+                            source: "/res/password_hide.png"
                             anchors.right: parent.right
                             anchors.rightMargin: 12
                             anchors.verticalCenter: parent.verticalCenter
@@ -471,7 +491,7 @@ ApplicationWindow {
                             width: 25
                             height: 25
                             fillMode: Image.PreserveAspectFit
-                            source: "/res/password_show.png"//"qrc:/../../../../Downloads/password_show.png"
+                            source: "/res/password_show.png"
                             anchors.right: parent.right
                             anchors.rightMargin: 12
                             anchors.verticalCenter: parent.verticalCenter
@@ -538,16 +558,18 @@ ApplicationWindow {
                             width: 50
                             height: 50
                             anchors.horizontalCenter: parent.horizontalCenter
-                            source: "/res/new_member.png" //"qrc:/../../../../Downloads/new_member.png"
+                            source: "/res/new_member.png"
 
                         }
                         MouseArea{
                             anchors.fill: new_user_logo
                             onClicked: {
+                                first_user_details_page.visible = true
+                                second_user_details_page.visible = false
+                                third_user_details_page.visible = false
                                 password_hide_image.visible = true
                                 password_show_image.visible = false
                                 new_user_first_page.visible = true
-                                first_user_details_page.visible = true
                                 login_page_email_textfield.text = ""
                                 login_page_password_textfield.text = ""
                                 user_name.border.color = "#05324D"
@@ -585,7 +607,7 @@ ApplicationWindow {
                             width: 50
                             height: 50
                             anchors.horizontalCenter: parent.horizontalCenter
-                            source: "/res/forgotpassword.png" //"qrc:/../../../../Downloads/forgotpassword.png"
+                            source: "/res/forgotpassword.png"
                         }
                         MouseArea{
                             anchors.fill: forgot_password_logo
@@ -703,7 +725,7 @@ ApplicationWindow {
                                 width: 25
                                 height: 25
                                 fillMode: Image.PreserveAspectFit
-                                source: "/res/mailLogo.png"//"qrc:/../../../../Downloads/mailLogo.png"
+                                source: "/res/mailLogo.png"
                                 anchors.left: parent.left
                                 anchors.leftMargin: 12
                                 anchors.verticalCenter: parent.verticalCenter
@@ -759,7 +781,7 @@ ApplicationWindow {
                     anchors.bottomMargin: 40
                     width: 75
                     height: 75
-                    source: "/res/backtologin-removebg-preview.png"//"qrc:/../../../../Downloads/backtologin-removebg-preview.png"
+                    source: "/res/backtologin-removebg-preview.png"
                     Label{
                         anchors.top: parent.bottom
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -864,7 +886,7 @@ ApplicationWindow {
                         width: 23
                         height: 23
                         fillMode: Image.PreserveAspectFit
-                        source: "/res/password.png"//"qrc:/../../../../Downloads/password.png"
+                        source: "/res/password.png"
                         anchors.left: parent.left
                         anchors.leftMargin: 8
                         anchors.verticalCenter: parent.verticalCenter
@@ -874,7 +896,7 @@ ApplicationWindow {
                         width: 25
                         height: 25
                         fillMode: Image.PreserveAspectFit
-                        source: "/res/password_hide.png"//"qrc:/../../../../Downloads/password_hide.png"
+                        source: "/res/password_hide.png"
                         anchors.right: parent.right
                         anchors.rightMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
@@ -893,7 +915,7 @@ ApplicationWindow {
                         width: 25
                         height: 25
                         fillMode: Image.PreserveAspectFit
-                        source: "/res/password_show.png"//"qrc:/../../../../Downloads/password_show.png"
+                        source: "/res/password_show.png"
                         anchors.right: parent.right
                         anchors.rightMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
@@ -939,7 +961,7 @@ ApplicationWindow {
                         width: 23
                         height: 23
                         fillMode: Image.PreserveAspectFit
-                        source: "/res/password.png"//"qrc:/../../../../Downloads/password.png"
+                        source: "/res/password.png"
                         anchors.left: parent.left
                         anchors.leftMargin: 8
                         anchors.verticalCenter: parent.verticalCenter
@@ -949,7 +971,7 @@ ApplicationWindow {
                         width: 25
                         height: 25
                         fillMode: Image.PreserveAspectFit
-                        source: "/res/password_hide.png"//"qrc:/../../../../Downloads/password_hide.png"
+                        source: "/res/password_hide.png"
                         anchors.right: parent.right
                         anchors.rightMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
@@ -968,7 +990,7 @@ ApplicationWindow {
                         height: 25
                         visible: false
                         fillMode: Image.PreserveAspectFit
-                        source: "/res/password_show.png"//"qrc:/../../../../Downloads/password_show.png"
+                        source: "/res/password_show.png"
                         anchors.right: parent.right
                         anchors.rightMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
@@ -1067,7 +1089,7 @@ ApplicationWindow {
 
                 Label{
                     id: new_user_first_page_label
-                    text: "<- Registration"
+                    text: "<- Home"
                     font.pixelSize: 20
                     color: "white"
                     font.bold: true
@@ -1095,10 +1117,12 @@ ApplicationWindow {
                             user_password_text.text = ""
                             control.currentIndex = -1
                             control_role.currentIndex = -1
+                            otpText = ["", "", "", "", "", ""]
                             password_hide_image.visible = true
                             password_show_image.visible = false
                             password_show_image1.visible = false
                             password_hide_image1.visible = true
+                            timer.running = false
                             new_user_image_rect.source = "/res/First Time Signup screen.png"
                         }
                     }
@@ -1240,7 +1264,7 @@ ApplicationWindow {
                                     width: 25
                                     height: 25
                                     anchors.verticalCenter: parent.verticalCenter
-                                    source: "/res/organization.png"//"qrc:/../../../../Downloads/organization.png"
+                                    source: "/res/organization.png"
                                 }
                             }
                             background: Rectangle {
@@ -1329,7 +1353,7 @@ ApplicationWindow {
                                     width: 25
                                     height: 25
                                     anchors.verticalCenter: parent.verticalCenter
-                                    source: "/res/role.png"//"qrc:/../../../../Downloads/organization.png"
+                                    source: "/res/role.png"
                                 }
                             }
                             background: Rectangle {
@@ -1412,7 +1436,6 @@ ApplicationWindow {
                     color: "#031C28"
                     Label {
                         text: "Upload Your Image*"
-                        //anchors.horizontalCenter: parent.horizontalCenter
                         anchors.left: user_image.right
                         anchors.leftMargin: 10
                         anchors.top: parent.top
@@ -1430,7 +1453,7 @@ ApplicationWindow {
                         Image{
                             anchors.fill: user_image
                             anchors.verticalCenter: parent.verticalCenter
-                            source: "/res/user_photo.png"//"qrc:/../../../../Downloads/user_photo.png"
+                            source: "/res/user_photo.png"
 
                         }
                         Image{
@@ -1466,13 +1489,14 @@ ApplicationWindow {
                         ScrollView {
                             anchors.fill: parent
                             clip: true
+                            contentWidth: parent.width
+                            anchors.horizontalCenter: parent.horizontalCenter
                             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
                             ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+
                             Column{
                                 id: column
                                 spacing: 30
-                                anchors.left: parent.left
-                                anchors.leftMargin: 50
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 Column{
                                     spacing: 10
@@ -1492,7 +1516,7 @@ ApplicationWindow {
                                             user_name.border.color = "#C0C0C0"
                                         }
                                         Keys.onReturnPressed: {
-                                            user_mail_text.forceActiveFocus()  // Move focus to the next text field
+                                            user_mail_text.forceActiveFocus()
                                         }
                                         background: Rectangle
                                         {
@@ -1506,7 +1530,7 @@ ApplicationWindow {
                                             width: 23
                                             height: 23
                                             fillMode: Image.PreserveAspectFit
-                                            source: "/res/user_image.png"//"qrc:/../../../../Downloads/user_image.png"
+                                            source: "/res/user_image.png"
                                             anchors.left: parent.left
                                             anchors.leftMargin: 12
                                             anchors.verticalCenter: parent.verticalCenter
@@ -1528,6 +1552,9 @@ ApplicationWindow {
                                         placeholderText: qsTr("example@gmail.com")
                                         inputMethodHints: Qt.ImhEmailCharactersOnly
                                         //validator: RegExpValidator{regExp:/[A-Z0-9a-z._-]{1,}@(\\w+)(\\.(\\w+))(\\.(\\w+))?(\\.(\\w+))?$"*/}
+                                        validator: RegExpValidator {
+                                            regExp: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
+                                        }
                                         leftPadding: 50
                                         onTextChanged: {
                                             user_mail.border.color = "#C0C0C0"
@@ -1547,7 +1574,7 @@ ApplicationWindow {
                                             width: 25
                                             height: 25
                                             fillMode: Image.PreserveAspectFit
-                                            source: "/res/mailLogo.png"//"qrc:/../../../../Downloads/mailLogo.png"
+                                            source: "/res/mailLogo.png"
                                             anchors.left: parent.left
                                             anchors.leftMargin: 12
                                             anchors.verticalCenter: parent.verticalCenter
@@ -1589,7 +1616,7 @@ ApplicationWindow {
                                             width: 25
                                             height: 25
                                             fillMode: Image.PreserveAspectFit
-                                            source: "/res/user_phone.png"//"qrc:/../../../../Downloads/user_phone.png"
+                                            source: "/res/user_phone.png"
                                             anchors.left: parent.left
                                             anchors.leftMargin: 12
                                             anchors.verticalCenter: parent.verticalCenter
@@ -1637,7 +1664,7 @@ ApplicationWindow {
                                             width: 30
                                             height: 30
                                             fillMode: Image.PreserveAspectFit
-                                            source: "/res/user_location.png"//"qrc:/../../../../Downloads/user_location.png"
+                                            source: "/res/user_location.png"
                                             anchors.left: parent.left
                                             anchors.leftMargin: 12
                                             anchors.verticalCenter: parent.verticalCenter
@@ -1676,7 +1703,7 @@ ApplicationWindow {
                                             width: 25
                                             height: 25
                                             fillMode: Image.PreserveAspectFit
-                                            source: "/res/user_locality.png"//"qrc:/../../../../Downloads/user_locality.png"
+                                            source: "/res/user_locality.png"
                                             anchors.left: parent.left
                                             anchors.leftMargin: 12
                                             anchors.verticalCenter: parent.verticalCenter
@@ -1714,7 +1741,7 @@ ApplicationWindow {
                                             width: 23
                                             height: 23
                                             fillMode: Image.PreserveAspectFit
-                                            source: "/res/password.png"//"qrc:/../../../../Downloads/password.png"
+                                            source: "/res/password.png"
                                             anchors.left: parent.left
                                             anchors.leftMargin: 8
                                             anchors.verticalCenter: parent.verticalCenter
@@ -1724,7 +1751,7 @@ ApplicationWindow {
                                             width: 25
                                             height: 25
                                             fillMode: Image.PreserveAspectFit
-                                            source: "/res/password_hide.png"//"qrc:/../../../../Downloads/password_hide.png"
+                                            source: "/res/password_hide.png"
                                             anchors.right: parent.right
                                             anchors.rightMargin: 12
                                             anchors.verticalCenter: parent.verticalCenter
@@ -1743,7 +1770,7 @@ ApplicationWindow {
                                             width: 25
                                             height: 25
                                             fillMode: Image.PreserveAspectFit
-                                            source: "/res/password_show.png"//"qrc:/../../../../Downloads/password_show.png"
+                                            source: "/res/password_show.png"
                                             anchors.right: parent.right
                                             anchors.rightMargin: 12
                                             anchors.verticalCenter: parent.verticalCenter
@@ -1768,6 +1795,7 @@ ApplicationWindow {
                         }
 
                     }
+
                     Column{
                         anchors.top: scrollview.bottom
                         anchors.topMargin: 20
@@ -1793,6 +1821,7 @@ ApplicationWindow {
                             onReleased: {
                                 verify_account_button.color = "#F25822"
                             }
+
                             onClicked: {
                                 if(user_name_text.text == ""
                                         || user_mail_text.text == ""
@@ -1802,52 +1831,63 @@ ApplicationWindow {
                                         || user_password_text.text == ""
                                         || user_profile_image.source == ""){
                                     enter_all_fields.open()
+
                                 }
                                 else{
                                     if(user_password_text.text.length < 6){
                                         password_length_error_dialog.open()
                                     }
+
                                     else{
                                         second_user_details_page.visible = false
                                         third_user_details_page.visible = true
-                                        //new_user_image_rect.source = "/res/otp.png"
                                         second_circle_text.text = "/"
                                         second_circle.color = "green"
                                         third_circle.color = "#F25822"
+                                        timer.countdown = 30;
+                                        timer.running = true;
                                         password_hide_image1.visible = true
                                         password_show_image1.visible = false
+                                        database_access.generateOTP(formattedPhoneNumber);
                                     }
                                 }
-                            }
-                        }
-                        Label{
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            text: "PREVIOUS STEP"
-                            font.bold: true
-                            color: "white"
-                            MouseArea{
-                                anchors.fill: parent
-                                onClicked: {
-                                    first_circle_text.text = "1"
-                                    second_circle_text.text = "2"
-                                    first_circle.color = "#F25822"
-                                    second_circle.color = "#031C28"
-                                    second_user_details_page.visible = false
-                                    first_user_details_page.visible = true
-                                    user_name_text.text == ""
-                                    user_mail_text.text == ""
-                                    user_number_text.text == ""
-                                    user_address_text.text == ""
-                                    user_locality_text.text == ""
-                                    user_password_text.text == ""
-                                    control.currentIndex = -1
-                                    control_role.currentIndex = -1
-                                    password_hide_image1.visible = true
-                                    password_show_image1.visible = false
-                                    new_user_image_rect.source = "/res/First Time Signup screen.png"
+                                var phoneNumber = user_number_text.text;
+                                var cleanedPhoneNumber = phoneNumber.replace(/[^0-9]/g, "");
+                                formattedPhoneNumber = "+91" + cleanedPhoneNumber;
+                                if (cleanedPhoneNumber.length > 4) {
+                                    lastFourDigits_phonenumber = cleanedPhoneNumber.slice(-4);
+                                    console.log("Last four digits of phone number: " + lastFourDigits_phonenumber);
                                 }
                             }
                         }
+                        //                        Label{
+                        //                            anchors.horizontalCenter: parent.horizontalCenter
+                        //                            text: "PREVIOUS STEP"
+                        //                            font.bold: true
+                        //                            color: "white"
+                        //                            MouseArea{
+                        //                                anchors.fill: parent
+                        //                                onClicked: {
+                        //                                    first_circle_text.text = "1"
+                        //                                    second_circle_text.text = "2"
+                        //                                    first_circle.color = "#F25822"
+                        //                                    second_circle.color = "#031C28"
+                        //                                    second_user_details_page.visible = false
+                        //                                    first_user_details_page.visible = true
+                        //                                    user_name_text.text == ""
+                        //                                    user_mail_text.text == ""
+                        //                                    user_number_text.text == ""
+                        //                                    user_address_text.text == ""
+                        //                                    user_locality_text.text == ""
+                        //                                    user_password_text.text == ""
+                        //                                    control.currentIndex = 1
+                        //                                    control_role.currentIndex = 1
+                        //                                    password_hide_image1.visible = true
+                        //                                    password_show_image1.visible = false
+                        //                                    new_user_image_rect.source = "/res/First Time Signup screen.png"
+                        //                                }
+                        //                            }
+                        //                        }
                     }
                 }
                 Rectangle{
@@ -1861,7 +1901,7 @@ ApplicationWindow {
                     Label{
                         id: otp_label
                         anchors.top: parent.top
-                        anchors.topMargin: 20
+                        anchors.topMargin: 10
                         anchors.left: parent.left
                         anchors.leftMargin: 20
                         text: "Please enter the"
@@ -1879,201 +1919,197 @@ ApplicationWindow {
                         anchors.top: otp_label.bottom
                         anchors.topMargin: 10
                         anchors.horizontalCenter: parent.horizontalCenter
-                        TextField{
-                            width: 30
-                            height: 30
-                            text: ""
-                            color: "white"
-                            maximumLength: 1
-                            onTextChanged: {
-                                otp.border.color = "green"
-                            }
-                            background: Rectangle
-                            {
-                                id: otp
-                                anchors.fill: parent
-                                color: "#031C28"
-                                border.color: "#05324D"
-                                border.width: 1.5
-                            }
-                        }
-                        TextField{
-                            width: 30
-                            height: 30
-                            text: ""
-                            color: "white"
-                            maximumLength: 1
-                            onTextChanged: {
-                                otp1.border.color = "green"
-                            }
-                            background: Rectangle
-                            {
-                                id: otp1
-                                anchors.fill: parent
-                                color: "#031C28"
-                                border.color: "#05324D"
-                                border.width: 1.5
-                            }
-                        }
-                        TextField{
-                            width: 30
-                            height: 30
-                            text: ""
-                            color: "white"
-                            maximumLength: 1
-                            onTextChanged: {
-                                otp2.border.color = "green"
-                            }
-                            background: Rectangle
-                            {
-                                id: otp2
-                                anchors.fill: parent
-                                color: "#031C28"
-                                border.color: "#05324D"
-                                border.width: 1.5
-                            }
-                        }
-                        TextField{
-                            width: 30
-                            height: 30
-                            text: ""
-                            color: "white"
-                            maximumLength: 1
-                            onTextChanged: {
-                                otp3.border.color = "green"
-                            }
-                            background: Rectangle
-                            {
-                                id: otp3
-                                anchors.fill: parent
-                                color: "#031C28"
-                                border.color: "#05324D"
-                                border.width: 1.5
-                            }
-                        }
-                        TextField{
-                            width: 30
-                            height: 30
-                            text: ""
-                            color: "white"
-                            maximumLength: 1
-                            onTextChanged: {
-                                otp4.border.color = "green"
-                            }
-                            background: Rectangle
-                            {
-                                id: otp4
-                                anchors.fill: parent
-                                color: "#031C28"
-                                border.color: "#05324D"
-                                border.width: 1.5
-                            }
-                        }
-                        TextField{
-                            width: 30
-                            height: 30
-                            text: ""
-                            color: "white"
-                            maximumLength: 1
-                            onTextChanged: {
-                                otp5.border.color = "green"
-                            }
-                            background: Rectangle
-                            {
-                                id: otp5
-                                anchors.fill: parent
-                                color: "#031C28"
-                                border.color: "#05324D"
-                                border.width: 1.5
+                        Repeater{
+                            model: 6
+                            TextField{
+                                id: textfiled
+                                height: 30
+                                width: 30
+                                text: otpText[index]
+                                color: "white"
+                                maximumLength: 1
+                                onTextChanged: {
+                                    otp_back_rect.border.color = "green"
+                                    otpText[index] = text;
+                                    console.log("mainrootwindow otp is:" + text);
+                                    if(text.length > 0 && index < 5)
+                                    {
+                                        otp_row.children[index + 1].forceActiveFocus();
+                                    }
+
+                                    if (otpText.every(function(value) { return value !== "" })) {
+                                    }
+                                }
+                                background: Rectangle
+                                {
+                                    id: otp_back_rect
+                                    anchors.fill: parent
+                                    color: "#031C28"
+                                    border.color: "#05324D"
+                                    border.width: 2
+                                }
                             }
                         }
                     }
-                    Row{
+
+                    RowLayout{
                         id: otp_error
-                        spacing: 20
+                        spacing: 150
                         anchors.top: otp_row.bottom
                         anchors.topMargin: 20
                         anchors.horizontalCenter: parent.horizontalCenter
-                        Label{
-                            text: "Didn't get the OTP"
-                            color: "white"
+
+                        Button{
+                            Text{
+                                id : resend_text_1
+                                text: "Didn't get the OTP"
+                                color: "white"
+                                visible: false
+                            }
+                            background: Rectangle {
+                                implicitWidth: 60
+                                implicitHeight: 20
+                                color: "#031C28"
+                            }
+
                         }
-                        Label{
-                            text: "Reset Code"
-                            color: "#F25822"
+
+                        Button {
+                            id: otp_reset_container
+                            Text{
+                                id: resend_text_2
+                                text :"Resend Code"
+                                color: "#F25822"
+                                visible: false
+                            }
+                            background: Rectangle {
+                                id: otp_reset_label
+                                implicitWidth: 60
+                                implicitHeight: 20
+                                color: "#031C28"
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    if (otp_reset_label.enabled) {
+                                        console.log("The button was clicked");
+                                        database_access.generateOTP(formattedPhoneNumber);
+                                        timer.countdown = 30;
+                                        timer.running = true;
+                                        otp_reset_label.enabled = false;
+                                    }
+                                }
+                            }
                         }
                     }
+
+                    Timer {
+                        id: timer
+                        interval: 1000
+                        repeat: true
+                        running: false
+                        property int countdown: 30
+
+                        onTriggered: {
+                            countdown--;
+                            if (countdown > 0) {
+                                resend_text_2.visible = false;
+                                resend_text_1.visible = false;
+                                timerLabelText = countdown.toString() + " seconds remaining";
+                            } else {
+                                timer.running = false;
+                                timerLabelText = "";
+                                otp_reset_label.enabled = true;
+                                resend_text_2.visible = true;
+                                resend_text_1.visible = true;
+                            }
+                        }
+                    }
+
                     Column{
                         id: otp_column
-                        spacing: 100
+                        spacing: 50
                         anchors.top: otp_error.bottom
                         anchors.topMargin: 40
                         anchors.horizontalCenter: parent.horizontalCenter
+
                         Label{
-                            text: "OTP has been sent to your Mobile"
+                            id: mobilenumber_text
+                            text: "OTP has been sent to your Registered Mobile Number +91-XXX XXX " + lastFourDigits_phonenumber;
                             color: "white"
-                            Label{
-                                anchors.top: parent.bottom
-                                anchors.topMargin: 10
-                                text: "Registered with Go Drona"
-                                color: "white"
-                            }
-                        }
-                        Button {
-                            Text{
-                                text: "Verify Now ->"
-                                font.pixelSize: 15
-                                anchors.centerIn: parent
-                                color: "white"
-                            }
-                            background: Rectangle {
-                                id: verify_now_button
-                                implicitWidth: 200
-                                implicitHeight: 40
-                                color: "#F25822"
-                                radius: 4
-                            }
-                            onPressed: {
-                                verify_now_button.color = "#05324D"
-                            }
-                            onReleased: {
-                                verify_now_button.color = "#F25822"
-                            }
-                            onClicked: {
-                                database_access.new_user_registration(combobox_text.text,combobox_role_text.text,user_name_text.text,user_mail_text.text,user_number_text.text,user_address_text.text,user_locality_text.text,user_password_text.text)
-                                control.currentIndex = -1
-                                control_role.currentIndex = -1
-                                user_name_text.text = ''
-                                user_mail_text.text = ''
-                                user_number_text.text = ''
-                                user_address_text.text = ''
-                                user_locality_text.text = ''
-                                user_password_text.text = ''
-                                user_image.color = "white"
-                                user_profile_image.source == ""
-                                user_profile_image.visible = false
-                            }
                         }
                     }
-                    Label{
+
+                    Label {
+                        id: timerText
                         anchors.top: otp_column.bottom
                         anchors.topMargin: 30
                         anchors.horizontalCenter: parent.horizontalCenter
-                        text: "PREVIOUS STEP"
-                        font.bold: true
+                        text: timerLabelText
                         color: "white"
-                        MouseArea{
-                            anchors.fill: parent
-                            onClicked: {
-                                second_circle_text.text = "2"
-                                second_circle.color = "#031C28"
-                                third_circle.color = "#031C28"
-                                third_user_details_page.visible = false
-                                second_user_details_page.visible = true
-                                new_user_image_rect.source = "/res/user_details.png"
-                            }
+                    }
+
+                    Button {
+                        id: verify_now_button_1
+                        anchors.top: timerText.bottom
+                        anchors.topMargin: 30
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        Text{
+                            text: "Verify Now ->"
+                            font.pixelSize: 15
+                            anchors.centerIn: parent
+                            color: "white"
+                        }
+                        background: Rectangle {
+                            id: verify_now_button
+                            implicitWidth: 200
+                            implicitHeight: 40
+                            anchors.leftMargin: 100
+                            color: "#F25822"
+                            radius: 4
+                        }
+                        onPressed: {
+                            verify_now_button.color = "#05324D"
+                        }
+                        onReleased: {
+                            verify_now_button.color = "#F25822"
+                        }
+                        onClicked: {
+                            database_access.verifyOTP(otpText,combobox_text.text,combobox_role_text.text,user_name_text.text,user_mail_text.text,user_number_text.text,user_address_text.text,user_locality_text.text,user_password_text.text)
+                            control.currentIndex = -1
+                            control_role.currentIndex = -1
+                            user_name_text.text = ''
+                            user_mail_text.text = ''
+                            user_number_text.text = ''
+                            user_address_text.text = ''
+                            user_locality_text.text = ''
+                            user_password_text.text = ''
+                            user_image.color = "white"
+                            user_profile_image.source == ""
+                            user_profile_image.visible = false
                         }
                     }
+
+
+                    //                    Label{
+                    //                        anchors.top: verify_now_button_1.bottom
+                    //                        anchors.topMargin: 20
+                    //                        anchors.horizontalCenter: parent.horizontalCenter
+                    //                        text: "PREVIOUS STEP"
+                    //                        font.bold: true
+                    //                        color: "white"
+                    //                        MouseArea{
+                    //                            anchors.fill: parent
+                    //                            onClicked: {
+                    //                                second_circle_text.text = "2"
+                    //                                second_circle.color = "#031C28"
+                    //                                third_circle.color = "#031C28"
+                    //                                third_user_details_page.visible = false
+                    //                                second_user_details_page.visible = true
+                    //                                new_user_image_rect.source = "/res/user_details.png"
+                    //                            }
+                    //                        }
+                    //                    }
                 }
                 Image{
                     id: back_to_login_logo
@@ -2082,7 +2118,7 @@ ApplicationWindow {
                     anchors.bottomMargin: 40
                     width: 75
                     height: 75
-                    source: "/res/backtologin-removebg-preview.png"//"qrc:/../../../../Downloads/backtologin-removebg-preview.png"
+                    source: "/res/backtologin-removebg-preview.png"
                     Label{
                         anchors.top: parent.bottom
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -2157,14 +2193,6 @@ ApplicationWindow {
         standardButtons: Dialog.Ok
     }
 
-
-    //    MessageDialog {
-    //        id: profileImageDialog
-    //        title: "Profile Image"
-    //        text: "Please Upload Your Profile Image."
-    //        standardButtons: Dialog.Ok
-    //    }
-
     MessageDialog {
         id: userRegisteredDialog
         title:"Registration Successfull"
@@ -2204,15 +2232,7 @@ ApplicationWindow {
             user_mail_text.text = ""
         }
     }
-    //    MessageDialog {
-    //        id: number_record_Dialog
-    //        title: "Already Registered Number"
-    //            text: "Entered Number is Already Registered."
-    //        standardButtons: Dialog.Ok
-    //        onAccepted: {
-    //            user_number_text.text = ""
-    //        }
-    //    }
+
     MessageDialog {
         id: uinrecord_Dialog
         title: "Already used UIN"
@@ -2238,7 +2258,6 @@ ApplicationWindow {
     }
     MessageDialog {
         id: enter_all_fields
-        //title: "Somefield not filled"
         text: "Please fill all the details"
     }
     MessageDialog {
@@ -3162,6 +3181,7 @@ ApplicationWindow {
                                 firmware_button.color             = "#031C28"
                                 profile_button.color              = "#031C28"
                                 about_button.color                = "#031C28"
+                                loadModelsFromFile(drone_model_list);
                             }
                         }
                     }
@@ -3431,7 +3451,6 @@ ApplicationWindow {
                         MouseArea{
                             anchors.fill: profile_button
                             onClicked: {
-                                //checkBoxState = 0
                                 logout_button.color = "#031C28"
                                 managerpa_button.color = "#031C28"
                                 dashboard_button.color = "#031C28"
@@ -4110,6 +4129,7 @@ ApplicationWindow {
                                     drone_name_text.text = ""
                                     uin_input_text.text = ""
                                     uin_input_text.enabled = true
+
                                 }
 
                             }
@@ -4153,8 +4173,6 @@ ApplicationWindow {
                         id: rpa_register_page
                         color: "#031C28"
                         visible: false
-                        //height: parent.height
-                        //width: parent.width
                         height: screen.height - 50
                         width: manage_rpa_header1.width
                         border.color: "#05324D"
@@ -4432,15 +4450,27 @@ ApplicationWindow {
                                     anchors.margins: 4
                                     currentIndex: -1
                                     displayText: currentIndex === -1 ? "Select Drone Model" : currentText
-                                    model: //["Model A", "Model B"]
-                                           ListModel {
-                                        ListElement{
-                                            text: "Model A"
-                                        }
-                                        ListElement{
-                                            text: "Model B"
-                                        }
+                                    model: ListModel {}
+                                    //                                    function loadModelsFromFile() {
+                                    //                                        console.log("i am enter the combobox function 1")
+                                    //                                        var filePath = QGroundControl.settingsManager.appSettings.telemetrySavePath + "/model_list.txt";
+                                    //                                        var models = rpadatabase.readModelsFromFile(filePath);
+                                    //                                        console.log("i am enter the combobox function 2")
+                                    //                                        if (models.length > 0) {
+                                    //                                            model.clear();
+                                    //                                            for (var i = 0; i < models.length; i++) {
+                                    //                                                model.append({ "text": models[i] });
+                                    //                                                console.log("i am enter the combobox function 3")
+
+                                    //                                            }
+                                    //                                        } else {
+                                    //                                            console.error("No models found in the file.");
+                                    //                                        }
+                                    //                                    }
+                                    Component.onCompleted: {
+                                        loadModelsFromFile(drone_model_list);
                                     }
+
 
                                     delegate: ItemDelegate {
                                         width: drone_model_list.width
@@ -4648,11 +4678,12 @@ ApplicationWindow {
                                 }
                                 onClicked: {
                                     if(updateButton === 1){
-                                        if((combo_box1.text === "")||(combo_box2.text === "") ||(drone_name_text.text == "") ||(uin_input_text.text == "") /*|| drone_image.source == ""*/) {
+                                        if(((combo_box1.text == "Select Drone Type") || (drone_type_list == -1))||((combo_box2.text == "Select Drone Model") || (drone_model_list == -1)) ||(drone_name_text.text == "") ||(uin_input_text.text == ""))
+                                        {
                                             fillDialog.visible = true
                                         }
                                         else{
-                                            rpadatabase.existingUIN(database_access.mail,uin_input_text.text)                                            //uinDialog.visible = true
+                                            rpadatabase.existingUIN(database_access.mail,uin_input_text.text)
                                         }
                                     }
                                     else if(updateButton == 2){
@@ -4665,7 +4696,6 @@ ApplicationWindow {
                                         uin_input_text.text = ""
                                         uin_input_text.enabled = true
                                         updateButton = 1
-                                        // checkBoxState = 0
                                     }
 
                                 }
@@ -4723,12 +4753,6 @@ ApplicationWindow {
                         text:"please fill the details correctly"
                     }
 
-                    //                        MessageDialog{
-                    //                            id:uinDialog
-                    //                            height: 50
-                    //                            width: 50
-                    //                            text:"Registered Successfully."
-                    //                        }
                     MessageDialog{
                         id:tableDialog
                         text:"Updated Successfully."
@@ -5406,7 +5430,7 @@ ApplicationWindow {
 
                             Image {
                                 id: user_image_inprofile
-                                source:rpadatabase.image//"qrc:/qmlimages/drone_1.png"
+                                source:rpadatabase.image
                                 anchors.fill: image_rect
                                 fillMode: Image.PreserveAspectCrop
                                 layer.enabled: true
@@ -5691,6 +5715,8 @@ ApplicationWindow {
                                         mobile_number.text = database_access.number
                                         address_field.text = database_access.address
                                         locality_field.text = database_access.locality
+                                        address_field.activeFocus = false
+                                        locality_field.activeFocus = false
                                     }
                                 }
                                 onPressed: {
